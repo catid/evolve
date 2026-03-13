@@ -1,59 +1,106 @@
-# Control-First Audit Report
+# DoorKey Control-Decomposition Report
 
-## What Was Wrong Or Uncertain
+## Current Conclusion
 
-- `SyncVectorEnv` was using `NEXT_STEP` autoreset semantics, which meant the rollout loop could act on terminal observations and then store a garbage post-terminal transition on the next step.
-- Time-limit truncations were being treated like true terminals for GAE/value bootstrapping, so truncated episodes lost their bootstrap target.
-- Vector-env reset seeds overlapped across DDP ranks because the code passed scalar seeds back into Gymnasium reset instead of explicit per-env seed lists.
-- Episode success was inferred from cumulative return rather than a durable per-episode success signal.
-- Evaluation was only reported in greedy mode, which hid a large train/eval mismatch on some tasks.
-- DDP episode metrics were reduced as unweighted per-rank means instead of sum/count aggregates.
-- Resolved configs did not reflect CLI update overrides, and resume-from-checkpoint behavior was missing.
-- In this environment, loopback sockets are not permitted, so the DDP smoke test must skip instead of pretending the harness regressed.
+- `flat_dense` remains the strongest verified greedy DoorKey control.
+- The original tokenized gap was real, but it was not one thing:
+  - `token_dense` was both underpowered and badly calibrated under greedy extraction.
+  - `single_expert` and `SARE` were much closer to solvable policies, but their action selection stayed too soft for greedy evaluation.
+- The smallest successful control-side recovery was not a new architecture. It was reducing PPO entropy pressure for `token_dense` from `0.01` to `0.001`.
+- Under that recovered setting, `token_dense` becomes a competent greedy DoorKey control.
+- A fair matched `SARE` rerun on the same setting still loses under greedy evaluation.
 
-## What Was Fixed
+## What Was Audited And Fixed
 
-- Vector env creation now uses `SAME_STEP` autoreset, and truncation bootstrapping uses `final_obs`.
-- Reset seeds are explicit and non-overlapping across ranks.
-- Episode success is carried through env info via `EpisodeSuccessWrapper`, with reward-based fallback only when needed.
-- Evaluation runs on rank 0, restores RNG state after completion, and can be checked in greedy or sampled mode.
-- Episode return/success/length logging now uses globally reduced sums and counts.
-- Checkpoints now save update/step/RNG state, and training can resume from `--resume-from`.
-- The DDP smoke test now skips when loopback sockets are unavailable.
-- Canonical recovery configs now live under `configs/diagnostic/` and `configs/experiments/`; `configs/baseline/` remains the short-run smoke lane.
+- Reproduced the accepted DoorKey comparison under the current experiment lane and saved [reproduction_note.md](/home/catid/evolve/outputs/reports/reproduction_note.md).
+- Fixed a provenance gap in `run_meta.json`: future runs now record both `git_commit` and `git_dirty`.
+- Added rollout/eval action-selection diagnostics:
+  - action entropy
+  - max action probability
+  - top-1 vs top-2 logit margin
+  - greedy-match rate
+- Added temperature-scaled sampled evaluation to separate policy quality from greedy extraction quality.
+- Added lightweight token representation metrics:
+  - pooled norm
+  - token feature std
+  - token pairwise cosine proxy
 
-## What Baselines Learn Now
+## Policy-Extraction Findings
 
-- Tiny overfit protocol on `MiniGrid-Empty-5x5-v0`:
-  - `flat_dense`: greedy eval success `1.000`, eval return `0.955`
-  - `token_dense`: greedy eval success `1.000`, eval return `0.955`
-- Sanity sweep:
-  - `Empty-5x5`: both `flat_dense` and `token_dense` solve it with greedy eval success `1.000`
-  - `FourRooms`: `flat_dense` reaches weak but nonzero greedy eval (`0.0614` return, `0.0625` success); `token_dense` remains `0.000`
-- Fully observed DoorKey diagnostic:
-  - default control stayed flat at greedy eval `0.000`
-  - tuned `token_dense` reached greedy eval return `0.964`, success `1.000`
-- Standard partial-observation DoorKey:
-  - tuned `token_dense` reached train success `1.000`
-  - greedy eval stayed at `0.000`
-  - sampled eval on the same checkpoint reached return `0.953`, success `1.000`
-- Memory at 60 updates:
-  - `token_gru` greedy eval stayed `0.000`, but sampled eval reached return `0.474`, success `0.500`
-  - matched `token_dense` greedy eval stayed `0.000`, but sampled eval reached return `0.514`, success `0.5625`
-  - caveat: `token_gru` is still diagnostic-only because PPO sequence-aware minibatching is deferred
+Source artifact: [policy_extraction_report.md](/home/catid/evolve/outputs/reports/policy_extraction_report.md)
 
-## Whether Routed Models Were Fairly Tested
+Original accepted DoorKey setting:
 
-- The original routed sweeps were not fair tests of routing; the controls were still unhealthy.
-- No new routed rerun is being claimed here.
-- The current evidence says the repo was primarily an RL-baseline-debugging project until the control fixes above landed.
+- `flat_dense`: greedy success `1.000`, eval max-prob `0.995`, logit margin `6.671`
+- `token_dense`: greedy success `0.000`, best sampled success `0.125`, eval max-prob `0.315`, logit margin `0.330`
+- `single_expert`: greedy success `0.000`, best sampled success `1.000`
+- `SARE`: greedy success `0.000`, best sampled success `1.000`
 
-## Go / No-Go
+Interpretation:
 
-- No-go on spending more time on TREG-H, SRW, or POR right now.
-- No-go on claiming routed gains from the earlier MiniGrid suite.
-- Conditional go on rerunning only `SARE`, and only after:
-  - controls are matched to the tuned PPO setting,
-  - evaluation mode is declared explicitly (`greedy` vs `sampled`),
-  - compute is matched to the control.
-- Highest-value next step is a compact PPO sweep and explicit greedy-vs-sampled policy diagnostics on DoorKey/KeyCorridor, not more architecture count.
+- `flat_dense` learns a sharp deterministic policy.
+- `token_dense` is weak even when sampling is allowed, so its problem is not only greedy extraction.
+- `single_expert` and `SARE` already contain competent sampled policies on DoorKey, but they do not extract a strong greedy policy. Their failure mode is much more calibration/extraction-heavy than `token_dense`.
+
+## Tokenization-Gap Findings
+
+Source artifact: [tokenization_gap_report.md](/home/catid/evolve/outputs/reports/tokenization_gap_report.md)
+
+DoorKey tokenized diagnostics:
+
+| Run | Greedy Success | Best Sampled Success | Train Return | Repr Std | Repr Cosine |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| baseline tokenized | `0.000` | `0.125` | `0.310` | `0.241` | `0.932` |
+| fully observed | `0.000` | `0.688` | `0.267` | `0.229` | `0.942` |
+| depth-4 | `0.000` | `0.125` | `0.088` | `0.151` | `0.970` |
+| depth-4 + fully observed | `0.000` | `0.938` | `0.718` | `0.204` | `0.948` |
+
+Interpretation:
+
+- Full observation helps the tokenized path a lot under sampled evaluation, so partial observability is part of the gap.
+- Depth alone does not fix the partial-observation tokenized control; in this implementation it actually looks more collapsed.
+- Even with full observation and deeper token mixing, greedy extraction still fails. So the remaining problem is not just representation quality; it is also action calibration.
+
+## Smallest Successful Recovery
+
+Source artifact: [outputs/experiments/token_recovery/report.md](/home/catid/evolve/outputs/experiments/token_recovery/report.md)
+
+Bounded sweep:
+
+- `token_dense`, `ent_coef=0.001`: greedy success `0.750`, train return `0.942`, rollout entropy `0.695`, repr std `0.467`, repr cosine `0.735`
+- `token_dense`, `ent_coef=0.0`: greedy success `0.000`
+- `single_expert`, `ent_coef=0.001`: greedy success `0.000`, best sampled success `0.750`
+- `single_expert`, `ent_coef=0.0`: greedy success `0.000`
+
+Interpretation:
+
+- The smallest successful change in this repo is `token_dense` with `ent_coef=0.001`.
+- That change both sharpens action selection and materially improves representation health.
+- Pushing entropy all the way to zero is too aggressive and does not recover the control.
+- The same sweep does not recover `single_expert`, so there is not one universal calibration fix for the whole tokenized path.
+
+## Fair SARE Retest
+
+Source artifact: [outputs/experiments/sare_retest/report.md](/home/catid/evolve/outputs/experiments/sare_retest/report.md)
+
+Matched DoorKey setting (`ent_coef=0.001`):
+
+| Variant | Greedy Success | Best Sampled Success | Train Return | Throughput |
+| --- | ---: | ---: | ---: | ---: |
+| `flat_dense` | `1.000` | `1.000` | `0.960` | `9062.6` |
+| `token_dense` | `0.750` | `1.000` | `0.942` | `6047.8` |
+| `single_expert` | `0.000` | `0.750` | `0.291` | `6509.1` |
+| `SARE` | `0.000` | `1.000` | `0.744` | `5748.6` |
+
+Interpretation:
+
+- `SARE` improves strongly under sampled evaluation, but it still fails under greedy evaluation on the same setting where `token_dense` now succeeds.
+- So the honest routed conclusion is still negative for the repo’s main greedy DoorKey benchmark.
+- The recovered tokenized control made the routed comparison fairer, and `SARE` still did not win that fair test.
+
+## Recommendation
+
+- Continue using `flat_dense` as the strongest verified DoorKey control.
+- Treat `token_dense` with `ent_coef=0.001` as the current canonical recovered tokenized DoorKey control.
+- Pause further routed-architecture work in this repo for greedy-eval claims.
+- If work continues, the highest-value follow-up is not new routing variants. It is policy extraction / calibration for routed token policies that already look competent under sampled evaluation.

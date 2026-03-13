@@ -4,6 +4,7 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 import torch
+import json
 from torch import nn
 
 from psmn_rl.config import load_config
@@ -67,3 +68,48 @@ def test_max_updates_override_is_written_to_resolved_config(tmp_path: Path) -> N
 
     resolved = load_config(Path(config.logging.output_dir) / "resolved_config.yaml")
     assert resolved.ppo.total_updates == 1
+
+
+def test_run_meta_records_git_provenance(tmp_path: Path) -> None:
+    config = load_config("configs/baseline/minigrid_dense.yaml")
+    config.system.device = "cpu"
+    config.env.num_envs = 1
+    config.env.num_eval_envs = 1
+    config.ppo.rollout_steps = 4
+    config.ppo.total_updates = 1
+    config.ppo.update_epochs = 1
+    config.ppo.minibatches = 1
+    config.evaluation.episodes = 1
+    config.logging.output_dir = str(tmp_path / "dense_meta")
+
+    run_training(config, max_updates=1)
+
+    run_meta = json.loads(Path(config.logging.output_dir, "run_meta.json").read_text())
+    assert isinstance(run_meta["git_commit"], str)
+    assert isinstance(run_meta["git_dirty"], bool)
+
+
+def test_training_logs_rollout_action_diagnostics(tmp_path: Path) -> None:
+    config = load_config("configs/baseline/minigrid_dense.yaml")
+    config.system.device = "cpu"
+    config.logging.tensorboard = False
+    config.env.num_envs = 1
+    config.env.num_eval_envs = 1
+    config.ppo.rollout_steps = 4
+    config.ppo.total_updates = 1
+    config.ppo.update_epochs = 1
+    config.ppo.minibatches = 1
+    config.evaluation.episodes = 1
+    config.logging.output_dir = str(tmp_path / "dense_metrics")
+
+    run_training(config, max_updates=1)
+
+    last_scalar = {}
+    for line in Path(config.logging.output_dir, "metrics.jsonl").read_text().splitlines():
+        row = json.loads(line)
+        if row.get("type") == "scalar":
+            last_scalar = row
+    assert "rollout/action_entropy" in last_scalar
+    assert "rollout/action_max_prob" in last_scalar
+    assert "rollout/action_logit_margin" in last_scalar
+    assert "rollout/action_greedy_match" in last_scalar

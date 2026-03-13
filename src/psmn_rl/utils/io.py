@@ -23,6 +23,19 @@ def get_git_commit() -> str:
         return "unknown"
 
 
+def get_git_dirty() -> bool | None:
+    try:
+        result = subprocess.run(
+            ["git", "status", "--porcelain"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except Exception:
+        return None
+    return bool(result.stdout.strip())
+
+
 def try_get_gpu_utilization() -> float | None:
     if not torch.cuda.is_available():
         return None

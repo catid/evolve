@@ -20,6 +20,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--episodes", type=int, default=None)
     parser.add_argument("--device", type=str, default="auto")
     parser.add_argument("--greedy", choices=("true", "false"), default=None)
+    parser.add_argument("--temperature", type=float, default=1.0)
     return parser
 
 
@@ -41,7 +42,14 @@ def main() -> None:
     checkpoint = torch.load(args.checkpoint, map_location=ctx.device, weights_only=False)
     model.load_state_dict(checkpoint["model"])
     try:
-        metrics = evaluate_policy(config, model, ctx, episodes=args.episodes)
+        metrics = evaluate_policy(
+            config,
+            model,
+            ctx,
+            episodes=args.episodes,
+            greedy=config.evaluation.greedy,
+            temperature=args.temperature,
+        )
     finally:
         cleanup_distributed(ctx)
     if ctx.is_main_process:

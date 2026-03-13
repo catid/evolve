@@ -116,6 +116,10 @@ Key scripts:
 ./scripts/run_minigrid_sanity_suite.sh
 ./scripts/run_minigrid_baseline_suite.sh
 ./scripts/run_sare_comparison_sweep.sh
+./scripts/run_policy_extraction_diagnostics.sh
+./scripts/run_tokenization_gap_diagnostics.sh
+./scripts/run_token_control_recovery_sweep.sh
+./scripts/run_sare_fair_retest.sh
 ./scripts/eval_policy_modes.sh
 ```
 
@@ -137,6 +141,22 @@ Compare greedy and sampled evaluation for a checkpoint:
 ```
 
 Current high-level findings are summarized in `summary.md`, `report.md`, and `overfit_report.md` at the repo root.
+
+## Current DoorKey Result
+
+The current repo conclusion is control-first and negative on routed claims:
+
+- `flat_dense` remains the best verified greedy DoorKey control.
+- The original tokenized DoorKey gap was split between a weak `token_dense` control and softer greedy extraction in `single_expert` / `SARE`.
+- The smallest successful recovery was `token_dense` with `ppo.ent_coef=0.001`.
+- Under that recovered setting, `token_dense` reaches greedy DoorKey success `0.75`.
+- A fair matched `SARE` rerun on the same setting still has greedy DoorKey success `0.0`.
+
+Canonical reports for this phase:
+
+- `outputs/reports/reproduction_note.md`
+- `outputs/reports/policy_extraction_report.md`
+- `outputs/reports/tokenization_gap_report.md`
 
 ## Repository Layout
 

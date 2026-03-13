@@ -23,7 +23,7 @@ from psmn_rl.rl.distributed.ddp import (
     unwrap_ddp,
 )
 from psmn_rl.rl.rollout.storage import RolloutStorage
-from psmn_rl.utils.io import get_git_commit, save_json, try_get_gpu_utilization
+from psmn_rl.utils.io import get_git_commit, get_git_dirty, save_json, try_get_gpu_utilization
 from psmn_rl.utils.seed import capture_rng_state, restore_rng_state, set_seed
 
 
@@ -32,6 +32,12 @@ class TrainResult:
     output_dir: str
     latest_checkpoint: str
     final_metrics: dict[str, float]
+
+
+@dataclass
+class EvalDiagnostics:
+    metrics: dict[str, float]
+    episodes: list[dict[str, Any]]
 
 
 def prepare_obs(obs: dict[str, np.ndarray] | np.ndarray, device: torch.device) -> dict[str, torch.Tensor]:
@@ -137,18 +143,44 @@ def _checkpoint_path(config: ExperimentConfig, name: str) -> str:
     return str(Path(config.logging.output_dir) / name)
 
 
+def _policy_diagnostics(
+    logits: torch.Tensor,
+    action: torch.Tensor,
+    dist: torch.distributions.Categorical,
+    prefix: str,
+) -> dict[str, torch.Tensor]:
+    probs = dist.probs
+    max_prob = probs.max(dim=-1).values
+    topk = torch.topk(logits, k=min(2, logits.size(-1)), dim=-1).values
+    if topk.size(-1) > 1:
+        margin = topk[..., 0] - topk[..., 1]
+    else:
+        margin = topk[..., 0]
+    greedy_action = logits.argmax(dim=-1)
+    selected_prob = probs.gather(-1, action.unsqueeze(-1)).squeeze(-1)
+    return {
+        f"{prefix}/action_entropy": dist.entropy(),
+        f"{prefix}/action_max_prob": max_prob,
+        f"{prefix}/action_logit_margin": margin,
+        f"{prefix}/action_greedy_match": (action == greedy_action).float(),
+        f"{prefix}/action_selected_prob": selected_prob,
+    }
+
+
 def policy_act(
     model: nn.Module,
     obs: dict[str, torch.Tensor],
     state: dict[str, torch.Tensor],
     done: torch.Tensor,
     greedy: bool = False,
+    temperature: float = 1.0,
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, dict[str, torch.Tensor], dict[str, torch.Tensor | float], dict[str, torch.Tensor]]:
     output = model(obs, state=state, done=done)
-    dist = unwrap_ddp(model).get_dist(output.logits)
+    dist = unwrap_ddp(model).get_dist(output.logits, temperature=temperature)
     action = output.logits.argmax(dim=-1) if greedy else dist.sample()
     log_prob = dist.log_prob(action)
-    return action, log_prob, output.value, output.next_state, output.metrics, output.aux_losses
+    metrics = {**output.metrics, **_policy_diagnostics(output.logits, action, dist, prefix="rollout")}
+    return action, log_prob, output.value, output.next_state, metrics, output.aux_losses
 
 
 def policy_evaluate_actions(
@@ -189,6 +221,7 @@ def save_checkpoint(
         "step": step,
         "config": config.to_dict(),
         "git_commit": get_git_commit(),
+        "git_dirty": get_git_dirty(),
         "rng_state": capture_rng_state(),
     }
     latest_path = output_dir / "latest.pt"
@@ -201,7 +234,29 @@ def evaluate_policy(
     model: ActorCriticModel,
     ctx: DistributedContext,
     episodes: int | None = None,
+    greedy: bool | None = None,
+    temperature: float = 1.0,
 ) -> dict[str, float]:
+    return collect_policy_diagnostics(
+        config=config,
+        model=model,
+        ctx=ctx,
+        episodes=episodes,
+        greedy=greedy,
+        temperature=temperature,
+        trace_limit=0,
+    ).metrics
+
+
+def collect_policy_diagnostics(
+    config: ExperimentConfig,
+    model: ActorCriticModel,
+    ctx: DistributedContext,
+    episodes: int | None = None,
+    greedy: bool | None = None,
+    temperature: float = 1.0,
+    trace_limit: int = 0,
+) -> EvalDiagnostics:
     was_training = model.training
     model.eval()
     try:
@@ -219,45 +274,137 @@ def evaluate_policy(
             finished_returns: list[float] = []
             finished_successes: list[float] = []
             finished_lengths: list[float] = []
+            action_entropy_sums = np.zeros(config.env.num_eval_envs, dtype=np.float64)
+            action_max_prob_sums = np.zeros(config.env.num_eval_envs, dtype=np.float64)
+            action_margin_sums = np.zeros(config.env.num_eval_envs, dtype=np.float64)
+            action_greedy_match_sums = np.zeros(config.env.num_eval_envs, dtype=np.float64)
+            episode_trace_buffers: list[list[dict[str, float | int]]] = [[] for _ in range(config.env.num_eval_envs)]
+            episode_summaries: list[dict[str, Any]] = []
             target_episodes = episodes or config.evaluation.episodes
+            eval_greedy = config.evaluation.greedy if greedy is None else greedy
             try:
                 while len(finished_returns) < target_episodes:
                     with torch.inference_mode():
-                        action, _, _, state, _, _ = policy_act(
+                        action, _, _, state, metrics, _ = policy_act(
                             model,
                             obs_t,
                             state=state,
                             done=done_t,
-                            greedy=config.evaluation.greedy,
+                            greedy=eval_greedy,
+                            temperature=temperature,
                         )
+                    entropy_step = metrics["rollout/action_entropy"].detach().cpu().numpy()
+                    max_prob_step = metrics["rollout/action_max_prob"].detach().cpu().numpy()
+                    margin_step = metrics["rollout/action_logit_margin"].detach().cpu().numpy()
+                    greedy_match_step = metrics["rollout/action_greedy_match"].detach().cpu().numpy()
+                    selected_prob_step = metrics["rollout/action_selected_prob"].detach().cpu().numpy()
+                    action_np = action.detach().cpu().numpy()
                     next_obs, reward, terminated, truncated, info = eval_env.step(action.cpu().numpy())
                     done_np = np.logical_or(terminated, truncated)
                     step_success = _episode_successes(reward, done_np, info)
                     returns += reward
                     lengths += 1
+                    action_entropy_sums += entropy_step
+                    action_max_prob_sums += max_prob_step
+                    action_margin_sums += margin_step
+                    action_greedy_match_sums += greedy_match_step
+                    if trace_limit > 0:
+                        for index in range(config.env.num_eval_envs):
+                            if len(episode_trace_buffers[index]) < 512:
+                                episode_trace_buffers[index].append(
+                                    {
+                                        "step": int(lengths[index]),
+                                        "action": int(action_np[index]),
+                                        "reward": float(reward[index]),
+                                        "action_entropy": float(entropy_step[index]),
+                                        "action_max_prob": float(max_prob_step[index]),
+                                        "action_logit_margin": float(margin_step[index]),
+                                        "action_greedy_match": float(greedy_match_step[index]),
+                                        "action_selected_prob": float(selected_prob_step[index]),
+                                    }
+                                )
                     for index, finished in enumerate(done_np):
                         if finished:
+                            episode_length = max(int(lengths[index]), 1)
+                            episode_summary = {
+                                "episode_index": len(finished_returns),
+                                "return": float(returns[index]),
+                                "success": float(step_success[index]),
+                                "length": float(lengths[index]),
+                                "action_entropy": float(action_entropy_sums[index] / episode_length),
+                                "action_max_prob": float(action_max_prob_sums[index] / episode_length),
+                                "action_logit_margin": float(action_margin_sums[index] / episode_length),
+                                "action_greedy_match": float(action_greedy_match_sums[index] / episode_length),
+                            }
+                            if len(episode_summaries) < trace_limit:
+                                episode_summary["trace"] = list(episode_trace_buffers[index])
+                            episode_summaries.append(episode_summary)
                             finished_returns.append(float(returns[index]))
                             finished_successes.append(float(step_success[index]))
                             finished_lengths.append(float(lengths[index]))
                             returns[index] = 0.0
                             lengths[index] = 0
+                            action_entropy_sums[index] = 0.0
+                            action_max_prob_sums[index] = 0.0
+                            action_margin_sums[index] = 0.0
+                            action_greedy_match_sums[index] = 0.0
+                            episode_trace_buffers[index].clear()
                     obs_t = prepare_obs(next_obs, ctx.device)
                     done_t = prepare_done(done_np, ctx.device)
             finally:
                 eval_env.close()
                 restore_rng_state(rng_state)
+            trimmed = episode_summaries[:target_episodes]
             metrics = {
                 "eval_return": float(np.mean(finished_returns[:target_episodes])),
                 "eval_success_rate": float(np.mean(finished_successes[:target_episodes])),
                 "eval_episode_length": float(np.mean(finished_lengths[:target_episodes])) if finished_lengths else 0.0,
             }
+            if trimmed:
+                metrics.update(
+                    {
+                        "eval/action_entropy": float(np.mean([episode["action_entropy"] for episode in trimmed])),
+                        "eval/action_max_prob": float(np.mean([episode["action_max_prob"] for episode in trimmed])),
+                        "eval/action_logit_margin": float(np.mean([episode["action_logit_margin"] for episode in trimmed])),
+                        "eval/action_greedy_match": float(np.mean([episode["action_greedy_match"] for episode in trimmed])),
+                    }
+                )
+                successful = [episode for episode in trimmed if episode["success"] > 0.0]
+                failed = [episode for episode in trimmed if episode["success"] <= 0.0]
+                if successful:
+                    metrics["eval/success_action_max_prob"] = float(
+                        np.mean([episode["action_max_prob"] for episode in successful])
+                    )
+                    metrics["eval/success_action_logit_margin"] = float(
+                        np.mean([episode["action_logit_margin"] for episode in successful])
+                    )
+                if failed:
+                    metrics["eval/failure_action_max_prob"] = float(
+                        np.mean([episode["action_max_prob"] for episode in failed])
+                    )
+                    metrics["eval/failure_action_logit_margin"] = float(
+                        np.mean([episode["action_logit_margin"] for episode in failed])
+                    )
+                median_length = float(np.median([episode["length"] for episode in trimmed]))
+                shorter = [episode for episode in trimmed if episode["length"] <= median_length]
+                longer = [episode for episode in trimmed if episode["length"] > median_length]
+                metrics["eval/length_median"] = median_length
+                if shorter:
+                    metrics["eval/short_action_max_prob"] = float(
+                        np.mean([episode["action_max_prob"] for episode in shorter])
+                    )
+                if longer:
+                    metrics["eval/long_action_max_prob"] = float(
+                        np.mean([episode["action_max_prob"] for episode in longer])
+                    )
         else:
             metrics = {}
+            trimmed = []
     finally:
         if was_training:
             model.train()
-    return broadcast_scalar_dict(metrics, ctx)
+    broadcast_metrics = broadcast_scalar_dict(metrics, ctx)
+    return EvalDiagnostics(metrics=broadcast_metrics, episodes=trimmed if ctx.is_main_process else [])
 
 
 def train(
@@ -286,6 +433,7 @@ def train(
 
     metadata = {
         "git_commit": get_git_commit(),
+        "git_dirty": get_git_dirty(),
         "rank": ctx.rank,
         "world_size": ctx.world_size,
         "torch_version": torch.__version__,

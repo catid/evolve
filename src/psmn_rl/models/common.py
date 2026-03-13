@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 import torch
+import torch.nn.functional as F
 from torch import nn
 from torch.distributions import Categorical
 
@@ -35,6 +36,32 @@ def masked_mean(tokens: torch.Tensor) -> torch.Tensor:
 
 def entropy_from_probs(probs: torch.Tensor, dim: int = -1) -> torch.Tensor:
     return -(probs.clamp_min(1e-8) * probs.clamp_min(1e-8).log()).sum(dim=dim)
+
+
+def pooled_representation_metrics(pooled: torch.Tensor) -> dict[str, torch.Tensor]:
+    return {"repr/pooled_norm": pooled.norm(dim=-1)}
+
+
+def token_representation_metrics(tokens: torch.Tensor, pooled: torch.Tensor) -> dict[str, torch.Tensor]:
+    spatial_tokens = tokens[:, :-1] if tokens.size(1) > 1 else tokens
+    direction_token = tokens[:, -1]
+    metrics: dict[str, torch.Tensor] = {
+        "repr/pooled_norm": pooled.norm(dim=-1),
+        "repr/token_norm": spatial_tokens.norm(dim=-1).mean(dim=-1),
+        "repr/token_feature_std": spatial_tokens.std(dim=1, unbiased=False).mean(dim=-1),
+        "repr/direction_norm": direction_token.norm(dim=-1),
+    }
+    if spatial_tokens.size(1) > 1:
+        normalized = F.normalize(spatial_tokens, dim=-1)
+        cosine = normalized @ normalized.transpose(1, 2)
+        token_count = spatial_tokens.size(1)
+        off_diag = (cosine.sum(dim=(1, 2)) - token_count) / max(token_count * (token_count - 1), 1)
+        metrics["repr/token_pairwise_cosine"] = off_diag
+    else:
+        metrics["repr/token_pairwise_cosine"] = torch.zeros(
+            spatial_tokens.size(0), device=tokens.device, dtype=tokens.dtype
+        )
+    return metrics
 
 
 class ActorCriticModel(nn.Module):
@@ -76,8 +103,10 @@ class ActorCriticModel(nn.Module):
             aux_losses=core_output.aux_losses,
         )
 
-    def get_dist(self, logits: torch.Tensor) -> Categorical:
-        return Categorical(logits=logits)
+    def get_dist(self, logits: torch.Tensor, temperature: float = 1.0) -> Categorical:
+        if temperature <= 0:
+            raise ValueError("temperature must be positive")
+        return Categorical(logits=logits / temperature)
 
     def act(
         self,
@@ -85,9 +114,10 @@ class ActorCriticModel(nn.Module):
         state: TensorDict | None = None,
         done: torch.Tensor | None = None,
         greedy: bool = False,
+        temperature: float = 1.0,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, TensorDict, dict[str, torch.Tensor | float], dict[str, torch.Tensor]]:
         output = self.forward(obs, state=state, done=done)
-        dist = self.get_dist(output.logits)
+        dist = self.get_dist(output.logits, temperature=temperature)
         if greedy:
             action = output.logits.argmax(dim=-1)
         else:

@@ -6,7 +6,7 @@ import torch
 from torch import nn
 
 from psmn_rl.metrics import reduce_path_statistics
-from psmn_rl.models.common import CoreOutput, entropy_from_probs, masked_mean
+from psmn_rl.models.common import CoreOutput, entropy_from_probs, masked_mean, token_representation_metrics
 from psmn_rl.models.cores.experts import ExpertBank
 from psmn_rl.models.encoders import build_token_encoder
 
@@ -75,5 +75,5 @@ class RoutedExpertCore(nn.Module):
         mixed = self.apply_experts(tokens, topk_values, topk_idx)
         tokens = self.output_norm(tokens + mixed)
         pooled = masked_mean(tokens)
-        metrics = _route_metrics(route_probs, topk_idx, self.expert_count)
+        metrics = {**_route_metrics(route_probs, topk_idx, self.expert_count), **token_representation_metrics(tokens, pooled)}
         return CoreOutput(pooled=pooled, tokens=tokens, metrics=metrics, next_state={})

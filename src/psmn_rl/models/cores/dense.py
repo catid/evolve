@@ -3,7 +3,7 @@ from __future__ import annotations
 import torch
 from torch import nn
 
-from psmn_rl.models.common import CoreOutput, masked_mean
+from psmn_rl.models.common import CoreOutput, masked_mean, pooled_representation_metrics, token_representation_metrics
 from psmn_rl.models.encoders import build_flat_encoder, build_token_encoder
 
 
@@ -34,7 +34,7 @@ class FlatDenseCore(nn.Module):
 
     def forward(self, obs: dict[str, torch.Tensor], state: dict[str, torch.Tensor], done: torch.Tensor | None) -> CoreOutput:
         pooled = self.encoder(obs)
-        metrics = {"route_entropy": 0.0, "active_compute_proxy": 1.0}
+        metrics = {"route_entropy": 0.0, "active_compute_proxy": 1.0, **pooled_representation_metrics(pooled)}
         return CoreOutput(pooled=pooled, tokens=None, metrics=metrics, next_state={})
 
 
@@ -63,5 +63,5 @@ class TokenDenseCore(nn.Module):
             tokens = block(tokens)
         tokens = self.norm(tokens)
         pooled = masked_mean(tokens)
-        metrics = {"route_entropy": 0.0, "active_compute_proxy": 1.0}
+        metrics = {"route_entropy": 0.0, "active_compute_proxy": 1.0, **token_representation_metrics(tokens, pooled)}
         return CoreOutput(pooled=pooled, tokens=tokens, metrics=metrics, next_state={})
