@@ -1,0 +1,34 @@
+seed: 7
+tags: ["srw", "minigrid"]
+system:
+  device: auto
+  precision: auto
+  deterministic: true
+  log_interval: 1
+  checkpoint_interval: 2
+env:
+  suite: minigrid
+  env_id: MiniGrid-DoorKey-5x5-v0
+  num_envs: 4
+  num_eval_envs: 4
+ppo:
+  rollout_steps: 32
+  total_updates: 4
+  update_epochs: 2
+  minibatches: 2
+  learning_rate: 0.00025
+model:
+  variant: srw
+  hidden_size: 128
+  token_dim: 128
+  expert_count: 4
+  top_k: 2
+  expert_hidden_size: 256
+  relational_tokens: 4
+  num_heads: 4
+logging:
+  run_name: minigrid_srw
+  output_dir: outputs/minigrid_srw
+evaluation:
+  episodes: 8
+  greedy: true

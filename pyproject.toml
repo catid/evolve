@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=70", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "psmn-rl"
+version = "0.1.0"
+description = "PSMN reinforcement learning experiments with routed token-based policies."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = {text = "MIT"}
+authors = [
+  {name = "catid"}
+]
+dependencies = [
+  "gymnasium>=1.1.0",
+  "minigrid>=2.5.0",
+  "numpy>=1.26.0",
+  "psutil>=5.9.8",
+  "pyyaml>=6.0.2",
+  "tensorboard>=2.18.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.5",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"

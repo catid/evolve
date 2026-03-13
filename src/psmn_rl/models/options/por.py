@@ -1,0 +1,89 @@
+from __future__ import annotations
+
+import torch
+from torch import nn
+
+from psmn_rl.models.common import CoreOutput, masked_mean
+from psmn_rl.models.cores.dense import TransformerBlock
+from psmn_rl.models.encoders import build_token_encoder
+
+
+class PORCore(nn.Module):
+    def __init__(
+        self,
+        observation_space,
+        token_dim: int,
+        patch_size: int,
+        hidden_size: int,
+        num_heads: int,
+        num_layers: int,
+        dropout: float,
+        option_count: int,
+    ) -> None:
+        super().__init__()
+        self.option_count = option_count
+        self.encoder = build_token_encoder(observation_space, token_dim, patch_size)
+        self.input_proj = nn.Linear(token_dim, hidden_size)
+        self.blocks = nn.ModuleList(
+            [TransformerBlock(hidden_size, num_heads=num_heads, dropout=dropout) for _ in range(num_layers)]
+        )
+        self.option_policy = nn.Sequential(nn.LayerNorm(hidden_size), nn.Linear(hidden_size, option_count))
+        self.option_embed = nn.Embedding(option_count, hidden_size)
+        self.option_proj = nn.Linear(hidden_size, hidden_size)
+        self.termination_head = nn.Sequential(
+            nn.LayerNorm(hidden_size * 2),
+            nn.Linear(hidden_size * 2, hidden_size),
+            nn.GELU(),
+            nn.Linear(hidden_size, 1),
+        )
+        self.norm = nn.LayerNorm(hidden_size)
+
+    def initial_state(self, batch_size: int, device: torch.device) -> dict[str, torch.Tensor]:
+        option_probs = torch.full((batch_size, self.option_count), 1.0 / self.option_count, device=device)
+        duration = torch.zeros(batch_size, device=device)
+        return {"option_probs": option_probs, "option_duration": duration}
+
+    def forward(self, obs: dict[str, torch.Tensor], state: dict[str, torch.Tensor], done: torch.Tensor | None) -> CoreOutput:
+        tokens = self.input_proj(self.encoder(obs))
+        for block in self.blocks:
+            tokens = block(tokens)
+        pooled = self.norm(masked_mean(tokens))
+
+        prev_probs = state.get("option_probs")
+        prev_duration = state.get("option_duration")
+        if prev_probs is None or prev_duration is None:
+            init_state = self.initial_state(pooled.size(0), pooled.device)
+            prev_probs = init_state["option_probs"]
+            prev_duration = init_state["option_duration"]
+
+        if done is not None:
+            done = done.float().unsqueeze(-1)
+            uniform = torch.full_like(prev_probs, 1.0 / self.option_count)
+            prev_probs = done * uniform + (1.0 - done) * prev_probs
+            prev_duration = done.squeeze(-1) * 0.0 + (1.0 - done.squeeze(-1)) * prev_duration
+
+        prev_context = prev_probs @ self.option_embed.weight
+        proposal = torch.softmax(self.option_policy(pooled), dim=-1)
+        terminate_prob = torch.sigmoid(self.termination_head(torch.cat([pooled, prev_context], dim=-1)))
+        next_probs = (1.0 - terminate_prob) * prev_probs + terminate_prob * proposal
+        next_duration = (1.0 - terminate_prob.squeeze(-1)) * (prev_duration + 1.0) + terminate_prob.squeeze(-1)
+        next_context = next_probs @ self.option_embed.weight
+        conditioned = pooled + self.option_proj(next_context)
+
+        prev_idx = prev_probs.argmax(dim=-1)
+        next_idx = next_probs.argmax(dim=-1)
+        switch_rate = (prev_idx != next_idx).float().mean()
+        option_entropy = -(next_probs.clamp_min(1e-8) * next_probs.clamp_min(1e-8).log()).sum(dim=-1).mean()
+
+        metrics = {
+            "route_entropy": float(option_entropy.item()),
+            "option_duration": float(next_duration.mean().item()),
+            "option_switch_rate": float(switch_rate.item()),
+            "avg_halting_probability": float(terminate_prob.mean().item()),
+            "active_compute_proxy": 1.0,
+        }
+        for option_index, value in enumerate(next_probs.mean(dim=0)):
+            metrics[f"expert_load_{option_index}"] = float(value.item())
+
+        next_state = {"option_probs": next_probs.detach(), "option_duration": next_duration.detach()}
+        return CoreOutput(pooled=conditioned, tokens=tokens, metrics=metrics, next_state=next_state)

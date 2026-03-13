@@ -1,0 +1,37 @@
+seed: 7
+tags: ["sare", "procgen", "maze"]
+system:
+  device: auto
+  precision: auto
+  deterministic: true
+  log_interval: 1
+  checkpoint_interval: 2
+env:
+  suite: procgen
+  env_id: procgen_gym/procgen-maze-v0
+  num_envs: 8
+  num_eval_envs: 4
+  max_episode_steps: 256
+  distribution_mode: easy
+  start_level: 0
+  num_levels: 200
+ppo:
+  rollout_steps: 64
+  total_updates: 4
+  update_epochs: 2
+  minibatches: 4
+  learning_rate: 0.00025
+model:
+  variant: sare
+  hidden_size: 128
+  token_dim: 128
+  patch_size: 8
+  expert_count: 4
+  top_k: 2
+  expert_hidden_size: 256
+logging:
+  run_name: procgen_maze_sare
+  output_dir: outputs/procgen_maze_sare
+evaluation:
+  episodes: 8
+  greedy: true

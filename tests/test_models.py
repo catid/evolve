@@ -1,0 +1,44 @@
+import gymnasium as gym
+import numpy as np
+import torch
+
+from psmn_rl.config import ModelConfig
+from psmn_rl.models.factory import build_model
+
+
+def _sample_obs(env: gym.Env) -> dict[str, torch.Tensor]:
+    obs, _ = env.reset(seed=0)
+    return {
+        "image": torch.as_tensor(obs["image"]).unsqueeze(0),
+        "direction": torch.as_tensor(obs["direction"]).unsqueeze(0),
+    }
+
+
+def test_all_variants_forward_shapes() -> None:
+    env = gym.make("MiniGrid-DoorKey-5x5-v0")
+    obs = _sample_obs(env)
+    done = torch.ones(1, dtype=torch.bool)
+    variants = ["flat_dense", "token_dense", "single_expert", "sare", "treg_h", "srw", "por"]
+    for variant in variants:
+        model_config = ModelConfig(variant=variant)
+        model = build_model(model_config, env.observation_space, env.action_space)
+        state = model.initial_state(batch_size=1, device=torch.device("cpu"))
+        output = model.forward(obs, state=state, done=done)
+        assert output.logits.shape == (1, env.action_space.n)
+        assert output.value.shape == (1,)
+    env.close()
+
+
+def test_visual_box_variants_forward_shapes() -> None:
+    observation_space = gym.spaces.Box(low=0, high=255, shape=(64, 64, 3), dtype=np.uint8)
+    action_space = gym.spaces.Discrete(15)
+    obs = {"pixels": torch.randint(0, 256, (1, 64, 64, 3), dtype=torch.uint8)}
+    done = torch.ones(1, dtype=torch.bool)
+    variants = ["flat_dense", "token_dense", "single_expert", "sare", "treg_h", "srw", "por"]
+    for variant in variants:
+        model_config = ModelConfig(variant=variant, hidden_size=64, token_dim=64, patch_size=8)
+        model = build_model(model_config, observation_space, action_space)
+        state = model.initial_state(batch_size=1, device=torch.device("cpu"))
+        output = model.forward(obs, state=state, done=done)
+        assert output.logits.shape == (1, action_space.n)
+        assert output.value.shape == (1,)
