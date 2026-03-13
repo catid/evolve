@@ -57,14 +57,25 @@ Implement and maintain these first-wave variants:
 6. SRW
 7. POR
 
+Available diagnostic-only control:
+
+- `token_gru` exists for memory probes, but do not treat it as a fair PPO baseline until sequence-aware rollout batching and minibatching are implemented.
+
 ## Experiment Conventions
 
 - Phase 1 environments: MiniGrid DoorKey, KeyCorridor, Memory, DynamicObstacles.
+- Sanity tier environments: MiniGrid Empty and FourRooms.
 - Phase 2 environments: Procgen CoinRun, Heist, Maze.
+- Keep `configs/baseline/` and the original ablation scripts as short smoke/falsification artifacts.
+- Canonical control-recovery configs now live under:
+  - `configs/diagnostic/` for tiny overfit, sanity-tier, fully observed, and memory-probe checks
+  - `configs/experiments/` for longer-run control baselines and routed reruns only after controls are competent
 - Procgen support is optional and currently gated by availability of a Python 3.12 compatible Gymnasium Procgen package.
 - Use `./scripts/install_procgen_port.sh` for the pinned local Procgen port validated in this repo.
 - PPO is the first RL algorithm. Keep interfaces open for IMPALA later.
 - Every routed model must be compared against flattened dense, tokenized dense, and tokenized single-expert controls.
+- Do not rerun routed models on a target task unless at least one relevant control shows nonzero evaluation performance there.
+- Do not treat `Memory` as a fair control-vs-routing benchmark unless the control being compared has a valid memory mechanism under the current PPO batching path.
 - Save configs, summaries, and metrics for every run under `outputs/`.
 - Favor simple inspectable PyTorch implementations over framework-heavy abstractions.
 
@@ -83,9 +94,12 @@ Implement and maintain these first-wave variants:
 - Record seed, rank, world size, torch version, CUDA version, and visible GPU count.
 - Save the resolved config next to each run.
 - Rank 0 alone writes checkpoints and final summaries.
+- Evaluation is treated as a deterministic measurement path: rank 0 evaluates, metrics are broadcast, and checkpoints can resume from saved optimizer/update/RNG state.
 - Seed each DDP rank deterministically from a shared base seed.
+- Vector envs use `SAME_STEP` autoreset semantics; time-limit truncations must be bootstrapped from `final_obs`.
 - Keep smoke tests small enough to run on CPU or a single GPU quickly.
 - Do not claim a gain unless dense and tokenized controls were run under comparable settings.
+- If greedy eval is flat but train success is high, also check sampled eval before judging the control as broken.
 
 ## Metrics To Log
 
@@ -108,6 +122,8 @@ Always log:
 - option duration
 - option switch rate
 - seed variance across runs
+- episode length
+- explained variance
 
 ## Before Finalizing Results
 
@@ -115,6 +131,8 @@ Always log:
 - Run the focused test or smoke command for the changed surface area.
 - Save the config and run summary under `outputs/`.
 - Write down known limitations or missing controls.
+- Prefer fixing control solvability and evaluation correctness over adding routed-model novelty.
+- Prefer the `configs/diagnostic/` and `configs/experiments/` lanes for recovery work; leave `configs/baseline/` intact as the smoke lane.
 - Prefer another small falsification run over expanding scope.
 
 ## Deferred Work

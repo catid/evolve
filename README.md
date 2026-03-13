@@ -12,6 +12,8 @@ The first milestone focuses on MiniGrid with PPO and DDP, comparing dense tokeni
 - SRW
 - POR
 
+`token_gru` is available as a diagnostic memory probe, but it is not treated as a fair mainline PPO control until sequence-aware rollout batching exists.
+
 ## Environment Setup
 
 ```bash
@@ -98,6 +100,43 @@ PSMN_MAX_UPDATES=2 ./scripts/run_minigrid_suite_ablations.sh
 ```
 
 This produces a multi-environment summary and grouped comparison report under `outputs/ablations/minigrid_suite_ddp/`.
+
+## Control-First MiniGrid Harness
+
+The active experiment flow is now control-first rather than architecture-first.
+
+- `configs/baseline/`: original short-run smoke/falsification configs
+- `configs/diagnostic/`: tiny overfit, sanity-tier, fully observed, and memory-probe diagnostics
+- `configs/experiments/`: longer-run control baselines and fair routed reruns
+
+Key scripts:
+
+```bash
+./scripts/run_tiny_overfit.sh
+./scripts/run_minigrid_sanity_suite.sh
+./scripts/run_minigrid_baseline_suite.sh
+./scripts/run_sare_comparison_sweep.sh
+./scripts/eval_policy_modes.sh
+```
+
+Resume a run from a checkpoint:
+
+```bash
+python -m psmn_rl.train \
+  --config configs/experiments/minigrid_doorkey_flat_dense.yaml \
+  --resume-from outputs/experiments/baselines/minigrid_doorkey_flat_dense/latest.pt
+```
+
+Compare greedy and sampled evaluation for a checkpoint:
+
+```bash
+./scripts/eval_policy_modes.sh \
+  outputs/experiments/baselines/minigrid_doorkey_token_dense/latest.pt \
+  configs/experiments/minigrid_doorkey_token_dense.yaml \
+  16
+```
+
+Current high-level findings are summarized in `summary.md`, `report.md`, and `overfit_report.md` at the repo root.
 
 ## Repository Layout
 

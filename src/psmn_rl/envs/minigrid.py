@@ -5,6 +5,8 @@ from collections.abc import Callable
 import gymnasium as gym
 from minigrid.wrappers import FullyObsWrapper
 
+from psmn_rl.envs.wrappers import EpisodeSuccessWrapper
+
 
 def build_env_fn(
     env_id: str,
@@ -17,9 +19,9 @@ def build_env_fn(
         env = gym.make(env_id, render_mode=None)
         if fully_observed:
             env = FullyObsWrapper(env)
+        env = EpisodeSuccessWrapper(env)
         if max_episode_steps is not None:
             env = gym.wrappers.TimeLimit(env, max_episode_steps=max_episode_steps)
-        env.reset(seed=seed + env_index)
         return env
 
     return thunk

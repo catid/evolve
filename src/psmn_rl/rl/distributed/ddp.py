@@ -93,14 +93,31 @@ def barrier(ctx: DistributedContext) -> None:
             dist.barrier()
 
 
-def reduce_scalar_dict(metrics: dict[str, float], ctx: DistributedContext) -> dict[str, float]:
+def reduce_scalar_dict(metrics: dict[str, float], ctx: DistributedContext, average: bool = True) -> dict[str, float]:
     if not ctx.is_distributed:
         return metrics
     keys = sorted(metrics)
     values = torch.tensor([metrics[key] for key in keys], device=ctx.device, dtype=torch.float32)
     dist.all_reduce(values, op=dist.ReduceOp.SUM)
-    values /= ctx.world_size
+    if average:
+        values /= ctx.world_size
     return {key: float(value.item()) for key, value in zip(keys, values)}
+
+
+def reduce_tensor_sum(values: torch.Tensor, ctx: DistributedContext) -> torch.Tensor:
+    if not ctx.is_distributed:
+        return values
+    reduced = values.clone()
+    dist.all_reduce(reduced, op=dist.ReduceOp.SUM)
+    return reduced
+
+
+def broadcast_scalar_dict(metrics: dict[str, float], ctx: DistributedContext) -> dict[str, float]:
+    if not ctx.is_distributed:
+        return metrics
+    payload = [metrics if ctx.is_main_process else None]
+    dist.broadcast_object_list(payload, src=0)
+    return payload[0] or {}
 
 
 def cleanup_distributed(ctx: DistributedContext) -> None:

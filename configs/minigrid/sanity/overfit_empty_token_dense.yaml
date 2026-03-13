@@ -1,0 +1,32 @@
+seed: 7
+tags: ["minigrid", "sanity", "overfit", "empty", "token_dense"]
+system:
+  device: auto
+  precision: auto
+  deterministic: true
+  log_interval: 4
+  checkpoint_interval: 16
+env:
+  suite: minigrid
+  env_id: MiniGrid-Empty-5x5-v0
+  num_envs: 1
+  num_eval_envs: 1
+  fully_observed: true
+ppo:
+  rollout_steps: 32
+  total_updates: 96
+  update_epochs: 4
+  minibatches: 1
+  learning_rate: 0.0003
+model:
+  variant: token_dense
+  hidden_size: 128
+  token_dim: 128
+  encoder_layers: 2
+  num_heads: 4
+logging:
+  run_name: overfit_empty_token_dense
+  output_dir: outputs/minigrid/overfit/empty_token_dense
+evaluation:
+  episodes: 8
+  greedy: true

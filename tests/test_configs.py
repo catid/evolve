@@ -28,3 +28,21 @@ def test_load_minigrid_suite_config() -> None:
     config = load_config(Path("configs/sare/minigrid_memory.yaml"))
     assert config.env.env_id == "MiniGrid-MemoryS9-v0"
     assert config.model.variant == "sare"
+
+
+def test_load_sanity_config() -> None:
+    config = load_config(Path("configs/diagnostic/minigrid_empty5_token_dense_sanity.yaml"))
+    assert config.env.env_id == "MiniGrid-Empty-5x5-v0"
+    assert config.model.variant == "token_dense"
+
+
+def test_load_diagnostic_memory_probe_config() -> None:
+    config = load_config(Path("configs/diagnostic/minigrid_memory_token_gru_probe.yaml"))
+    assert config.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert config.model.variant == "token_gru"
+
+
+def test_load_experiment_config() -> None:
+    config = load_config(Path("configs/experiments/minigrid_doorkey_sare.yaml"))
+    assert config.env.env_id == "MiniGrid-DoorKey-5x5-v0"
+    assert config.model.variant == "sare"

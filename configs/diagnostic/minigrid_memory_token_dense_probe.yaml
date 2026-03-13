@@ -1,0 +1,31 @@
+seed: 7
+tags: ["diagnostic", "minigrid", "memory", "token_dense", "probe"]
+system:
+  device: auto
+  precision: auto
+  deterministic: true
+  log_interval: 5
+  checkpoint_interval: 20
+env:
+  suite: minigrid
+  env_id: MiniGrid-MemoryS9-v0
+  num_envs: 8
+  num_eval_envs: 8
+ppo:
+  rollout_steps: 64
+  total_updates: 120
+  update_epochs: 4
+  minibatches: 4
+  learning_rate: 0.0003
+model:
+  variant: token_dense
+  hidden_size: 128
+  token_dim: 128
+  encoder_layers: 2
+  num_heads: 4
+logging:
+  run_name: diagnostic_minigrid_memory_token_dense_probe
+  output_dir: outputs/diagnostics/memory_probe/minigrid_memory_token_dense
+evaluation:
+  episodes: 16
+  greedy: true

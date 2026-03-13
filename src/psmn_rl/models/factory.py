@@ -5,6 +5,7 @@ import gymnasium as gym
 from psmn_rl.config import ModelConfig
 from psmn_rl.models.common import ActorCriticModel
 from psmn_rl.models.cores.dense import FlatDenseCore, TokenDenseCore
+from psmn_rl.models.cores.recurrent import TokenGRUCore
 from psmn_rl.models.options.por import PORCore
 from psmn_rl.models.relational.srw import SRWCore
 from psmn_rl.models.routing.sare import RoutedExpertCore
@@ -19,6 +20,16 @@ def build_model(model_config: ModelConfig, observation_space: gym.Space, action_
         core = FlatDenseCore(observation_space, hidden_size=model_config.hidden_size)
     elif variant == "token_dense":
         core = TokenDenseCore(
+            observation_space=observation_space,
+            token_dim=model_config.token_dim,
+            patch_size=model_config.patch_size,
+            hidden_size=model_config.hidden_size,
+            num_heads=model_config.num_heads,
+            num_layers=model_config.encoder_layers,
+            dropout=model_config.dropout,
+        )
+    elif variant == "token_gru":
+        core = TokenGRUCore(
             observation_space=observation_space,
             token_dim=model_config.token_dim,
             patch_size=model_config.patch_size,

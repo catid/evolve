@@ -4,19 +4,27 @@ import time
 from contextlib import nullcontext
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import torch
 from torch import nn
 
 from psmn_rl.config import ExperimentConfig
-from psmn_rl.envs.registry import make_eval_env, make_vector_env
+from psmn_rl.envs.registry import make_eval_env, make_reset_seeds, make_vector_env
 from psmn_rl.logging import LOGGER, RunLogger
 from psmn_rl.metrics import MetricAggregator, scalarize_metrics
 from psmn_rl.models.common import ActorCriticModel
-from psmn_rl.rl.distributed.ddp import DistributedContext, barrier, reduce_scalar_dict, unwrap_ddp
+from psmn_rl.rl.distributed.ddp import (
+    DistributedContext,
+    barrier,
+    broadcast_scalar_dict,
+    reduce_scalar_dict,
+    unwrap_ddp,
+)
 from psmn_rl.rl.rollout.storage import RolloutStorage
 from psmn_rl.utils.io import get_git_commit, save_json, try_get_gpu_utilization
+from psmn_rl.utils.seed import capture_rng_state, restore_rng_state, set_seed
 
 
 @dataclass
@@ -42,6 +50,81 @@ def prepare_done(done: np.ndarray | torch.Tensor, device: torch.device) -> torch
 
 def _state_index(state: dict[str, torch.Tensor], index: torch.Tensor) -> dict[str, torch.Tensor]:
     return {key: value[index] for key, value in state.items()}
+
+
+def _stack_raw_obs(obs_list: list[dict[str, Any] | np.ndarray]) -> dict[str, np.ndarray] | np.ndarray:
+    first = obs_list[0]
+    if isinstance(first, dict):
+        return {
+            key: np.stack([np.asarray(obs[key]) for obs in obs_list], axis=0)
+            for key in ("image", "direction", "pixels")
+            if key in first
+        }
+    return np.stack([np.asarray(obs) for obs in obs_list], axis=0)
+
+
+def _extract_final_obs_batch(
+    info: dict[str, Any],
+    mask: np.ndarray,
+) -> tuple[torch.Tensor, list[dict[str, Any] | np.ndarray]] | None:
+    final_obs = info.get("final_obs")
+    final_mask = info.get("_final_obs")
+    if final_obs is None or final_mask is None:
+        return None
+    present = np.asarray(final_mask, dtype=bool)
+    selected = np.nonzero(mask & present)[0]
+    if selected.size == 0:
+        return None
+    obs_list = [final_obs[index] for index in selected]
+    return torch.as_tensor(selected, dtype=torch.long), obs_list
+
+
+def _episode_successes(
+    reward: np.ndarray,
+    done: np.ndarray,
+    info: dict[str, Any],
+) -> np.ndarray:
+    success = np.zeros_like(reward, dtype=np.float32)
+    if not np.any(done):
+        return success
+    final_info = info.get("final_info")
+    final_info_mask = np.asarray(info.get("_final_info", np.zeros_like(done, dtype=bool)), dtype=bool)
+    for index, finished in enumerate(done):
+        if not finished:
+            continue
+        if isinstance(final_info, dict) and final_info_mask[index]:
+            env_info = {key: value[index] for key, value in final_info.items() if len(value) > index}
+            for key in ("success", "is_success", "goal_reached", "completed"):
+                if key in env_info:
+                    success[index] = float(env_info[key])
+                    break
+            else:
+                success[index] = float(reward[index] > 0.0)
+        else:
+            success[index] = float(reward[index] > 0.0)
+    return success
+
+
+def _apply_truncation_bootstrap(
+    model: nn.Module,
+    next_state: dict[str, torch.Tensor],
+    truncated: np.ndarray,
+    info: dict[str, Any],
+    reward_t: torch.Tensor,
+    ctx: DistributedContext,
+    gamma: float,
+) -> None:
+    final_batch = _extract_final_obs_batch(info, truncated)
+    if final_batch is None:
+        return
+    selected, obs_list = final_batch
+    final_obs_t = prepare_obs(_stack_raw_obs(obs_list), ctx.device)
+    final_state = _state_index(next_state, selected.to(device=ctx.device))
+    bootstrap_done = torch.zeros(selected.numel(), device=ctx.device, dtype=torch.bool)
+    with torch.no_grad():
+        with _autocast_context(ctx):
+            final_value = model.forward(final_obs_t, state=final_state, done=bootstrap_done).value.detach()
+    reward_t[selected.to(device=ctx.device)] += gamma * final_value
 
 
 def _autocast_context(ctx: DistributedContext):
@@ -91,6 +174,7 @@ def save_checkpoint(
     config: ExperimentConfig,
     model: nn.Module,
     optimizer: torch.optim.Optimizer,
+    update: int,
     step: int,
     is_main_process: bool,
 ) -> str | None:
@@ -101,9 +185,11 @@ def save_checkpoint(
     checkpoint = {
         "model": unwrap_ddp(model).state_dict(),
         "optimizer": optimizer.state_dict(),
+        "update": update,
         "step": step,
         "config": config.to_dict(),
         "git_commit": get_git_commit(),
+        "rng_state": capture_rng_state(),
     }
     latest_path = output_dir / "latest.pt"
     torch.save(checkpoint, latest_path)
@@ -116,43 +202,62 @@ def evaluate_policy(
     ctx: DistributedContext,
     episodes: int | None = None,
 ) -> dict[str, float]:
-    eval_env = make_eval_env(config.env, seed=config.seed + 999)
-    obs, _ = eval_env.reset(seed=config.seed + 999)
-    obs_t = prepare_obs(obs, ctx.device)
-    done_t = torch.ones(config.env.num_eval_envs, device=ctx.device, dtype=torch.bool)
-    state = model.initial_state(config.env.num_eval_envs, ctx.device)
-    returns = np.zeros(config.env.num_eval_envs, dtype=np.float32)
-    lengths = np.zeros(config.env.num_eval_envs, dtype=np.int32)
-    finished_returns: list[float] = []
-    finished_successes: list[float] = []
-    target_episodes = episodes or config.evaluation.episodes
-    while len(finished_returns) < target_episodes:
-        with torch.no_grad():
-            action, _, _, state, _, _ = policy_act(
-                model,
-                obs_t,
-                state=state,
-                done=done_t,
-                greedy=config.evaluation.greedy,
-            )
-        next_obs, reward, terminated, truncated, _ = eval_env.step(action.cpu().numpy())
-        done_np = np.logical_or(terminated, truncated)
-        returns += reward
-        lengths += 1
-        for index, finished in enumerate(done_np):
-            if finished:
-                finished_returns.append(float(returns[index]))
-                finished_successes.append(float(returns[index] > 0.0))
-                returns[index] = 0.0
-                lengths[index] = 0
-        obs_t = prepare_obs(next_obs, ctx.device)
-        done_t = prepare_done(done_np, ctx.device)
-    eval_env.close()
-    metrics = {
-        "eval_return": float(np.mean(finished_returns[:target_episodes])),
-        "eval_success_rate": float(np.mean(finished_successes[:target_episodes])),
-    }
-    return metrics
+    was_training = model.training
+    model.eval()
+    try:
+        if ctx.is_main_process:
+            rng_state = capture_rng_state()
+            set_seed(config.seed + 999_999, deterministic=config.system.deterministic)
+            eval_env = make_eval_env(config.env, seed=config.seed + 999, world_rank=0)
+            eval_seed = make_reset_seeds(config.env.num_eval_envs, config.seed + 999, world_rank=0)
+            obs, _ = eval_env.reset(seed=eval_seed)
+            obs_t = prepare_obs(obs, ctx.device)
+            done_t = torch.ones(config.env.num_eval_envs, device=ctx.device, dtype=torch.bool)
+            state = model.initial_state(config.env.num_eval_envs, ctx.device)
+            returns = np.zeros(config.env.num_eval_envs, dtype=np.float32)
+            lengths = np.zeros(config.env.num_eval_envs, dtype=np.int32)
+            finished_returns: list[float] = []
+            finished_successes: list[float] = []
+            finished_lengths: list[float] = []
+            target_episodes = episodes or config.evaluation.episodes
+            try:
+                while len(finished_returns) < target_episodes:
+                    with torch.inference_mode():
+                        action, _, _, state, _, _ = policy_act(
+                            model,
+                            obs_t,
+                            state=state,
+                            done=done_t,
+                            greedy=config.evaluation.greedy,
+                        )
+                    next_obs, reward, terminated, truncated, info = eval_env.step(action.cpu().numpy())
+                    done_np = np.logical_or(terminated, truncated)
+                    step_success = _episode_successes(reward, done_np, info)
+                    returns += reward
+                    lengths += 1
+                    for index, finished in enumerate(done_np):
+                        if finished:
+                            finished_returns.append(float(returns[index]))
+                            finished_successes.append(float(step_success[index]))
+                            finished_lengths.append(float(lengths[index]))
+                            returns[index] = 0.0
+                            lengths[index] = 0
+                    obs_t = prepare_obs(next_obs, ctx.device)
+                    done_t = prepare_done(done_np, ctx.device)
+            finally:
+                eval_env.close()
+                restore_rng_state(rng_state)
+            metrics = {
+                "eval_return": float(np.mean(finished_returns[:target_episodes])),
+                "eval_success_rate": float(np.mean(finished_successes[:target_episodes])),
+                "eval_episode_length": float(np.mean(finished_lengths[:target_episodes])) if finished_lengths else 0.0,
+            }
+        else:
+            metrics = {}
+    finally:
+        if was_training:
+            model.train()
+    return broadcast_scalar_dict(metrics, ctx)
 
 
 def train(
@@ -161,21 +266,22 @@ def train(
     optimizer: torch.optim.Optimizer,
     ctx: DistributedContext,
     max_updates: int | None = None,
+    start_update: int = 0,
+    start_step: int = 0,
 ) -> TrainResult:
     logger = RunLogger(config, enabled=ctx.is_main_process)
     envs = make_vector_env(config.env, seed=config.seed, world_rank=ctx.rank)
-    obs, _ = envs.reset(seed=config.seed + ctx.rank)
+    train_seed = make_reset_seeds(config.env.num_envs, config.seed, world_rank=ctx.rank)
+    obs, _ = envs.reset(seed=train_seed)
     obs_t = prepare_obs(obs, ctx.device)
     done_t = torch.ones(config.env.num_envs, device=ctx.device, dtype=torch.bool)
     state = unwrap_ddp(model).initial_state(config.env.num_envs, ctx.device)
 
     total_updates = max_updates or config.ppo.total_updates
-    global_step = 0
+    global_step = start_step
     start_time = time.perf_counter()
     episode_returns = np.zeros(config.env.num_envs, dtype=np.float32)
     episode_lengths = np.zeros(config.env.num_envs, dtype=np.int32)
-    completed_returns: list[float] = []
-    completed_successes: list[float] = []
     latest_checkpoint = ""
 
     metadata = {
@@ -190,13 +296,27 @@ def train(
     if ctx.is_main_process:
         save_json(f"{config.logging.output_dir}/run_meta.json", metadata)
 
-    for update in range(1, total_updates + 1):
+    update_metrics = {
+        "global_step": float(global_step),
+        "wall_clock_seconds": 0.0,
+        "throughput_fps": 0.0,
+        "train/episode_return": 0.0,
+        "train/success_rate": 0.0,
+        "train/episode_length": 0.0,
+        "train/episodes_completed": 0.0,
+        "gpu_utilization": 0.0,
+    }
+
+    for update in range(start_update + 1, total_updates + 1):
         if config.ppo.anneal_lr:
             frac = 1.0 - (update - 1) / max(total_updates, 1)
             optimizer.param_groups[0]["lr"] = frac * config.ppo.learning_rate
 
         rollout = RolloutStorage()
         rollout_metrics = MetricAggregator()
+        update_completed_returns: list[float] = []
+        update_completed_successes: list[float] = []
+        update_completed_lengths: list[float] = []
 
         for _ in range(config.ppo.rollout_steps):
             with torch.no_grad():
@@ -208,8 +328,19 @@ def train(
                         done=done_t,
                     )
 
-            next_obs, reward, terminated, truncated, _ = envs.step(action.cpu().numpy())
+            next_obs, reward, terminated, truncated, info = envs.step(action.cpu().numpy())
             reward_t = torch.as_tensor(reward, device=ctx.device, dtype=torch.float32)
+            truncated_np = np.asarray(truncated, dtype=bool)
+            if truncated_np.any():
+                _apply_truncation_bootstrap(
+                    model=model,
+                    next_state=next_state,
+                    truncated=truncated_np,
+                    info=info,
+                    reward_t=reward_t,
+                    ctx=ctx,
+                    gamma=config.ppo.gamma,
+                )
             next_done_np = np.logical_or(terminated, truncated)
             next_done_t = prepare_done(next_done_np, ctx.device)
             rollout.add(obs_t, state, done_t, action, log_prob, value, reward_t, next_done_t)
@@ -217,10 +348,12 @@ def train(
 
             episode_returns += reward
             episode_lengths += 1
+            step_success = _episode_successes(reward, next_done_np, info)
             for env_index, finished in enumerate(next_done_np):
                 if finished:
-                    completed_returns.append(float(episode_returns[env_index]))
-                    completed_successes.append(float(episode_returns[env_index] > 0.0))
+                    update_completed_returns.append(float(episode_returns[env_index]))
+                    update_completed_successes.append(float(step_success[env_index]))
+                    update_completed_lengths.append(float(episode_lengths[env_index]))
                     episode_returns[env_index] = 0.0
                     episode_lengths[env_index] = 0
 
@@ -241,6 +374,12 @@ def train(
         advantages = batch.advantages
         advantages = (advantages - advantages.mean()) / (advantages.std(unbiased=False) + 1e-8)
         batch.advantages = advantages
+        returns_var = torch.var(batch.returns, unbiased=False)
+        explained_variance = 0.0
+        if returns_var.item() > 1e-8:
+            explained_variance = float(
+                (1.0 - torch.var(batch.returns - batch.values, unbiased=False) / returns_var).item()
+            )
 
         batch_size = batch.actions.size(0)
         minibatch_size = max(batch_size // config.ppo.minibatches, 1)
@@ -306,17 +445,36 @@ def train(
                     break
 
         elapsed = max(time.perf_counter() - start_time, 1e-6)
+        aggregate_metrics = reduce_scalar_dict(
+            {
+                "global_step": float(global_step),
+                "wall_clock_seconds": elapsed,
+                "throughput_fps": global_step / elapsed,
+                "gpu_utilization": try_get_gpu_utilization() or 0.0,
+                "explained_variance": explained_variance,
+                **rollout_metrics.compute(),
+                **train_metrics.compute(),
+            },
+            ctx,
+        )
+        episode_sums = reduce_scalar_dict(
+            {
+                "return_sum": float(np.sum(update_completed_returns)) if update_completed_returns else 0.0,
+                "success_sum": float(np.sum(update_completed_successes)) if update_completed_successes else 0.0,
+                "length_sum": float(np.sum(update_completed_lengths)) if update_completed_lengths else 0.0,
+                "episode_count": float(len(update_completed_returns)),
+            },
+            ctx,
+            average=False,
+        )
+        episode_count = max(episode_sums["episode_count"], 1.0)
         update_metrics = {
-            "global_step": float(global_step),
-            "wall_clock_seconds": elapsed,
-            "throughput_fps": global_step / elapsed,
-            "train/episode_return": float(np.mean(completed_returns[-32:])) if completed_returns else 0.0,
-            "train/success_rate": float(np.mean(completed_successes[-32:])) if completed_successes else 0.0,
-            "gpu_utilization": try_get_gpu_utilization() or 0.0,
-            **rollout_metrics.compute(),
-            **train_metrics.compute(),
+            **aggregate_metrics,
+            "train/episode_return": episode_sums["return_sum"] / episode_count if episode_sums["episode_count"] > 0 else 0.0,
+            "train/success_rate": episode_sums["success_sum"] / episode_count if episode_sums["episode_count"] > 0 else 0.0,
+            "train/episode_length": episode_sums["length_sum"] / episode_count if episode_sums["episode_count"] > 0 else 0.0,
+            "train/episodes_completed": episode_sums["episode_count"],
         }
-        update_metrics = reduce_scalar_dict(update_metrics, ctx)
 
         if ctx.is_main_process and (update % config.system.log_interval == 0 or update == total_updates):
             LOGGER.info(
@@ -330,14 +488,13 @@ def train(
             logger.log(update, update_metrics)
 
         if update % config.system.checkpoint_interval == 0 or update == total_updates:
-            latest = save_checkpoint(config, model, optimizer, global_step, ctx.is_main_process)
+            latest = save_checkpoint(config, model, optimizer, update, global_step, ctx.is_main_process)
             if latest is not None:
                 latest_checkpoint = latest
 
         barrier(ctx)
 
     eval_metrics = evaluate_policy(config, unwrap_ddp(model), ctx)
-    eval_metrics = reduce_scalar_dict(eval_metrics, ctx)
     final_metrics = {**update_metrics, **eval_metrics}
     if ctx.is_main_process:
         logger.log(total_updates, final_metrics)

@@ -15,6 +15,7 @@ class SystemConfig:
     compile: bool = False
     log_interval: int = 1
     checkpoint_interval: int = 10
+    resume_from: str | None = None
 
 
 @dataclass(slots=True)

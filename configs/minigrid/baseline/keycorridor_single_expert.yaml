@@ -1,0 +1,30 @@
+seed: 7
+tags: ["minigrid", "baseline", "keycorridor", "single_expert"]
+system:
+  device: auto
+  precision: auto
+  deterministic: true
+  log_interval: 4
+  checkpoint_interval: 16
+env:
+  suite: minigrid
+  env_id: MiniGrid-KeyCorridorS3R1-v0
+  num_envs: 8
+  num_eval_envs: 8
+ppo:
+  rollout_steps: 64
+  total_updates: 48
+  update_epochs: 4
+  minibatches: 4
+  learning_rate: 0.00025
+model:
+  variant: single_expert
+  hidden_size: 128
+  token_dim: 128
+  expert_hidden_size: 256
+logging:
+  run_name: baseline_keycorridor_single_expert
+  output_dir: outputs/minigrid/baseline/keycorridor_single_expert
+evaluation:
+  episodes: 16
+  greedy: true

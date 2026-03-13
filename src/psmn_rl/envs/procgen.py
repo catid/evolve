@@ -5,6 +5,7 @@ from collections.abc import Callable
 import gymnasium as gym
 
 from psmn_rl.config import EnvConfig
+from psmn_rl.envs.wrappers import EpisodeSuccessWrapper
 
 
 def ensure_procgen_available() -> None:
@@ -30,9 +31,9 @@ def build_env_fn(config: EnvConfig, seed: int, env_index: int) -> Callable[[], g
             start_level=config.start_level + env_index,
             num_levels=config.num_levels,
         )
+        env = EpisodeSuccessWrapper(env)
         if config.max_episode_steps is not None:
             env = gym.wrappers.TimeLimit(env, max_episode_steps=config.max_episode_steps)
-        env.reset(seed=seed + env_index)
         return env
 
     return thunk

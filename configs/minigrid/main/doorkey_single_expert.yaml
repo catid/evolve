@@ -1,0 +1,30 @@
+seed: 7
+tags: ["minigrid", "main", "doorkey", "single_expert"]
+system:
+  device: auto
+  precision: auto
+  deterministic: true
+  log_interval: 5
+  checkpoint_interval: 20
+env:
+  suite: minigrid
+  env_id: MiniGrid-DoorKey-5x5-v0
+  num_envs: 8
+  num_eval_envs: 8
+ppo:
+  rollout_steps: 64
+  total_updates: 80
+  update_epochs: 4
+  minibatches: 4
+  learning_rate: 0.0003
+model:
+  variant: single_expert
+  hidden_size: 128
+  token_dim: 128
+  expert_hidden_size: 256
+logging:
+  run_name: minigrid_main_doorkey_single_expert
+  output_dir: outputs/minigrid/main/doorkey_single_expert
+evaluation:
+  episodes: 16
+  greedy: true

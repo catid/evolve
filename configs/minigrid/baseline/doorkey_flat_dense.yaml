@@ -1,0 +1,28 @@
+seed: 7
+tags: ["minigrid", "baseline", "doorkey", "flat_dense"]
+system:
+  device: auto
+  precision: auto
+  deterministic: true
+  log_interval: 4
+  checkpoint_interval: 16
+env:
+  suite: minigrid
+  env_id: MiniGrid-DoorKey-5x5-v0
+  num_envs: 8
+  num_eval_envs: 8
+ppo:
+  rollout_steps: 64
+  total_updates: 48
+  update_epochs: 4
+  minibatches: 4
+  learning_rate: 0.00025
+model:
+  variant: flat_dense
+  hidden_size: 128
+logging:
+  run_name: baseline_doorkey_flat_dense
+  output_dir: outputs/minigrid/baseline/doorkey_flat_dense
+evaluation:
+  episodes: 16
+  greedy: true

@@ -92,11 +92,10 @@ class RolloutStorage:
         last_advantage = torch.zeros_like(last_value)
         for step in reversed(range(rewards.size(0))):
             if step == rewards.size(0) - 1:
-                next_non_terminal = 1.0 - last_done.float()
                 next_value = last_value
             else:
-                next_non_terminal = 1.0 - next_dones[step].float()
                 next_value = values[step + 1]
+            next_non_terminal = 1.0 - (last_done.float() if step == rewards.size(0) - 1 else next_dones[step].float())
             delta = rewards[step] + gamma * next_value * next_non_terminal - values[step]
             last_advantage = delta + gamma * gae_lambda * next_non_terminal * last_advantage
             advantages[step] = last_advantage

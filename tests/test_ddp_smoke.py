@@ -1,11 +1,30 @@
 import subprocess
 import sys
+import socket
 from pathlib import Path
 
+import pytest
 import yaml
 
 
+def _loopback_sockets_available() -> bool:
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    except PermissionError:
+        return False
+    try:
+        sock.bind(("127.0.0.1", 0))
+        return True
+    except OSError:
+        return False
+    finally:
+        sock.close()
+
+
 def test_ddp_smoke(tmp_path: Path) -> None:
+    if not _loopback_sockets_available():
+        pytest.skip("loopback sockets are unavailable in this environment")
+
     config = {
         "seed": 7,
         "system": {
