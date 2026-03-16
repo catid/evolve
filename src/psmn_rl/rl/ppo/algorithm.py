@@ -202,6 +202,27 @@ def policy_evaluate_actions(
     }
 
 
+def current_entropy_coefficient(config: ExperimentConfig, update: int, total_updates: int) -> float:
+    start = float(config.ppo.ent_coef)
+    final = float(config.ppo.ent_coef_final) if config.ppo.ent_coef_final is not None else start
+    schedule = config.ppo.ent_schedule
+    if schedule == "constant" or abs(final - start) < 1e-12 or total_updates <= 1:
+        return start
+    start_fraction = min(max(float(config.ppo.ent_schedule_start_fraction), 0.0), 0.999999)
+    progress = (update - 1) / max(total_updates - 1, 1)
+    if schedule == "step":
+        return final if progress >= start_fraction else start
+    if schedule == "linear":
+        scaled_progress = progress
+    elif schedule == "late_linear":
+        if progress <= start_fraction:
+            return start
+        scaled_progress = (progress - start_fraction) / max(1.0 - start_fraction, 1e-8)
+    else:
+        raise ValueError(f"unsupported entropy schedule: {schedule}")
+    return start + (final - start) * scaled_progress
+
+
 def save_checkpoint(
     config: ExperimentConfig,
     model: nn.Module,
@@ -226,6 +247,9 @@ def save_checkpoint(
     }
     latest_path = output_dir / "latest.pt"
     torch.save(checkpoint, latest_path)
+    if config.system.archive_checkpoints:
+        archive_path = output_dir / f"checkpoint_update_{update:04d}.pt"
+        torch.save(checkpoint, archive_path)
     return str(latest_path)
 
 
@@ -459,6 +483,7 @@ def train(
         if config.ppo.anneal_lr:
             frac = 1.0 - (update - 1) / max(total_updates, 1)
             optimizer.param_groups[0]["lr"] = frac * config.ppo.learning_rate
+        ent_coef_current = current_entropy_coefficient(config, update, total_updates)
 
         rollout = RolloutStorage()
         rollout_metrics = MetricAggregator()
@@ -571,7 +596,7 @@ def train(
                     value_loss = 0.5 * torch.max(value_loss_unclipped, value_loss_clipped).mean()
                     entropy = outputs["entropy"].mean()
                     aux_loss = sum(outputs["aux_losses"].values()) if outputs["aux_losses"] else torch.zeros((), device=ctx.device)
-                    loss = policy_loss + config.ppo.vf_coef * value_loss - config.ppo.ent_coef * entropy + aux_loss
+                    loss = policy_loss + config.ppo.vf_coef * value_loss - ent_coef_current * entropy + aux_loss
 
                 optimizer.zero_grad(set_to_none=True)
                 loss.backward()
@@ -600,6 +625,7 @@ def train(
                 "throughput_fps": global_step / elapsed,
                 "gpu_utilization": try_get_gpu_utilization() or 0.0,
                 "explained_variance": explained_variance,
+                "ent_coef_current": ent_coef_current,
                 **rollout_metrics.compute(),
                 **train_metrics.compute(),
             },

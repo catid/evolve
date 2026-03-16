@@ -64,7 +64,8 @@ def _format_float(value: Any) -> str:
     return str(value)
 
 
-def _build_report(rows: list[dict[str, Any]], run_dirs: list[Path], episodes: int) -> str:
+def _build_report(rows: list[dict[str, Any]], run_dirs: list[Path], episodes: int, group_by: str) -> str:
+    group_label = "Variant" if group_by == "variant" else "Run"
     lines = [
         "# Policy Extraction Report",
         "",
@@ -74,20 +75,20 @@ def _build_report(rows: list[dict[str, Any]], run_dirs: list[Path], episodes: in
     ]
     lines.append("## Greedy vs Best Sampled")
     lines.append("")
-    lines.append("| Variant | Greedy Success | Best Sampled Success | Best Sampled Mode | Greedy Max Prob | Greedy Margin | Best Sampled Greedy-Match |")
+    lines.append(f"| {group_label} | Greedy Success | Best Sampled Success | Best Sampled Mode | Greedy Max Prob | Greedy Margin | Best Sampled Greedy-Match |")
     lines.append("| --- | ---: | ---: | --- | ---: | ---: | ---: |")
     by_variant: dict[str, list[dict[str, Any]]] = {}
     for row in rows:
-        by_variant.setdefault(str(row["variant"]), []).append(row)
-    for variant, variant_rows in sorted(by_variant.items()):
-        greedy_row = next(row for row in variant_rows if row["mode"] == "greedy")
-        sampled_rows = [row for row in variant_rows if row["mode"] != "greedy"]
+        by_variant.setdefault(str(row[group_by]), []).append(row)
+    for label, grouped_rows in sorted(by_variant.items()):
+        greedy_row = next(row for row in grouped_rows if row["mode"] == "greedy")
+        sampled_rows = [row for row in grouped_rows if row["mode"] != "greedy"]
         best_sampled = max(sampled_rows, key=lambda row: row.get("eval_success_rate", 0.0)) if sampled_rows else greedy_row
         lines.append(
             "| "
             + " | ".join(
                 [
-                    variant,
+                    label,
                     _format_float(greedy_row.get("eval_success_rate")),
                     _format_float(best_sampled.get("eval_success_rate")),
                     str(best_sampled["mode"]),
@@ -98,14 +99,14 @@ def _build_report(rows: list[dict[str, Any]], run_dirs: list[Path], episodes: in
             )
             + " |"
         )
-    lines.extend(["", "## Mode Table", "", "| Variant | Mode | Eval Return | Eval Success | Eval Entropy | Eval Max Prob | Eval Margin | Eval Greedy Match | Train Return | Train Success | Train Entropy | Train Max Prob | Throughput |", "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |"])
-    sort_rows = sorted(rows, key=lambda row: (str(row["variant"]), str(row["mode"])))
+    lines.extend(["", "## Mode Table", "", f"| {group_label} | Mode | Eval Return | Eval Success | Eval Entropy | Eval Max Prob | Eval Margin | Eval Greedy Match | Train Return | Train Success | Train Entropy | Train Max Prob | Throughput |", "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |"])
+    sort_rows = sorted(rows, key=lambda row: (str(row[group_by]), str(row["mode"])))
     for row in sort_rows:
         lines.append(
             "| "
             + " | ".join(
                 [
-                    str(row["variant"]),
+                    str(row[group_by]),
                     str(row["mode"]),
                     _format_float(row.get("eval_return")),
                     _format_float(row.get("eval_success_rate")),
@@ -130,6 +131,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("paths", nargs="+", help="Run directories or parent directories containing run directories")
     parser.add_argument("--episodes", type=int, default=32)
     parser.add_argument("--device", type=str, default="auto")
+    parser.add_argument("--group-by", choices=("variant", "run_name"), default="variant")
     parser.add_argument("--output", type=str, required=True)
     parser.add_argument("--csv", type=str, default=None)
     parser.add_argument("--trace-dir", type=str, default=None)
@@ -172,6 +174,7 @@ def main() -> None:
                 )
                 row = {
                     "run_dir": str(run_dir),
+                    "run_name": run_dir.name,
                     "variant": config.model.variant,
                     "env_id": config.env.env_id,
                     "mode": mode_name,
@@ -188,7 +191,7 @@ def main() -> None:
             return
         output_path = Path(args.output)
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(_build_report(rows, run_dirs, args.episodes), encoding="utf-8")
+        output_path.write_text(_build_report(rows, run_dirs, args.episodes, args.group_by), encoding="utf-8")
         if args.csv is not None:
             csv_path = Path(args.csv)
             csv_path.parent.mkdir(parents=True, exist_ok=True)

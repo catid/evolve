@@ -6,8 +6,8 @@ Why does `flat_dense` solve greedy DoorKey while the original tokenized path doe
 
 Artifact root for this phase:
 
-- [outputs/diagnostics/policy_extraction/doorkey/report.md](/home/catid/evolve/outputs/diagnostics/policy_extraction/doorkey/report.md)
-- [outputs/reports/policy_extraction_report.csv](/home/catid/evolve/outputs/reports/policy_extraction_report.csv)
+- [outputs/diagnostics/policy_extraction/doorkey/report.md](../diagnostics/policy_extraction/doorkey/report.md)
+- [outputs/reports/policy_extraction_report.csv](policy_extraction_report.csv)
 
 ## Results
 

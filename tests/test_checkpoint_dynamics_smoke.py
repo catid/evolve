@@ -8,43 +8,42 @@ from psmn_rl.config import load_config
 from psmn_rl.train import run_training
 
 
-def test_policy_diagnostics_analysis_smoke(tmp_path: Path) -> None:
-    config = load_config("configs/diagnostic/minigrid_empty5_flat_dense_overfit.yaml")
+def test_checkpoint_archive_and_dynamics_report_smoke(tmp_path: Path) -> None:
+    config = load_config("configs/experiments/minigrid_doorkey_single_expert_ent1e3_ckptscan.yaml")
     config.system.device = "cpu"
     config.logging.tensorboard = False
     config.env.num_envs = 1
     config.env.num_eval_envs = 1
+    config.system.checkpoint_interval = 1
     config.ppo.rollout_steps = 4
-    config.ppo.total_updates = 1
+    config.ppo.total_updates = 2
     config.ppo.update_epochs = 1
     config.ppo.minibatches = 1
     config.evaluation.episodes = 1
     config.logging.output_dir = str(tmp_path / "run")
-    run_training(config, max_updates=1)
 
-    report_path = tmp_path / "policy_report.md"
-    csv_path = tmp_path / "policy_report.csv"
-    trace_dir = tmp_path / "traces"
+    run_training(config, max_updates=2)
+
+    assert Path(config.logging.output_dir, "latest.pt").exists()
+    assert Path(config.logging.output_dir, "checkpoint_update_0001.pt").exists()
+    assert Path(config.logging.output_dir, "checkpoint_update_0002.pt").exists()
+
+    report_path = tmp_path / "checkpoint_report.md"
+    csv_path = tmp_path / "checkpoint_report.csv"
     subprocess.run(
         [
             sys.executable,
             "-m",
-            "psmn_rl.analysis.policy_diagnostics",
+            "psmn_rl.analysis.checkpoint_dynamics",
             str(config.logging.output_dir),
             "--episodes",
             "2",
             "--device",
             "cpu",
-            "--group-by",
-            "run_name",
             "--output",
             str(report_path),
             "--csv",
             str(csv_path),
-            "--trace-dir",
-            str(trace_dir),
-            "--trace-limit",
-            "1",
         ],
         cwd=Path(__file__).resolve().parents[1],
         capture_output=True,
@@ -54,4 +53,3 @@ def test_policy_diagnostics_analysis_smoke(tmp_path: Path) -> None:
 
     assert report_path.exists()
     assert csv_path.exists()
-    assert any(trace_dir.glob("*.json"))

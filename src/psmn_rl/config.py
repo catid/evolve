@@ -15,6 +15,7 @@ class SystemConfig:
     compile: bool = False
     log_interval: int = 1
     checkpoint_interval: int = 10
+    archive_checkpoints: bool = False
     resume_from: str | None = None
 
 
@@ -43,6 +44,9 @@ class PPOConfig:
     clip_coef: float = 0.2
     value_clip_coef: float = 0.2
     ent_coef: float = 0.01
+    ent_coef_final: float | None = None
+    ent_schedule: str = "constant"
+    ent_schedule_start_fraction: float = 0.0
     vf_coef: float = 0.5
     max_grad_norm: float = 0.5
     learning_rate: float = 2.5e-4

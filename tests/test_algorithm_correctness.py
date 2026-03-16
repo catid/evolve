@@ -10,7 +10,7 @@ import torch
 from psmn_rl.config import load_config
 from psmn_rl.models.factory import build_model
 from psmn_rl.rl.distributed.ddp import DistributedContext
-from psmn_rl.rl.ppo.algorithm import _apply_truncation_bootstrap, evaluate_policy
+from psmn_rl.rl.ppo.algorithm import _apply_truncation_bootstrap, current_entropy_coefficient, evaluate_policy
 from psmn_rl.train import run_training
 
 
@@ -75,6 +75,17 @@ def test_evaluate_policy_sampling_is_reproducible() -> None:
     assert first == second
     assert model.training
     env.close()
+
+
+def test_entropy_schedule_progression() -> None:
+    config = load_config("configs/experiments/minigrid_doorkey_sare_linear_1e2_to_1e3.yaml")
+    assert current_entropy_coefficient(config, update=1, total_updates=80) == pytest.approx(0.01)
+    assert current_entropy_coefficient(config, update=80, total_updates=80) == pytest.approx(0.001)
+
+    config.ppo.ent_schedule = "late_linear"
+    config.ppo.ent_schedule_start_fraction = 0.75
+    assert current_entropy_coefficient(config, update=40, total_updates=80) == pytest.approx(0.01)
+    assert current_entropy_coefficient(config, update=80, total_updates=80) == pytest.approx(0.001)
 
 
 def test_resume_training_advances_global_step(tmp_path: Path) -> None:

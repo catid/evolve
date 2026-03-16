@@ -9,7 +9,7 @@ from torch import nn
 
 from psmn_rl.config import load_config
 from psmn_rl.rl.distributed.ddp import DistributedContext
-from psmn_rl.rl.ppo.algorithm import _apply_truncation_bootstrap
+from psmn_rl.rl.ppo.algorithm import _apply_truncation_bootstrap, current_entropy_coefficient
 from psmn_rl.train import run_training
 
 
@@ -113,3 +113,18 @@ def test_training_logs_rollout_action_diagnostics(tmp_path: Path) -> None:
     assert "rollout/action_max_prob" in last_scalar
     assert "rollout/action_logit_margin" in last_scalar
     assert "rollout/action_greedy_match" in last_scalar
+
+
+def test_linear_entropy_schedule_with_late_start() -> None:
+    config = load_config("configs/experiments/minigrid_doorkey_sare_ent1e3.yaml")
+    config.ppo.ent_coef = 0.01
+    config.ppo.ent_coef_final = 0.001
+    config.ppo.ent_schedule = "late_linear"
+    config.ppo.ent_schedule_start_fraction = 0.5
+
+    values = [current_entropy_coefficient(config, update, total_updates=5) for update in range(1, 6)]
+
+    assert values[0] == pytest.approx(0.01)
+    assert values[1] == pytest.approx(0.01)
+    assert values[-1] == pytest.approx(0.001)
+    assert values[-2] > values[-1]

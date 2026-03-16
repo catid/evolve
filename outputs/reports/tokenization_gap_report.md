@@ -6,9 +6,9 @@ What explains the weak original `token_dense` DoorKey result, and what is the sm
 
 Relevant artifact roots:
 
-- [outputs/diagnostics/tokenization_gap/report.md](/home/catid/evolve/outputs/diagnostics/tokenization_gap/report.md)
-- [outputs/experiments/token_recovery/report.md](/home/catid/evolve/outputs/experiments/token_recovery/report.md)
-- [outputs/experiments/sare_retest/report.md](/home/catid/evolve/outputs/experiments/sare_retest/report.md)
+- [outputs/diagnostics/tokenization_gap/report.md](../diagnostics/tokenization_gap/report.md)
+- [outputs/experiments/token_recovery/report.md](../experiments/token_recovery/report.md)
+- [outputs/experiments/sare_retest/report.md](../experiments/sare_retest/report.md)
 
 ## Phase 1: Tokenization-Gap Diagnostics
 

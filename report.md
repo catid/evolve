@@ -1,106 +1,110 @@
-# DoorKey Control-Decomposition Report
+# DoorKey Greedy-Recovery Report
 
 ## Current Conclusion
 
 - `flat_dense` remains the strongest verified greedy DoorKey control.
-- The original tokenized gap was real, but it was not one thing:
-  - `token_dense` was both underpowered and badly calibrated under greedy extraction.
-  - `single_expert` and `SARE` were much closer to solvable policies, but their action selection stayed too soft for greedy evaluation.
-- The smallest successful control-side recovery was not a new architecture. It was reducing PPO entropy pressure for `token_dense` from `0.01` to `0.001`.
-- Under that recovered setting, `token_dense` becomes a competent greedy DoorKey control.
-- A fair matched `SARE` rerun on the same setting still loses under greedy evaluation.
+- `token_dense` with `ppo.ent_coef=0.001` remains the canonical recovered tokenized DoorKey control.
+- `single_expert` and `SARE` remain sampled-competent but greedy-failing on DoorKey.
+- The bounded architecture-neutral recovery campaign is now complete:
+  - checkpoint selection did not reveal any missed good greedy checkpoint
+  - entropy schedules did not recover greedy `single_expert` or greedy `SARE`
+  - self-imitation from successful sampled trajectories did not recover greedy `single_expert` or greedy `SARE`
+- Current repo recommendation: stop routed work for greedy-policy claims on DoorKey unless a new, separately justified extraction method is proposed.
 
-## What Was Audited And Fixed
+## Baseline And Reproduction
 
-- Reproduced the accepted DoorKey comparison under the current experiment lane and saved [reproduction_note.md](/home/catid/evolve/outputs/reports/reproduction_note.md).
-- Fixed a provenance gap in `run_meta.json`: future runs now record both `git_commit` and `git_dirty`.
-- Added rollout/eval action-selection diagnostics:
-  - action entropy
-  - max action probability
-  - top-1 vs top-2 logit margin
-  - greedy-match rate
-- Added temperature-scaled sampled evaluation to separate policy quality from greedy extraction quality.
-- Added lightweight token representation metrics:
-  - pooled norm
-  - token feature std
-  - token pairwise cosine proxy
+Source artifacts:
 
-## Policy-Extraction Findings
+- [greedy_recovery_reproduction_note.md](outputs/reports/greedy_recovery_reproduction_note.md)
+- [outputs/experiments/sare_retest/report.md](outputs/experiments/sare_retest/report.md)
 
-Source artifact: [policy_extraction_report.md](/home/catid/evolve/outputs/reports/policy_extraction_report.md)
+Current reproduced DoorKey baseline:
 
-Original accepted DoorKey setting:
+| Variant | Greedy Success | Best Sampled Success | Train Return |
+| --- | ---: | ---: | ---: |
+| `flat_dense` | `1.000` | `1.000` | `0.960` |
+| recovered `token_dense` | `0.750` | `1.000` | `0.942` |
+| `single_expert` | `0.000` | `0.750` | `0.291` |
+| `SARE` | `0.000` | `1.000` | `0.744` |
 
-- `flat_dense`: greedy success `1.000`, eval max-prob `0.995`, logit margin `6.671`
-- `token_dense`: greedy success `0.000`, best sampled success `0.125`, eval max-prob `0.315`, logit margin `0.330`
-- `single_expert`: greedy success `0.000`, best sampled success `1.000`
-- `SARE`: greedy success `0.000`, best sampled success `1.000`
+This is the accepted starting point for the greedy-recovery phase.
 
-Interpretation:
+## Why The Gap Exists
 
-- `flat_dense` learns a sharp deterministic policy.
-- `token_dense` is weak even when sampling is allowed, so its problem is not only greedy extraction.
-- `single_expert` and `SARE` already contain competent sampled policies on DoorKey, but they do not extract a strong greedy policy. Their failure mode is much more calibration/extraction-heavy than `token_dense`.
+Source artifacts:
 
-## Tokenization-Gap Findings
+- [policy_extraction_report.md](outputs/reports/policy_extraction_report.md)
+- [tokenization_gap_report.md](outputs/reports/tokenization_gap_report.md)
 
-Source artifact: [tokenization_gap_report.md](/home/catid/evolve/outputs/reports/tokenization_gap_report.md)
+The control decomposition is unchanged:
 
-DoorKey tokenized diagnostics:
+- `flat_dense` learns a sharp greedy policy.
+- original `token_dense` was genuinely weak under partial observation, not just badly extracted.
+- `single_expert` and `SARE` already contain strong sampled policies, but their greedy action ordering stays wrong.
 
-| Run | Greedy Success | Best Sampled Success | Train Return | Repr Std | Repr Cosine |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| baseline tokenized | `0.000` | `0.125` | `0.310` | `0.241` | `0.932` |
-| fully observed | `0.000` | `0.688` | `0.267` | `0.229` | `0.942` |
-| depth-4 | `0.000` | `0.125` | `0.088` | `0.151` | `0.970` |
-| depth-4 + fully observed | `0.000` | `0.938` | `0.718` | `0.204` | `0.948` |
+That is why this phase focused on checkpoint choice, entropy schedules, and self-imitation rather than new routed architectures.
 
-Interpretation:
+## Checkpoint Dynamics
 
-- Full observation helps the tokenized path a lot under sampled evaluation, so partial observability is part of the gap.
-- Depth alone does not fix the partial-observation tokenized control; in this implementation it actually looks more collapsed.
-- Even with full observation and deeper token mixing, greedy extraction still fails. So the remaining problem is not just representation quality; it is also action calibration.
+Source artifact: [checkpoint_dynamics_report.md](outputs/reports/checkpoint_dynamics_report.md)
 
-## Smallest Successful Recovery
+Result:
 
-Source artifact: [outputs/experiments/token_recovery/report.md](/home/catid/evolve/outputs/experiments/token_recovery/report.md)
+- `SARE` never shows a nonzero greedy checkpoint anywhere in the archived DoorKey series.
+- `single_expert` never shows a nonzero greedy checkpoint anywhere in the archived DoorKey series.
+- sampled-good checkpoints and greedy-good checkpoints do not merely diverge; the greedy-good checkpoints do not appear at all in the tested training traces.
 
-Bounded sweep:
+This rules out “we just picked the wrong checkpoint” as the main explanation.
 
-- `token_dense`, `ent_coef=0.001`: greedy success `0.750`, train return `0.942`, rollout entropy `0.695`, repr std `0.467`, repr cosine `0.735`
-- `token_dense`, `ent_coef=0.0`: greedy success `0.000`
-- `single_expert`, `ent_coef=0.001`: greedy success `0.000`, best sampled success `0.750`
-- `single_expert`, `ent_coef=0.0`: greedy success `0.000`
+## Entropy Schedules
+
+Source artifact: [entropy_schedule_report.md](outputs/reports/entropy_schedule_report.md)
+
+Best bounded schedules:
+
+| Variant | Best Schedule | Greedy Success | Best Sampled Success |
+| --- | --- | ---: | ---: |
+| `single_expert` | `late_linear:0.01->0.001@0.75` | `0.000` | `1.000` |
+| `SARE` | `late_linear:0.01->0.001@0.75` | `0.000` | `1.000` |
 
 Interpretation:
 
-- The smallest successful change in this repo is `token_dense` with `ent_coef=0.001`.
-- That change both sharpens action selection and materially improves representation health.
-- Pushing entropy all the way to zero is too aggressive and does not recover the control.
-- The same sweep does not recover `single_expert`, so there is not one universal calibration fix for the whole tokenized path.
+- simple entropy schedules can preserve or improve sampled competence
+- they do not recover a usable greedy DoorKey policy for either `single_expert` or `SARE`
+- large action margins alone are not enough; some schedules produce sharper wrong argmax decisions
 
-## Fair SARE Retest
+So greedy recovery is not mainly an entropy-schedule problem in this repo.
 
-Source artifact: [outputs/experiments/sare_retest/report.md](/home/catid/evolve/outputs/experiments/sare_retest/report.md)
+## Self-Imitation
 
-Matched DoorKey setting (`ent_coef=0.001`):
+Source artifact: [self_imitation_report.md](outputs/reports/self_imitation_report.md)
 
-| Variant | Greedy Success | Best Sampled Success | Train Return | Throughput |
-| --- | ---: | ---: | ---: | ---: |
-| `flat_dense` | `1.000` | `1.000` | `0.960` | `9062.6` |
-| `token_dense` | `0.750` | `1.000` | `0.942` | `6047.8` |
-| `single_expert` | `0.000` | `0.750` | `0.291` | `6509.1` |
-| `SARE` | `0.000` | `1.000` | `0.744` | `5748.6` |
+Tested matrix:
 
-Interpretation:
+- teacher mode: sampled `t=1.0`
+- targets: `policy_head`, `policy_head_plus_last_shared`
+- weightings: `uniform`, `return`
 
-- `SARE` improves strongly under sampled evaluation, but it still fails under greedy evaluation on the same setting where `token_dense` now succeeds.
-- So the honest routed conclusion is still negative for the repo’s main greedy DoorKey benchmark.
-- The recovered tokenized control made the routed comparison fairer, and `SARE` still did not win that fair test.
+Result:
+
+- every `SARE` self-imitation run stayed at greedy success `0.000`
+- every `single_expert` self-imitation run stayed at greedy success `0.000`
+- sampled competence was mostly preserved, but greedy extraction did not improve
+
+This rules out the simplest successful-trajectory distillation path as a practical greedy recovery method for the current routed policies.
+
+## Stop Condition
+
+The campaign hit the memo’s stop condition:
+
+- no bounded architecture-neutral sharpening family materially improved greedy `SARE`
+
+Because checkpoint selection, entropy schedules, and self-imitation all failed to recover greedy `SARE`, the optional margin-regularization probe and KeyCorridor transfer check were not run. That would have expanded scope after the repo had already reached a clean no-go answer for the current DoorKey question.
 
 ## Recommendation
 
-- Continue using `flat_dense` as the strongest verified DoorKey control.
-- Treat `token_dense` with `ent_coef=0.001` as the current canonical recovered tokenized DoorKey control.
-- Pause further routed-architecture work in this repo for greedy-eval claims.
-- If work continues, the highest-value follow-up is not new routing variants. It is policy extraction / calibration for routed token policies that already look competent under sampled evaluation.
+- Keep `flat_dense` as the strongest verified greedy DoorKey control.
+- Keep `token_dense` with `ppo.ent_coef=0.001` as the canonical recovered tokenized control.
+- Treat current `single_expert` and `SARE` DoorKey policies as sampled-competent but not greedily recoverable under the bounded, architecture-neutral methods tested here.
+- Pause or stop routed work for greedy-policy claims in this repo.
+- If work continues at all, it should be framed as a new extraction-method project, not as evidence that current routed models are close to a greedy win.
