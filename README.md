@@ -144,21 +144,38 @@ Current high-level findings are summarized in `summary.md` and `report.md` at th
 
 ## Current DoorKey Result
 
-The current repo conclusion is still control-first, but the story has moved from pure routed-no-go to teacher-guided extraction:
+The current repo conclusion is still control-first, but the routed story has now split cleanly:
 
 - `flat_dense` remains the best verified greedy DoorKey control.
 - `token_dense` with `ppo.ent_coef=0.001` remains the canonical recovered tokenized control.
-- Offline teacher distillation did not recover greedy DoorKey behavior for either tokenized students or `SARE`.
-- Learner-state supervision from a `flat_dense` teacher did recover greedy `SARE` on some seeds.
-- That positive routed signal did not survive the small multi-seed robustness check, so routed greedy-performance claims remain paused.
+- PPO-only `SARE` is still greedy-negative.
+- Offline teacher distillation and other bounded recovery families remain negative.
+- The only reopened routed result is narrower and teacher-guided:
+  - teacher-logit KL learner-state supervision for `SARE`
+  - external 3-seed 64-episode DoorKey gate
+  - mean greedy success `0.7135` for routed `SARE` vs `0.5677` for recovered `token_dense`
+  - no routed seed remains at `0.0`
+- That reopened claim is an extraction-method result, not a PPO-alone routed win.
+- The current phase is hardening that claim with:
+  - an additional small DoorKey seed set
+  - matched teacher-guided tokenized controls under the same external 64-episode evaluation path
+  - no transfer claims unless the hardened DoorKey result survives both checks
+
+Current hardening result:
+
+- the DoorKey claim is stronger on fresh seeds: KL learner-state `SARE` reaches greedy `1.0` on added seeds `23`, `29`, and `31`
+- matched teacher-guided `token_dense` also improves, so the right story is still method-first
+- `SARE` still keeps the higher mean on the original `7/11/19` DoorKey lane under matched teacher-guided extraction
+- the same method shows no bounded KeyCorridor transfer, so the claim remains narrowly DoorKey-specific
 
 Canonical reports for the current phase:
 
-- `outputs/reports/teacher_extraction_reproduction_note.md`
-- `outputs/reports/policy_distillation_report.md`
-- `outputs/reports/learner_state_supervision_report.md`
-- `outputs/reports/teacher_extraction_multiseed_report.md`
-- `outputs/reports/teacher_extraction_decision_memo.md`
+- `outputs/reports/lss_claim_hardening_reproduction_note.md`
+- `outputs/reports/lss_additional_seed_report.md`
+- `outputs/reports/lss_matched_control_report.md`
+- `outputs/reports/lss_new_case_route_integrity_report.md`
+- `outputs/reports/lss_keycorridor_transfer_report.md`
+- `outputs/reports/lss_claim_hardening_decision_memo.md`
 
 ## Repository Layout
 
