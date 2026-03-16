@@ -37,6 +37,8 @@ class StudentConfig:
     checkpoint: str
     target: str = "policy_head"
     loss: str = "ce"
+    ce_weight: float = 1.0
+    kl_weight: float = 1.0
     weighting: str = "uniform"
     learning_rate: float = 1e-4
     batch_size: int = 128
@@ -76,6 +78,7 @@ class DistillationBatch:
     steps: int
     mean_return: float
     mean_length: float
+    teacher_confidence: torch.Tensor | None = None
 
 
 def _load_yaml(path: str | Path) -> dict[str, Any]:
@@ -168,6 +171,41 @@ def _kl_loss(student_logits: torch.Tensor, teacher_logits: torch.Tensor, weights
     teacher_probs = F.softmax(teacher_logits, dim=-1)
     per_item = F.kl_div(student_log_probs, teacher_probs, reduction="none").sum(dim=-1)
     return _weighted_loss(per_item, weights)
+
+
+def _teacher_confidence(teacher_logits: torch.Tensor) -> torch.Tensor:
+    return torch.softmax(teacher_logits, dim=-1).max(dim=-1).values
+
+
+def _dataset_weights(spec: StudentConfig, dataset: DistillationBatch, device: torch.device) -> torch.Tensor:
+    weights = torch.ones_like(dataset.weights, device=device)
+    if spec.weighting == "return":
+        weights = dataset.weights.to(device)
+    elif spec.weighting == "teacher_confidence":
+        if dataset.teacher_confidence is None:
+            raise ValueError("teacher_confidence weighting requested but dataset lacks teacher_confidence")
+        weights = dataset.teacher_confidence.to(device)
+    elif spec.weighting != "uniform":
+        raise ValueError(f"unsupported weighting mode: {spec.weighting}")
+    return weights
+
+
+def _student_loss(
+    student_cfg: StudentConfig,
+    student_logits: torch.Tensor,
+    teacher_actions: torch.Tensor,
+    teacher_logits: torch.Tensor,
+    weights: torch.Tensor,
+) -> torch.Tensor:
+    if student_cfg.loss == "ce":
+        return _ce_loss(student_logits, teacher_actions, weights)
+    if student_cfg.loss == "kl":
+        return _kl_loss(student_logits, teacher_logits, weights)
+    if student_cfg.loss == "ce_kl":
+        ce = _ce_loss(student_logits, teacher_actions, weights)
+        kl = _kl_loss(student_logits, teacher_logits, weights)
+        return student_cfg.ce_weight * ce + student_cfg.kl_weight * kl
+    raise ValueError(f"unsupported student loss: {student_cfg.loss}")
 
 
 def _load_model(config_path: str, checkpoint_path: str, device: torch.device) -> tuple[Any, ActorCriticModel]:
@@ -263,6 +301,7 @@ def harvest_teacher_dataset(spec: DistillationSpec, device: str) -> Distillation
         actions=torch.as_tensor(accepted_actions, dtype=torch.long),
         teacher_logits=torch.as_tensor(np.stack(accepted_logits, axis=0), dtype=torch.float32),
         weights=torch.as_tensor(accepted_weights, dtype=torch.float32),
+        teacher_confidence=_teacher_confidence(torch.as_tensor(np.stack(accepted_logits, axis=0), dtype=torch.float32)),
         accepted_episodes=accepted_episodes,
         episodes_seen=episodes_seen,
         steps=len(accepted_actions),
@@ -289,10 +328,7 @@ def fine_tune_student(
     obs = {key: value.to(device_t) for key, value in dataset.obs.items()}
     actions = dataset.actions.to(device_t)
     teacher_logits = dataset.teacher_logits.to(device_t)
-    if spec.student.weighting == "return":
-        weights = dataset.weights.to(device_t)
-    else:
-        weights = torch.ones_like(dataset.weights, device=device_t)
+    weights = _dataset_weights(spec.student, dataset, device_t)
     done = torch.zeros(actions.size(0), device=device_t, dtype=torch.bool)
     losses: list[float] = []
 
@@ -307,10 +343,13 @@ def fine_tune_student(
             done_batch = done[batch_index]
 
             output = student(obs_batch, state={}, done=done_batch)
-            if spec.student.loss == "kl":
-                loss = _kl_loss(output.logits, teacher_logits_batch, weight_batch)
-            else:
-                loss = _ce_loss(output.logits, action_batch, weight_batch)
+            loss = _student_loss(
+                spec.student,
+                output.logits,
+                action_batch,
+                teacher_logits_batch,
+                weight_batch,
+            )
             optimizer.zero_grad(set_to_none=True)
             loss.backward()
             optimizer.step()

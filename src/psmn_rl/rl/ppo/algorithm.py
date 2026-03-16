@@ -302,6 +302,7 @@ def collect_policy_diagnostics(
             action_max_prob_sums = np.zeros(config.env.num_eval_envs, dtype=np.float64)
             action_margin_sums = np.zeros(config.env.num_eval_envs, dtype=np.float64)
             action_greedy_match_sums = np.zeros(config.env.num_eval_envs, dtype=np.float64)
+            eval_output_metrics = MetricAggregator()
             episode_trace_buffers: list[list[dict[str, float | int]]] = [[] for _ in range(config.env.num_eval_envs)]
             episode_summaries: list[dict[str, Any]] = []
             target_episodes = episodes or config.evaluation.episodes
@@ -317,6 +318,7 @@ def collect_policy_diagnostics(
                             greedy=eval_greedy,
                             temperature=temperature,
                         )
+                    eval_output_metrics.update({key: value for key, value in metrics.items() if not key.startswith("rollout/")})
                     entropy_step = metrics["rollout/action_entropy"].detach().cpu().numpy()
                     max_prob_step = metrics["rollout/action_max_prob"].detach().cpu().numpy()
                     margin_step = metrics["rollout/action_logit_margin"].detach().cpu().numpy()
@@ -384,6 +386,7 @@ def collect_policy_diagnostics(
                 "eval_success_rate": float(np.mean(finished_successes[:target_episodes])),
                 "eval_episode_length": float(np.mean(finished_lengths[:target_episodes])) if finished_lengths else 0.0,
             }
+            metrics.update(eval_output_metrics.compute())
             if trimmed:
                 metrics.update(
                     {

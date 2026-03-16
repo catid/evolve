@@ -1,0 +1,18 @@
+name: lss_kl
+teacher:
+  greedy: true
+  temperature: 1.0
+student:
+  target: policy_head_plus_last_shared
+  loss: kl
+  weighting: uniform
+  learning_rate: 0.0001
+  batch_size: 128
+  epochs: 4
+loop:
+  rounds: 4
+  episodes_per_round: 64
+  max_episodes_per_round: 96
+  aggregation: append_all
+evaluation:
+  episodes: 64

@@ -5,6 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+import torch
 import yaml
 
 from psmn_rl.config import load_config
@@ -92,7 +93,14 @@ def test_learner_state_supervision_run_and_report_smoke(tmp_path: Path) -> None:
 
     summary = json.loads((run_dir / "summary.json").read_text(encoding="utf-8"))
     assert summary["best_round_greedy_success"] >= 0.0
+    assert summary["aggregation"] == "append_all"
+    assert summary["loss"] == "ce"
     assert (run_dir / "latest.pt").exists()
+    dataset = torch.load(run_dir / "round_01_dataset.pt", map_location="cpu", weights_only=False)
+    assert "round_diagnostics" in dataset
+    assert dataset["round_diagnostics"]["collection/steps"] > 0.0
+    assert "collection/disagreement_rate" in dataset["round_diagnostics"]
+    assert "teacher_confidence" in dataset
 
     report_path = tmp_path / "learner_state_report.md"
     csv_path = tmp_path / "learner_state_report.csv"

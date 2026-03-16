@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 from dataclasses import dataclass
 from pathlib import Path
@@ -18,16 +19,18 @@ from psmn_rl.analysis.policy_distillation import (
     TeacherConfig,
     _best_sampled_mode,
     _capture_raw_obs,
-    _ce_loss,
+    _dataset_weights,
     _discover_run_dirs,
     _format_float,
     _load_model,
     _set_trainable_parameters,
     _stack_obs,
+    _student_loss,
     evaluate_modes,
 )
 from psmn_rl.config import dump_config, load_config
 from psmn_rl.envs.registry import make_eval_env, make_reset_seeds
+from psmn_rl.metrics import MetricAggregator, scalarize_metrics
 from psmn_rl.rl.distributed.ddp import detect_device
 from psmn_rl.rl.ppo.algorithm import _episode_successes, prepare_done, prepare_obs
 from psmn_rl.utils.io import get_git_commit, get_git_dirty
@@ -39,6 +42,14 @@ class LoopConfig:
     rounds: int = 4
     episodes_per_round: int = 64
     max_episodes_per_round: int = 96
+    aggregation: str = "append_all"
+    max_dataset_steps: int | None = None
+
+
+@dataclass(slots=True)
+class RoundCollection:
+    batch: DistillationBatch
+    diagnostics: dict[str, Any]
 
 
 @dataclass(slots=True)
@@ -67,6 +78,14 @@ def _load_spec(path: str | Path) -> LearnerStateSpec:
     )
 
 
+def _combine_optional_tensor(left: torch.Tensor | None, right: torch.Tensor | None) -> torch.Tensor | None:
+    if left is None:
+        return right
+    if right is None:
+        return left
+    return torch.cat([left, right], dim=0)
+
+
 def _concat_batches(left: DistillationBatch | None, right: DistillationBatch) -> DistillationBatch:
     if left is None:
         return right
@@ -79,12 +98,106 @@ def _concat_batches(left: DistillationBatch | None, right: DistillationBatch) ->
         actions=torch.cat([left.actions, right.actions], dim=0),
         teacher_logits=torch.cat([left.teacher_logits, right.teacher_logits], dim=0),
         weights=torch.cat([left.weights, right.weights], dim=0),
+        teacher_confidence=_combine_optional_tensor(left.teacher_confidence, right.teacher_confidence),
         accepted_episodes=left.accepted_episodes + right.accepted_episodes,
         episodes_seen=left.episodes_seen + right.episodes_seen,
-        steps=left.steps + right.steps,
+        steps=int(left.steps + right.steps),
         mean_return=float(np.mean([left.mean_return, right.mean_return])),
         mean_length=float(np.mean([left.mean_length, right.mean_length])),
     )
+
+
+def _slice_batch(batch: DistillationBatch, indices: torch.Tensor) -> DistillationBatch:
+    return DistillationBatch(
+        obs={key: value[indices] for key, value in batch.obs.items()},
+        actions=batch.actions[indices],
+        teacher_logits=batch.teacher_logits[indices],
+        weights=batch.weights[indices],
+        accepted_episodes=batch.accepted_episodes,
+        episodes_seen=batch.episodes_seen,
+        steps=int(indices.numel()),
+        mean_return=batch.mean_return,
+        mean_length=batch.mean_length,
+        teacher_confidence=batch.teacher_confidence[indices] if batch.teacher_confidence is not None else None,
+    )
+
+
+def _cap_recent_indices(total_steps: int, max_steps: int) -> torch.Tensor:
+    start = max(total_steps - max_steps, 0)
+    return torch.arange(start, total_steps, dtype=torch.long)
+
+
+def _cap_recent_balanced_indices(actions: torch.Tensor, max_steps: int) -> torch.Tensor:
+    action_count = int(actions.max().item()) + 1 if actions.numel() else 0
+    if action_count <= 0:
+        return torch.empty(0, dtype=torch.long)
+    quota = max(max_steps // action_count, 1)
+    kept: list[int] = []
+    per_action: dict[int, int] = {action: 0 for action in range(action_count)}
+    for index in range(actions.numel() - 1, -1, -1):
+        action = int(actions[index].item())
+        if per_action[action] >= quota:
+            continue
+        kept.append(index)
+        per_action[action] += 1
+        if len(kept) >= max_steps:
+            break
+    if len(kept) < max_steps:
+        seen = set(kept)
+        for index in range(actions.numel() - 1, -1, -1):
+            if index in seen:
+                continue
+            kept.append(index)
+            if len(kept) >= max_steps:
+                break
+    kept.sort()
+    return torch.as_tensor(kept, dtype=torch.long)
+
+
+def _apply_aggregation_policy(spec: LearnerStateSpec, batch: DistillationBatch) -> DistillationBatch:
+    if spec.loop.aggregation == "append_all" or spec.loop.max_dataset_steps is None:
+        batch.steps = int(batch.actions.numel())
+        return batch
+    max_steps = int(spec.loop.max_dataset_steps)
+    if batch.actions.numel() <= max_steps:
+        batch.steps = int(batch.actions.numel())
+        return batch
+    if spec.loop.aggregation == "cap_recent":
+        keep = _cap_recent_indices(int(batch.actions.numel()), max_steps)
+    elif spec.loop.aggregation == "cap_recent_balanced":
+        keep = _cap_recent_balanced_indices(batch.actions, max_steps)
+    else:
+        raise ValueError(f"unsupported aggregation mode: {spec.loop.aggregation}")
+    return _slice_batch(batch, keep)
+
+
+def _hash_raw_obs(obs_sample: dict[str, np.ndarray]) -> str:
+    digest = hashlib.sha1()
+    for key in sorted(obs_sample):
+        value = np.asarray(obs_sample[key])
+        digest.update(key.encode("utf-8"))
+        digest.update(value.shape.__repr__().encode("utf-8"))
+        digest.update(value.tobytes())
+    return digest.hexdigest()
+
+
+def _teacher_student_step_metrics(
+    teacher_logits: torch.Tensor,
+    teacher_action: torch.Tensor,
+    student_logits: torch.Tensor,
+    student_action: torch.Tensor,
+) -> dict[str, np.ndarray]:
+    teacher_probs = torch.softmax(teacher_logits, dim=-1)
+    student_probs = torch.softmax(student_logits, dim=-1)
+    teacher_top2 = torch.topk(teacher_logits, k=min(2, teacher_logits.size(-1)), dim=-1).values
+    return {
+        "teacher_confidence": teacher_probs.max(dim=-1).values.detach().cpu().numpy(),
+        "teacher_entropy": (-(teacher_probs.clamp_min(1e-8) * teacher_probs.clamp_min(1e-8).log()).sum(dim=-1)).detach().cpu().numpy(),
+        "teacher_margin": (teacher_top2[..., 0] - teacher_top2[..., 1] if teacher_top2.size(-1) > 1 else teacher_top2[..., 0]).detach().cpu().numpy(),
+        "student_confidence": student_probs.max(dim=-1).values.detach().cpu().numpy(),
+        "student_entropy": (-(student_probs.clamp_min(1e-8) * student_probs.clamp_min(1e-8).log()).sum(dim=-1)).detach().cpu().numpy(),
+        "teacher_student_disagreement": (teacher_action != student_action).float().detach().cpu().numpy(),
+    }
 
 
 def _collect_teacher_labels_for_student_states(
@@ -93,7 +206,7 @@ def _collect_teacher_labels_for_student_states(
     student: Any,
     device: torch.device,
     round_index: int,
-) -> DistillationBatch:
+) -> RoundCollection:
     env_config = load_config(spec.student.config)
     set_seed(env_config.seed + 30_000 + round_index, deterministic=env_config.system.deterministic)
     eval_env = make_eval_env(env_config.env, seed=env_config.seed + 300 + round_index, world_rank=0)
@@ -108,16 +221,32 @@ def _collect_teacher_labels_for_student_states(
     episode_obs: list[list[dict[str, np.ndarray]]] = [[] for _ in range(env_config.env.num_eval_envs)]
     episode_actions: list[list[int]] = [[] for _ in range(env_config.env.num_eval_envs)]
     episode_logits: list[list[np.ndarray]] = [[] for _ in range(env_config.env.num_eval_envs)]
+    episode_teacher_confidence: list[list[float]] = [[] for _ in range(env_config.env.num_eval_envs)]
+    episode_teacher_entropy: list[list[float]] = [[] for _ in range(env_config.env.num_eval_envs)]
+    episode_teacher_margin: list[list[float]] = [[] for _ in range(env_config.env.num_eval_envs)]
+    episode_student_confidence: list[list[float]] = [[] for _ in range(env_config.env.num_eval_envs)]
+    episode_student_entropy: list[list[float]] = [[] for _ in range(env_config.env.num_eval_envs)]
+    episode_disagreement: list[list[float]] = [[] for _ in range(env_config.env.num_eval_envs)]
     episode_returns = np.zeros(env_config.env.num_eval_envs, dtype=np.float32)
     episode_lengths = np.zeros(env_config.env.num_eval_envs, dtype=np.int32)
     collected_obs: list[dict[str, np.ndarray]] = []
     collected_actions: list[int] = []
     collected_logits: list[np.ndarray] = []
     collected_weights: list[float] = []
+    collected_teacher_confidence: list[float] = []
+    collected_teacher_entropy: list[float] = []
+    collected_teacher_margin: list[float] = []
+    collected_student_confidence: list[float] = []
+    collected_student_entropy: list[float] = []
+    collected_disagreements: list[float] = []
     collected_returns: list[float] = []
     collected_lengths: list[float] = []
+    collected_success_flags: list[float] = []
+    success_episode_disagreement: list[float] = []
+    failure_episode_disagreement: list[float] = []
     accepted_episodes = 0
     episodes_seen = 0
+    route_metrics = MetricAggregator()
 
     try:
         while accepted_episodes < spec.loop.episodes_per_round and episodes_seen < spec.loop.max_episodes_per_round:
@@ -134,6 +263,13 @@ def _collect_teacher_labels_for_student_states(
                 student_action = student_output.logits.argmax(dim=-1)
                 student_state = student_output.next_state
 
+            step_diag = _teacher_student_step_metrics(
+                teacher_output.logits,
+                teacher_action,
+                student_output.logits,
+                student_action,
+            )
+            route_metrics.update(student_output.metrics)
             teacher_action_np = teacher_action.detach().cpu().numpy()
             teacher_logits_np = teacher_output.logits.detach().cpu().numpy()
             student_action_np = student_action.detach().cpu().numpy()
@@ -142,10 +278,16 @@ def _collect_teacher_labels_for_student_states(
                 episode_obs[index].append({key: value[index].copy() for key, value in raw_obs.items()})
                 episode_actions[index].append(int(teacher_action_np[index]))
                 episode_logits[index].append(teacher_logits_np[index].copy())
+                episode_teacher_confidence[index].append(float(step_diag["teacher_confidence"][index]))
+                episode_teacher_entropy[index].append(float(step_diag["teacher_entropy"][index]))
+                episode_teacher_margin[index].append(float(step_diag["teacher_margin"][index]))
+                episode_student_confidence[index].append(float(step_diag["student_confidence"][index]))
+                episode_student_entropy[index].append(float(step_diag["student_entropy"][index]))
+                episode_disagreement[index].append(float(step_diag["teacher_student_disagreement"][index]))
 
             next_obs, reward, terminated, truncated, info = eval_env.step(student_action_np)
             done_np = np.logical_or(terminated, truncated)
-            _ = _episode_successes(reward, done_np, info)
+            step_success = _episode_successes(reward, done_np, info)
             episode_returns += reward
             episode_lengths += 1
 
@@ -157,13 +299,31 @@ def _collect_teacher_labels_for_student_states(
                 episode_return = float(episode_returns[index])
                 collected_returns.append(episode_return)
                 collected_lengths.append(float(episode_lengths[index]))
+                collected_success_flags.append(float(step_success[index]))
                 collected_obs.extend(episode_obs[index])
                 collected_actions.extend(episode_actions[index])
                 collected_logits.extend(episode_logits[index])
                 collected_weights.extend([episode_return] * len(episode_actions[index]))
+                collected_teacher_confidence.extend(episode_teacher_confidence[index])
+                collected_teacher_entropy.extend(episode_teacher_entropy[index])
+                collected_teacher_margin.extend(episode_teacher_margin[index])
+                collected_student_confidence.extend(episode_student_confidence[index])
+                collected_student_entropy.extend(episode_student_entropy[index])
+                collected_disagreements.extend(episode_disagreement[index])
+                mean_disagreement = float(np.mean(episode_disagreement[index])) if episode_disagreement[index] else 0.0
+                if step_success[index] > 0.0:
+                    success_episode_disagreement.append(mean_disagreement)
+                else:
+                    failure_episode_disagreement.append(mean_disagreement)
                 episode_obs[index].clear()
                 episode_actions[index].clear()
                 episode_logits[index].clear()
+                episode_teacher_confidence[index].clear()
+                episode_teacher_entropy[index].clear()
+                episode_teacher_margin[index].clear()
+                episode_student_confidence[index].clear()
+                episode_student_entropy[index].clear()
+                episode_disagreement[index].clear()
                 episode_returns[index] = 0.0
                 episode_lengths[index] = 0
 
@@ -174,17 +334,57 @@ def _collect_teacher_labels_for_student_states(
     finally:
         eval_env.close()
 
-    return DistillationBatch(
+    if not collected_obs:
+        raise RuntimeError("learner-state supervision collected no labeled states")
+
+    state_hashes = {_hash_raw_obs(sample) for sample in collected_obs}
+    action_count = int(max(collected_actions) + 1) if collected_actions else 0
+    action_hist = np.bincount(np.asarray(collected_actions, dtype=np.int64), minlength=action_count) if action_count > 0 else np.zeros(0, dtype=np.int64)
+    action_probs = action_hist.astype(np.float64)
+    if action_probs.sum() > 0:
+        action_probs = action_probs / action_probs.sum()
+        action_entropy = float(-(action_probs[action_probs > 0.0] * np.log(action_probs[action_probs > 0.0])).sum())
+    else:
+        action_entropy = 0.0
+
+    teacher_logits_t = torch.as_tensor(np.stack(collected_logits, axis=0), dtype=torch.float32)
+    batch = DistillationBatch(
         obs=_stack_obs(collected_obs),
         actions=torch.as_tensor(collected_actions, dtype=torch.long),
-        teacher_logits=torch.as_tensor(np.stack(collected_logits, axis=0), dtype=torch.float32),
+        teacher_logits=teacher_logits_t,
         weights=torch.as_tensor(collected_weights, dtype=torch.float32),
+        teacher_confidence=torch.as_tensor(collected_teacher_confidence, dtype=torch.float32),
         accepted_episodes=accepted_episodes,
         episodes_seen=episodes_seen,
         steps=len(collected_actions),
         mean_return=float(np.mean(collected_returns)) if collected_returns else 0.0,
         mean_length=float(np.mean(collected_lengths)) if collected_lengths else 0.0,
     )
+    diagnostics: dict[str, Any] = {
+        "collection/episodes_seen": float(episodes_seen),
+        "collection/accepted_episodes": float(accepted_episodes),
+        "collection/steps": float(batch.steps),
+        "collection/mean_return": float(np.mean(collected_returns)) if collected_returns else 0.0,
+        "collection/mean_length": float(np.mean(collected_lengths)) if collected_lengths else 0.0,
+        "collection/success_rate": float(np.mean(collected_success_flags)) if collected_success_flags else 0.0,
+        "collection/unique_state_count": float(len(state_hashes)),
+        "collection/unique_state_ratio": float(len(state_hashes) / max(len(collected_obs), 1)),
+        "collection/teacher_confidence_mean": float(np.mean(collected_teacher_confidence)) if collected_teacher_confidence else 0.0,
+        "collection/teacher_confidence_std": float(np.std(collected_teacher_confidence)) if collected_teacher_confidence else 0.0,
+        "collection/teacher_entropy_mean": float(np.mean(collected_teacher_entropy)) if collected_teacher_entropy else 0.0,
+        "collection/teacher_margin_mean": float(np.mean(collected_teacher_margin)) if collected_teacher_margin else 0.0,
+        "collection/student_confidence_mean": float(np.mean(collected_student_confidence)) if collected_student_confidence else 0.0,
+        "collection/student_entropy_mean": float(np.mean(collected_student_entropy)) if collected_student_entropy else 0.0,
+        "collection/disagreement_rate": float(np.mean(collected_disagreements)) if collected_disagreements else 0.0,
+        "collection/success_episode_disagreement": float(np.mean(success_episode_disagreement)) if success_episode_disagreement else None,
+        "collection/failure_episode_disagreement": float(np.mean(failure_episode_disagreement)) if failure_episode_disagreement else None,
+        "collection/action_entropy": action_entropy,
+    }
+    for action_index, count in enumerate(action_hist):
+        diagnostics[f"collection/action_count_{action_index}"] = float(count)
+        diagnostics[f"collection/action_frac_{action_index}"] = float(count / max(len(collected_actions), 1))
+    diagnostics.update({f"collection/{key}": value for key, value in route_metrics.compute().items()})
+    return RoundCollection(batch=batch, diagnostics=diagnostics)
 
 
 def _fine_tune_student(
@@ -201,10 +401,8 @@ def _fine_tune_student(
     )
     obs = {key: value.to(device) for key, value in dataset.obs.items()}
     actions = dataset.actions.to(device)
-    if spec.student.weighting == "return":
-        weights = dataset.weights.to(device)
-    else:
-        weights = torch.ones_like(dataset.weights, device=device)
+    teacher_logits = dataset.teacher_logits.to(device)
+    weights = _dataset_weights(spec.student, dataset, device)
     done = torch.zeros(actions.size(0), device=device, dtype=torch.bool)
     losses: list[float] = []
 
@@ -214,10 +412,17 @@ def _fine_tune_student(
             batch_index = indices[start : start + spec.student.batch_size]
             obs_batch = {key: value[batch_index] for key, value in obs.items()}
             action_batch = actions[batch_index]
+            teacher_logits_batch = teacher_logits[batch_index]
             done_batch = done[batch_index]
             weight_batch = weights[batch_index]
             output = student(obs_batch, state={}, done=done_batch)
-            loss = _ce_loss(output.logits, action_batch, weight_batch)
+            loss = _student_loss(
+                spec.student,
+                output.logits,
+                action_batch,
+                teacher_logits_batch,
+                weight_batch,
+            )
             optimizer.zero_grad(set_to_none=True)
             loss.backward()
             optimizer.step()
@@ -252,7 +457,10 @@ def _write_single_run_summary(
         "student_config": spec.student.config,
         "student_checkpoint": spec.student.checkpoint,
         "target": spec.student.target,
+        "loss": spec.student.loss,
         "weighting": spec.student.weighting,
+        "aggregation": spec.loop.aggregation,
+        "max_dataset_steps": spec.loop.max_dataset_steps,
         "before_greedy_success": float(before["greedy"].get("eval_success_rate", 0.0)),
         "before_best_sampled_mode": before_best_mode,
         "before_best_sampled_success": before_best_sampled,
@@ -271,12 +479,14 @@ def _write_single_run_summary(
         f"- teacher_variant: `{teacher_variant}`",
         f"- student_variant: `{student_variant}`",
         f"- target: `{spec.student.target}`",
+        f"- loss: `{spec.student.loss}`",
+        f"- aggregation: `{spec.loop.aggregation}`",
         f"- before_greedy_success: `{summary['before_greedy_success']:.3f}`",
         f"- best_round_greedy_success: `{summary['best_round_greedy_success']:.3f}`",
         f"- final_greedy_success: `{summary['final_greedy_success']:.3f}`",
         "",
-        "| Round | Added Episodes | Aggregate Steps | After Greedy | After Best Sampled | Loss Mean |",
-        "| --- | ---: | ---: | ---: | ---: | ---: |",
+        "| Round | Added Episodes | Added Steps | Aggregate Steps | After Greedy | After Best Sampled | Disagreement | Teacher Conf | Unique Ratio | Loss Mean |",
+        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
     for row in rounds:
         lines.append(
@@ -285,9 +495,13 @@ def _write_single_run_summary(
                 [
                     str(int(row["round"])),
                     str(int(row["added_episodes"])),
+                    str(int(row["added_steps"])),
                     str(int(row["aggregate_steps"])),
                     f"{row['after_greedy_success']:.3f}",
                     f"{row['after_best_sampled_success']:.3f}",
+                    f"{row['collection/disagreement_rate']:.3f}",
+                    f"{row['collection/teacher_confidence_mean']:.3f}",
+                    f"{row['collection/unique_state_ratio']:.3f}",
                     f"{row['fine_tune/loss_mean']:.3f}",
                 ]
             )
@@ -302,8 +516,8 @@ def _build_report(rows: list[dict[str, Any]]) -> str:
         "",
         "## Summary",
         "",
-        "| Run | Teacher | Student | Target | Before Greedy | Best Round Greedy | Final Greedy | Best Sampled After | Rounds |",
-        "| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: |",
+        "| Run | Teacher | Student | Target | Loss | Aggregation | Before Greedy | Best Round Greedy | Final Greedy | Best Sampled After | Rounds |",
+        "| --- | --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: |",
     ]
     for row in sorted(rows, key=lambda item: (str(item["student_variant"]), str(item["teacher_variant"]))):
         lines.append(
@@ -314,6 +528,8 @@ def _build_report(rows: list[dict[str, Any]]) -> str:
                     str(row["teacher_variant"]),
                     str(row["student_variant"]),
                     str(row["target"]),
+                    str(row.get("loss", "ce")),
+                    str(row.get("aggregation", "append_all")),
                     _format_float(row["before_greedy_success"]),
                     _format_float(row["best_round_greedy_success"]),
                     _format_float(row["final_greedy_success"]),
@@ -328,7 +544,8 @@ def _build_report(rows: list[dict[str, Any]]) -> str:
         lines.append(
             f"- `{row['run_name']}` uses learner-state supervision from `{row['teacher_variant']}` into `{row['student_variant']}`, "
             f"moving greedy success from `{row['before_greedy_success']:.3f}` to best-round `{row['best_round_greedy_success']:.3f}` "
-            f"and final `{row['final_greedy_success']:.3f}`."
+            f"and final `{row['final_greedy_success']:.3f}` with loss `{row.get('loss', 'ce')}` "
+            f"and aggregation `{row.get('aggregation', 'append_all')}`."
         )
     return "\n".join(lines) + "\n"
 
@@ -350,14 +567,15 @@ def run_once(args: argparse.Namespace) -> None:
     aggregate: DistillationBatch | None = None
     round_rows: list[dict[str, Any]] = []
     for round_index in range(1, spec.loop.rounds + 1):
-        round_batch = _collect_teacher_labels_for_student_states(
+        round_collection = _collect_teacher_labels_for_student_states(
             spec=spec,
             teacher=teacher,
             student=student,
             device=detect_device(args.device),
             round_index=round_index,
         )
-        aggregate = _concat_batches(aggregate, round_batch)
+        round_batch = round_collection.batch
+        aggregate = _apply_aggregation_policy(spec, _concat_batches(aggregate, round_batch))
         fine_tune_metrics = _fine_tune_student(
             spec=spec,
             student=student,
@@ -375,7 +593,12 @@ def run_once(args: argparse.Namespace) -> None:
             "after_greedy_return": float(after["greedy"].get("eval_return", 0.0)),
             "after_best_sampled_mode": after_best_mode,
             "after_best_sampled_success": after_best_sampled,
+            "loss": spec.student.loss,
+            "aggregation": spec.loop.aggregation,
+            "target": spec.student.target,
+            "weighting": spec.student.weighting,
             **fine_tune_metrics,
+            **round_collection.diagnostics,
         }
         round_rows.append(round_row)
         torch.save(
@@ -384,11 +607,13 @@ def run_once(args: argparse.Namespace) -> None:
                 "actions": aggregate.actions,
                 "teacher_logits": aggregate.teacher_logits,
                 "weights": aggregate.weights,
+                "teacher_confidence": aggregate.teacher_confidence,
                 "accepted_episodes": aggregate.accepted_episodes,
                 "episodes_seen": aggregate.episodes_seen,
                 "steps": aggregate.steps,
                 "mean_return": aggregate.mean_return,
                 "mean_length": aggregate.mean_length,
+                "round_diagnostics": round_collection.diagnostics,
             },
             output_dir / f"round_{round_index:02d}_dataset.pt",
         )
@@ -397,7 +622,11 @@ def run_once(args: argparse.Namespace) -> None:
         checkpoint["learner_state_supervision"] = {
             "round": round_index,
             "target": spec.student.target,
+            "loss": spec.student.loss,
+            "aggregation": spec.loop.aggregation,
+            "weighting": spec.student.weighting,
             **fine_tune_metrics,
+            **round_collection.diagnostics,
         }
         torch.save(checkpoint, output_dir / f"round_{round_index:02d}.pt")
 

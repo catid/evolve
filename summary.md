@@ -1,8 +1,9 @@
 # Current Summary
 
-- `flat_dense` remains the strongest verified greedy DoorKey control.
-- `token_dense` with `ppo.ent_coef=0.001` remains the canonical recovered tokenized DoorKey control.
-- The offline teacher-distillation path was negative for both tokenized and routed students: it improved sampled behavior but never recovered greedy DoorKey behavior. See [policy_distillation_report.md](outputs/reports/policy_distillation_report.md).
-- Learner-state supervision from a `flat_dense` teacher partially recovered greedy `SARE`, reaching seed-level greedy success `0.5`, `1.0`, and `0.0` across the 3-seed check. See [teacher_extraction_multiseed_report.md](outputs/reports/teacher_extraction_multiseed_report.md).
-- The strongest recovered `SARE` seed retained meaningful routing rather than collapsing into an obvious dense shortcut. See [distilled_route_integrity_best_seed_report.md](outputs/reports/distilled_route_integrity_best_seed_report.md).
-- Current recommendation: pause routed greedy-performance claims on DoorKey. The teacher-guided `SARE` gain is real but not robust enough to reopen a routed win. See [teacher_extraction_decision_memo.md](outputs/reports/teacher_extraction_decision_memo.md).
+- `flat_dense` remains the strongest greedy DoorKey control.
+- recovered `token_dense` with `ppo.ent_coef=0.001` remains the canonical tokenized control.
+- PPO-only `SARE` is still negative on greedy DoorKey.
+- The current reopened routed result is narrower: teacher-logit KL learner-state supervision for `SARE` now passes the external 3-seed `64`-episode gate on DoorKey. See [lss_robustness_multiseed_report.md](outputs/reports/lss_robustness_multiseed_report.md).
+- The winning bounded method is `kl` teacher targets with `append_all` aggregation; capped replay variants were negative. See [lss_robustness_sweep_report.md](outputs/reports/lss_robustness_sweep_report.md).
+- On the revived seed `19`, routing remains meaningful rather than collapsing into a dense shortcut. See [lss_route_integrity_report.md](outputs/reports/lss_route_integrity_report.md).
+- The current repo recommendation is to continue routed work on DoorKey only under this teacher-guided extraction claim, not as a PPO-alone routed win. See [lss_robustness_decision_memo.md](outputs/reports/lss_robustness_decision_memo.md).
