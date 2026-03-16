@@ -1,110 +1,124 @@
-# DoorKey Greedy-Recovery Report
+# DoorKey Teacher-Extraction Report
 
 ## Current Conclusion
 
-- `flat_dense` remains the strongest verified greedy DoorKey control.
+- `flat_dense` remains the strongest and most stable verified greedy DoorKey control.
 - `token_dense` with `ppo.ent_coef=0.001` remains the canonical recovered tokenized DoorKey control.
-- `single_expert` and `SARE` remain sampled-competent but greedy-failing on DoorKey.
-- The bounded architecture-neutral recovery campaign is now complete:
-  - checkpoint selection did not reveal any missed good greedy checkpoint
-  - entropy schedules did not recover greedy `single_expert` or greedy `SARE`
-  - self-imitation from successful sampled trajectories did not recover greedy `single_expert` or greedy `SARE`
-- Current repo recommendation: stop routed work for greedy-policy claims on DoorKey unless a new, separately justified extraction method is proposed.
+- The bounded teacher-guided extraction phase is now complete:
+  - offline policy distillation did not recover greedy `token_dense` or greedy `SARE`
+  - learner-state supervision from a `flat_dense` teacher materially improved greedy `SARE`
+  - the best recovered `SARE` seed retained non-collapsed routing
+  - the recovery did not pass a 3-seed robustness check
+- Current repo recommendation: pause routed greedy-policy claims on DoorKey. If work continues, it should be framed as an extraction-method project rather than as evidence that routed PPO is competitive by itself.
 
-## Baseline And Reproduction
+## Reproduced Baseline
 
 Source artifacts:
 
-- [greedy_recovery_reproduction_note.md](outputs/reports/greedy_recovery_reproduction_note.md)
-- [outputs/experiments/sare_retest/report.md](outputs/experiments/sare_retest/report.md)
+- [teacher_extraction_reproduction_note.md](outputs/reports/teacher_extraction_reproduction_note.md)
+- [outputs/reproductions/teacher_extraction_baseline/report.md](outputs/reproductions/teacher_extraction_baseline/report.md)
 
-Current reproduced DoorKey baseline:
+The accepted teacher-extraction starting point was reproduced on the current experiment lane with `seed=7`, `world_size=4`, and greedy plus sampled evaluation:
 
 | Variant | Greedy Success | Best Sampled Success | Train Return |
 | --- | ---: | ---: | ---: |
 | `flat_dense` | `1.000` | `1.000` | `0.960` |
 | recovered `token_dense` | `0.750` | `1.000` | `0.942` |
-| `single_expert` | `0.000` | `0.750` | `0.291` |
 | `SARE` | `0.000` | `1.000` | `0.744` |
 
-This is the accepted starting point for the greedy-recovery phase.
+That reproduction was close enough to the published artifacts to justify forward work.
 
-## Why The Gap Exists
+## Prior Negative Recovery Families Still Stand
 
 Source artifacts:
 
-- [policy_extraction_report.md](outputs/reports/policy_extraction_report.md)
-- [tokenization_gap_report.md](outputs/reports/tokenization_gap_report.md)
+- [checkpoint_dynamics_report.md](outputs/reports/checkpoint_dynamics_report.md)
+- [entropy_schedule_report.md](outputs/reports/entropy_schedule_report.md)
+- [self_imitation_report.md](outputs/reports/self_imitation_report.md)
 
-The control decomposition is unchanged:
+The previous no-go result is still valid:
 
-- `flat_dense` learns a sharp greedy policy.
-- original `token_dense` was genuinely weak under partial observation, not just badly extracted.
-- `single_expert` and `SARE` already contain strong sampled policies, but their greedy action ordering stays wrong.
+- checkpoint selection never revealed a good greedy `SARE` checkpoint
+- bounded entropy schedules preserved sampled competence but did not recover greedy `SARE`
+- self-imitation from successful sampled trajectories did not recover greedy `SARE`
 
-That is why this phase focused on checkpoint choice, entropy schedules, and self-imitation rather than new routed architectures.
+That left teacher-guided extraction as the next clean capacity-vs-training-path discriminator.
 
-## Checkpoint Dynamics
+## Offline Policy Distillation
 
-Source artifact: [checkpoint_dynamics_report.md](outputs/reports/checkpoint_dynamics_report.md)
+Source artifact: [policy_distillation_report.md](outputs/reports/policy_distillation_report.md)
 
-Result:
+The minimal offline teacher-distillation path was negative for greedy recovery.
 
-- `SARE` never shows a nonzero greedy checkpoint anywhere in the archived DoorKey series.
-- `single_expert` never shows a nonzero greedy checkpoint anywhere in the archived DoorKey series.
-- sampled-good checkpoints and greedy-good checkpoints do not merely diverge; the greedy-good checkpoints do not appear at all in the tested training traces.
+Key result:
 
-This rules out “we just picked the wrong checkpoint” as the main explanation.
-
-## Entropy Schedules
-
-Source artifact: [entropy_schedule_report.md](outputs/reports/entropy_schedule_report.md)
-
-Best bounded schedules:
-
-| Variant | Best Schedule | Greedy Success | Best Sampled Success |
-| --- | --- | ---: | ---: |
-| `single_expert` | `late_linear:0.01->0.001@0.75` | `0.000` | `1.000` |
-| `SARE` | `late_linear:0.01->0.001@0.75` | `0.000` | `1.000` |
+- `flat_dense -> token_dense`: even full-model distillation raised best sampled success from `0.125` to `0.969`, but greedy success stayed `0.000`
+- `flat_dense -> SARE`: head-only, last-shared, and full-model distillation all preserved strong sampled behavior, but greedy success stayed `0.000`
+- `token_dense -> SARE`: sampled behavior stayed strong, but greedy success also stayed `0.000`
 
 Interpretation:
 
-- simple entropy schedules can preserve or improve sampled competence
-- they do not recover a usable greedy DoorKey policy for either `single_expert` or `SARE`
-- large action margins alone are not enough; some schedules produce sharper wrong argmax decisions
+- offline teacher data alone is not enough to recover greedy action ordering in this repo
+- the failure is not unique to `SARE`; the same offline path also failed for the tokenized student sanity check
 
-So greedy recovery is not mainly an entropy-schedule problem in this repo.
+## Learner-State Supervision
 
-## Self-Imitation
+Source artifacts:
 
-Source artifact: [self_imitation_report.md](outputs/reports/self_imitation_report.md)
+- [learner_state_supervision_report.md](outputs/reports/learner_state_supervision_report.md)
+- [teacher_extraction_sare_compare_64.md](outputs/reports/teacher_extraction_sare_compare_64.md)
 
-Tested matrix:
+The bounded learner-state supervision loop produced the first real positive routed signal:
 
-- teacher mode: sampled `t=1.0`
-- targets: `policy_head`, `policy_head_plus_last_shared`
-- weightings: `uniform`, `return`
+- `flat_dense -> token_dense` remained at greedy success `0.000`
+- `flat_dense -> SARE` moved from greedy success `0.000` to `0.500` on the original seed-7 lane
+- the recovered seed-7 `SARE` became a sharp policy, not merely a softer sampled policy:
+  - greedy max action probability rose from `0.4177` to `0.9920`
+  - greedy top-1 vs top-2 margin rose from `0.4066` to `9.2367`
 
-Result:
+This is evidence that the routed student can represent a competent greedy DoorKey policy under stronger teacher supervision, at least on some seeds.
 
-- every `SARE` self-imitation run stayed at greedy success `0.000`
-- every `single_expert` self-imitation run stayed at greedy success `0.000`
-- sampled competence was mostly preserved, but greedy extraction did not improve
+## Route Integrity
 
-This rules out the simplest successful-trajectory distillation path as a practical greedy recovery method for the current routed policies.
+Source artifacts:
 
-## Stop Condition
+- [distilled_route_integrity_report.md](outputs/reports/distilled_route_integrity_report.md)
+- [distilled_route_integrity_best_seed_report.md](outputs/reports/distilled_route_integrity_best_seed_report.md)
 
-The campaign hit the memo’s stop condition:
+The positive learner-state `SARE` result did not look like obvious route collapse.
 
-- no bounded architecture-neutral sharpening family materially improved greedy `SARE`
+On the strongest recovered seed:
 
-Because checkpoint selection, entropy schedules, and self-imitation all failed to recover greedy `SARE`, the optional margin-regularization probe and KeyCorridor transfer check were not run. That would have expanded scope after the repo had already reached a clean no-go answer for the current DoorKey question.
+- baseline PPO `SARE`: greedy success `0.000`, route entropy `1.3832`, active compute `0.5000`
+- learner-state supervised `SARE`: greedy success `1.000`, route entropy `1.3383`, active compute `0.5000`
+
+Expert usage stayed distributed across all four experts, and active compute did not increase. So the best recovered policy still meaningfully used routing.
+
+## Multi-Seed Validation
+
+Source artifact: [teacher_extraction_multiseed_report.md](outputs/reports/teacher_extraction_multiseed_report.md)
+
+The conditional positive signal did not survive cleanly as a robust method win.
+
+Under a consistent 64-episode external evaluation:
+
+| Seed | recovered `token_dense` | baseline `SARE` | learner-state `SARE` |
+| --- | ---: | ---: | ---: |
+| `7` | `0.703` | `0.000` | `0.500` |
+| `11` | `0.000` | `0.000` | `1.000` |
+| `19` | `1.000` | `0.000` | `0.000` |
+
+Interpretation:
+
+- learner-state supervision clearly beats baseline PPO `SARE`
+- but the method is not reliable enough to reopen a routed greedy claim
+- it helps strongly on two seeds and fails completely on one seed
+- the recovered `token_dense` control is also seed-sensitive, but the routed result still does not meet a clean robustness bar
 
 ## Recommendation
 
 - Keep `flat_dense` as the strongest verified greedy DoorKey control.
 - Keep `token_dense` with `ppo.ent_coef=0.001` as the canonical recovered tokenized control.
-- Treat current `single_expert` and `SARE` DoorKey policies as sampled-competent but not greedily recoverable under the bounded, architecture-neutral methods tested here.
-- Pause or stop routed work for greedy-policy claims in this repo.
-- If work continues at all, it should be framed as a new extraction-method project, not as evidence that current routed models are close to a greedy win.
+- Treat learner-state supervision as evidence that `SARE` capacity is not the whole problem: the routed student can represent a strong greedy DoorKey policy under some teacher-guided conditions.
+- Do not reopen routed greedy-performance claims from this repo on the basis of the current teacher-guided result, because the multi-seed check is not robust enough.
+- If work continues, treat it as a bounded extraction-method project with multi-seed validation as a hard gate.

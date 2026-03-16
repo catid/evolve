@@ -140,23 +140,25 @@ Compare greedy and sampled evaluation for a checkpoint:
   16
 ```
 
-Current high-level findings are summarized in `summary.md`, `report.md`, and `overfit_report.md` at the repo root.
+Current high-level findings are summarized in `summary.md` and `report.md` at the repo root, with detailed phase artifacts under `outputs/reports/`.
 
 ## Current DoorKey Result
 
-The current repo conclusion is control-first and negative on routed claims:
+The current repo conclusion is still control-first, but the story has moved from pure routed-no-go to teacher-guided extraction:
 
 - `flat_dense` remains the best verified greedy DoorKey control.
-- The original tokenized DoorKey gap was split between a weak `token_dense` control and softer greedy extraction in `single_expert` / `SARE`.
-- The smallest successful recovery was `token_dense` with `ppo.ent_coef=0.001`.
-- Under that recovered setting, `token_dense` reaches greedy DoorKey success `0.75`.
-- A fair matched `SARE` rerun on the same setting still has greedy DoorKey success `0.0`.
+- `token_dense` with `ppo.ent_coef=0.001` remains the canonical recovered tokenized control.
+- Offline teacher distillation did not recover greedy DoorKey behavior for either tokenized students or `SARE`.
+- Learner-state supervision from a `flat_dense` teacher did recover greedy `SARE` on some seeds.
+- That positive routed signal did not survive the small multi-seed robustness check, so routed greedy-performance claims remain paused.
 
-Canonical reports for this phase:
+Canonical reports for the current phase:
 
-- `outputs/reports/reproduction_note.md`
-- `outputs/reports/policy_extraction_report.md`
-- `outputs/reports/tokenization_gap_report.md`
+- `outputs/reports/teacher_extraction_reproduction_note.md`
+- `outputs/reports/policy_distillation_report.md`
+- `outputs/reports/learner_state_supervision_report.md`
+- `outputs/reports/teacher_extraction_multiseed_report.md`
+- `outputs/reports/teacher_extraction_decision_memo.md`
 
 ## Repository Layout
 

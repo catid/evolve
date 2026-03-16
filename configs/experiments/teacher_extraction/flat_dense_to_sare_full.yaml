@@ -1,0 +1,22 @@
+name: flat_dense_to_sare_full
+output_dir: outputs/experiments/teacher_extraction/offline_distillation/flat_dense_to_sare_full
+teacher:
+  config: configs/experiments/minigrid_doorkey_flat_dense_ent1e3.yaml
+  checkpoint: outputs/reproductions/teacher_extraction_baseline/minigrid_doorkey_flat_dense_ent1e3/latest.pt
+  greedy: true
+  temperature: 1.0
+student:
+  config: configs/experiments/minigrid_doorkey_sare_ent1e3.yaml
+  checkpoint: outputs/reproductions/teacher_extraction_baseline/minigrid_doorkey_sare_ent1e3/latest.pt
+  target: full_model
+  loss: ce
+  weighting: uniform
+  learning_rate: 0.0001
+  batch_size: 128
+  epochs: 8
+harvest:
+  success_only: true
+  target_episodes: 64
+  max_episodes: 256
+evaluation:
+  episodes: 32

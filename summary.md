@@ -1,10 +1,8 @@
 # Current Summary
 
-- `flat_dense` is still the best verified greedy DoorKey control.
+- `flat_dense` remains the strongest verified greedy DoorKey control.
 - `token_dense` with `ppo.ent_coef=0.001` remains the canonical recovered tokenized DoorKey control.
-- `single_expert` and `SARE` remain sampled-competent but greedy-failing on DoorKey.
-- The bounded greedy-recovery campaign is now complete:
-  - checkpoint dynamics found no missed good greedy checkpoint
-  - entropy schedules found no nonzero greedy recovery
-  - self-imitation from successful sampled trajectories found no nonzero greedy recovery
-- Current recommendation: stop routed work for greedy-policy claims on DoorKey in this repo unless a new extraction method is justified as a separate project.
+- The offline teacher-distillation path was negative for both tokenized and routed students: it improved sampled behavior but never recovered greedy DoorKey behavior. See [policy_distillation_report.md](outputs/reports/policy_distillation_report.md).
+- Learner-state supervision from a `flat_dense` teacher partially recovered greedy `SARE`, reaching seed-level greedy success `0.5`, `1.0`, and `0.0` across the 3-seed check. See [teacher_extraction_multiseed_report.md](outputs/reports/teacher_extraction_multiseed_report.md).
+- The strongest recovered `SARE` seed retained meaningful routing rather than collapsing into an obvious dense shortcut. See [distilled_route_integrity_best_seed_report.md](outputs/reports/distilled_route_integrity_best_seed_report.md).
+- Current recommendation: pause routed greedy-performance claims on DoorKey. The teacher-guided `SARE` gain is real but not robust enough to reopen a routed win. See [teacher_extraction_decision_memo.md](outputs/reports/teacher_extraction_decision_memo.md).

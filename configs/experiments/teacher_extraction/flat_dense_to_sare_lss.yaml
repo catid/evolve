@@ -1,0 +1,22 @@
+name: flat_dense_to_sare_lss
+output_dir: outputs/experiments/teacher_extraction/learner_state/flat_dense_to_sare_lss
+teacher:
+  config: configs/experiments/minigrid_doorkey_flat_dense_ent1e3.yaml
+  checkpoint: outputs/reproductions/teacher_extraction_baseline/minigrid_doorkey_flat_dense_ent1e3/latest.pt
+  greedy: true
+  temperature: 1.0
+student:
+  config: configs/experiments/minigrid_doorkey_sare_ent1e3.yaml
+  checkpoint: outputs/reproductions/teacher_extraction_baseline/minigrid_doorkey_sare_ent1e3/latest.pt
+  target: policy_head_plus_last_shared
+  loss: ce
+  weighting: uniform
+  learning_rate: 0.0001
+  batch_size: 128
+  epochs: 4
+loop:
+  rounds: 4
+  episodes_per_round: 64
+  max_episodes_per_round: 96
+evaluation:
+  episodes: 32
