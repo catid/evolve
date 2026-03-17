@@ -1,0 +1,171 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [
+      [
+        "original",
+        7
+      ],
+      [
+        "original",
+        11
+      ],
+      [
+        "original",
+        19
+      ]
+    ],
+    "retry_block_lane_seeds": [
+      [
+        "original",
+        7
+      ],
+      [
+        "original",
+        11
+      ],
+      [
+        "original",
+        19
+      ]
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "outputs/reports/historical_candidate_packs/lss_robustness_multiseed/artifacts/candidate_summary.md",
+      "role": "candidate_summary_markdown",
+      "sha256": "4978866fc89f33b56dc833f7f1b6aee75480c3c88309c75de03c31dfac5f12b6",
+      "size_bytes": 833
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/lss_robustness_multiseed/artifacts/candidate_metrics.json",
+      "role": "candidate_metrics_json",
+      "sha256": "7b70e33f56993eaa497a4cd5e51d8886abc59665ee1ce7b510275ea66c761969",
+      "size_bytes": 2672
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/lss_robustness_multiseed/artifacts/combined_report.md",
+      "role": "combined_report_markdown",
+      "sha256": "856fdb44b1aed0ecde4c66cb243d25e5a92a40bdaf1844b93134dfe390a6683c",
+      "size_bytes": 506
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/lss_robustness_multiseed/artifacts/combined_report.csv",
+      "role": "combined_report_csv",
+      "sha256": "06f48a11468f9573375cb9874e08b341319e3a555a980b8b37b8ea9599a1fb59",
+      "size_bytes": 219
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/lss_robustness_multiseed/artifacts/retry_block_report.md",
+      "role": "retry_block_report_markdown",
+      "sha256": "63f087b1a99235f387737490541f6eb94c2ce5b746daf4c05eebdefaa08341fa",
+      "size_bytes": 509
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/lss_robustness_multiseed/artifacts/retry_block_report.csv",
+      "role": "retry_block_report_csv",
+      "sha256": "06f48a11468f9573375cb9874e08b341319e3a555a980b8b37b8ea9599a1fb59",
+      "size_bytes": 219
+    }
+  ],
+  "candidate_name": "lss_robustness_multiseed",
+  "controls_present": [
+    "recovered_token_dense",
+    "baseline_sare",
+    "kl_lss_sare"
+  ],
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "external_policy_diagnostics"
+  },
+  "frozen_pack_reference": {
+    "claim_id": "doorkey_frozen_claim",
+    "path": "outputs/reports/frozen_benchmark_pack.json",
+    "sha256": "21f69b44b2a1567f6432e0ec2a0f5dce2c4f74ea256196d865fbdf384580a873"
+  },
+  "historical_context": {
+    "description": "Reopened 3-seed learner-state supervision lane before matched-control hardening.",
+    "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+    "family": "Learner-state supervision",
+    "ledger_family": "Learner-state supervision",
+    "rationale": "The reopened 3-seed result still predates the modern matched-control and retry-block requirements."
+  },
+  "metrics": {
+    "combined": {
+      "baseline_sare": {
+        "complete_seed_failures": 3,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "flat_dense": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 0.7135416666666666,
+        "min": 0.5625,
+        "seed_count": 3
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.5677083333333334,
+        "min": 0.0,
+        "seed_count": 3
+      }
+    },
+    "retry_block": {
+      "baseline_sare": {
+        "complete_seed_failures": 3,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "flat_dense": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 0.7135416666666666,
+        "min": 0.5625,
+        "seed_count": 3
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.5677083333333334,
+        "min": 0.0,
+        "seed_count": 3
+      }
+    }
+  },
+  "pack_type": "candidate_result_pack",
+  "provenance": {
+    "git_commit": "8d691d69559de8e2aba18481bebcb7151ac15d84",
+    "git_dirty": true,
+    "historical_phase": "Reopened 3-seed learner-state supervision lane before matched-control hardening.",
+    "historical_status": "bounded positive",
+    "provenance_note": "This is the reopened positive DoorKey lane that later required matched controls and a final-block freeze check.",
+    "source_reports": [
+      "outputs/reports/lss_robustness_multiseed_report.md",
+      "outputs/reports/lss_robustness_multiseed_report.csv"
+    ]
+  },
+  "requested_claims": [
+    "bounded_teacher_guided_doorkey_sare"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

@@ -1,0 +1,176 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [
+      [
+        "fresh",
+        23
+      ],
+      [
+        "fresh",
+        29
+      ],
+      [
+        "fresh",
+        31
+      ],
+      [
+        "fresh_extra",
+        37
+      ],
+      [
+        "fresh_extra",
+        41
+      ],
+      [
+        "fresh_extra",
+        43
+      ],
+      [
+        "fresh_final",
+        47
+      ],
+      [
+        "fresh_final",
+        53
+      ],
+      [
+        "fresh_final",
+        59
+      ],
+      [
+        "original",
+        7
+      ],
+      [
+        "original",
+        11
+      ],
+      [
+        "original",
+        19
+      ]
+    ],
+    "retry_block_lane_seeds": [
+      [
+        "fresh_final",
+        47
+      ],
+      [
+        "fresh_final",
+        53
+      ],
+      [
+        "fresh_final",
+        59
+      ]
+    ]
+  },
+  "candidate_name": "forensic_atlas",
+  "controls_present": [
+    "recovered_token_dense",
+    "kl_lss_token_dense",
+    "kl_lss_single_expert",
+    "baseline_sare",
+    "kl_lss_sare"
+  ],
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "external_policy_diagnostics"
+  },
+  "metrics": {
+    "combined": {
+      "baseline_sare": {
+        "complete_seed_failures": 12,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.7122395833333334,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "kl_lss_single_expert": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.6861979166666666,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 4,
+        "max": 1.0,
+        "mean": 0.6354166666666666,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 5,
+        "max": 1.0,
+        "mean": 0.55859375,
+        "min": 0.0,
+        "seed_count": 12
+      }
+    },
+    "retry_block": {
+      "baseline_sare": {
+        "complete_seed_failures": 3,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 1,
+        "max": 0.515625,
+        "mean": 0.3125,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "kl_lss_single_expert": {
+        "complete_seed_failures": 0,
+        "max": 0.515625,
+        "mean": 0.4635416666666667,
+        "min": 0.421875,
+        "seed_count": 3
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3
+      }
+    }
+  },
+  "provenance": {
+    "git_commit": "8d691d69559de8e2aba18481bebcb7151ac15d84",
+    "git_dirty": true,
+    "historical_phase": "Deep forensic atlas after resume-gate closure.",
+    "historical_status": "frozen",
+    "provenance_note": "This phase changes the mechanism diagnosis, not the frozen candidate metrics or the thaw bar.",
+    "source_reports": [
+      "outputs/reports/lss_forensic_casebook.md",
+      "outputs/reports/lss_forensic_round_audit.md",
+      "outputs/reports/lss_forensic_route_locality.md",
+      "outputs/reports/lss_forensic_atlas_decision_memo.md",
+      "outputs/reports/lss_final_block_single_expert_control_report.md",
+      "outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.md"
+    ]
+  },
+  "requested_claims": [
+    "bounded_teacher_guided_doorkey_sare"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

@@ -1,0 +1,49 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [],
+    "retry_block_lane_seeds": []
+  },
+  "candidate_name": "self_imitation",
+  "controls_present": [
+    "baseline_sare"
+  ],
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "self_imitation_finetune"
+  },
+  "metrics": {
+    "combined": {
+      "baseline_sare": {
+        "complete_seed_failures": 4,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 4
+      },
+      "single_expert": {
+        "complete_seed_failures": 4,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 4
+      }
+    },
+    "retry_block": {}
+  },
+  "provenance": {
+    "git_commit": "8d691d69559de8e2aba18481bebcb7151ac15d84",
+    "git_dirty": true,
+    "historical_phase": "Post-hoc self-imitation fine-tuning for DoorKey routed students.",
+    "historical_status": "negative",
+    "provenance_note": "The report summarizes before/after greedy and sampled behavior, not a canonical external-64 structured comparison pack.",
+    "source_reports": [
+      "outputs/reports/self_imitation_report.md",
+      "outputs/reports/self_imitation_report.csv"
+    ]
+  },
+  "requested_claims": [
+    "historical_recovery_probe"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

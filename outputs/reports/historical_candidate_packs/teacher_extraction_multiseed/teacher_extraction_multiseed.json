@@ -1,0 +1,157 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [
+      [
+        "original",
+        7
+      ],
+      [
+        "original",
+        11
+      ],
+      [
+        "original",
+        19
+      ]
+    ],
+    "retry_block_lane_seeds": [
+      [
+        "original",
+        7
+      ],
+      [
+        "original",
+        11
+      ],
+      [
+        "original",
+        19
+      ]
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "outputs/reports/historical_candidate_packs/teacher_extraction_multiseed/artifacts/candidate_summary.md",
+      "role": "candidate_summary_markdown",
+      "sha256": "2c028728d3e54dec8619d2a7ebf137bfeb7538384e1b4863ced116e3c3c9d2c7",
+      "size_bytes": 865
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/teacher_extraction_multiseed/artifacts/candidate_metrics.json",
+      "role": "candidate_metrics_json",
+      "sha256": "28cd72d7b73a306e7ad3eb1812a4bda642573e61f1aeb46c39cc99787c7ef2db",
+      "size_bytes": 2326
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/teacher_extraction_multiseed/artifacts/combined_report.md",
+      "role": "combined_report_markdown",
+      "sha256": "a54bb69986b0b3336608adebfcea341f77c52a95e1008848d0f965e591421485",
+      "size_bytes": 448
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/teacher_extraction_multiseed/artifacts/combined_report.csv",
+      "role": "combined_report_csv",
+      "sha256": "1baaa8ffba37bfe3cba76a682f3986edb8d09d6ef36d405796b3b1b76870dfb4",
+      "size_bytes": 182
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/teacher_extraction_multiseed/artifacts/retry_block_report.md",
+      "role": "retry_block_report_markdown",
+      "sha256": "89572f9cece95ebe062a92b902cf68f521a99a958e962486f973fe5449feb311",
+      "size_bytes": 451
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/teacher_extraction_multiseed/artifacts/retry_block_report.csv",
+      "role": "retry_block_report_csv",
+      "sha256": "1baaa8ffba37bfe3cba76a682f3986edb8d09d6ef36d405796b3b1b76870dfb4",
+      "size_bytes": 182
+    }
+  ],
+  "candidate_name": "teacher_extraction_multiseed",
+  "controls_present": [
+    "recovered_token_dense",
+    "baseline_sare",
+    "kl_lss_sare"
+  ],
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "external_policy_diagnostics"
+  },
+  "frozen_pack_reference": {
+    "claim_id": "doorkey_frozen_claim",
+    "path": "outputs/reports/frozen_benchmark_pack.json",
+    "sha256": "21f69b44b2a1567f6432e0ec2a0f5dce2c4f74ea256196d865fbdf384580a873"
+  },
+  "historical_context": {
+    "description": "First multi-seed teacher-guided learner-state DoorKey signal before hardening.",
+    "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+    "family": "Learner-state supervision",
+    "ledger_family": "Learner-state supervision",
+    "rationale": "The reopened positive signal lacked the modern token_dense KL control, single_expert control, and canonical retry block."
+  },
+  "metrics": {
+    "combined": {
+      "baseline_sare": {
+        "complete_seed_failures": 3,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.5,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.5677083333333334,
+        "min": 0.0,
+        "seed_count": 3
+      }
+    },
+    "retry_block": {
+      "baseline_sare": {
+        "complete_seed_failures": 3,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.5,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.5677,
+        "min": 0.0,
+        "seed_count": 3
+      }
+    }
+  },
+  "pack_type": "candidate_result_pack",
+  "provenance": {
+    "git_commit": "8d691d69559de8e2aba18481bebcb7151ac15d84",
+    "git_dirty": true,
+    "historical_phase": "First multi-seed teacher-guided learner-state DoorKey signal before hardening.",
+    "historical_status": "bounded positive",
+    "provenance_note": "The original 3-seed reopened result predated the later matched-control and final-block fairness requirements.",
+    "source_reports": [
+      "outputs/reports/teacher_extraction_multiseed_report.md",
+      "outputs/reports/teacher_extraction_multiseed_report.csv"
+    ]
+  },
+  "requested_claims": [
+    "bounded_teacher_guided_doorkey_sare"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

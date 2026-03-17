@@ -1,0 +1,93 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [],
+    "retry_block_lane_seeds": []
+  },
+  "artifacts": [
+    {
+      "path": "outputs/reports/historical_candidate_packs/entropy_schedule/artifacts/candidate_summary.md",
+      "role": "candidate_summary_markdown",
+      "sha256": "8b5bed2ba09fc118635b3e9a97838428311b25b891eb41e9fadc88c45a7b9c0b",
+      "size_bytes": 716
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/entropy_schedule/artifacts/candidate_metrics.json",
+      "role": "candidate_metrics_json",
+      "sha256": "ae57028cf01703859e658568f697bf9bb6696566d8683c5a0ed208ab94ed1203",
+      "size_bytes": 1063
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/entropy_schedule/artifacts/combined_report.md",
+      "role": "combined_report_markdown",
+      "sha256": "23125b2f936ec440f4811f929fc13fa1e71ab6d0ca83eef33f3dfca0a44300d0",
+      "size_bytes": 249
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/entropy_schedule/artifacts/combined_report.csv",
+      "role": "combined_report_csv",
+      "sha256": "ba1bebada7d2cd352404389d75e7a31a03ca340b231a2252a3d316afb9f6fe61",
+      "size_bytes": 96
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/entropy_schedule/artifacts/retry_block_report.md",
+      "role": "retry_block_report_markdown",
+      "sha256": "8af6001f2a239e016515875ba8e29caca2b26b983f647c27e1c8e8ecbac477ec",
+      "size_bytes": 225
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/entropy_schedule/artifacts/retry_block_report.csv",
+      "role": "retry_block_report_csv",
+      "sha256": "5d71b9e014f3ffdeee6afb2392744b27d16f8171c4f8871c9e21035f3127562d",
+      "size_bytes": 69
+    }
+  ],
+  "candidate_name": "entropy_schedule",
+  "controls_present": [
+    "baseline_sare"
+  ],
+  "evaluation": {
+    "episodes": 32,
+    "path_key": "entropy_schedule_sweep"
+  },
+  "frozen_pack_reference": {
+    "claim_id": "doorkey_frozen_claim",
+    "path": "outputs/reports/frozen_benchmark_pack.json",
+    "sha256": "21f69b44b2a1567f6432e0ec2a0f5dce2c4f74ea256196d865fbdf384580a873"
+  },
+  "historical_context": {
+    "description": "PPO entropy-schedule sweep for DoorKey SARE greedy recovery.",
+    "expected_verdict": "FAIL: claim remains frozen",
+    "family": "Entropy schedules",
+    "ledger_family": "Entropy schedules",
+    "rationale": "PPO-only routed win language is disallowed, and the entropy sweep also predates the canonical external-64 thaw prerequisites."
+  },
+  "metrics": {
+    "combined": {
+      "baseline_sare": {
+        "complete_seed_failures": 7,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 7
+      }
+    },
+    "retry_block": {}
+  },
+  "pack_type": "candidate_result_pack",
+  "provenance": {
+    "git_commit": "8d691d69559de8e2aba18481bebcb7151ac15d84",
+    "git_dirty": true,
+    "historical_phase": "PPO entropy-schedule sweep for DoorKey SARE greedy recovery.",
+    "historical_status": "negative",
+    "provenance_note": "This is a PPO-only schedule sweep rather than a teacher-guided structured comparison.",
+    "source_reports": [
+      "outputs/reports/entropy_schedule_report.md",
+      "outputs/reports/entropy_schedule_report.csv"
+    ]
+  },
+  "requested_claims": [
+    "ppo_only_routed_win"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

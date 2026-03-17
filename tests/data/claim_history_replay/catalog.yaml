@@ -1,0 +1,632 @@
+name: doorkey_claim_history_replay_catalog
+schema_version: 1
+cases:
+  - id: checkpoint_dynamics
+    family: PPO tuning / checkpoint dynamics
+    ledger_family: PPO tuning / checkpoint dynamics
+    phase_status: negative
+    description: Archived PPO checkpoint scan for DoorKey SARE greedy recovery.
+    expected_verdict: "FAIL: claim remains frozen"
+    rationale: PPO-only routed win language is now explicitly disallowed, and the archived checkpoint scan also misses the current external-64 fairness prerequisites.
+    requested_claims:
+      - ppo_only_routed_win
+    evaluation:
+      path_key: checkpoint_dynamics_scan
+      episodes: 32
+    controls_present:
+      - baseline_sare
+    source_reports:
+      - outputs/reports/checkpoint_dynamics_report.md
+      - outputs/reports/checkpoint_dynamics_report.csv
+    provenance_note: The historical phase was a PPO-only checkpoint scan, not a teacher-guided KL learner-state comparison.
+    combined_metrics:
+      sources:
+        - kind: grouped_csv
+          path: outputs/reports/checkpoint_dynamics_report.csv
+          filters:
+            mode: greedy
+            variant: sare
+          group_field: variant
+          group_mapping:
+            sare: baseline_sare
+          value_field: eval_success_rate
+    retry_block_metrics:
+      sources: []
+
+  - id: entropy_schedule
+    family: Entropy schedules
+    ledger_family: Entropy schedules
+    phase_status: negative
+    description: PPO entropy-schedule sweep for DoorKey SARE greedy recovery.
+    expected_verdict: "FAIL: claim remains frozen"
+    rationale: PPO-only routed win language is disallowed, and the entropy sweep also predates the canonical external-64 thaw prerequisites.
+    requested_claims:
+      - ppo_only_routed_win
+    evaluation:
+      path_key: entropy_schedule_sweep
+      episodes: 32
+    controls_present:
+      - baseline_sare
+    source_reports:
+      - outputs/reports/entropy_schedule_report.md
+      - outputs/reports/entropy_schedule_report.csv
+    provenance_note: This is a PPO-only schedule sweep rather than a teacher-guided structured comparison.
+    combined_metrics:
+      sources:
+        - kind: grouped_csv
+          path: outputs/reports/entropy_schedule_report.csv
+          filters:
+            mode: greedy
+            variant: sare
+          group_field: variant
+          group_mapping:
+            sare: baseline_sare
+          value_field: eval_success_rate
+    retry_block_metrics:
+      sources: []
+
+  - id: self_imitation
+    family: Self-imitation
+    ledger_family: Self-imitation
+    phase_status: negative
+    description: Post-hoc self-imitation fine-tuning for DoorKey routed students.
+    expected_verdict: "INCONCLUSIVE: missing prerequisites"
+    rationale: The historical self-imitation phase did not package the required external-64 structured controls or retry-block slice under the modern gate.
+    requested_claims:
+      - historical_recovery_probe
+    evaluation:
+      path_key: self_imitation_finetune
+      episodes: 64
+    controls_present:
+      - baseline_sare
+    source_reports:
+      - outputs/reports/self_imitation_report.md
+      - outputs/reports/self_imitation_report.csv
+    provenance_note: The report summarizes before/after greedy and sampled behavior, not a canonical external-64 structured comparison pack.
+    combined_metrics:
+      sources:
+        - kind: grouped_csv
+          path: outputs/reports/self_imitation_report.csv
+          group_field: variant
+          group_mapping:
+            sare: baseline_sare
+            single_expert: single_expert
+          value_field: after_greedy_success
+    retry_block_metrics:
+      sources: []
+
+  - id: policy_distillation
+    family: Offline teacher distillation
+    ledger_family: Offline teacher distillation
+    phase_status: negative
+    description: Offline teacher distillation from flat_dense or token_dense into SARE and token_dense students.
+    expected_verdict: "INCONCLUSIVE: missing prerequisites"
+    rationale: The phase is teacher-guided but not the current KL learner-state family and does not supply the modern matched-control/retry-block comparison pack.
+    requested_claims:
+      - bounded_teacher_guided_doorkey_sare
+    evaluation:
+      path_key: offline_policy_distillation
+      episodes: 64
+    controls_present: []
+    source_reports:
+      - outputs/reports/policy_distillation_report.md
+      - outputs/reports/policy_distillation_report.csv
+    provenance_note: Historical distillation results are preserved as source evidence, but they are not directly comparable to the frozen KL learner-state benchmark slice.
+    combined_metrics:
+      sources:
+        - kind: grouped_csv
+          path: outputs/reports/policy_distillation_report.csv
+          filters:
+            student_variant: sare
+          group_field: student_variant
+          group_mapping:
+            sare: distilled_sare
+          value_field: after_greedy_success
+        - kind: grouped_csv
+          path: outputs/reports/policy_distillation_report.csv
+          filters:
+            student_variant: token_dense
+          group_field: student_variant
+          group_mapping:
+            token_dense: distilled_token_dense
+          value_field: after_greedy_success
+    retry_block_metrics:
+      sources: []
+
+  - id: learner_state_supervision_initial
+    family: Learner-state supervision
+    ledger_family: Learner-state supervision
+    phase_status: bounded positive
+    description: Initial single-run learner-state supervision signal before multi-seed hardening.
+    expected_verdict: "INCONCLUSIVE: missing prerequisites"
+    rationale: The initial positive learner-state signal does not include the required matched controls, retry block, or combined DoorKey slice under the modern frozen gate.
+    requested_claims:
+      - bounded_teacher_guided_doorkey_sare
+    evaluation:
+      path_key: learner_state_round_summary
+      episodes: 64
+    controls_present:
+      - kl_lss_sare
+    source_reports:
+      - outputs/reports/learner_state_supervision_report.md
+      - outputs/reports/learner_state_supervision_report.csv
+    provenance_note: This pack captures the first bounded positive learner-state signal, not a modern thaw-ready comparison pack.
+    combined_metrics:
+      sources:
+        - kind: grouped_csv
+          path: outputs/reports/learner_state_supervision_report.csv
+          group_field: name
+          group_mapping:
+            flat_dense_to_sare_lss: kl_lss_sare
+            flat_dense_to_token_dense_lss: kl_lss_token_dense
+          value_field: final_greedy_success
+    retry_block_metrics:
+      sources: []
+
+  - id: teacher_extraction_multiseed
+    family: Learner-state supervision
+    ledger_family: Learner-state supervision
+    phase_status: bounded positive
+    description: First multi-seed teacher-guided learner-state DoorKey signal before hardening.
+    expected_verdict: "INCONCLUSIVE: missing prerequisites"
+    rationale: The reopened positive signal lacked the modern token_dense KL control, single_expert control, and canonical retry block.
+    requested_claims:
+      - bounded_teacher_guided_doorkey_sare
+    evaluation:
+      path_key: external_policy_diagnostics
+      episodes: 64
+    controls_present:
+      - recovered_token_dense
+      - baseline_sare
+      - kl_lss_sare
+    source_reports:
+      - outputs/reports/teacher_extraction_multiseed_report.md
+      - outputs/reports/teacher_extraction_multiseed_report.csv
+    provenance_note: The original 3-seed reopened result predated the later matched-control and final-block fairness requirements.
+    combined_metrics:
+      sources:
+        - kind: grouped_csv
+          path: outputs/reports/teacher_extraction_multiseed_report.csv
+          filters:
+            mode: greedy
+          group_field: run_name
+          group_mapping:
+            token_dense_ent1e3: recovered_token_dense
+            flat_dense_to_sare_lss: kl_lss_sare
+          value_field: eval_success_rate
+      manual_metrics:
+        baseline_sare:
+          mean: 0.0000
+          min: 0.0000
+          max: 0.0000
+          complete_seed_failures: 3
+          seed_count: 3
+      actual_sets_override:
+        - [original, 7]
+        - [original, 11]
+        - [original, 19]
+    retry_block_metrics:
+      manual_metrics:
+        baseline_sare:
+          mean: 0.0000
+          min: 0.0000
+          max: 0.0000
+          complete_seed_failures: 3
+          seed_count: 3
+        kl_lss_sare:
+          mean: 0.5000
+          min: 0.0000
+          max: 1.0000
+          complete_seed_failures: 1
+          seed_count: 3
+        recovered_token_dense:
+          mean: 0.5677
+          min: 0.0000
+          max: 1.0000
+          complete_seed_failures: 1
+          seed_count: 3
+      actual_sets_override:
+        - [original, 7]
+        - [original, 11]
+        - [original, 19]
+
+  - id: lss_robustness_multiseed
+    family: Learner-state supervision
+    ledger_family: Learner-state supervision
+    phase_status: bounded positive
+    description: Reopened 3-seed learner-state supervision lane before matched-control hardening.
+    expected_verdict: "INCONCLUSIVE: missing prerequisites"
+    rationale: The reopened 3-seed result still predates the modern matched-control and retry-block requirements.
+    requested_claims:
+      - bounded_teacher_guided_doorkey_sare
+    evaluation:
+      path_key: external_policy_diagnostics
+      episodes: 64
+    controls_present:
+      - recovered_token_dense
+      - baseline_sare
+      - kl_lss_sare
+    source_reports:
+      - outputs/reports/lss_robustness_multiseed_report.md
+      - outputs/reports/lss_robustness_multiseed_report.csv
+    provenance_note: This is the reopened positive DoorKey lane that later required matched controls and a final-block freeze check.
+    combined_metrics:
+      sources:
+        - kind: grouped_csv
+          path: outputs/reports/lss_robustness_multiseed_report.csv
+          filters:
+            mode: greedy
+          group_field: label
+          group_mapping:
+            recovered_token_dense: recovered_token_dense
+            baseline_sare: baseline_sare
+            improved_lss_sare: kl_lss_sare
+          value_field: eval_success_rate
+          seed_field: seed
+          default_lane: original
+    retry_block_metrics:
+      sources:
+        - kind: grouped_csv
+          path: outputs/reports/lss_robustness_multiseed_report.csv
+          filters:
+            mode: greedy
+          group_field: label
+          group_mapping:
+            recovered_token_dense: recovered_token_dense
+            baseline_sare: baseline_sare
+            improved_lss_sare: kl_lss_sare
+          value_field: eval_success_rate
+          seed_field: seed
+          default_lane: original
+
+  - id: claim_hardening
+    family: Claim hardening
+    ledger_family: Claim hardening
+    phase_status: bounded positive
+    description: Additional-seed and matched-token-control hardening before broadening.
+    expected_verdict: "INCONCLUSIVE: missing prerequisites"
+    rationale: The claim-hardening phase strengthened the narrow DoorKey signal but still lacked the final retry block and same-block single_expert fairness control.
+    requested_claims:
+      - bounded_teacher_guided_doorkey_sare
+    evaluation:
+      path_key: external_policy_diagnostics
+      episodes: 64
+    controls_present:
+      - recovered_token_dense
+      - kl_lss_token_dense
+      - baseline_sare
+      - kl_lss_sare
+    source_reports:
+      - outputs/reports/lss_additional_seed_report.md
+      - outputs/reports/lss_matched_control_report.md
+      - outputs/reports/lss_claim_hardening_decision_memo.md
+    provenance_note: This phase added matched token_dense controls and fresh seeds, but not the current single_expert and final retry-block closure.
+    combined_metrics:
+      sources:
+        - kind: grouped_csv
+          path: outputs/reports/lss_matched_control_report.csv
+          filters:
+            mode: greedy
+          group_field: label
+          group_mapping:
+            recovered_token_dense: recovered_token_dense
+            kl_lss_token_dense: kl_lss_token_dense
+            baseline_sare: baseline_sare
+            kl_lss_sare: kl_lss_sare
+          value_field: eval_success_rate
+          lane_field: lane
+          seed_field: seed
+          default_lane: original
+        - kind: grouped_csv
+          path: outputs/reports/lss_additional_seed_report.csv
+          filters:
+            mode: greedy
+          group_field: label
+          group_mapping:
+            recovered_token_dense: recovered_token_dense
+            baseline_sare: baseline_sare
+            kl_lss_sare: kl_lss_sare
+          value_field: eval_success_rate
+          seed_field: seed
+          default_lane: fresh
+    retry_block_metrics:
+      sources:
+        - kind: grouped_csv
+          path: outputs/reports/lss_additional_seed_report.csv
+          filters:
+            mode: greedy
+          group_field: label
+          group_mapping:
+            recovered_token_dense: recovered_token_dense
+            baseline_sare: baseline_sare
+            kl_lss_sare: kl_lss_sare
+          value_field: eval_success_rate
+          seed_field: seed
+          default_lane: fresh
+
+  - id: claim_broadening
+    family: Claim broadening
+    ledger_family: Claim broadening
+    phase_status: bounded positive
+    description: DoorKey broadening phase that argued for a multi-expert routed edge inside DoorKey.
+    expected_verdict: "FAIL: claim remains frozen"
+    rationale: The historical broadening phase requested now-disallowed specifically multi-expert routed claim language.
+    requested_claims:
+      - bounded_teacher_guided_doorkey_sare
+      - specifically_multi_expert_routed_advantage
+    evaluation:
+      path_key: external_policy_diagnostics
+      episodes: 64
+    controls_present:
+      - recovered_token_dense
+      - kl_lss_token_dense
+      - kl_lss_single_expert
+      - baseline_sare
+      - kl_lss_sare
+    source_reports:
+      - outputs/reports/lss_single_expert_matched_control_report.md
+      - outputs/reports/lss_extended_route_dependence_report.md
+      - outputs/reports/lss_additional_fresh_seed_block_report.md
+      - outputs/reports/lss_claim_broadening_decision_memo.md
+    provenance_note: This pack intentionally reflects the stronger multi-expert wording that the current frozen claim envelope now disallows.
+    combined_metrics:
+      sources:
+        - kind: grouped_csv
+          path: outputs/reports/lss_expanded_combined_doorkey_report.csv
+          filters:
+            mode: greedy
+          group_field: label
+          group_mapping:
+            recovered_token_dense: recovered_token_dense
+            kl_lss_token_dense: kl_lss_token_dense
+            kl_lss_single_expert: kl_lss_single_expert
+            baseline_sare: baseline_sare
+            kl_lss_sare: kl_lss_sare
+          value_field: eval_success_rate
+          lane_field: lane
+          seed_field: seed
+    retry_block_metrics:
+      sources:
+        - kind: grouped_csv
+          path: outputs/reports/lss_fresh_single_expert_matched_control_report.csv
+          filters:
+            mode: greedy
+            lane: fresh_extra
+          group_field: label
+          group_mapping:
+            recovered_token_dense: recovered_token_dense
+            kl_lss_token_dense: kl_lss_token_dense
+            kl_lss_single_expert: kl_lss_single_expert
+            baseline_sare: baseline_sare
+            kl_lss_sare: kl_lss_sare
+          value_field: eval_success_rate
+          lane_field: lane
+          seed_field: seed
+
+  - id: multi_expert_hardening
+    family: Multi-expert hardening
+    ledger_family: Multi-expert hardening
+    phase_status: bounded positive
+    description: Final fresh-block weakening before the later frozen fairness closure.
+    expected_verdict: "INCONCLUSIVE: missing prerequisites"
+    rationale: The historical hardening phase still lacked the final same-block single_expert retry metrics needed by the current gate.
+    requested_claims:
+      - bounded_teacher_guided_doorkey_sare
+    evaluation:
+      path_key: external_policy_diagnostics
+      episodes: 64
+    controls_present:
+      - recovered_token_dense
+      - kl_lss_token_dense
+      - kl_lss_single_expert
+      - baseline_sare
+      - kl_lss_sare
+    source_reports:
+      - outputs/reports/lss_final_fresh_seed_block_report.md
+      - outputs/reports/lss_final_combined_doorkey_report.md
+      - outputs/reports/lss_multi_expert_hardening_decision_memo.md
+    provenance_note: This pre-frozen phase is historically important because it first exposed the final-block reversal, but it did not yet include the later same-block single_expert closure.
+    combined_metrics:
+      sources:
+        - kind: grouped_csv
+          path: outputs/reports/lss_final_combined_doorkey_report.csv
+          filters:
+            mode: greedy
+          group_field: label
+          group_mapping:
+            recovered_token_dense: recovered_token_dense
+            kl_lss_token_dense: kl_lss_token_dense
+            kl_lss_single_expert: kl_lss_single_expert
+            baseline_sare: baseline_sare
+            kl_lss_sare: kl_lss_sare
+          value_field: eval_success_rate
+          lane_field: lane
+          seed_field: seed
+    retry_block_metrics:
+      sources:
+        - kind: grouped_csv
+          path: outputs/reports/lss_final_fresh_seed_block_report.csv
+          filters:
+            mode: greedy
+          group_field: label
+          group_mapping:
+            recovered_token_dense: recovered_token_dense
+            kl_lss_token_dense: kl_lss_token_dense
+            baseline_sare: baseline_sare
+            kl_lss_sare: kl_lss_sare
+          value_field: eval_success_rate
+          lane_field: lane
+          seed_field: seed
+
+  - id: resume_gate
+    family: Resume gate
+    ledger_family: Resume gate
+    phase_status: frozen
+    description: Resume-gate phase after the final-block single_expert fairness closure.
+    expected_verdict: "FAIL: claim remains frozen"
+    rationale: Once the final-block single_expert control exists, the current frozen candidate still fails the thaw bars.
+    requested_claims:
+      - bounded_teacher_guided_doorkey_sare
+    evaluation:
+      path_key: external_policy_diagnostics
+      episodes: 64
+    controls_present:
+      - recovered_token_dense
+      - kl_lss_token_dense
+      - kl_lss_single_expert
+      - baseline_sare
+      - kl_lss_sare
+    source_reports:
+      - outputs/reports/lss_final_block_single_expert_control_report.md
+      - outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.md
+      - outputs/reports/lss_resume_gate_decision_memo.md
+    provenance_note: This is the first frozen-era phase where the modern fairness closure exists and the gate can evaluate the retry block directly.
+    combined_metrics:
+      sources:
+        - kind: grouped_csv
+          path: outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.csv
+          filters:
+            mode: greedy
+          group_field: label
+          group_mapping:
+            recovered_token_dense: recovered_token_dense
+            kl_lss_token_dense: kl_lss_token_dense
+            kl_lss_single_expert: kl_lss_single_expert
+            baseline_sare: baseline_sare
+            kl_lss_sare: kl_lss_sare
+          value_field: eval_success_rate
+          lane_field: lane
+          seed_field: seed
+    retry_block_metrics:
+      sources:
+        - kind: grouped_csv
+          path: outputs/reports/lss_final_block_single_expert_control_report.csv
+          filters:
+            mode: greedy
+          group_field: label
+          group_mapping:
+            recovered_token_dense: recovered_token_dense
+            kl_lss_token_dense: kl_lss_token_dense
+            kl_lss_single_expert: kl_lss_single_expert
+            baseline_sare: baseline_sare
+            kl_lss_sare: kl_lss_sare
+          value_field: eval_success_rate
+          lane_field: lane
+          seed_field: seed
+
+  - id: forensic_atlas
+    family: Forensic atlas
+    ledger_family: Forensic atlas
+    phase_status: frozen
+    description: Deep forensic atlas after resume-gate closure.
+    expected_verdict: "FAIL: claim remains frozen"
+    rationale: The deeper forensic package preserved the same frozen candidate metrics and explicitly blocked a bounded retry.
+    requested_claims:
+      - bounded_teacher_guided_doorkey_sare
+    evaluation:
+      path_key: external_policy_diagnostics
+      episodes: 64
+    controls_present:
+      - recovered_token_dense
+      - kl_lss_token_dense
+      - kl_lss_single_expert
+      - baseline_sare
+      - kl_lss_sare
+    source_reports:
+      - outputs/reports/lss_forensic_casebook.md
+      - outputs/reports/lss_forensic_round_audit.md
+      - outputs/reports/lss_forensic_route_locality.md
+      - outputs/reports/lss_forensic_atlas_decision_memo.md
+      - outputs/reports/lss_final_block_single_expert_control_report.md
+      - outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.md
+    provenance_note: This phase changes the mechanism diagnosis, not the frozen candidate metrics or the thaw bar.
+    combined_metrics:
+      sources:
+        - kind: grouped_csv
+          path: outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.csv
+          filters:
+            mode: greedy
+          group_field: label
+          group_mapping:
+            recovered_token_dense: recovered_token_dense
+            kl_lss_token_dense: kl_lss_token_dense
+            kl_lss_single_expert: kl_lss_single_expert
+            baseline_sare: baseline_sare
+            kl_lss_sare: kl_lss_sare
+          value_field: eval_success_rate
+          lane_field: lane
+          seed_field: seed
+    retry_block_metrics:
+      sources:
+        - kind: grouped_csv
+          path: outputs/reports/lss_final_block_single_expert_control_report.csv
+          filters:
+            mode: greedy
+          group_field: label
+          group_mapping:
+            recovered_token_dense: recovered_token_dense
+            kl_lss_token_dense: kl_lss_token_dense
+            kl_lss_single_expert: kl_lss_single_expert
+            baseline_sare: baseline_sare
+            kl_lss_sare: kl_lss_sare
+          value_field: eval_success_rate
+          lane_field: lane
+          seed_field: seed
+
+  - id: final_frozen_state
+    family: Final frozen state
+    ledger_family: Final frozen state
+    phase_status: frozen
+    description: Current sealed frozen DoorKey candidate under the pack-based gate.
+    expected_verdict: "FAIL: claim remains frozen"
+    rationale: The current frozen candidate is the explicit no-thaw reference point and must still fail its own thaw gate.
+    requested_claims:
+      - bounded_teacher_guided_doorkey_sare
+    evaluation:
+      path_key: external_policy_diagnostics
+      episodes: 64
+    controls_present:
+      - recovered_token_dense
+      - kl_lss_token_dense
+      - kl_lss_single_expert
+      - baseline_sare
+      - kl_lss_sare
+    source_reports:
+      - outputs/reports/frozen_benchmark_pack.md
+      - outputs/reports/frozen_claim_envelope.md
+      - outputs/reports/freeze_hardening_operational_memo.md
+      - outputs/reports/lss_final_block_single_expert_control_report.md
+      - outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.md
+    provenance_note: This is the current sealed frozen benchmark candidate and should remain the hard-fail thaw reference.
+    combined_metrics:
+      sources:
+        - kind: grouped_csv
+          path: outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.csv
+          filters:
+            mode: greedy
+          group_field: label
+          group_mapping:
+            recovered_token_dense: recovered_token_dense
+            kl_lss_token_dense: kl_lss_token_dense
+            kl_lss_single_expert: kl_lss_single_expert
+            baseline_sare: baseline_sare
+            kl_lss_sare: kl_lss_sare
+          value_field: eval_success_rate
+          lane_field: lane
+          seed_field: seed
+    retry_block_metrics:
+      sources:
+        - kind: grouped_csv
+          path: outputs/reports/lss_final_block_single_expert_control_report.csv
+          filters:
+            mode: greedy
+          group_field: label
+          group_mapping:
+            recovered_token_dense: recovered_token_dense
+            kl_lss_token_dense: kl_lss_token_dense
+            kl_lss_single_expert: kl_lss_single_expert
+            baseline_sare: baseline_sare
+            kl_lss_sare: kl_lss_sare
+          value_field: eval_success_rate
+          lane_field: lane
+          seed_field: seed

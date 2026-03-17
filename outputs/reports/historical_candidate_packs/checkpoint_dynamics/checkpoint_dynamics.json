@@ -1,0 +1,93 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [],
+    "retry_block_lane_seeds": []
+  },
+  "artifacts": [
+    {
+      "path": "outputs/reports/historical_candidate_packs/checkpoint_dynamics/artifacts/candidate_summary.md",
+      "role": "candidate_summary_markdown",
+      "sha256": "a3ced80076aaa380660438f4ba6b3736ba6dd3db1a493752069d1119d632b187",
+      "size_bytes": 800
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/checkpoint_dynamics/artifacts/candidate_metrics.json",
+      "role": "candidate_metrics_json",
+      "sha256": "30fafd89cea6f8451a449bc64fbb0eb7c8b74239cc1ec427649bba87d4012381",
+      "size_bytes": 1093
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/checkpoint_dynamics/artifacts/combined_report.md",
+      "role": "combined_report_markdown",
+      "sha256": "b00140cbe30b6b8700a728da7dbfc4d16dd9822209dc414278a3458bcc206340",
+      "size_bytes": 252
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/checkpoint_dynamics/artifacts/combined_report.csv",
+      "role": "combined_report_csv",
+      "sha256": "eeb430dba9ae8d91d9557144e2dc44813c3b2f6996dc7839c4b999ecca9cfde5",
+      "size_bytes": 96
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/checkpoint_dynamics/artifacts/retry_block_report.md",
+      "role": "retry_block_report_markdown",
+      "sha256": "fc1710d17c1719a2bf88ed17e3ffef6f89fab019723a680c519a5dd822cf448f",
+      "size_bytes": 228
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/checkpoint_dynamics/artifacts/retry_block_report.csv",
+      "role": "retry_block_report_csv",
+      "sha256": "5d71b9e014f3ffdeee6afb2392744b27d16f8171c4f8871c9e21035f3127562d",
+      "size_bytes": 69
+    }
+  ],
+  "candidate_name": "checkpoint_dynamics",
+  "controls_present": [
+    "baseline_sare"
+  ],
+  "evaluation": {
+    "episodes": 32,
+    "path_key": "checkpoint_dynamics_scan"
+  },
+  "frozen_pack_reference": {
+    "claim_id": "doorkey_frozen_claim",
+    "path": "outputs/reports/frozen_benchmark_pack.json",
+    "sha256": "21f69b44b2a1567f6432e0ec2a0f5dce2c4f74ea256196d865fbdf384580a873"
+  },
+  "historical_context": {
+    "description": "Archived PPO checkpoint scan for DoorKey SARE greedy recovery.",
+    "expected_verdict": "FAIL: claim remains frozen",
+    "family": "PPO tuning / checkpoint dynamics",
+    "ledger_family": "PPO tuning / checkpoint dynamics",
+    "rationale": "PPO-only routed win language is now explicitly disallowed, and the archived checkpoint scan also misses the current external-64 fairness prerequisites."
+  },
+  "metrics": {
+    "combined": {
+      "baseline_sare": {
+        "complete_seed_failures": 8,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 8
+      }
+    },
+    "retry_block": {}
+  },
+  "pack_type": "candidate_result_pack",
+  "provenance": {
+    "git_commit": "8d691d69559de8e2aba18481bebcb7151ac15d84",
+    "git_dirty": true,
+    "historical_phase": "Archived PPO checkpoint scan for DoorKey SARE greedy recovery.",
+    "historical_status": "negative",
+    "provenance_note": "The historical phase was a PPO-only checkpoint scan, not a teacher-guided KL learner-state comparison.",
+    "source_reports": [
+      "outputs/reports/checkpoint_dynamics_report.md",
+      "outputs/reports/checkpoint_dynamics_report.csv"
+    ]
+  },
+  "requested_claims": [
+    "ppo_only_routed_win"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

@@ -1,0 +1,100 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [],
+    "retry_block_lane_seeds": []
+  },
+  "artifacts": [
+    {
+      "path": "outputs/reports/historical_candidate_packs/self_imitation/artifacts/candidate_summary.md",
+      "role": "candidate_summary_markdown",
+      "sha256": "2bbb0155852c53cdab143a2cd80e3e3e24f87355e83e1b7a3e9305bcd752e313",
+      "size_bytes": 769
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/self_imitation/artifacts/candidate_metrics.json",
+      "role": "candidate_metrics_json",
+      "sha256": "fb99bae593642f2a6946c5d7878a1409cc008f42c131b9ce5cbba3e659fdde69",
+      "size_bytes": 1258
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/self_imitation/artifacts/combined_report.md",
+      "role": "combined_report_markdown",
+      "sha256": "e91372bcc6baf5b87d7f9a3bcedf215ddeaf61e8037523667e9d44373b156374",
+      "size_bytes": 312
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/self_imitation/artifacts/combined_report.csv",
+      "role": "combined_report_csv",
+      "sha256": "cf063ac58496cdb240f0276aea2c2d8e01dd3ac62223a0d89f557c46c8547ec3",
+      "size_bytes": 136
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/self_imitation/artifacts/retry_block_report.md",
+      "role": "retry_block_report_markdown",
+      "sha256": "1542b0bb0d02edb7d59b21066e1d018e4b6b8fe9ec8f891dca46516141c3aaf9",
+      "size_bytes": 223
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/self_imitation/artifacts/retry_block_report.csv",
+      "role": "retry_block_report_csv",
+      "sha256": "5d71b9e014f3ffdeee6afb2392744b27d16f8171c4f8871c9e21035f3127562d",
+      "size_bytes": 69
+    }
+  ],
+  "candidate_name": "self_imitation",
+  "controls_present": [
+    "baseline_sare"
+  ],
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "self_imitation_finetune"
+  },
+  "frozen_pack_reference": {
+    "claim_id": "doorkey_frozen_claim",
+    "path": "outputs/reports/frozen_benchmark_pack.json",
+    "sha256": "21f69b44b2a1567f6432e0ec2a0f5dce2c4f74ea256196d865fbdf384580a873"
+  },
+  "historical_context": {
+    "description": "Post-hoc self-imitation fine-tuning for DoorKey routed students.",
+    "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+    "family": "Self-imitation",
+    "ledger_family": "Self-imitation",
+    "rationale": "The historical self-imitation phase did not package the required external-64 structured controls or retry-block slice under the modern gate."
+  },
+  "metrics": {
+    "combined": {
+      "baseline_sare": {
+        "complete_seed_failures": 4,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 4
+      },
+      "single_expert": {
+        "complete_seed_failures": 4,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 4
+      }
+    },
+    "retry_block": {}
+  },
+  "pack_type": "candidate_result_pack",
+  "provenance": {
+    "git_commit": "8d691d69559de8e2aba18481bebcb7151ac15d84",
+    "git_dirty": true,
+    "historical_phase": "Post-hoc self-imitation fine-tuning for DoorKey routed students.",
+    "historical_status": "negative",
+    "provenance_note": "The report summarizes before/after greedy and sampled behavior, not a canonical external-64 structured comparison pack.",
+    "source_reports": [
+      "outputs/reports/self_imitation_report.md",
+      "outputs/reports/self_imitation_report.csv"
+    ]
+  },
+  "requested_claims": [
+    "historical_recovery_probe"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

@@ -1,0 +1,118 @@
+{
+  "case_verdicts": [
+    {
+      "actual_verdict": "FAIL: claim remains frozen",
+      "expected_verdict": "FAIL: claim remains frozen",
+      "id": "checkpoint_dynamics"
+    },
+    {
+      "actual_verdict": "FAIL: claim remains frozen",
+      "expected_verdict": "FAIL: claim remains frozen",
+      "id": "entropy_schedule"
+    },
+    {
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+      "id": "self_imitation"
+    },
+    {
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+      "id": "policy_distillation"
+    },
+    {
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+      "id": "learner_state_supervision_initial"
+    },
+    {
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+      "id": "teacher_extraction_multiseed"
+    },
+    {
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+      "id": "lss_robustness_multiseed"
+    },
+    {
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+      "id": "claim_hardening"
+    },
+    {
+      "actual_verdict": "FAIL: claim remains frozen",
+      "expected_verdict": "FAIL: claim remains frozen",
+      "id": "claim_broadening"
+    },
+    {
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+      "id": "multi_expert_hardening"
+    },
+    {
+      "actual_verdict": "FAIL: claim remains frozen",
+      "expected_verdict": "FAIL: claim remains frozen",
+      "id": "resume_gate"
+    },
+    {
+      "actual_verdict": "FAIL: claim remains frozen",
+      "expected_verdict": "FAIL: claim remains frozen",
+      "id": "forensic_atlas"
+    },
+    {
+      "actual_verdict": "FAIL: claim remains frozen",
+      "expected_verdict": "FAIL: claim remains frozen",
+      "id": "final_frozen_state"
+    }
+  ],
+  "frozen_pack_sha256": "21f69b44b2a1567f6432e0ec2a0f5dce2c4f74ea256196d865fbdf384580a873",
+  "ledger_audit": [
+    {
+      "classification": "consistent",
+      "family": "PPO tuning / checkpoint dynamics"
+    },
+    {
+      "classification": "consistent",
+      "family": "Entropy schedules"
+    },
+    {
+      "classification": "consistent but narrower under current gate",
+      "family": "Self-imitation"
+    },
+    {
+      "classification": "consistent but narrower under current gate",
+      "family": "Offline teacher distillation"
+    },
+    {
+      "classification": "consistent but narrower under current gate",
+      "family": "Learner-state supervision"
+    },
+    {
+      "classification": "consistent but narrower under current gate",
+      "family": "Claim hardening"
+    },
+    {
+      "classification": "consistent but narrower under current gate",
+      "family": "Claim broadening"
+    },
+    {
+      "classification": "consistent but narrower under current gate",
+      "family": "Multi-expert hardening"
+    },
+    {
+      "classification": "consistent",
+      "family": "Resume gate"
+    },
+    {
+      "classification": "consistent",
+      "family": "Forensic atlas"
+    },
+    {
+      "classification": "consistent",
+      "family": "Final frozen state"
+    }
+  ],
+  "replay_verdict": "PASS: historical replay matches the expected claim-gate verdict map",
+  "schema_version": 1
+}

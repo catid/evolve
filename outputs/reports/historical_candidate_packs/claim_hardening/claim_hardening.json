@@ -1,0 +1,192 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [
+      [
+        "fresh",
+        23
+      ],
+      [
+        "fresh",
+        29
+      ],
+      [
+        "fresh",
+        31
+      ],
+      [
+        "original",
+        7
+      ],
+      [
+        "original",
+        11
+      ],
+      [
+        "original",
+        19
+      ]
+    ],
+    "retry_block_lane_seeds": [
+      [
+        "fresh",
+        23
+      ],
+      [
+        "fresh",
+        29
+      ],
+      [
+        "fresh",
+        31
+      ]
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "outputs/reports/historical_candidate_packs/claim_hardening/artifacts/candidate_summary.md",
+      "role": "candidate_summary_markdown",
+      "sha256": "e5fe768cc3d8195e6e8818d9b2399b0a4abcb531d51676b47f6b4caabd06b6e2",
+      "size_bytes": 940
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/claim_hardening/artifacts/candidate_metrics.json",
+      "role": "candidate_metrics_json",
+      "sha256": "02612298c2636d676d75a639a09e87cc7b9dbdf699306d638609efe116a0419a",
+      "size_bytes": 3031
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/claim_hardening/artifacts/combined_report.md",
+      "role": "combined_report_markdown",
+      "sha256": "e19b8f616bff3c30b8f84e821537b43f4b3ce2ed6d1e83ccaf94266e4c344632",
+      "size_bytes": 612
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/claim_hardening/artifacts/combined_report.csv",
+      "role": "combined_report_csv",
+      "sha256": "8a244af23b350a0b653e3ba93cfe27c6bb6d12f68e062427600a06fdd9244cfc",
+      "size_bytes": 264
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/claim_hardening/artifacts/retry_block_report.md",
+      "role": "retry_block_report_markdown",
+      "sha256": "a78d826ccc23f5ac350e49145724c0b597f6492982169bbfcbef349bfa230282",
+      "size_bytes": 492
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/claim_hardening/artifacts/retry_block_report.csv",
+      "role": "retry_block_report_csv",
+      "sha256": "435c051943db284b61b74130ddc14d80ad12620db4078a9ffe60a44d785843c6",
+      "size_bytes": 219
+    }
+  ],
+  "candidate_name": "claim_hardening",
+  "controls_present": [
+    "recovered_token_dense",
+    "kl_lss_token_dense",
+    "baseline_sare",
+    "kl_lss_sare"
+  ],
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "external_policy_diagnostics"
+  },
+  "frozen_pack_reference": {
+    "claim_id": "doorkey_frozen_claim",
+    "path": "outputs/reports/frozen_benchmark_pack.json",
+    "sha256": "21f69b44b2a1567f6432e0ec2a0f5dce2c4f74ea256196d865fbdf384580a873"
+  },
+  "historical_context": {
+    "description": "Additional-seed and matched-token-control hardening before broadening.",
+    "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+    "family": "Claim hardening",
+    "ledger_family": "Claim hardening",
+    "rationale": "The claim-hardening phase strengthened the narrow DoorKey signal but still lacked the final retry block and same-block single_expert fairness control."
+  },
+  "metrics": {
+    "combined": {
+      "baseline_sare": {
+        "complete_seed_failures": 6,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 6
+      },
+      "flat_dense": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 6
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 0.8567708333333334,
+        "min": 0.5625,
+        "seed_count": 6
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.6666666666666666,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 3,
+        "max": 1.0,
+        "mean": 0.4505208333333333,
+        "min": 0.0,
+        "seed_count": 6
+      }
+    },
+    "retry_block": {
+      "baseline_sare": {
+        "complete_seed_failures": 3,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "flat_dense": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 2,
+        "max": 1.0,
+        "mean": 0.3333333333333333,
+        "min": 0.0,
+        "seed_count": 3
+      }
+    }
+  },
+  "pack_type": "candidate_result_pack",
+  "provenance": {
+    "git_commit": "8d691d69559de8e2aba18481bebcb7151ac15d84",
+    "git_dirty": true,
+    "historical_phase": "Additional-seed and matched-token-control hardening before broadening.",
+    "historical_status": "bounded positive",
+    "provenance_note": "This phase added matched token_dense controls and fresh seeds, but not the current single_expert and final retry-block closure.",
+    "source_reports": [
+      "outputs/reports/lss_additional_seed_report.md",
+      "outputs/reports/lss_matched_control_report.md",
+      "outputs/reports/lss_claim_hardening_decision_memo.md"
+    ]
+  },
+  "requested_claims": [
+    "bounded_teacher_guided_doorkey_sare"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

@@ -22,7 +22,7 @@
       "status": "PASS"
     },
     {
-      "detail": "candidate references frozen-pack hash `1d0bdccf1a16e0368f087ed73952b41ed4647a48d1c7dbed917da7dde41ac9ae`",
+      "detail": "candidate references frozen-pack hash `21f69b44b2a1567f6432e0ec2a0f5dce2c4f74ea256196d865fbdf384580a873`",
       "name": "frozen_pack_reference.sha256",
       "status": "PASS"
     },
@@ -97,12 +97,12 @@
       "status": "PASS"
     },
     {
-      "detail": "candidate artifact `outputs/reports/frozen_baseline_validation.json` hash matches `03f5b1d49e3effdbf508aa69e12842a35cb06d365f0b9bd1e3dca0bf9c048351`",
+      "detail": "candidate artifact `outputs/reports/frozen_baseline_validation.json` hash matches `1888fb7ac3e78dead22811d99b88ee1d6b250c37de8fa0600e4bc7ea12a1918b`",
       "name": "artifact_hash::candidate_metrics_json",
       "status": "PASS"
     },
     {
-      "detail": "candidate artifact `outputs/reports/frozen_baseline_validation.md` hash matches `e068beabe92f80c105345bf900c528b448d7f133906478ff152497f8a6b28063`",
+      "detail": "candidate artifact `outputs/reports/frozen_baseline_validation.md` hash matches `9ce8e7f5055663abea1ea7444bde72ecc3789b9605a644ce24375f0149bf1248`",
       "name": "artifact_hash::candidate_summary_markdown",
       "status": "PASS"
     },
@@ -132,7 +132,7 @@
       "status": "PASS"
     },
     {
-      "detail": "candidate provenance git_commit `7a5b35e2829ddbcbaf1eaea6cf59614070f5a33e` is well formed",
+      "detail": "candidate provenance git_commit `8d691d69559de8e2aba18481bebcb7151ac15d84` is well formed",
       "name": "provenance.git_commit",
       "status": "PASS"
     },
@@ -232,7 +232,7 @@
       "status": "PASS"
     },
     {
-      "detail": "sealed source commit `7a5b35e2829ddbcbaf1eaea6cf59614070f5a33e` is well formed",
+      "detail": "sealed source commit `8d691d69559de8e2aba18481bebcb7151ac15d84` is well formed",
       "name": "provenance.sealed_source_commit",
       "status": "PASS"
     },
@@ -302,7 +302,7 @@
       "status": "PASS"
     },
     {
-      "detail": "artifact `outputs/reports/claim_ledger.md` hash matches `edce380e5fb0f3224e18fd1612e2c809ec54d109c756f428e869a93905122487`",
+      "detail": "artifact `outputs/reports/claim_ledger.md` hash matches `8127d6aeb0b06bd69d13dbb75b37f991abebe4ba501fc60cf4a8d0c6a99d691d`",
       "name": "artifact_hash::claim_ledger",
       "status": "PASS"
     },
@@ -352,7 +352,7 @@
       "status": "PASS"
     },
     {
-      "detail": "artifact `outputs/reports/frozen_claim_envelope.md` hash matches `f27bf0ef77d41823ef407de83af4ee97673d863bb9f3214fe9a129ee1d473f3c`",
+      "detail": "artifact `outputs/reports/frozen_claim_envelope.md` hash matches `58cd74802397935f8abc2dbaf1119fa59046c3e15bc352deac098ace03e2a9d8`",
       "name": "artifact_hash::frozen_claim_envelope",
       "status": "PASS"
     },
@@ -362,12 +362,12 @@
       "status": "PASS"
     },
     {
-      "detail": "artifact `outputs/reports/frozen_baseline_validation.json` hash matches `03f5b1d49e3effdbf508aa69e12842a35cb06d365f0b9bd1e3dca0bf9c048351`",
+      "detail": "artifact `outputs/reports/frozen_baseline_validation.json` hash matches `1888fb7ac3e78dead22811d99b88ee1d6b250c37de8fa0600e4bc7ea12a1918b`",
       "name": "artifact_hash::frozen_validation_json",
       "status": "PASS"
     },
     {
-      "detail": "artifact `outputs/reports/frozen_baseline_validation.md` hash matches `e068beabe92f80c105345bf900c528b448d7f133906478ff152497f8a6b28063`",
+      "detail": "artifact `outputs/reports/frozen_baseline_validation.md` hash matches `9ce8e7f5055663abea1ea7444bde72ecc3789b9605a644ce24375f0149bf1248`",
       "name": "artifact_hash::frozen_validation_report",
       "status": "PASS"
     },

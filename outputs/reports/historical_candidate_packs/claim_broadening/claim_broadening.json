@@ -1,0 +1,221 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [
+      [
+        "fresh",
+        23
+      ],
+      [
+        "fresh",
+        29
+      ],
+      [
+        "fresh",
+        31
+      ],
+      [
+        "fresh_extra",
+        37
+      ],
+      [
+        "fresh_extra",
+        41
+      ],
+      [
+        "fresh_extra",
+        43
+      ],
+      [
+        "original",
+        7
+      ],
+      [
+        "original",
+        11
+      ],
+      [
+        "original",
+        19
+      ]
+    ],
+    "retry_block_lane_seeds": [
+      [
+        "fresh_extra",
+        37
+      ],
+      [
+        "fresh_extra",
+        41
+      ],
+      [
+        "fresh_extra",
+        43
+      ]
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "outputs/reports/historical_candidate_packs/claim_broadening/artifacts/candidate_summary.md",
+      "role": "candidate_summary_markdown",
+      "sha256": "65f573c473bbeb8dd35b112f271dc64f2f6f46e7bb0da1bc999d288a8411209b",
+      "size_bytes": 1039
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/claim_broadening/artifacts/candidate_metrics.json",
+      "role": "candidate_metrics_json",
+      "sha256": "63ef32aac0ccc2d754e53d6e4b8f41ec51ef76e9f865405a4c0686a619a67584",
+      "size_bytes": 3763
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/claim_broadening/artifacts/combined_report.md",
+      "role": "combined_report_markdown",
+      "sha256": "2d652120b9e31ae444f6d01abeffa50adae7451da265c16264599e6b0b115b4a",
+      "size_bytes": 754
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/claim_broadening/artifacts/combined_report.csv",
+      "role": "combined_report_csv",
+      "sha256": "601441265bddebbe7608cd07f99e903926fa4a7d3bda147dfbe1b7bcacb620f0",
+      "size_bytes": 317
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/claim_broadening/artifacts/retry_block_report.md",
+      "role": "retry_block_report_markdown",
+      "sha256": "ae595beb5dc0169cadf0c83dc79d49b1c438845b97c5aeb16cecc47aea9137d9",
+      "size_bytes": 591
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/claim_broadening/artifacts/retry_block_report.csv",
+      "role": "retry_block_report_csv",
+      "sha256": "d7e2c9dfaca7912fbd06eecb17e33cfab86cb20cb8c2da42cc1754c1af945a54",
+      "size_bytes": 274
+    }
+  ],
+  "candidate_name": "claim_broadening",
+  "controls_present": [
+    "recovered_token_dense",
+    "kl_lss_token_dense",
+    "kl_lss_single_expert",
+    "baseline_sare",
+    "kl_lss_sare"
+  ],
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "external_policy_diagnostics"
+  },
+  "frozen_pack_reference": {
+    "claim_id": "doorkey_frozen_claim",
+    "path": "outputs/reports/frozen_benchmark_pack.json",
+    "sha256": "21f69b44b2a1567f6432e0ec2a0f5dce2c4f74ea256196d865fbdf384580a873"
+  },
+  "historical_context": {
+    "description": "DoorKey broadening phase that argued for a multi-expert routed edge inside DoorKey.",
+    "expected_verdict": "FAIL: claim remains frozen",
+    "family": "Claim broadening",
+    "ledger_family": "Claim broadening",
+    "rationale": "The historical broadening phase requested now-disallowed specifically multi-expert routed claim language."
+  },
+  "metrics": {
+    "combined": {
+      "baseline_sare": {
+        "complete_seed_failures": 12,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "flat_dense": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 12
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 0.8125,
+        "min": 0.46875,
+        "seed_count": 12
+      },
+      "kl_lss_single_expert": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.6666666666666666,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 5,
+        "max": 1.0,
+        "mean": 0.5520833333333334,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 6,
+        "max": 1.0,
+        "mean": 0.4505208333333333,
+        "min": 0.0,
+        "seed_count": 12
+      }
+    },
+    "retry_block": {
+      "baseline_sare": {
+        "complete_seed_failures": 3,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 0.8229166666666666,
+        "min": 0.46875,
+        "seed_count": 3
+      },
+      "kl_lss_single_expert": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 0.8125,
+        "min": 0.4375,
+        "seed_count": 3
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 2,
+        "max": 1.0,
+        "mean": 0.3333333333333333,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 2,
+        "max": 1.0,
+        "mean": 0.3333333333333333,
+        "min": 0.0,
+        "seed_count": 3
+      }
+    }
+  },
+  "pack_type": "candidate_result_pack",
+  "provenance": {
+    "git_commit": "8d691d69559de8e2aba18481bebcb7151ac15d84",
+    "git_dirty": true,
+    "historical_phase": "DoorKey broadening phase that argued for a multi-expert routed edge inside DoorKey.",
+    "historical_status": "bounded positive",
+    "provenance_note": "This pack intentionally reflects the stronger multi-expert wording that the current frozen claim envelope now disallows.",
+    "source_reports": [
+      "outputs/reports/lss_single_expert_matched_control_report.md",
+      "outputs/reports/lss_extended_route_dependence_report.md",
+      "outputs/reports/lss_additional_fresh_seed_block_report.md",
+      "outputs/reports/lss_claim_broadening_decision_memo.md"
+    ]
+  },
+  "requested_claims": [
+    "bounded_teacher_guided_doorkey_sare",
+    "specifically_multi_expert_routed_advantage"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

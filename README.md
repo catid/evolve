@@ -138,6 +138,7 @@ Key scripts:
 ./scripts/run_frozen_benchmark_pack_validation.sh
 ./scripts/run_claim_gate.sh
 ./scripts/run_claim_gate_conformance.sh
+./scripts/run_claim_history_replay.sh
 ./scripts/run_claim_gate_redteam_finalize.sh
 ./scripts/run_freeze_hardening_finalize.sh
 ```
@@ -193,6 +194,14 @@ Ad hoc markdown summaries are not enough for thaw consideration. Future DoorKey 
 ```bash
 bash ./scripts/run_claim_gate_conformance.sh
 ```
+
+Historical trust now also includes replaying the gate against the repo's real claim history:
+
+```bash
+bash ./scripts/run_claim_history_replay.sh
+```
+
+That replay is the check that the current sealed gate still agrees with the accepted historical claim trajectory rather than only with synthetic red-team cases.
 
 ## Current DoorKey Result
 

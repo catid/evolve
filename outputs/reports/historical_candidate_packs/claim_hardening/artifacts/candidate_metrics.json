@@ -1,0 +1,141 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [
+      [
+        "fresh",
+        23
+      ],
+      [
+        "fresh",
+        29
+      ],
+      [
+        "fresh",
+        31
+      ],
+      [
+        "original",
+        7
+      ],
+      [
+        "original",
+        11
+      ],
+      [
+        "original",
+        19
+      ]
+    ],
+    "retry_block_lane_seeds": [
+      [
+        "fresh",
+        23
+      ],
+      [
+        "fresh",
+        29
+      ],
+      [
+        "fresh",
+        31
+      ]
+    ]
+  },
+  "candidate_name": "claim_hardening",
+  "controls_present": [
+    "recovered_token_dense",
+    "kl_lss_token_dense",
+    "baseline_sare",
+    "kl_lss_sare"
+  ],
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "external_policy_diagnostics"
+  },
+  "metrics": {
+    "combined": {
+      "baseline_sare": {
+        "complete_seed_failures": 6,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 6
+      },
+      "flat_dense": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 6
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 0.8567708333333334,
+        "min": 0.5625,
+        "seed_count": 6
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.6666666666666666,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 3,
+        "max": 1.0,
+        "mean": 0.4505208333333333,
+        "min": 0.0,
+        "seed_count": 6
+      }
+    },
+    "retry_block": {
+      "baseline_sare": {
+        "complete_seed_failures": 3,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "flat_dense": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 2,
+        "max": 1.0,
+        "mean": 0.3333333333333333,
+        "min": 0.0,
+        "seed_count": 3
+      }
+    }
+  },
+  "provenance": {
+    "git_commit": "8d691d69559de8e2aba18481bebcb7151ac15d84",
+    "git_dirty": true,
+    "historical_phase": "Additional-seed and matched-token-control hardening before broadening.",
+    "historical_status": "bounded positive",
+    "provenance_note": "This phase added matched token_dense controls and fresh seeds, but not the current single_expert and final retry-block closure.",
+    "source_reports": [
+      "outputs/reports/lss_additional_seed_report.md",
+      "outputs/reports/lss_matched_control_report.md",
+      "outputs/reports/lss_claim_hardening_decision_memo.md"
+    ]
+  },
+  "requested_claims": [
+    "bounded_teacher_guided_doorkey_sare"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

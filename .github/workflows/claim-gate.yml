@@ -11,6 +11,7 @@ on:
       - "outputs/reports/**"
       - "scripts/run_claim_gate.sh"
       - "scripts/run_claim_gate_conformance.sh"
+      - "scripts/run_claim_history_replay.sh"
       - "scripts/run_claim_gate_redteam_finalize.sh"
       - "scripts/run_frozen_baseline_validation.sh"
       - "scripts/run_frozen_benchmark_pack_validation.sh"
@@ -18,11 +19,14 @@ on:
       - "src/psmn_rl/analysis/benchmark_pack.py"
       - "src/psmn_rl/analysis/claim_gate.py"
       - "src/psmn_rl/analysis/claim_gate_conformance.py"
+      - "src/psmn_rl/analysis/claim_history_replay.py"
       - "src/psmn_rl/analysis/freeze_hardening.py"
       - "tests/data/claim_gate_corpus/**"
+      - "tests/data/claim_history_replay/**"
       - "tests/test_benchmark_pack.py"
       - "tests/test_claim_gate.py"
       - "tests/test_claim_gate_conformance.py"
+      - "tests/test_claim_history_replay.py"
       - "tests/test_freeze_hardening.py"
   workflow_dispatch:
 
@@ -51,6 +55,7 @@ jobs:
           bash -n scripts/run_frozen_benchmark_pack_validation.sh
           bash -n scripts/run_claim_gate.sh
           bash -n scripts/run_claim_gate_conformance.sh
+          bash -n scripts/run_claim_history_replay.sh
           bash -n scripts/run_claim_gate_redteam_finalize.sh
           bash -n scripts/run_freeze_hardening_finalize.sh
 
@@ -63,6 +68,11 @@ jobs:
         run: |
           source .venv/bin/activate
           bash ./scripts/run_claim_gate_conformance.sh
+
+      - name: Run historical claim-gate replay
+        run: |
+          source .venv/bin/activate
+          bash ./scripts/run_claim_history_replay.sh
 
       - name: Run tests
         run: |

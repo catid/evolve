@@ -1,0 +1,42 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [],
+    "retry_block_lane_seeds": []
+  },
+  "candidate_name": "entropy_schedule",
+  "controls_present": [
+    "baseline_sare"
+  ],
+  "evaluation": {
+    "episodes": 32,
+    "path_key": "entropy_schedule_sweep"
+  },
+  "metrics": {
+    "combined": {
+      "baseline_sare": {
+        "complete_seed_failures": 7,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 7
+      }
+    },
+    "retry_block": {}
+  },
+  "provenance": {
+    "git_commit": "8d691d69559de8e2aba18481bebcb7151ac15d84",
+    "git_dirty": true,
+    "historical_phase": "PPO entropy-schedule sweep for DoorKey SARE greedy recovery.",
+    "historical_status": "negative",
+    "provenance_note": "This is a PPO-only schedule sweep rather than a teacher-guided structured comparison.",
+    "source_reports": [
+      "outputs/reports/entropy_schedule_report.md",
+      "outputs/reports/entropy_schedule_report.csv"
+    ]
+  },
+  "requested_claims": [
+    "ppo_only_routed_win"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

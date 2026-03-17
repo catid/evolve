@@ -1,0 +1,106 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [
+      [
+        "original",
+        7
+      ],
+      [
+        "original",
+        11
+      ],
+      [
+        "original",
+        19
+      ]
+    ],
+    "retry_block_lane_seeds": [
+      [
+        "original",
+        7
+      ],
+      [
+        "original",
+        11
+      ],
+      [
+        "original",
+        19
+      ]
+    ]
+  },
+  "candidate_name": "teacher_extraction_multiseed",
+  "controls_present": [
+    "recovered_token_dense",
+    "baseline_sare",
+    "kl_lss_sare"
+  ],
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "external_policy_diagnostics"
+  },
+  "metrics": {
+    "combined": {
+      "baseline_sare": {
+        "complete_seed_failures": 3,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.5,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.5677083333333334,
+        "min": 0.0,
+        "seed_count": 3
+      }
+    },
+    "retry_block": {
+      "baseline_sare": {
+        "complete_seed_failures": 3,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.5,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.5677,
+        "min": 0.0,
+        "seed_count": 3
+      }
+    }
+  },
+  "provenance": {
+    "git_commit": "8d691d69559de8e2aba18481bebcb7151ac15d84",
+    "git_dirty": true,
+    "historical_phase": "First multi-seed teacher-guided learner-state DoorKey signal before hardening.",
+    "historical_status": "bounded positive",
+    "provenance_note": "The original 3-seed reopened result predated the later matched-control and final-block fairness requirements.",
+    "source_reports": [
+      "outputs/reports/teacher_extraction_multiseed_report.md",
+      "outputs/reports/teacher_extraction_multiseed_report.csv"
+    ]
+  },
+  "requested_claims": [
+    "bounded_teacher_guided_doorkey_sare"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

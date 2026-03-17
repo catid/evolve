@@ -1,0 +1,3 @@
+variant,mean,min,max,complete_seed_failures,seed_count
+baseline_sare,0.0000,0.0000,0.0000,4,4
+single_expert,0.0000,0.0000,0.0000,4,4

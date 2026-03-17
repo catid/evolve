@@ -1,0 +1,226 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [
+      [
+        "fresh",
+        23
+      ],
+      [
+        "fresh",
+        29
+      ],
+      [
+        "fresh",
+        31
+      ],
+      [
+        "fresh_extra",
+        37
+      ],
+      [
+        "fresh_extra",
+        41
+      ],
+      [
+        "fresh_extra",
+        43
+      ],
+      [
+        "fresh_final",
+        47
+      ],
+      [
+        "fresh_final",
+        53
+      ],
+      [
+        "fresh_final",
+        59
+      ],
+      [
+        "original",
+        7
+      ],
+      [
+        "original",
+        11
+      ],
+      [
+        "original",
+        19
+      ]
+    ],
+    "retry_block_lane_seeds": [
+      [
+        "fresh_final",
+        47
+      ],
+      [
+        "fresh_final",
+        53
+      ],
+      [
+        "fresh_final",
+        59
+      ]
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "outputs/reports/historical_candidate_packs/final_frozen_state/artifacts/candidate_summary.md",
+      "role": "candidate_summary_markdown",
+      "sha256": "b06d8fa0289f71dea1032c72f268d95600928e0d239b08c6ff5f9107e60d915a",
+      "size_bytes": 1015
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/final_frozen_state/artifacts/candidate_metrics.json",
+      "role": "candidate_metrics_json",
+      "sha256": "146cba09cbd6c144c2cc337ded8e2c9e7df9883135cab9e6493f690005f6d89b",
+      "size_bytes": 3695
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/final_frozen_state/artifacts/combined_report.md",
+      "role": "combined_report_markdown",
+      "sha256": "34aeb1880b4433f1a07f72a85abbbfea122941d6a7dac5fead25ac42c21a3a23",
+      "size_bytes": 757
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/final_frozen_state/artifacts/combined_report.csv",
+      "role": "combined_report_csv",
+      "sha256": "fe90ab291deac9322e605cf1b892f6e6c1703fe47d72914c35c85881c7c3007f",
+      "size_bytes": 280
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/final_frozen_state/artifacts/retry_block_report.md",
+      "role": "retry_block_report_markdown",
+      "sha256": "a15a00fec6cee3126de2bc813b40e0aa0cf4d875e747f8d9e37a8606a3ad40a8",
+      "size_bytes": 593
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/final_frozen_state/artifacts/retry_block_report.csv",
+      "role": "retry_block_report_csv",
+      "sha256": "bbbdbe8eabf869147eec640576077f6cc82195e86b7f325fb250974ea7e00a81",
+      "size_bytes": 274
+    }
+  ],
+  "candidate_name": "final_frozen_state",
+  "controls_present": [
+    "recovered_token_dense",
+    "kl_lss_token_dense",
+    "kl_lss_single_expert",
+    "baseline_sare",
+    "kl_lss_sare"
+  ],
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "external_policy_diagnostics"
+  },
+  "frozen_pack_reference": {
+    "claim_id": "doorkey_frozen_claim",
+    "path": "outputs/reports/frozen_benchmark_pack.json",
+    "sha256": "21f69b44b2a1567f6432e0ec2a0f5dce2c4f74ea256196d865fbdf384580a873"
+  },
+  "historical_context": {
+    "description": "Current sealed frozen DoorKey candidate under the pack-based gate.",
+    "expected_verdict": "FAIL: claim remains frozen",
+    "family": "Final frozen state",
+    "ledger_family": "Final frozen state",
+    "rationale": "The current frozen candidate is the explicit no-thaw reference point and must still fail its own thaw gate."
+  },
+  "metrics": {
+    "combined": {
+      "baseline_sare": {
+        "complete_seed_failures": 12,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.7122395833333334,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "kl_lss_single_expert": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.6861979166666666,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 4,
+        "max": 1.0,
+        "mean": 0.6354166666666666,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 5,
+        "max": 1.0,
+        "mean": 0.55859375,
+        "min": 0.0,
+        "seed_count": 12
+      }
+    },
+    "retry_block": {
+      "baseline_sare": {
+        "complete_seed_failures": 3,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 1,
+        "max": 0.515625,
+        "mean": 0.3125,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "kl_lss_single_expert": {
+        "complete_seed_failures": 0,
+        "max": 0.515625,
+        "mean": 0.4635416666666667,
+        "min": 0.421875,
+        "seed_count": 3
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3
+      }
+    }
+  },
+  "pack_type": "candidate_result_pack",
+  "provenance": {
+    "git_commit": "8d691d69559de8e2aba18481bebcb7151ac15d84",
+    "git_dirty": true,
+    "historical_phase": "Current sealed frozen DoorKey candidate under the pack-based gate.",
+    "historical_status": "frozen",
+    "provenance_note": "This is the current sealed frozen benchmark candidate and should remain the hard-fail thaw reference.",
+    "source_reports": [
+      "outputs/reports/frozen_benchmark_pack.md",
+      "outputs/reports/frozen_claim_envelope.md",
+      "outputs/reports/freeze_hardening_operational_memo.md",
+      "outputs/reports/lss_final_block_single_expert_control_report.md",
+      "outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.md"
+    ]
+  },
+  "requested_claims": [
+    "bounded_teacher_guided_doorkey_sare"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

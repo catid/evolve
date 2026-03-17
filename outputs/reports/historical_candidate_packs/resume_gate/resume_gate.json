@@ -1,0 +1,224 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [
+      [
+        "fresh",
+        23
+      ],
+      [
+        "fresh",
+        29
+      ],
+      [
+        "fresh",
+        31
+      ],
+      [
+        "fresh_extra",
+        37
+      ],
+      [
+        "fresh_extra",
+        41
+      ],
+      [
+        "fresh_extra",
+        43
+      ],
+      [
+        "fresh_final",
+        47
+      ],
+      [
+        "fresh_final",
+        53
+      ],
+      [
+        "fresh_final",
+        59
+      ],
+      [
+        "original",
+        7
+      ],
+      [
+        "original",
+        11
+      ],
+      [
+        "original",
+        19
+      ]
+    ],
+    "retry_block_lane_seeds": [
+      [
+        "fresh_final",
+        47
+      ],
+      [
+        "fresh_final",
+        53
+      ],
+      [
+        "fresh_final",
+        59
+      ]
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "outputs/reports/historical_candidate_packs/resume_gate/artifacts/candidate_summary.md",
+      "role": "candidate_summary_markdown",
+      "sha256": "361868ed2e2684e25997e3ea81b444fff75c8c51c890e165f9a10379407f4dc2",
+      "size_bytes": 925
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/resume_gate/artifacts/candidate_metrics.json",
+      "role": "candidate_metrics_json",
+      "sha256": "3292f59291aade8cfb4d3c8183029c24a58b81841ae75d90ef7911f2fb7e547f",
+      "size_bytes": 3615
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/resume_gate/artifacts/combined_report.md",
+      "role": "combined_report_markdown",
+      "sha256": "2416275f166cebf439caa08e03752bcf96d29e2e8f497224d50db8ca7cf2e26c",
+      "size_bytes": 750
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/resume_gate/artifacts/combined_report.csv",
+      "role": "combined_report_csv",
+      "sha256": "fe90ab291deac9322e605cf1b892f6e6c1703fe47d72914c35c85881c7c3007f",
+      "size_bytes": 280
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/resume_gate/artifacts/retry_block_report.md",
+      "role": "retry_block_report_markdown",
+      "sha256": "d25812a1a7def541375e2900758e24f92a1aac4b2cd54d0e1621f46cb9ae8574",
+      "size_bytes": 586
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/resume_gate/artifacts/retry_block_report.csv",
+      "role": "retry_block_report_csv",
+      "sha256": "bbbdbe8eabf869147eec640576077f6cc82195e86b7f325fb250974ea7e00a81",
+      "size_bytes": 274
+    }
+  ],
+  "candidate_name": "resume_gate",
+  "controls_present": [
+    "recovered_token_dense",
+    "kl_lss_token_dense",
+    "kl_lss_single_expert",
+    "baseline_sare",
+    "kl_lss_sare"
+  ],
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "external_policy_diagnostics"
+  },
+  "frozen_pack_reference": {
+    "claim_id": "doorkey_frozen_claim",
+    "path": "outputs/reports/frozen_benchmark_pack.json",
+    "sha256": "21f69b44b2a1567f6432e0ec2a0f5dce2c4f74ea256196d865fbdf384580a873"
+  },
+  "historical_context": {
+    "description": "Resume-gate phase after the final-block single_expert fairness closure.",
+    "expected_verdict": "FAIL: claim remains frozen",
+    "family": "Resume gate",
+    "ledger_family": "Resume gate",
+    "rationale": "Once the final-block single_expert control exists, the current frozen candidate still fails the thaw bars."
+  },
+  "metrics": {
+    "combined": {
+      "baseline_sare": {
+        "complete_seed_failures": 12,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.7122395833333334,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "kl_lss_single_expert": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.6861979166666666,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 4,
+        "max": 1.0,
+        "mean": 0.6354166666666666,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 5,
+        "max": 1.0,
+        "mean": 0.55859375,
+        "min": 0.0,
+        "seed_count": 12
+      }
+    },
+    "retry_block": {
+      "baseline_sare": {
+        "complete_seed_failures": 3,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 1,
+        "max": 0.515625,
+        "mean": 0.3125,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "kl_lss_single_expert": {
+        "complete_seed_failures": 0,
+        "max": 0.515625,
+        "mean": 0.4635416666666667,
+        "min": 0.421875,
+        "seed_count": 3
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3
+      }
+    }
+  },
+  "pack_type": "candidate_result_pack",
+  "provenance": {
+    "git_commit": "8d691d69559de8e2aba18481bebcb7151ac15d84",
+    "git_dirty": true,
+    "historical_phase": "Resume-gate phase after the final-block single_expert fairness closure.",
+    "historical_status": "frozen",
+    "provenance_note": "This is the first frozen-era phase where the modern fairness closure exists and the gate can evaluate the retry block directly.",
+    "source_reports": [
+      "outputs/reports/lss_final_block_single_expert_control_report.md",
+      "outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.md",
+      "outputs/reports/lss_resume_gate_decision_memo.md"
+    ]
+  },
+  "requested_claims": [
+    "bounded_teacher_guided_doorkey_sare"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

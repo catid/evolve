@@ -70,14 +70,14 @@
       "exists": true,
       "path": "outputs/reports/frozen_baseline_validation.md",
       "role": "candidate_summary_markdown",
-      "sha256": "e068beabe92f80c105345bf900c528b448d7f133906478ff152497f8a6b28063",
+      "sha256": "9ce8e7f5055663abea1ea7444bde72ecc3789b9605a644ce24375f0149bf1248",
       "size_bytes": 3115
     },
     {
       "exists": true,
       "path": "outputs/reports/frozen_baseline_validation.json",
       "role": "candidate_metrics_json",
-      "sha256": "03f5b1d49e3effdbf508aa69e12842a35cb06d365f0b9bd1e3dca0bf9c048351",
+      "sha256": "1888fb7ac3e78dead22811d99b88ee1d6b250c37de8fa0600e4bc7ea12a1918b",
       "size_bytes": 9679
     },
     {
@@ -124,7 +124,7 @@
   "frozen_pack_reference": {
     "claim_id": "doorkey_frozen_claim",
     "path": "outputs/reports/frozen_benchmark_pack.json",
-    "sha256": "1d0bdccf1a16e0368f087ed73952b41ed4647a48d1c7dbed917da7dde41ac9ae"
+    "sha256": "21f69b44b2a1567f6432e0ec2a0f5dce2c4f74ea256196d865fbdf384580a873"
   },
   "metrics": {
     "combined": {
@@ -230,7 +230,7 @@
     "candidate_source_json": "outputs/reports/frozen_baseline_validation.json",
     "combined_doorkey_csv": "outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.csv",
     "final_block_csv": "outputs/reports/lss_final_block_single_expert_control_report.csv",
-    "git_commit": "7a5b35e2829ddbcbaf1eaea6cf59614070f5a33e",
+    "git_commit": "8d691d69559de8e2aba18481bebcb7151ac15d84",
     "git_dirty": true,
     "keycorridor_transfer_csv": "outputs/reports/lss_keycorridor_transfer_report.csv"
   },

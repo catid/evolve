@@ -62,9 +62,19 @@ Future thaw discussion must use the pack-based gate, not ad hoc report compariso
 - adversarial conformance corpus: [claim_gate_corpus_report.md](outputs/reports/claim_gate_corpus_report.md)
 - adversarial conformance result: [claim_gate_conformance_report.md](outputs/reports/claim_gate_conformance_report.md)
 - red-team memo: [claim_gate_redteam_decision_memo.md](outputs/reports/claim_gate_redteam_decision_memo.md)
+- historical replay catalog: [historical_candidate_pack_catalog.md](outputs/reports/historical_candidate_pack_catalog.md)
+- historical replay report: [claim_history_replay_report.md](outputs/reports/claim_history_replay_report.md)
+- historical replay audit: [claim_ledger_consistency_audit.md](outputs/reports/claim_ledger_consistency_audit.md)
+- historical replay memo: [claim_history_replay_decision_memo.md](outputs/reports/claim_history_replay_decision_memo.md)
 - operational memo: [freeze_hardening_operational_memo.md](outputs/reports/freeze_hardening_operational_memo.md)
 
 Ad hoc markdown reports are insufficient for thaw consideration. Any future DoorKey thaw candidate must be packaged as a candidate result pack and clear the pack-based gate.
+The hardened trust path is now:
+
+- sealed frozen benchmark pack
+- pack-based claim gate
+- adversarial conformance corpus
+- historical replay against the repo's real claim history
 
 ## Final Decision Path
 

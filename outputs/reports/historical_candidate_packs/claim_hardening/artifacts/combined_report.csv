@@ -1,0 +1,6 @@
+variant,mean,min,max,complete_seed_failures,seed_count
+baseline_sare,0.0000,0.0000,0.0000,6,6
+flat_dense,1.0000,1.0000,1.0000,0,6
+kl_lss_sare,0.8568,0.5625,1.0000,0,6
+kl_lss_token_dense,0.6667,0.0000,1.0000,1,3
+recovered_token_dense,0.4505,0.0000,1.0000,3,6

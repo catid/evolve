@@ -1,0 +1,47 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [],
+    "retry_block_lane_seeds": []
+  },
+  "candidate_name": "policy_distillation",
+  "controls_present": [],
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "offline_policy_distillation"
+  },
+  "metrics": {
+    "combined": {
+      "distilled_sare": {
+        "complete_seed_failures": 5,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 5
+      },
+      "distilled_token_dense": {
+        "complete_seed_failures": 5,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 5
+      }
+    },
+    "retry_block": {}
+  },
+  "provenance": {
+    "git_commit": "8d691d69559de8e2aba18481bebcb7151ac15d84",
+    "git_dirty": true,
+    "historical_phase": "Offline teacher distillation from flat_dense or token_dense into SARE and token_dense students.",
+    "historical_status": "negative",
+    "provenance_note": "Historical distillation results are preserved as source evidence, but they are not directly comparable to the frozen KL learner-state benchmark slice.",
+    "source_reports": [
+      "outputs/reports/policy_distillation_report.md",
+      "outputs/reports/policy_distillation_report.csv"
+    ]
+  },
+  "requested_claims": [
+    "bounded_teacher_guided_doorkey_sare"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

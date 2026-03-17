@@ -1,0 +1,49 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [],
+    "retry_block_lane_seeds": []
+  },
+  "candidate_name": "learner_state_supervision_initial",
+  "controls_present": [
+    "kl_lss_sare"
+  ],
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "learner_state_round_summary"
+  },
+  "metrics": {
+    "combined": {
+      "kl_lss_sare": {
+        "complete_seed_failures": 0,
+        "max": 0.5,
+        "mean": 0.5,
+        "min": 0.5,
+        "seed_count": 1
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 1,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 1
+      }
+    },
+    "retry_block": {}
+  },
+  "provenance": {
+    "git_commit": "8d691d69559de8e2aba18481bebcb7151ac15d84",
+    "git_dirty": true,
+    "historical_phase": "Initial single-run learner-state supervision signal before multi-seed hardening.",
+    "historical_status": "bounded positive",
+    "provenance_note": "This pack captures the first bounded positive learner-state signal, not a modern thaw-ready comparison pack.",
+    "source_reports": [
+      "outputs/reports/learner_state_supervision_report.md",
+      "outputs/reports/learner_state_supervision_report.csv"
+    ]
+  },
+  "requested_claims": [
+    "bounded_teacher_guided_doorkey_sare"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

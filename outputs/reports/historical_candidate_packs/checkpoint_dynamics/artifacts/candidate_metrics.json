@@ -1,0 +1,42 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [],
+    "retry_block_lane_seeds": []
+  },
+  "candidate_name": "checkpoint_dynamics",
+  "controls_present": [
+    "baseline_sare"
+  ],
+  "evaluation": {
+    "episodes": 32,
+    "path_key": "checkpoint_dynamics_scan"
+  },
+  "metrics": {
+    "combined": {
+      "baseline_sare": {
+        "complete_seed_failures": 8,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 8
+      }
+    },
+    "retry_block": {}
+  },
+  "provenance": {
+    "git_commit": "8d691d69559de8e2aba18481bebcb7151ac15d84",
+    "git_dirty": true,
+    "historical_phase": "Archived PPO checkpoint scan for DoorKey SARE greedy recovery.",
+    "historical_status": "negative",
+    "provenance_note": "The historical phase was a PPO-only checkpoint scan, not a teacher-guided KL learner-state comparison.",
+    "source_reports": [
+      "outputs/reports/checkpoint_dynamics_report.md",
+      "outputs/reports/checkpoint_dynamics_report.csv"
+    ]
+  },
+  "requested_claims": [
+    "ppo_only_routed_win"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

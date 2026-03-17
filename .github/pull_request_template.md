@@ -17,6 +17,8 @@
 - Pack-based claim gate report path:
 - Pack-based claim gate verdict:
 - Claim-gate conformance report path:
+- Historical replay report path:
+- Historical replay snapshot report path:
 - Frozen benchmark pack validation report path:
 
 ## Retry Registration

@@ -1,0 +1,217 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [
+      [
+        "fresh",
+        23
+      ],
+      [
+        "fresh",
+        29
+      ],
+      [
+        "fresh",
+        31
+      ],
+      [
+        "fresh_extra",
+        37
+      ],
+      [
+        "fresh_extra",
+        41
+      ],
+      [
+        "fresh_extra",
+        43
+      ],
+      [
+        "fresh_final",
+        47
+      ],
+      [
+        "fresh_final",
+        53
+      ],
+      [
+        "fresh_final",
+        59
+      ],
+      [
+        "original",
+        7
+      ],
+      [
+        "original",
+        11
+      ],
+      [
+        "original",
+        19
+      ]
+    ],
+    "retry_block_lane_seeds": [
+      [
+        "fresh_final",
+        47
+      ],
+      [
+        "fresh_final",
+        53
+      ],
+      [
+        "fresh_final",
+        59
+      ]
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "outputs/reports/historical_candidate_packs/multi_expert_hardening/artifacts/candidate_summary.md",
+      "role": "candidate_summary_markdown",
+      "sha256": "8ee7046ff8631833b456989cf7345fa5523df5ed0ac05a52a6dbe8d74317f75c",
+      "size_bytes": 1018
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/multi_expert_hardening/artifacts/candidate_metrics.json",
+      "role": "candidate_metrics_json",
+      "sha256": "865c0e2073d08c0a5b00865d6d0471cfe4b0b2faf05d6522630a206638ce9dc9",
+      "size_bytes": 3472
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/multi_expert_hardening/artifacts/combined_report.md",
+      "role": "combined_report_markdown",
+      "sha256": "c007dd24bda8f58b01150b7916007fc9b8e17f78003da4817a1304bed2909370",
+      "size_bytes": 760
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/multi_expert_hardening/artifacts/combined_report.csv",
+      "role": "combined_report_csv",
+      "sha256": "0014cb41569e11f8e1a7051697df64b14dd83e4de265e2d8dda6fcd42553f87c",
+      "size_bytes": 279
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/multi_expert_hardening/artifacts/retry_block_report.md",
+      "role": "retry_block_report_markdown",
+      "sha256": "62bc5550e3ebc13ebb8c55cd6acf025259ada5f3093d44c7ed02dd829592dac5",
+      "size_bytes": 525
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/multi_expert_hardening/artifacts/retry_block_report.csv",
+      "role": "retry_block_report_csv",
+      "sha256": "5f69b03e93a292c4e8b98317069100abe8c9b1d2ff948e44363ed80cc525c25a",
+      "size_bytes": 227
+    }
+  ],
+  "candidate_name": "multi_expert_hardening",
+  "controls_present": [
+    "recovered_token_dense",
+    "kl_lss_token_dense",
+    "kl_lss_single_expert",
+    "baseline_sare",
+    "kl_lss_sare"
+  ],
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "external_policy_diagnostics"
+  },
+  "frozen_pack_reference": {
+    "claim_id": "doorkey_frozen_claim",
+    "path": "outputs/reports/frozen_benchmark_pack.json",
+    "sha256": "21f69b44b2a1567f6432e0ec2a0f5dce2c4f74ea256196d865fbdf384580a873"
+  },
+  "historical_context": {
+    "description": "Final fresh-block weakening before the later frozen fairness closure.",
+    "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+    "family": "Multi-expert hardening",
+    "ledger_family": "Multi-expert hardening",
+    "rationale": "The historical hardening phase still lacked the final same-block single_expert retry metrics needed by the current gate."
+  },
+  "metrics": {
+    "combined": {
+      "baseline_sare": {
+        "complete_seed_failures": 12,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.7122395833333334,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "kl_lss_single_expert": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.7604166666666666,
+        "min": 0.0,
+        "seed_count": 9
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 4,
+        "max": 1.0,
+        "mean": 0.6354166666666666,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 5,
+        "max": 1.0,
+        "mean": 0.55859375,
+        "min": 0.0,
+        "seed_count": 12
+      }
+    },
+    "retry_block": {
+      "baseline_sare": {
+        "complete_seed_failures": 3,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 1,
+        "max": 0.515625,
+        "mean": 0.3125,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3
+      }
+    }
+  },
+  "pack_type": "candidate_result_pack",
+  "provenance": {
+    "git_commit": "8d691d69559de8e2aba18481bebcb7151ac15d84",
+    "git_dirty": true,
+    "historical_phase": "Final fresh-block weakening before the later frozen fairness closure.",
+    "historical_status": "bounded positive",
+    "provenance_note": "This pre-frozen phase is historically important because it first exposed the final-block reversal, but it did not yet include the later same-block single_expert closure.",
+    "source_reports": [
+      "outputs/reports/lss_final_fresh_seed_block_report.md",
+      "outputs/reports/lss_final_combined_doorkey_report.md",
+      "outputs/reports/lss_multi_expert_hardening_decision_memo.md"
+    ]
+  },
+  "requested_claims": [
+    "bounded_teacher_guided_doorkey_sare"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

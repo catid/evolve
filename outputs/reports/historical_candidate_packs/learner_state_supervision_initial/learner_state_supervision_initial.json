@@ -1,0 +1,100 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [],
+    "retry_block_lane_seeds": []
+  },
+  "artifacts": [
+    {
+      "path": "outputs/reports/historical_candidate_packs/learner_state_supervision_initial/artifacts/candidate_summary.md",
+      "role": "candidate_summary_markdown",
+      "sha256": "58782e90102d83f634b9d3a81b9f604f2c4ca0fb57e7d764c310f2d05ddb5f17",
+      "size_bytes": 859
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/learner_state_supervision_initial/artifacts/candidate_metrics.json",
+      "role": "candidate_metrics_json",
+      "sha256": "36cef66bf37757f1a0b0e945679299a2c2933b993bbbf209434bdc358a3c503d",
+      "size_bytes": 1327
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/learner_state_supervision_initial/artifacts/combined_report.md",
+      "role": "combined_report_markdown",
+      "sha256": "e941a98ebe70a765c8c583e6bc5f32547a45b2316f4230726524b5b312b68394",
+      "size_bytes": 334
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/learner_state_supervision_initial/artifacts/combined_report.csv",
+      "role": "combined_report_csv",
+      "sha256": "df3bcdd4036e62705fffa60c58312e0119bc27c134fee114e492efc9cc66e854",
+      "size_bytes": 139
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/learner_state_supervision_initial/artifacts/retry_block_report.md",
+      "role": "retry_block_report_markdown",
+      "sha256": "4174a0eaeca0ab6b0992dc655756b3c5c920fcb33ba05bd28d0278a872bdb6fa",
+      "size_bytes": 242
+    },
+    {
+      "path": "outputs/reports/historical_candidate_packs/learner_state_supervision_initial/artifacts/retry_block_report.csv",
+      "role": "retry_block_report_csv",
+      "sha256": "5d71b9e014f3ffdeee6afb2392744b27d16f8171c4f8871c9e21035f3127562d",
+      "size_bytes": 69
+    }
+  ],
+  "candidate_name": "learner_state_supervision_initial",
+  "controls_present": [
+    "kl_lss_sare"
+  ],
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "learner_state_round_summary"
+  },
+  "frozen_pack_reference": {
+    "claim_id": "doorkey_frozen_claim",
+    "path": "outputs/reports/frozen_benchmark_pack.json",
+    "sha256": "21f69b44b2a1567f6432e0ec2a0f5dce2c4f74ea256196d865fbdf384580a873"
+  },
+  "historical_context": {
+    "description": "Initial single-run learner-state supervision signal before multi-seed hardening.",
+    "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+    "family": "Learner-state supervision",
+    "ledger_family": "Learner-state supervision",
+    "rationale": "The initial positive learner-state signal does not include the required matched controls, retry block, or combined DoorKey slice under the modern frozen gate."
+  },
+  "metrics": {
+    "combined": {
+      "kl_lss_sare": {
+        "complete_seed_failures": 0,
+        "max": 0.5,
+        "mean": 0.5,
+        "min": 0.5,
+        "seed_count": 1
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 1,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 1
+      }
+    },
+    "retry_block": {}
+  },
+  "pack_type": "candidate_result_pack",
+  "provenance": {
+    "git_commit": "8d691d69559de8e2aba18481bebcb7151ac15d84",
+    "git_dirty": true,
+    "historical_phase": "Initial single-run learner-state supervision signal before multi-seed hardening.",
+    "historical_status": "bounded positive",
+    "provenance_note": "This pack captures the first bounded positive learner-state signal, not a modern thaw-ready comparison pack.",
+    "source_reports": [
+      "outputs/reports/learner_state_supervision_report.md",
+      "outputs/reports/learner_state_supervision_report.csv"
+    ]
+  },
+  "requested_claims": [
+    "bounded_teacher_guided_doorkey_sare"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

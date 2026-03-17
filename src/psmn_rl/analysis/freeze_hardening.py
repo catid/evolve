@@ -52,7 +52,7 @@ LEDGER_ROWS = [
         "family": "Learner-state supervision",
         "status": "bounded positive",
         "scope": "DoorKey teacher-guided KL learner-state extraction",
-        "claim_effect": "opened the only bounded positive routed DoorKey result",
+        "claim_effect": "opened the only bounded positive routed DoorKey result, but only as an early signal that still predates the current matched-control and retry-block gate",
         "reports": [
             "outputs/reports/lss_robustness_sweep_report.md",
             "outputs/reports/lss_robustness_multiseed_report.md",
@@ -73,11 +73,24 @@ LEDGER_ROWS = [
         "family": "Claim broadening",
         "status": "bounded positive",
         "scope": "DoorKey-only fairness and causal-route checks before final freeze",
-        "claim_effect": "showed a stronger within-DoorKey edge, later weakened by the final block",
+        "claim_effect": "showed a stronger within-DoorKey edge, but that broader multi-expert interpretation was later weakened by the final block and is blocked by the current frozen gate",
         "reports": [
             "outputs/reports/lss_single_expert_matched_control_report.md",
             "outputs/reports/lss_extended_route_dependence_report.md",
             "outputs/reports/lss_claim_broadening_decision_memo.md",
+        ],
+    },
+    {
+        "family": "Multi-expert hardening",
+        "status": "bounded positive",
+        "scope": "DoorKey-only fresh single_expert fairness checks and final-block stress test before freeze",
+        "claim_effect": "showed that the structured DoorKey edge still existed on the 9-seed slice, but the 47/53/59 final block weakened the specifically multi-expert interpretation enough that the project moved toward freeze instead of thaw",
+        "reports": [
+            "outputs/reports/lss_fresh_single_expert_matched_control_report.md",
+            "outputs/reports/lss_seed29_route_randomization_forensics.md",
+            "outputs/reports/lss_broader_route_dependence_report.md",
+            "outputs/reports/lss_final_fresh_seed_block_report.md",
+            "outputs/reports/lss_multi_expert_hardening_decision_memo.md",
         ],
     },
     {
