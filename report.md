@@ -9,23 +9,21 @@
   - teacher-logit `KL` learner-state supervision for `SARE`
   - DoorKey only
   - external `64`-episode evaluation only
-- After the multi-expert hardening pass, the best description of the result is:
+- After the final fairness-and-failure analysis pass, the best description of the result is:
   - a bounded DoorKey teacher-guided `SARE` win
-  - more method-first than fully mechanism-hardened
+  - narrower and more method-first than the earlier broadened DoorKey reading
   - not strong enough to promote into a specifically multi-expert routed DoorKey edge
 
 ## Final Decision Path
 
 Source artifacts:
 
-- [lss_multi_expert_hardening_reproduction_note.md](outputs/reports/lss_multi_expert_hardening_reproduction_note.md)
-- [lss_fresh_single_expert_matched_control_report.md](outputs/reports/lss_fresh_single_expert_matched_control_report.md)
-- [lss_seed29_route_randomization_forensics.md](outputs/reports/lss_seed29_route_randomization_forensics.md)
-- [lss_broader_route_dependence_report.md](outputs/reports/lss_broader_route_dependence_report.md)
-- [lss_final_fresh_seed_block_report.md](outputs/reports/lss_final_fresh_seed_block_report.md)
-- [lss_final_combined_doorkey_report.md](outputs/reports/lss_final_combined_doorkey_report.md)
+- [lss_frozen_claim_reproduction_note.md](outputs/reports/lss_frozen_claim_reproduction_note.md)
+- [lss_final_block_single_expert_control_report.md](outputs/reports/lss_final_block_single_expert_control_report.md)
+- [lss_final_block_failure_analysis.md](outputs/reports/lss_final_block_failure_analysis.md)
+- [lss_frozen_claim_updated_combined_doorkey_report.md](outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.md)
+- [lss_frozen_claim_decision_memo.md](outputs/reports/lss_frozen_claim_decision_memo.md)
 - [lss_keycorridor_transfer_report.md](outputs/reports/lss_keycorridor_transfer_report.md)
-- [lss_multi_expert_hardening_decision_memo.md](outputs/reports/lss_multi_expert_hardening_decision_memo.md)
 
 All final claims in this phase use the external `64`-episode `policy_diagnostics` path.
 
@@ -47,19 +45,19 @@ These earlier no-go results still stand:
 
 So the repo’s positive routed result still does not come from PPO tuning or offline imitation.
 
-## What Changed In The Multi-Expert Hardening Phase
+## What Changed In The Frozen-Claim Analysis Phase
 
-The final hardening phase answered three remaining DoorKey-only questions:
+The final fairness-and-failure phase answered three remaining DoorKey-only questions:
 
-- does `SARE` stay ahead once fresh-lane matched `single_expert` controls are added?
-- is seed `29` a weak route-randomization probe artifact or a real exception?
-- does one final fresh matched seed block keep the edge alive?
+- does `SARE` stay ahead once the missing final-block matched `single_expert` control is added?
+- why does the final fresh block `47/53/59` flip toward `token_dense`?
+- does the updated combined DoorKey fairness picture justify thawing the claim?
 
 The answer is:
 
-- yes on the fresh-lane `single_expert` fairness check
-- seed `29` is a genuine but narrow route-randomization exception
-- no on the final fresh matched seed block
+- no on the final-block `single_expert` fairness check
+- the weak final-block seeds look more like extraction mismatch than bad teacher labels
+- no on thawing the claim
 - still no on bounded KeyCorridor transfer
 
 On the matched structured DoorKey slice where all three structured students exist:
@@ -84,16 +82,17 @@ Mean greedy success on that structured slice:
 
 On the final fresh matched DoorKey block:
 
-| Seed | recovered `token_dense` | KL learner-state `token_dense` | baseline PPO `SARE` | KL learner-state `SARE` |
-| --- | ---: | ---: | ---: | ---: |
-| `47` | `1.0000` | `1.0000` | `0.0000` | `0.0000` |
-| `53` | `1.0000` | `1.0000` | `0.0000` | `0.5156` |
-| `59` | `1.0000` | `1.0000` | `0.0000` | `0.4219` |
+| Seed | recovered `token_dense` | KL learner-state `token_dense` | KL learner-state `single_expert` | baseline PPO `SARE` | KL learner-state `SARE` |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `47` | `1.0000` | `1.0000` | `0.4531` | `0.0000` | `0.0000` |
+| `53` | `1.0000` | `1.0000` | `0.5156` | `0.0000` | `0.5156` |
+| `59` | `1.0000` | `1.0000` | `0.4219` | `0.0000` | `0.4219` |
 
 Mean greedy success on that block:
 
 - recovered `token_dense`: `1.0000`
 - `KL` learner-state `token_dense`: `1.0000`
+- `KL` learner-state `single_expert`: `0.4635`
 - `KL` learner-state `SARE`: `0.3125`
 
 Across the final combined DoorKey picture:
@@ -102,16 +101,15 @@ Across the final combined DoorKey picture:
 | --- | ---: | ---: |
 | recovered `token_dense` | `0.5586` | `5` |
 | `KL` learner-state `token_dense` | `0.6354` | `4` |
-| `KL` learner-state `single_expert` | `0.7604` on the 9-seed structured slice | `1` |
+| `KL` learner-state `single_expert` | `0.6862` | `1` |
 | baseline PPO `SARE` | `0.0000` | `12` |
 | `KL` learner-state `SARE` | `0.7122` | `1` |
 
-So the right claim after the hardening pass is:
+So the right claim after the frozen-claim analysis pass is:
 
 - teacher-guided KL learner-state supervision helps structured students generally
-- `SARE` still beats matched teacher-guided `token_dense` in the full combined DoorKey picture
-- `single_expert` closes most of the gap on the matched structured slice
-- the final fresh block materially weakens the broader routed edge
+- `SARE` still ends slightly ahead of the matched structured controls in the full combined DoorKey picture
+- but the final fresh block plus the missing `single_expert` fairness control push the result back toward a method-first interpretation
 - the evidence is no longer strong enough to strengthen the claim into a specifically multi-expert routed DoorKey edge
 
 ## Route Dependence
@@ -151,10 +149,10 @@ All three KeyCorridor seeds stayed flat:
 
 ## Recommendation
 
-- Stay frozen at the current DoorKey-only scope.
+- Stay frozen at the current DoorKey-only scope, and narrow the wording further.
 - The current evidence still supports a bounded teacher-guided DoorKey `SARE` win, but it is not strong enough to strengthen into a specifically multi-expert routed claim because:
-  - matched `single_expert` closes most of the gap
-  - seed `29` remains a genuine narrow route-randomization exception
+  - matched `single_expert` beats or matches `SARE` on the final fresh block
+  - the weak final-block seeds show extraction mismatch without a teacher-quality failure
   - one final fresh matched DoorKey block materially weakens the edge
 - Keep the scope explicit:
   - teacher-guided extraction only

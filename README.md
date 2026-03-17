@@ -167,31 +167,24 @@ The current repo conclusion is still control-first, but the routed story has now
   - teacher-logit KL learner-state supervision for `SARE`
   - DoorKey only
   - external `64`-episode evaluation only
-- After the multi-expert hardening pass, the best reading of that result is:
-  - on the matched structured DoorKey slice, KL learner-state `SARE` still leads:
-    - `KL` learner-state `token_dense`: mean greedy success `0.5139`
-    - `KL` learner-state `single_expert`: mean greedy success `0.7604`
-    - `KL` learner-state `SARE`: mean greedy success `0.8455`
-  - seed `29` is a genuine but narrow exception to the route-randomization story:
-    - fixed-pair router overrides and most expert ablations still collapse success
-    - repeated current and stronger randomization ladders stay only weakly harmful there
-  - one final fresh matched DoorKey seed block weakens the broader routed edge:
-    - fresh-final seeds `47/53/59`: `KL` learner-state `token_dense` mean greedy success `1.0000`
-    - fresh-final seeds `47/53/59`: `KL` learner-state `SARE` mean greedy success `0.3125`
-    - `KL` learner-state `SARE` picks up a complete-seed failure again
-  - the full combined DoorKey picture still favors KL learner-state `SARE` over KL learner-state `token_dense`, but not clearly enough over `single_expert` to justify a specifically multi-expert routed claim
+- After the final fairness-and-failure analysis pass, the best reading of that result is:
+  - on the final fresh block `47/53/59`, matched KL learner-state `single_expert` reaches mean greedy success `0.4635` versus `0.3125` for KL learner-state `SARE`
+  - the weak final-block `SARE` seeds keep high teacher confidence but show higher disagreement and no better learner-state coverage, which points to extraction mismatch rather than weak teacher labels
+  - the full combined DoorKey picture still leaves KL learner-state `SARE` slightly ahead:
+    - `KL` learner-state `token_dense`: mean greedy success `0.6354`
+    - `KL` learner-state `single_expert`: mean greedy success `0.6862`
+    - `KL` learner-state `SARE`: mean greedy success `0.7122`
+  - that edge is too small and too final-block-sensitive to justify a specifically multi-expert routed DoorKey claim
 - That positive result is still an extraction-method result, not a PPO-alone routed win.
-- The current repo recommendation is to stay frozen at this scope rather than broaden further.
+- The current repo recommendation is to stay frozen at this scope and narrow the wording further rather than broaden it.
 
 Canonical reports for the current phase:
 
-- `outputs/reports/lss_multi_expert_hardening_reproduction_note.md`
-- `outputs/reports/lss_fresh_single_expert_matched_control_report.md`
-- `outputs/reports/lss_seed29_route_randomization_forensics.md`
-- `outputs/reports/lss_broader_route_dependence_report.md`
-- `outputs/reports/lss_final_fresh_seed_block_report.md`
-- `outputs/reports/lss_final_combined_doorkey_report.md`
-- `outputs/reports/lss_multi_expert_hardening_decision_memo.md`
+- `outputs/reports/lss_frozen_claim_reproduction_note.md`
+- `outputs/reports/lss_final_block_single_expert_control_report.md`
+- `outputs/reports/lss_final_block_failure_analysis.md`
+- `outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.md`
+- `outputs/reports/lss_frozen_claim_decision_memo.md`
 
 ## Repository Layout
 
