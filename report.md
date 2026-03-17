@@ -42,6 +42,25 @@ Canonical gate artifacts:
 - [claim_gate_dry_run.md](outputs/reports/claim_gate_dry_run.md)
 - [freeze_hardening_decision_memo.md](outputs/reports/freeze_hardening_decision_memo.md)
 
+## Frozen Benchmark Pack
+
+The current frozen DoorKey state is now sealed as an explicit benchmark pack instead of only a report bundle.
+
+- [frozen_benchmark_pack.md](outputs/reports/frozen_benchmark_pack.md)
+- [frozen_benchmark_pack.json](outputs/reports/frozen_benchmark_pack.json)
+- [frozen_benchmark_pack_validation.md](outputs/reports/frozen_benchmark_pack_validation.md)
+- [benchmark_pack_schema_report.md](outputs/reports/benchmark_pack_schema_report.md)
+
+## Claim Gate
+
+Future thaw discussion must use the pack-based gate, not ad hoc report comparison.
+
+- candidate pack format: [candidate_result_pack_schema.md](outputs/reports/candidate_result_pack_schema.md)
+- candidate pack template: [candidate_result_pack_template.json](outputs/reports/candidate_result_pack_template.json)
+- current frozen dry run: [claim_gate_pack_dry_run.md](outputs/reports/claim_gate_pack_dry_run.md)
+- malformed candidate example: [claim_gate_pack_inconclusive.md](outputs/reports/claim_gate_pack_inconclusive.md)
+- operational memo: [freeze_hardening_operational_memo.md](outputs/reports/freeze_hardening_operational_memo.md)
+
 ## Final Decision Path
 
 Source artifacts:

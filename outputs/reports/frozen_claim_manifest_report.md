@@ -27,6 +27,12 @@
 - retry-block KL learner-state `SARE` mean: `0.3125`
 - retry-block KL learner-state `single_expert` mean: `0.4635`
 
+## Pack Schema
+
+- frozen benchmark pack schema version: `1`
+- candidate result pack schema version: `1`
+- required candidate artifact roles: `['candidate_summary_markdown', 'candidate_metrics_json', 'combined_report_markdown', 'combined_report_csv', 'retry_block_report_markdown', 'retry_block_report_csv']`
+
 ## Authoritative Reports
 
 - `frozen_claim_envelope`: `outputs/reports/frozen_claim_envelope.md`

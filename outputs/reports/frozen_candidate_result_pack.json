@@ -1,0 +1,242 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [
+      [
+        "fresh",
+        23
+      ],
+      [
+        "fresh",
+        29
+      ],
+      [
+        "fresh",
+        31
+      ],
+      [
+        "fresh_extra",
+        37
+      ],
+      [
+        "fresh_extra",
+        41
+      ],
+      [
+        "fresh_extra",
+        43
+      ],
+      [
+        "fresh_final",
+        47
+      ],
+      [
+        "fresh_final",
+        53
+      ],
+      [
+        "fresh_final",
+        59
+      ],
+      [
+        "original",
+        7
+      ],
+      [
+        "original",
+        11
+      ],
+      [
+        "original",
+        19
+      ]
+    ],
+    "retry_block_lane_seeds": [
+      [
+        "fresh_final",
+        47
+      ],
+      [
+        "fresh_final",
+        53
+      ],
+      [
+        "fresh_final",
+        59
+      ]
+    ]
+  },
+  "artifacts": [
+    {
+      "exists": true,
+      "path": "outputs/reports/frozen_baseline_validation.md",
+      "role": "candidate_summary_markdown",
+      "sha256": "ee5776dc56290d9a281a900f9dd2dd395f3432f655a405eca086c387ad2e5af3",
+      "size_bytes": 3115
+    },
+    {
+      "exists": true,
+      "path": "outputs/reports/frozen_baseline_validation.json",
+      "role": "candidate_metrics_json",
+      "sha256": "eb99e4bd94fd436ee7d78852b1366fdabc922f3b7327afc8b857f32db8695152",
+      "size_bytes": 9679
+    },
+    {
+      "exists": true,
+      "path": "outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.md",
+      "role": "combined_report_markdown",
+      "sha256": "e0cdd2b799538aad926156a19bdf88da19cb8c62a091ab16799a3e94cc87e19d",
+      "size_bytes": 1687
+    },
+    {
+      "exists": true,
+      "path": "outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.csv",
+      "role": "combined_report_csv",
+      "sha256": "f0c83d833ef9bfe3fa9e2db97f10e5bc42f6c1ab42805c14b21aa53ca0744b3b",
+      "size_bytes": 182578
+    },
+    {
+      "exists": true,
+      "path": "outputs/reports/lss_final_block_single_expert_control_report.md",
+      "role": "retry_block_report_markdown",
+      "sha256": "084c6b96a5dfac5536af36009fe08664a42b21a61b230a3a03aa5e48a772812f",
+      "size_bytes": 950
+    },
+    {
+      "exists": true,
+      "path": "outputs/reports/lss_final_block_single_expert_control_report.csv",
+      "role": "retry_block_report_csv",
+      "sha256": "8a7c5491529286337be0a727d2a71649ca4804b0e33efe8eba497354f46f7f2c",
+      "size_bytes": 47509
+    }
+  ],
+  "candidate_name": "current_frozen_candidate_pack",
+  "controls_present": [
+    "recovered_token_dense",
+    "kl_lss_token_dense",
+    "kl_lss_single_expert",
+    "baseline_sare",
+    "kl_lss_sare"
+  ],
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "external_policy_diagnostics"
+  },
+  "frozen_pack_reference": {
+    "claim_id": "doorkey_frozen_claim",
+    "path": "outputs/reports/frozen_benchmark_pack.json",
+    "sha256": "983f80b4e95db317de8ee402394fcc666df38e8c2f9d229950b5dfe8ee75cd41"
+  },
+  "metrics": {
+    "combined": {
+      "baseline_sare": {
+        "complete_seed_failures": 12,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.7122395833333334,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "kl_lss_single_expert": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.6861979166666666,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 4,
+        "max": 1.0,
+        "mean": 0.6354166666666666,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 5,
+        "max": 1.0,
+        "mean": 0.55859375,
+        "min": 0.0,
+        "seed_count": 12
+      }
+    },
+    "keycorridor_transfer": {
+      "baseline_sare": {
+        "complete_seed_failures": 3,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 3,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 3,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3
+      }
+    },
+    "retry_block": {
+      "baseline_sare": {
+        "complete_seed_failures": 3,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 1,
+        "max": 0.515625,
+        "mean": 0.3125,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "kl_lss_single_expert": {
+        "complete_seed_failures": 0,
+        "max": 0.515625,
+        "mean": 0.4635416666666667,
+        "min": 0.421875,
+        "seed_count": 3
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3
+      }
+    }
+  },
+  "pack_type": "candidate_result_pack",
+  "provenance": {
+    "candidate_source_json": "outputs/reports/frozen_baseline_validation.json",
+    "combined_doorkey_csv": "outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.csv",
+    "final_block_csv": "outputs/reports/lss_final_block_single_expert_control_report.csv",
+    "git_commit": "e9eab1761bbe3eb1d768a58f439f7072ccf87ab9",
+    "git_dirty": true,
+    "keycorridor_transfer_csv": "outputs/reports/lss_keycorridor_transfer_report.csv"
+  },
+  "requested_claims": [
+    "bounded_teacher_guided_doorkey_sare"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

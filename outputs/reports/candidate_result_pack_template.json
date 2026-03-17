@@ -1,0 +1,210 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [
+      [
+        "fresh",
+        23
+      ],
+      [
+        "fresh",
+        29
+      ],
+      [
+        "fresh",
+        31
+      ],
+      [
+        "fresh_extra",
+        37
+      ],
+      [
+        "fresh_extra",
+        41
+      ],
+      [
+        "fresh_extra",
+        43
+      ],
+      [
+        "fresh_final",
+        47
+      ],
+      [
+        "fresh_final",
+        53
+      ],
+      [
+        "fresh_final",
+        59
+      ],
+      [
+        "original",
+        7
+      ],
+      [
+        "original",
+        11
+      ],
+      [
+        "original",
+        19
+      ]
+    ],
+    "retry_block_lane_seeds": [
+      [
+        "fresh_final",
+        47
+      ],
+      [
+        "fresh_final",
+        53
+      ],
+      [
+        "fresh_final",
+        59
+      ]
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "<fill-me>",
+      "role": "candidate_summary_markdown",
+      "sha256": "<fill-me>",
+      "size_bytes": "<fill-me>"
+    },
+    {
+      "path": "<fill-me>",
+      "role": "candidate_metrics_json",
+      "sha256": "<fill-me>",
+      "size_bytes": "<fill-me>"
+    },
+    {
+      "path": "<fill-me>",
+      "role": "combined_report_markdown",
+      "sha256": "<fill-me>",
+      "size_bytes": "<fill-me>"
+    },
+    {
+      "path": "<fill-me>",
+      "role": "combined_report_csv",
+      "sha256": "<fill-me>",
+      "size_bytes": "<fill-me>"
+    },
+    {
+      "path": "<fill-me>",
+      "role": "retry_block_report_markdown",
+      "sha256": "<fill-me>",
+      "size_bytes": "<fill-me>"
+    },
+    {
+      "path": "<fill-me>",
+      "role": "retry_block_report_csv",
+      "sha256": "<fill-me>",
+      "size_bytes": "<fill-me>"
+    }
+  ],
+  "candidate_name": "<fill-me>",
+  "controls_present": [
+    "baseline_sare",
+    "kl_lss_sare",
+    "kl_lss_single_expert",
+    "kl_lss_token_dense",
+    "recovered_token_dense"
+  ],
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "external_policy_diagnostics"
+  },
+  "frozen_pack_reference": {
+    "claim_id": "doorkey_frozen_claim",
+    "path": "outputs/reports/frozen_benchmark_pack.json",
+    "sha256": "983f80b4e95db317de8ee402394fcc666df38e8c2f9d229950b5dfe8ee75cd41"
+  },
+  "metrics": {
+    "combined": {
+      "baseline_sare": {
+        "complete_seed_failures": "<fill-me>",
+        "max": "<fill-me>",
+        "mean": "<fill-me>",
+        "min": "<fill-me>",
+        "seed_count": "<fill-me>"
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": "<fill-me>",
+        "max": "<fill-me>",
+        "mean": "<fill-me>",
+        "min": "<fill-me>",
+        "seed_count": "<fill-me>"
+      },
+      "kl_lss_single_expert": {
+        "complete_seed_failures": "<fill-me>",
+        "max": "<fill-me>",
+        "mean": "<fill-me>",
+        "min": "<fill-me>",
+        "seed_count": "<fill-me>"
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": "<fill-me>",
+        "max": "<fill-me>",
+        "mean": "<fill-me>",
+        "min": "<fill-me>",
+        "seed_count": "<fill-me>"
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": "<fill-me>",
+        "max": "<fill-me>",
+        "mean": "<fill-me>",
+        "min": "<fill-me>",
+        "seed_count": "<fill-me>"
+      }
+    },
+    "retry_block": {
+      "baseline_sare": {
+        "complete_seed_failures": "<fill-me>",
+        "max": "<fill-me>",
+        "mean": "<fill-me>",
+        "min": "<fill-me>",
+        "seed_count": "<fill-me>"
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": "<fill-me>",
+        "max": "<fill-me>",
+        "mean": "<fill-me>",
+        "min": "<fill-me>",
+        "seed_count": "<fill-me>"
+      },
+      "kl_lss_single_expert": {
+        "complete_seed_failures": "<fill-me>",
+        "max": "<fill-me>",
+        "mean": "<fill-me>",
+        "min": "<fill-me>",
+        "seed_count": "<fill-me>"
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": "<fill-me>",
+        "max": "<fill-me>",
+        "mean": "<fill-me>",
+        "min": "<fill-me>",
+        "seed_count": "<fill-me>"
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": "<fill-me>",
+        "max": "<fill-me>",
+        "mean": "<fill-me>",
+        "min": "<fill-me>",
+        "seed_count": "<fill-me>"
+      }
+    }
+  },
+  "pack_type": "candidate_result_pack",
+  "provenance": {
+    "git_commit": "<fill-me>",
+    "git_dirty": "<fill-me>",
+    "notes": "<fill-me>"
+  },
+  "requested_claims": [
+    "bounded_teacher_guided_doorkey_sare"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

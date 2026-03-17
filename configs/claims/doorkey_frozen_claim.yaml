@@ -141,3 +141,38 @@ thaw_gate:
     - cross_task_routed_advantage
     - keycorridor_transfer_claim
   current_expected_gate_status: "FAIL: claim remains frozen"
+
+benchmark_pack:
+  schema_version: 1
+  required_artifact_keys:
+    - frozen_claim_envelope
+    - manifest_report
+    - frozen_validation_report
+    - frozen_validation_csv
+    - frozen_validation_json
+    - claim_gate_dry_run
+    - claim_gate_dry_run_json
+    - claim_ledger
+    - future_retry_template
+    - freeze_hardening_decision_memo
+    - combined_doorkey_report
+    - combined_doorkey_csv
+    - final_block_report
+    - final_block_csv
+    - forensic_casebook
+    - forensic_round_audit
+    - forensic_route_locality
+    - forensic_decision_memo
+    - resume_scorecard
+    - keycorridor_transfer_report
+    - keycorridor_transfer_csv
+
+candidate_pack:
+  schema_version: 1
+  required_artifact_roles:
+    - candidate_summary_markdown
+    - candidate_metrics_json
+    - combined_report_markdown
+    - combined_report_csv
+    - retry_block_report_markdown
+    - retry_block_report_csv

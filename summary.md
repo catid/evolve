@@ -6,6 +6,7 @@
 - Not allowed: PPO-only routed win, specifically multi-expert routed advantage, cross-task routed advantage, or KeyCorridor transfer claim.
 - Any future thaw candidate must beat retry-block KL learner-state `SARE` mean `0.3125` on seeds `47/53/59`, at least match same-block KL learner-state `single_expert`, and preserve combined DoorKey KL learner-state `SARE` mean `0.7122`.
 - Canonical gate artifacts: [frozen_claim_envelope.md](outputs/reports/frozen_claim_envelope.md), [frozen_claim_manifest_report.md](outputs/reports/frozen_claim_manifest_report.md), [frozen_baseline_validation.md](outputs/reports/frozen_baseline_validation.md), and [claim_gate_dry_run.md](outputs/reports/claim_gate_dry_run.md).
+- Frozen benchmark pack artifacts: [frozen_benchmark_pack.md](outputs/reports/frozen_benchmark_pack.md), [frozen_benchmark_pack_validation.md](outputs/reports/frozen_benchmark_pack_validation.md), [claim_gate_pack_dry_run.md](outputs/reports/claim_gate_pack_dry_run.md), and [freeze_hardening_operational_memo.md](outputs/reports/freeze_hardening_operational_memo.md).
 
 - `flat_dense` remains the strongest greedy DoorKey control.
 - recovered `token_dense` with `ppo.ent_coef=0.001` remains the canonical tokenized control.
@@ -23,3 +24,10 @@
   - see [lss_seed29_route_randomization_forensics.md](outputs/reports/lss_seed29_route_randomization_forensics.md) and [lss_broader_route_dependence_report.md](outputs/reports/lss_broader_route_dependence_report.md)
 - The exact same method shows no bounded KeyCorridor transfer. See [lss_keycorridor_transfer_report.md](outputs/reports/lss_keycorridor_transfer_report.md).
 - The current repo recommendation is to stay frozen as-is and require the automated gate before any thaw consideration. See [freeze_hardening_decision_memo.md](outputs/reports/freeze_hardening_decision_memo.md).
+
+## Claim Gate
+
+- Validate the sealed frozen benchmark pack first: [frozen_benchmark_pack_validation.md](outputs/reports/frozen_benchmark_pack_validation.md)
+- Package any future thaw candidate using: [candidate_result_pack_schema.md](outputs/reports/candidate_result_pack_schema.md) and [candidate_result_pack_template.json](outputs/reports/candidate_result_pack_template.json)
+- The current frozen candidate still fails the pack-based gate: [claim_gate_pack_dry_run.md](outputs/reports/claim_gate_pack_dry_run.md)
+- Malformed or incomplete candidates should be treated as missing prerequisites: [claim_gate_pack_inconclusive.md](outputs/reports/claim_gate_pack_inconclusive.md)

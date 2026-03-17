@@ -334,6 +334,7 @@ def _build_envelope_report(manifest: dict[str, Any], manifest_path: Path) -> str
             "## Operational Rule",
             "",
             "- No future DoorKey result should be treated as a thaw candidate until it passes the automated claim gate against this manifest.",
+            "- The sealed frozen benchmark pack and pack-based claim gate are the canonical operational entrypoints for future work.",
         ]
     )
     return "\n".join(lines) + "\n"
@@ -370,6 +371,12 @@ def _build_manifest_report(manifest: dict[str, Any], manifest_path: Path) -> str
             f"- combined KL learner-state `single_expert` mean: `{manifest['thresholds']['combined_means']['kl_lss_single_expert']:.4f}`",
             f"- retry-block KL learner-state `SARE` mean: `{manifest['thresholds']['retry_block_means']['kl_lss_sare']:.4f}`",
             f"- retry-block KL learner-state `single_expert` mean: `{manifest['thresholds']['retry_block_means']['kl_lss_single_expert']:.4f}`",
+            "",
+            "## Pack Schema",
+            "",
+            f"- frozen benchmark pack schema version: `{manifest.get('benchmark_pack', {}).get('schema_version', 1)}`",
+            f"- candidate result pack schema version: `{manifest.get('candidate_pack', {}).get('schema_version', 1)}`",
+            f"- required candidate artifact roles: `{manifest.get('candidate_pack', {}).get('required_artifact_roles', [])}`",
             "",
             "## Authoritative Reports",
             "",
@@ -528,6 +535,63 @@ def _build_decision_memo(manifest: dict[str, Any], validation_verdict: str, gate
     return "\n".join(lines) + "\n"
 
 
+def _build_ci_claim_gate_report(
+    frozen_pack_validation: dict[str, Any],
+    pack_gate: dict[str, Any],
+    incomplete_gate: dict[str, Any],
+) -> str:
+    lines = [
+        "# CI Claim Gate Report",
+        "",
+        "## Workflow",
+        "",
+        "- GitHub Actions workflow: `.github/workflows/claim-gate.yml`",
+        "- Pull request template: `.github/pull_request_template.md`",
+        "",
+        "## Local Entry Points",
+        "",
+        "- `./scripts/run_frozen_benchmark_pack_validation.sh`",
+        "- `./scripts/run_claim_gate.sh`",
+        "- `./scripts/run_freeze_hardening_finalize.sh`",
+        "",
+        "## Current Dry Runs",
+        "",
+        f"- frozen benchmark pack validation: `{frozen_pack_validation.get('verdict', '-')}`",
+        f"- pack-based claim gate on the current frozen candidate: `{pack_gate.get('verdict', '-')}`",
+        f"- malformed/incomplete candidate pack gate: `{incomplete_gate.get('verdict', '-')}`",
+        "",
+        "## Enforcement Rule",
+        "",
+        "- Any future thaw candidate should include a candidate result pack path, a pack-based gate report, and a retry-template reference before claim language is discussed in review.",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def _build_operational_memo(
+    frozen_pack: dict[str, Any],
+    frozen_pack_path: Path,
+    frozen_pack_validation: dict[str, Any],
+    pack_gate: dict[str, Any],
+    incomplete_gate: dict[str, Any],
+) -> str:
+    thaw = frozen_pack.get("thaw_gate", {})
+    retry = thaw.get("retry_block", {})
+    combined = thaw.get("combined_picture", {})
+    lines = [
+        "# Freeze-Hardening Operational Memo",
+        "",
+        "## Answers",
+        "",
+        f"1. The frozen benchmark pack is `{frozen_pack_path}`, schema version `{frozen_pack.get('schema_version', '-')}`, sealing the claim `{frozen_pack.get('claim', {}).get('allowed_claim_text', '-')}` against the canonical DoorKey artifacts and manifest.",
+        f"2. The pack is validated by hash and schema. The current dry run returns `{frozen_pack_validation.get('verdict', '-')}`. See [frozen_benchmark_pack_validation.md](frozen_benchmark_pack_validation.md).",
+        "3. Any future candidate must be packaged as a candidate result pack with the required controls, metrics, actual lane/seed sets, and hashed artifacts. See [candidate_result_pack_schema.md](candidate_result_pack_schema.md) and [candidate_result_pack_template.json](candidate_result_pack_template.json).",
+        f"4. The automated gate validates both packs first, then applies the frozen DoorKey thresholds: retry-block KL learner-state `SARE` must beat `{retry.get('candidate_sare_mean_must_exceed', 0.0):.4f}`, match or beat same-block `single_expert`, and preserve combined KL learner-state `SARE` mean `{combined.get('candidate_sare_mean_must_be_gte', 0.0):.4f}`. The current dry run returns `{pack_gate.get('verdict', '-')}` and malformed candidates return `{incomplete_gate.get('verdict', '-')}`. See [claim_gate_pack_dry_run.md](claim_gate_pack_dry_run.md).",
+        "5. Repo workflow now includes a claim-gate GitHub Action and a PR template that require claim scope, candidate pack path, gate result, and retry-template reference for claim-sensitive changes. See [ci_claim_gate_report.md](ci_claim_gate_report.md).",
+        "6. Yes. The project is now operationally frozen until a preregistered retry clears the pack-based gate.",
+    ]
+    return "\n".join(lines) + "\n"
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Freeze-hardening utilities for the frozen DoorKey SARE claim.")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -558,6 +622,19 @@ def build_parser() -> argparse.ArgumentParser:
     memo.add_argument("--validation-json", required=True)
     memo.add_argument("--claim-gate-json", required=True)
     memo.add_argument("--output", required=True)
+
+    ci_report = sub.add_parser("ci-claim-gate-report")
+    ci_report.add_argument("--frozen-pack-validation-json", required=True)
+    ci_report.add_argument("--claim-gate-pack-json", required=True)
+    ci_report.add_argument("--claim-gate-incomplete-json", required=True)
+    ci_report.add_argument("--output", required=True)
+
+    operational = sub.add_parser("operational-memo")
+    operational.add_argument("--frozen-pack", required=True)
+    operational.add_argument("--frozen-pack-validation-json", required=True)
+    operational.add_argument("--claim-gate-pack-json", required=True)
+    operational.add_argument("--claim-gate-incomplete-json", required=True)
+    operational.add_argument("--output", required=True)
     return parser
 
 
@@ -654,6 +731,42 @@ def main() -> None:
                 manifest,
                 str(validation_json.get("_validation", {}).get("verdict", "INCOMPLETE: required artifact missing")),
                 str(claim_gate_json["verdict"]),
+            ),
+            encoding="utf-8",
+        )
+        return
+
+    if command == "ci-claim-gate-report":
+        frozen_pack_validation = json.loads(Path(args.frozen_pack_validation_json).read_text(encoding="utf-8"))
+        pack_gate = json.loads(Path(args.claim_gate_pack_json).read_text(encoding="utf-8"))
+        incomplete_gate = json.loads(Path(args.claim_gate_incomplete_json).read_text(encoding="utf-8"))
+        output = Path(args.output)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(
+            _build_ci_claim_gate_report(
+                frozen_pack_validation,
+                pack_gate,
+                incomplete_gate,
+            ),
+            encoding="utf-8",
+        )
+        return
+
+    if command == "operational-memo":
+        frozen_pack_path = Path(args.frozen_pack)
+        frozen_pack = json.loads(frozen_pack_path.read_text(encoding="utf-8"))
+        frozen_pack_validation = json.loads(Path(args.frozen_pack_validation_json).read_text(encoding="utf-8"))
+        pack_gate = json.loads(Path(args.claim_gate_pack_json).read_text(encoding="utf-8"))
+        incomplete_gate = json.loads(Path(args.claim_gate_incomplete_json).read_text(encoding="utf-8"))
+        output = Path(args.output)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(
+            _build_operational_memo(
+                frozen_pack,
+                frozen_pack_path,
+                frozen_pack_validation,
+                pack_gate,
+                incomplete_gate,
             ),
             encoding="utf-8",
         )

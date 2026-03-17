@@ -1,4 +1,9 @@
-from psmn_rl.analysis.claim_gate import evaluate_claim_gate
+from __future__ import annotations
+
+import json
+
+from psmn_rl.analysis.benchmark_pack import build_frozen_benchmark_pack, sha256_path
+from psmn_rl.analysis.claim_gate import evaluate_claim_gate, evaluate_pack_claim_gate
 
 
 def _manifest() -> dict:
@@ -98,3 +103,88 @@ def test_claim_gate_can_pass_when_candidate_clears_all_bars() -> None:
     }
     verdict, _checks = evaluate_claim_gate(_manifest(), candidate)
     assert verdict == "PASS: thaw consideration allowed"
+
+
+def test_pack_claim_gate_is_inconclusive_for_malformed_candidate(tmp_path) -> None:
+    artifact_a = tmp_path / "envelope.md"
+    artifact_b = tmp_path / "combined.md"
+    artifact_a.write_text("# a\n", encoding="utf-8")
+    artifact_b.write_text("# b\n", encoding="utf-8")
+    manifest = _manifest() | {
+        "claim": {
+            "id": "doorkey_frozen_claim",
+            "status": "frozen",
+            "allowed_claim_key": "bounded_teacher_guided_doorkey_sare",
+            "allowed_claim_text": "bounded teacher-guided DoorKey SARE result",
+            "disallowed_claim_keys": ["ppo_only_routed_win", "specifically_multi_expert_routed_advantage"],
+        },
+        "canonical_method": {},
+        "evaluation": {"task": "DoorKey", "path_key": "external_policy_diagnostics", "episodes": 64},
+        "seed_groups": {
+            "combined": {"blocks": [{"lane": "original", "seeds": [7]}]},
+            "retry_block": {"lane": "fresh_final", "seeds": [47]}},
+        "variants": {
+            "recovered_token_dense": {},
+            "kl_lss_token_dense": {},
+            "kl_lss_single_expert": {},
+            "baseline_sare": {},
+            "kl_lss_sare": {},
+        },
+        "thresholds": {
+            "combined_means": {"kl_lss_sare": 0.7122},
+            "combined_complete_seed_failures": {"kl_lss_sare": 1},
+            "retry_block_means": {"kl_lss_sare": 0.3125},
+            "retry_block_complete_seed_failures": {"kl_lss_sare": 1},
+            "keycorridor_transfer_means": {"kl_lss_sare": 0.0},
+        },
+        "authoritative_reports": {
+            "frozen_claim_envelope": str(artifact_a),
+            "combined_doorkey_report": str(artifact_b),
+        },
+        "benchmark_pack": {
+            "schema_version": 1,
+            "required_artifact_keys": ["frozen_claim_envelope", "combined_doorkey_report"],
+        },
+        "candidate_pack": {
+            "schema_version": 1,
+            "required_artifact_roles": [
+                "candidate_summary_markdown",
+                "candidate_metrics_json",
+                "combined_report_markdown",
+                "combined_report_csv",
+                "retry_block_report_markdown",
+                "retry_block_report_csv",
+            ],
+        },
+    }
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    frozen_pack = build_frozen_benchmark_pack(manifest_path, manifest, source_commit="abc123", source_dirty=False)
+    frozen_pack_path = tmp_path / "frozen_pack.json"
+    frozen_pack_path.write_text(json.dumps(frozen_pack, indent=2, sort_keys=True), encoding="utf-8")
+    candidate = {
+        "schema_version": 1,
+        "pack_type": "candidate_result_pack",
+        "candidate_name": "broken",
+        "frozen_pack_reference": {
+            "path": str(frozen_pack_path),
+            "sha256": sha256_path(frozen_pack_path),
+            "claim_id": "doorkey_frozen_claim",
+        },
+        "task": "DoorKey",
+        "evaluation": {"path_key": "external_policy_diagnostics", "episodes": 64},
+        "requested_claims": ["bounded_teacher_guided_doorkey_sare"],
+        "controls_present": ["kl_lss_sare"],
+        "metrics": {},
+        "actual_sets": {"combined_lane_seeds": [], "retry_block_lane_seeds": []},
+        "artifacts": [],
+        "provenance": {"git_commit": "abc123", "git_dirty": False},
+    }
+    verdict, checks, _frozen_checks, _candidate_checks = evaluate_pack_claim_gate(
+        frozen_pack_path,
+        frozen_pack,
+        tmp_path / "candidate.json",
+        candidate,
+    )
+    assert verdict == "INCONCLUSIVE: missing prerequisites"
+    assert any(check.name.startswith("candidate_pack::controls_present") for check in checks)

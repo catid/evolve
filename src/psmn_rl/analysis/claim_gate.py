@@ -6,7 +6,11 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
-import yaml
+from psmn_rl.analysis.benchmark_pack import (
+    load_structured_file,
+    validate_candidate_result_pack,
+    validate_frozen_benchmark_pack,
+)
 
 
 @dataclass(slots=True)
@@ -17,16 +21,11 @@ class GateCheck:
 
 
 def load_manifest(path: Path) -> dict[str, Any]:
-    return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    return load_structured_file(path)
 
 
 def load_candidate(path: Path) -> dict[str, Any]:
-    suffix = path.suffix.lower()
-    if suffix == ".json":
-        return json.loads(path.read_text(encoding="utf-8"))
-    if suffix in {".yaml", ".yml"}:
-        return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    raise ValueError(f"Unsupported candidate format: {path}")
+    return load_structured_file(path)
 
 
 def evaluate_claim_gate(manifest: dict[str, Any], candidate: dict[str, Any]) -> tuple[str, list[GateCheck]]:
@@ -205,6 +204,49 @@ def evaluate_claim_gate(manifest: dict[str, Any], candidate: dict[str, Any]) -> 
     return verdict, checks
 
 
+def _manifest_from_frozen_pack(frozen_pack: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "claim": frozen_pack.get("claim", {}),
+        "evaluation": frozen_pack.get("evaluation", {}),
+        "thaw_gate": frozen_pack.get("thaw_gate", {}),
+    }
+
+
+def evaluate_pack_claim_gate(
+    frozen_pack_path: Path,
+    frozen_pack: dict[str, Any],
+    candidate_pack_path: Path,
+    candidate_pack: dict[str, Any],
+) -> tuple[str, list[GateCheck], list[dict[str, str]], list[dict[str, str]]]:
+    frozen_validation_verdict, frozen_checks = validate_frozen_benchmark_pack(frozen_pack)
+    candidate_validation_verdict, candidate_checks = validate_candidate_result_pack(frozen_pack, frozen_pack_path, candidate_pack)
+
+    frozen_pack_rows = [asdict(check) for check in frozen_checks]
+    candidate_pack_rows = [asdict(check) for check in candidate_checks]
+    if frozen_validation_verdict != "PASS: frozen benchmark pack validated" or candidate_validation_verdict != "PASS: candidate result pack validated":
+        mapped_checks = [
+            GateCheck(
+                f"frozen_pack::{check['name']}",
+                "INCONCLUSIVE" if check["status"] != "PASS" else "PASS",
+                check["detail"],
+            )
+            for check in frozen_pack_rows
+        ]
+        mapped_checks.extend(
+            GateCheck(
+                f"candidate_pack::{check['name']}",
+                "INCONCLUSIVE" if check["status"] != "PASS" else "PASS",
+                check["detail"],
+            )
+            for check in candidate_pack_rows
+        )
+        return "INCONCLUSIVE: missing prerequisites", mapped_checks, frozen_pack_rows, candidate_pack_rows
+
+    manifest_like = _manifest_from_frozen_pack(frozen_pack)
+    verdict, checks = evaluate_claim_gate(manifest_like, candidate_pack)
+    return verdict, checks, frozen_pack_rows, candidate_pack_rows
+
+
 def render_gate_report(
     manifest_path: Path,
     candidate_path: Path,
@@ -228,10 +270,59 @@ def render_gate_report(
     return "\n".join(lines) + "\n"
 
 
+def render_pack_gate_report(
+    frozen_pack_path: Path,
+    candidate_pack_path: Path,
+    verdict: str,
+    frozen_pack_checks: list[dict[str, str]],
+    candidate_pack_checks: list[dict[str, str]],
+    checks: list[GateCheck],
+) -> str:
+    lines = [
+        "# Pack-Based Claim Gate Dry Run",
+        "",
+        f"- frozen benchmark pack: `{frozen_pack_path}`",
+        f"- candidate result pack: `{candidate_pack_path}`",
+        "",
+        "## Frozen Pack Validation",
+        "",
+        "| Check | Result | Detail |",
+        "| --- | --- | --- |",
+    ]
+    for check in frozen_pack_checks:
+        lines.append(f"| {check['name']} | `{check['status']}` | {check['detail']} |")
+    lines.extend(
+        [
+            "",
+            "## Candidate Pack Validation",
+            "",
+            "| Check | Result | Detail |",
+            "| --- | --- | --- |",
+        ]
+    )
+    for check in candidate_pack_checks:
+        lines.append(f"| {check['name']} | `{check['status']}` | {check['detail']} |")
+    lines.extend(
+        [
+            "",
+            "## Claim Gate Checks",
+            "",
+            "| Check | Result | Detail |",
+            "| --- | --- | --- |",
+        ]
+    )
+    for check in checks:
+        lines.append(f"| {check.name} | `{check.status}` | {check.detail} |")
+    lines.extend(["", "## Verdict", "", verdict])
+    return "\n".join(lines) + "\n"
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Automated claim gate for the frozen DoorKey SARE claim.")
-    parser.add_argument("--manifest", required=True)
-    parser.add_argument("--candidate", required=True)
+    parser.add_argument("--manifest")
+    parser.add_argument("--candidate")
+    parser.add_argument("--frozen-pack")
+    parser.add_argument("--candidate-pack")
     parser.add_argument("--output", required=True)
     parser.add_argument("--json-output")
     return parser
@@ -239,24 +330,71 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main() -> None:
     args = build_parser().parse_args()
-    manifest_path = Path(args.manifest)
-    candidate_path = Path(args.candidate)
     output_path = Path(args.output)
     json_output_path = Path(args.json_output) if args.json_output else None
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    if json_output_path is not None:
+        json_output_path.parent.mkdir(parents=True, exist_ok=True)
 
+    if args.frozen_pack or args.candidate_pack:
+        if not args.frozen_pack or not args.candidate_pack:
+            raise SystemExit("pack mode requires both --frozen-pack and --candidate-pack")
+        frozen_pack_path = Path(args.frozen_pack)
+        candidate_pack_path = Path(args.candidate_pack)
+        frozen_pack = load_structured_file(frozen_pack_path)
+        candidate_pack = load_structured_file(candidate_pack_path)
+        verdict, checks, frozen_pack_checks, candidate_pack_checks = evaluate_pack_claim_gate(
+            frozen_pack_path,
+            frozen_pack,
+            candidate_pack_path,
+            candidate_pack,
+        )
+        output_path.write_text(
+            render_pack_gate_report(
+                frozen_pack_path,
+                candidate_pack_path,
+                verdict,
+                frozen_pack_checks,
+                candidate_pack_checks,
+                checks,
+            ),
+            encoding="utf-8",
+        )
+        if json_output_path is not None:
+            json_output_path.write_text(
+                json.dumps(
+                    {
+                        "mode": "pack",
+                        "frozen_pack": str(frozen_pack_path),
+                        "candidate_pack": str(candidate_pack_path),
+                        "verdict": verdict,
+                        "frozen_pack_validation": frozen_pack_checks,
+                        "candidate_pack_validation": candidate_pack_checks,
+                        "checks": [asdict(check) for check in checks],
+                    },
+                    indent=2,
+                    sort_keys=True,
+                ),
+                encoding="utf-8",
+            )
+        return
+
+    if not args.manifest or not args.candidate:
+        raise SystemExit("legacy mode requires both --manifest and --candidate")
+    manifest_path = Path(args.manifest)
+    candidate_path = Path(args.candidate)
     manifest = load_manifest(manifest_path)
     candidate = load_candidate(candidate_path)
     verdict, checks = evaluate_claim_gate(manifest, candidate)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(
         render_gate_report(manifest_path, candidate_path, manifest, verdict, checks),
         encoding="utf-8",
     )
     if json_output_path is not None:
-        json_output_path.parent.mkdir(parents=True, exist_ok=True)
         json_output_path.write_text(
             json.dumps(
                 {
+                    "mode": "legacy",
                     "manifest": str(manifest_path),
                     "candidate": str(candidate_path),
                     "verdict": verdict,

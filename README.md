@@ -135,6 +135,7 @@ Key scripts:
 ./scripts/run_lss_multi_expert_hardening_final_fresh_block.sh
 ./scripts/run_lss_multi_expert_hardening_finalize.sh
 ./scripts/run_frozen_baseline_validation.sh
+./scripts/run_frozen_benchmark_pack_validation.sh
 ./scripts/run_claim_gate.sh
 ./scripts/run_freeze_hardening_finalize.sh
 ```
@@ -157,6 +158,33 @@ Compare greedy and sampled evaluation for a checkpoint:
 ```
 
 Current high-level findings are summarized in `summary.md` and `report.md` at the repo root, with detailed phase artifacts under `outputs/reports/`.
+
+## Frozen Benchmark Pack
+
+The DoorKey claim is now sealed as a frozen benchmark pack rather than a loose collection of reports.
+
+- human-readable pack: `outputs/reports/frozen_benchmark_pack.md`
+- machine-readable pack: `outputs/reports/frozen_benchmark_pack.json`
+- schema report: `outputs/reports/benchmark_pack_schema_report.md`
+- candidate pack schema + template:
+  - `outputs/reports/candidate_result_pack_schema.md`
+  - `outputs/reports/candidate_result_pack_template.json`
+
+Validate the sealed pack with one command:
+
+```bash
+./scripts/run_frozen_benchmark_pack_validation.sh
+```
+
+Run the pack-based gate against a candidate pack:
+
+```bash
+./scripts/run_claim_gate.sh \
+  outputs/reports/frozen_benchmark_pack.json \
+  outputs/reports/frozen_candidate_result_pack.json \
+  outputs/reports/claim_gate_pack_dry_run.md \
+  outputs/reports/claim_gate_pack_dry_run.json
+```
 
 ## Current DoorKey Result
 
@@ -218,6 +246,19 @@ Future thaw candidates must:
 - beat the frozen retry-block KL learner-state `SARE` mean `0.3125` on seeds `47/53/59`
 - at least match matched KL learner-state `single_expert` on that same block
 - preserve the combined DoorKey KL learner-state `SARE` mean `0.7122`
+
+## Claim Gate
+
+- Frozen pack validation verdict: `PASS: frozen benchmark pack validated`
+- Current pack-based gate verdict on the frozen candidate: `FAIL: claim remains frozen`
+- Malformed candidate packs are rejected as `INCONCLUSIVE: missing prerequisites`
+
+Canonical operational artifacts:
+
+- `outputs/reports/frozen_benchmark_pack_validation.md`
+- `outputs/reports/claim_gate_pack_dry_run.md`
+- `outputs/reports/claim_gate_pack_inconclusive.md`
+- `outputs/reports/freeze_hardening_operational_memo.md`
 
 Canonical gate artifacts:
 

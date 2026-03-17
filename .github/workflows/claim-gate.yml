@@ -1,0 +1,58 @@
+name: claim-gate
+
+on:
+  pull_request:
+    paths:
+      - ".github/**"
+      - "README.md"
+      - "report.md"
+      - "summary.md"
+      - "configs/claims/**"
+      - "outputs/reports/**"
+      - "scripts/run_claim_gate.sh"
+      - "scripts/run_frozen_baseline_validation.sh"
+      - "scripts/run_frozen_benchmark_pack_validation.sh"
+      - "scripts/run_freeze_hardening_finalize.sh"
+      - "src/psmn_rl/analysis/benchmark_pack.py"
+      - "src/psmn_rl/analysis/claim_gate.py"
+      - "src/psmn_rl/analysis/freeze_hardening.py"
+      - "tests/test_benchmark_pack.py"
+      - "tests/test_claim_gate.py"
+      - "tests/test_freeze_hardening.py"
+  workflow_dispatch:
+
+jobs:
+  frozen-claim-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Install dependencies
+        run: |
+          uv venv .venv
+          source .venv/bin/activate
+          uv pip install --pre torch --index-url https://download.pytorch.org/whl/nightly/cpu
+          uv pip install -e '.[dev]'
+
+      - name: Syntax check scripts
+        run: |
+          bash -n scripts/run_frozen_baseline_validation.sh
+          bash -n scripts/run_frozen_benchmark_pack_validation.sh
+          bash -n scripts/run_claim_gate.sh
+          bash -n scripts/run_freeze_hardening_finalize.sh
+
+      - name: Validate frozen pack and claim gate
+        run: |
+          source .venv/bin/activate
+          ./scripts/run_freeze_hardening_finalize.sh
+
+      - name: Run tests
+        run: |
+          source .venv/bin/activate
+          pytest -q

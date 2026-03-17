@@ -1,0 +1,49 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [],
+    "retry_block_lane_seeds": []
+  },
+  "artifacts": [
+    {
+      "path": "outputs/reports/does_not_exist.json",
+      "role": "candidate_metrics_json",
+      "sha256": "missing",
+      "size_bytes": 0
+    }
+  ],
+  "candidate_name": "incomplete_candidate_pack_example",
+  "controls_present": [
+    "recovered_token_dense",
+    "kl_lss_sare"
+  ],
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "external_policy_diagnostics"
+  },
+  "frozen_pack_reference": {
+    "claim_id": "doorkey_frozen_claim",
+    "path": "outputs/reports/frozen_benchmark_pack.json",
+    "sha256": "983f80b4e95db317de8ee402394fcc666df38e8c2f9d229950b5dfe8ee75cd41"
+  },
+  "metrics": {
+    "combined": {
+      "kl_lss_sare": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.7122,
+        "min": 0.0,
+        "seed_count": 12
+      }
+    }
+  },
+  "pack_type": "candidate_result_pack",
+  "provenance": {
+    "git_commit": "e9eab1761bbe3eb1d768a58f439f7072ccf87ab9",
+    "git_dirty": true
+  },
+  "requested_claims": [
+    "bounded_teacher_guided_doorkey_sare"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

@@ -1,7 +1,7 @@
 # Frozen Claim Envelope
 
 - manifest: `configs/claims/doorkey_frozen_claim.yaml`
-- git commit: `acf13060031180632c5db77f2025ef4dda5ceb04`
+- git commit: `e9eab1761bbe3eb1d768a58f439f7072ccf87ab9`
 - git dirty: `True`
 
 ## Allowed Claim
@@ -25,3 +25,4 @@
 ## Operational Rule
 
 - No future DoorKey result should be treated as a thaw candidate until it passes the automated claim gate against this manifest.
+- The sealed frozen benchmark pack and pack-based claim gate are the canonical operational entrypoints for future work.
