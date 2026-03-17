@@ -1,0 +1,14 @@
+# Claim Ledger
+
+| Experiment Family | Status | Scope | Why It Changed Or Did Not Change The Claim | Authoritative Reports |
+| --- | --- | --- | --- | --- |
+| PPO tuning / checkpoint dynamics | `negative` | PPO-only DoorKey SARE greedy recovery | did not recover a greedy PPO SARE policy | `outputs/reports/checkpoint_dynamics_report.md` |
+| Entropy schedules | `negative` | PPO-only DoorKey SARE greedy recovery | did not recover a greedy PPO SARE policy | `outputs/reports/entropy_schedule_report.md` |
+| Self-imitation | `negative` | DoorKey SARE greedy recovery from successful sampled trajectories | did not recover a greedy SARE policy | `outputs/reports/self_imitation_report.md` |
+| Offline teacher distillation | `negative` | teacher-guided offline extraction for token_dense and SARE on DoorKey | did not recover greedy SARE or robust tokenized controls | `outputs/reports/policy_distillation_report.md` |
+| Learner-state supervision | `bounded positive` | DoorKey teacher-guided KL learner-state extraction | opened the only bounded positive routed DoorKey result | `outputs/reports/lss_robustness_sweep_report.md`<br>`outputs/reports/lss_robustness_multiseed_report.md` |
+| Claim hardening | `bounded positive` | DoorKey-only replication and matched tokenized controls | strengthened the DoorKey-only extraction result without broadening it beyond teacher-guided scope | `outputs/reports/lss_additional_seed_report.md`<br>`outputs/reports/lss_matched_control_report.md`<br>`outputs/reports/lss_claim_hardening_decision_memo.md` |
+| Claim broadening | `bounded positive` | DoorKey-only fairness and causal-route checks before final freeze | showed a stronger within-DoorKey edge, later weakened by the final block | `outputs/reports/lss_single_expert_matched_control_report.md`<br>`outputs/reports/lss_extended_route_dependence_report.md`<br>`outputs/reports/lss_claim_broadening_decision_memo.md` |
+| Resume gate | `frozen` | DoorKey-only retry justification check | did not justify a bounded retry | `outputs/reports/lss_resume_gate_failure_mechanism_report.md`<br>`outputs/reports/lss_resume_gate_decision_memo.md` |
+| Forensic atlas | `frozen` | deep DoorKey-only trajectory, round, and route-locality diagnosis | confirmed mixed weak-block failure modes and blocked bounded retry | `outputs/reports/lss_forensic_casebook.md`<br>`outputs/reports/lss_forensic_round_audit.md`<br>`outputs/reports/lss_forensic_route_locality.md`<br>`outputs/reports/lss_forensic_atlas_decision_memo.md` |
+| Final frozen state | `frozen` | current DoorKey teacher-guided claim envelope | bounded teacher-guided DoorKey SARE result only; no PPO-only, multi-expert, cross-task, or KeyCorridor claim | `outputs/reports/frozen_claim_envelope.md`<br>`outputs/reports/frozen_claim_manifest_report.md`<br>`outputs/reports/freeze_hardening_decision_memo.md` |

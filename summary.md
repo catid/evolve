@@ -1,5 +1,12 @@
 # Current Summary
 
+## Frozen Claim Scope
+
+- Allowed: bounded teacher-guided DoorKey `SARE` result only.
+- Not allowed: PPO-only routed win, specifically multi-expert routed advantage, cross-task routed advantage, or KeyCorridor transfer claim.
+- Any future thaw candidate must beat retry-block KL learner-state `SARE` mean `0.3125` on seeds `47/53/59`, at least match same-block KL learner-state `single_expert`, and preserve combined DoorKey KL learner-state `SARE` mean `0.7122`.
+- Canonical gate artifacts: [frozen_claim_envelope.md](outputs/reports/frozen_claim_envelope.md), [frozen_claim_manifest_report.md](outputs/reports/frozen_claim_manifest_report.md), [frozen_baseline_validation.md](outputs/reports/frozen_baseline_validation.md), and [claim_gate_dry_run.md](outputs/reports/claim_gate_dry_run.md).
+
 - `flat_dense` remains the strongest greedy DoorKey control.
 - recovered `token_dense` with `ppo.ent_coef=0.001` remains the canonical tokenized control.
 - PPO-only `SARE` is still negative on greedy DoorKey.
@@ -15,4 +22,4 @@
   - route randomization is catastrophic on most recovered seeds, but seed `29` is now a genuine narrow exception rather than a weak-probe artifact
   - see [lss_seed29_route_randomization_forensics.md](outputs/reports/lss_seed29_route_randomization_forensics.md) and [lss_broader_route_dependence_report.md](outputs/reports/lss_broader_route_dependence_report.md)
 - The exact same method shows no bounded KeyCorridor transfer. See [lss_keycorridor_transfer_report.md](outputs/reports/lss_keycorridor_transfer_report.md).
-- The current repo recommendation is to stay frozen as-is: keep the claim explicitly teacher-guided, DoorKey-only, and external-64-episode-only, and do not strengthen it into a PPO-only, specifically multi-expert, or cross-task routed advantage. See [lss_forensic_atlas_decision_memo.md](outputs/reports/lss_forensic_atlas_decision_memo.md).
+- The current repo recommendation is to stay frozen as-is and require the automated gate before any thaw consideration. See [freeze_hardening_decision_memo.md](outputs/reports/freeze_hardening_decision_memo.md).

@@ -1,0 +1,398 @@
+{
+  "_validation": {
+    "checks": [
+      {
+        "actual": "0.5586",
+        "expected": "0.5586",
+        "metric": "mean",
+        "section": "combined",
+        "status": "PASS",
+        "variant": "recovered_token_dense"
+      },
+      {
+        "actual": "0.6354",
+        "expected": "0.6354",
+        "metric": "mean",
+        "section": "combined",
+        "status": "PASS",
+        "variant": "kl_lss_token_dense"
+      },
+      {
+        "actual": "0.6862",
+        "expected": "0.6862",
+        "metric": "mean",
+        "section": "combined",
+        "status": "PASS",
+        "variant": "kl_lss_single_expert"
+      },
+      {
+        "actual": "0.0000",
+        "expected": "0.0000",
+        "metric": "mean",
+        "section": "combined",
+        "status": "PASS",
+        "variant": "baseline_sare"
+      },
+      {
+        "actual": "0.7122",
+        "expected": "0.7122",
+        "metric": "mean",
+        "section": "combined",
+        "status": "PASS",
+        "variant": "kl_lss_sare"
+      },
+      {
+        "actual": "5",
+        "expected": "5",
+        "metric": "complete_seed_failures",
+        "section": "combined",
+        "status": "PASS",
+        "variant": "recovered_token_dense"
+      },
+      {
+        "actual": "4",
+        "expected": "4",
+        "metric": "complete_seed_failures",
+        "section": "combined",
+        "status": "PASS",
+        "variant": "kl_lss_token_dense"
+      },
+      {
+        "actual": "1",
+        "expected": "1",
+        "metric": "complete_seed_failures",
+        "section": "combined",
+        "status": "PASS",
+        "variant": "kl_lss_single_expert"
+      },
+      {
+        "actual": "12",
+        "expected": "12",
+        "metric": "complete_seed_failures",
+        "section": "combined",
+        "status": "PASS",
+        "variant": "baseline_sare"
+      },
+      {
+        "actual": "1",
+        "expected": "1",
+        "metric": "complete_seed_failures",
+        "section": "combined",
+        "status": "PASS",
+        "variant": "kl_lss_sare"
+      },
+      {
+        "actual": "1.0000",
+        "expected": "1.0000",
+        "metric": "mean",
+        "section": "retry_block",
+        "status": "PASS",
+        "variant": "recovered_token_dense"
+      },
+      {
+        "actual": "1.0000",
+        "expected": "1.0000",
+        "metric": "mean",
+        "section": "retry_block",
+        "status": "PASS",
+        "variant": "kl_lss_token_dense"
+      },
+      {
+        "actual": "0.4635",
+        "expected": "0.4635",
+        "metric": "mean",
+        "section": "retry_block",
+        "status": "PASS",
+        "variant": "kl_lss_single_expert"
+      },
+      {
+        "actual": "0.0000",
+        "expected": "0.0000",
+        "metric": "mean",
+        "section": "retry_block",
+        "status": "PASS",
+        "variant": "baseline_sare"
+      },
+      {
+        "actual": "0.3125",
+        "expected": "0.3125",
+        "metric": "mean",
+        "section": "retry_block",
+        "status": "PASS",
+        "variant": "kl_lss_sare"
+      },
+      {
+        "actual": "0",
+        "expected": "0",
+        "metric": "complete_seed_failures",
+        "section": "retry_block",
+        "status": "PASS",
+        "variant": "recovered_token_dense"
+      },
+      {
+        "actual": "0",
+        "expected": "0",
+        "metric": "complete_seed_failures",
+        "section": "retry_block",
+        "status": "PASS",
+        "variant": "kl_lss_token_dense"
+      },
+      {
+        "actual": "0",
+        "expected": "0",
+        "metric": "complete_seed_failures",
+        "section": "retry_block",
+        "status": "PASS",
+        "variant": "kl_lss_single_expert"
+      },
+      {
+        "actual": "3",
+        "expected": "3",
+        "metric": "complete_seed_failures",
+        "section": "retry_block",
+        "status": "PASS",
+        "variant": "baseline_sare"
+      },
+      {
+        "actual": "1",
+        "expected": "1",
+        "metric": "complete_seed_failures",
+        "section": "retry_block",
+        "status": "PASS",
+        "variant": "kl_lss_sare"
+      },
+      {
+        "actual": "0.0000",
+        "expected": "0.0000",
+        "metric": "mean",
+        "section": "keycorridor_transfer",
+        "status": "PASS",
+        "variant": "recovered_token_dense"
+      },
+      {
+        "actual": "0.0000",
+        "expected": "0.0000",
+        "metric": "mean",
+        "section": "keycorridor_transfer",
+        "status": "PASS",
+        "variant": "baseline_sare"
+      },
+      {
+        "actual": "0.0000",
+        "expected": "0.0000",
+        "metric": "mean",
+        "section": "keycorridor_transfer",
+        "status": "PASS",
+        "variant": "kl_lss_sare"
+      },
+      {
+        "actual": "[('fresh', 23), ('fresh', 29), ('fresh', 31), ('fresh_extra', 37), ('fresh_extra', 41), ('fresh_extra', 43), ('fresh_final', 47), ('fresh_final', 53), ('fresh_final', 59), ('original', 7), ('original', 11), ('original', 19)]",
+        "expected": "[('fresh', 23), ('fresh', 29), ('fresh', 31), ('fresh_extra', 37), ('fresh_extra', 41), ('fresh_extra', 43), ('fresh_final', 47), ('fresh_final', 53), ('fresh_final', 59), ('original', 7), ('original', 11), ('original', 19)]",
+        "metric": "combined_lane_seed_set",
+        "section": "coverage",
+        "status": "PASS",
+        "variant": "-"
+      },
+      {
+        "actual": "[('fresh_final', 47), ('fresh_final', 53), ('fresh_final', 59)]",
+        "expected": "[('fresh_final', 47), ('fresh_final', 53), ('fresh_final', 59)]",
+        "metric": "retry_block_lane_seed_set",
+        "section": "coverage",
+        "status": "PASS",
+        "variant": "-"
+      }
+    ],
+    "manifest": "configs/claims/doorkey_frozen_claim.yaml",
+    "missing": [],
+    "verdict": "PASS: frozen baseline validated"
+  },
+  "actual_sets": {
+    "combined_lane_seeds": [
+      [
+        "fresh",
+        23
+      ],
+      [
+        "fresh",
+        29
+      ],
+      [
+        "fresh",
+        31
+      ],
+      [
+        "fresh_extra",
+        37
+      ],
+      [
+        "fresh_extra",
+        41
+      ],
+      [
+        "fresh_extra",
+        43
+      ],
+      [
+        "fresh_final",
+        47
+      ],
+      [
+        "fresh_final",
+        53
+      ],
+      [
+        "fresh_final",
+        59
+      ],
+      [
+        "original",
+        7
+      ],
+      [
+        "original",
+        11
+      ],
+      [
+        "original",
+        19
+      ]
+    ],
+    "retry_block_lane_seeds": [
+      [
+        "fresh_final",
+        47
+      ],
+      [
+        "fresh_final",
+        53
+      ],
+      [
+        "fresh_final",
+        59
+      ]
+    ]
+  },
+  "candidate_name": "current_frozen_baseline",
+  "controls_present": [
+    "recovered_token_dense",
+    "kl_lss_token_dense",
+    "kl_lss_single_expert",
+    "baseline_sare",
+    "kl_lss_sare"
+  ],
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "external_policy_diagnostics"
+  },
+  "metrics": {
+    "combined": {
+      "baseline_sare": {
+        "complete_seed_failures": 12,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.7122395833333334,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "kl_lss_single_expert": {
+        "complete_seed_failures": 1,
+        "max": 1.0,
+        "mean": 0.6861979166666666,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 4,
+        "max": 1.0,
+        "mean": 0.6354166666666666,
+        "min": 0.0,
+        "seed_count": 12
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 5,
+        "max": 1.0,
+        "mean": 0.55859375,
+        "min": 0.0,
+        "seed_count": 12
+      }
+    },
+    "keycorridor_transfer": {
+      "baseline_sare": {
+        "complete_seed_failures": 3,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 3,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 3,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3
+      }
+    },
+    "retry_block": {
+      "baseline_sare": {
+        "complete_seed_failures": 3,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 1,
+        "max": 0.515625,
+        "mean": 0.3125,
+        "min": 0.0,
+        "seed_count": 3
+      },
+      "kl_lss_single_expert": {
+        "complete_seed_failures": 0,
+        "max": 0.515625,
+        "mean": 0.4635416666666667,
+        "min": 0.421875,
+        "seed_count": 3
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3
+      }
+    }
+  },
+  "provenance": {
+    "combined_doorkey_csv": "outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.csv",
+    "final_block_csv": "outputs/reports/lss_final_block_single_expert_control_report.csv",
+    "git_commit": "acf13060031180632c5db77f2025ef4dda5ceb04",
+    "git_dirty": true,
+    "keycorridor_transfer_csv": "outputs/reports/lss_keycorridor_transfer_report.csv"
+  },
+  "requested_claims": [
+    "bounded_teacher_guided_doorkey_sare"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

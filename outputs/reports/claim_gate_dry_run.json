@@ -1,0 +1,57 @@
+{
+  "candidate": "outputs/reports/frozen_baseline_validation.json",
+  "checks": [
+    {
+      "detail": "candidate task matches `DoorKey`",
+      "name": "task",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate uses `external_policy_diagnostics` with `64` episodes",
+      "name": "evaluation_path",
+      "status": "PASS"
+    },
+    {
+      "detail": "all required structured controls are present",
+      "name": "fairness_controls",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate stays inside the frozen claim envelope",
+      "name": "claim_scope",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate exposes retry-block and combined metrics for required variants",
+      "name": "candidate_metrics",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate retry-block SARE mean `0.3125` does not exceed frozen baseline `0.3125`",
+      "name": "retry_block_improvement",
+      "status": "FAIL"
+    },
+    {
+      "detail": "candidate retry-block SARE mean `0.3125` trails same-block single_expert `0.4635`",
+      "name": "retry_block_vs_single_expert",
+      "status": "FAIL"
+    },
+    {
+      "detail": "candidate retry-block SARE complete-seed failures `1` stay within gate `1`",
+      "name": "retry_block_failures",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate combined SARE mean `0.7122` preserves or improves frozen baseline `0.7122`",
+      "name": "combined_picture_mean",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate combined SARE complete-seed failures `1` stay within gate `1`",
+      "name": "combined_picture_failures",
+      "status": "PASS"
+    }
+  ],
+  "manifest": "configs/claims/doorkey_frozen_claim.yaml",
+  "verdict": "FAIL: claim remains frozen"
+}

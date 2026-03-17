@@ -1,0 +1,143 @@
+schema_version: 1
+
+claim:
+  id: doorkey_frozen_claim
+  status: frozen
+  task: DoorKey
+  allowed_claim_key: bounded_teacher_guided_doorkey_sare
+  allowed_claim_text: bounded teacher-guided DoorKey SARE result
+  disallowed_claim_keys:
+    - ppo_only_routed_win
+    - specifically_multi_expert_routed_advantage
+    - cross_task_routed_advantage
+    - keycorridor_transfer_claim
+
+canonical_method:
+  teacher: flat_dense
+  supervision: teacher_logit_kl
+  learner_state_collection: append_all
+  student: sare
+
+evaluation:
+  path_key: external_policy_diagnostics
+  path_text: external 64-episode policy_diagnostics path
+  episodes: 64
+  task: DoorKey
+
+seed_groups:
+  original:
+    lane: original
+    seeds: [7, 11, 19]
+  structured_slice:
+    lanes: [original, fresh, fresh_extra]
+    seeds: [7, 11, 19, 23, 29, 31, 37, 41, 43]
+  retry_block:
+    lane: fresh_final
+    seeds: [47, 53, 59]
+  combined:
+    blocks:
+      - lane: original
+        seeds: [7, 11, 19]
+      - lane: fresh
+        seeds: [23, 29, 31]
+      - lane: fresh_extra
+        seeds: [37, 41, 43]
+      - lane: fresh_final
+        seeds: [47, 53, 59]
+
+variants:
+  recovered_token_dense:
+    display: recovered token_dense
+    family: baseline
+  kl_lss_token_dense:
+    display: KL learner-state token_dense
+    family: teacher_guided_structured_control
+  kl_lss_single_expert:
+    display: KL learner-state single_expert
+    family: teacher_guided_structured_control
+  baseline_sare:
+    display: baseline PPO SARE
+    family: baseline
+  kl_lss_sare:
+    display: KL learner-state SARE
+    family: teacher_guided_routed
+
+authoritative_reports:
+  frozen_claim_envelope: outputs/reports/frozen_claim_envelope.md
+  manifest_report: outputs/reports/frozen_claim_manifest_report.md
+  frozen_validation_report: outputs/reports/frozen_baseline_validation.md
+  frozen_validation_csv: outputs/reports/frozen_baseline_validation.csv
+  frozen_validation_json: outputs/reports/frozen_baseline_validation.json
+  claim_gate_dry_run: outputs/reports/claim_gate_dry_run.md
+  claim_gate_dry_run_json: outputs/reports/claim_gate_dry_run.json
+  claim_ledger: outputs/reports/claim_ledger.md
+  future_retry_template: outputs/reports/future_retry_template.md
+  freeze_hardening_decision_memo: outputs/reports/freeze_hardening_decision_memo.md
+  combined_doorkey_report: outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.md
+  combined_doorkey_csv: outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.csv
+  final_block_report: outputs/reports/lss_final_block_single_expert_control_report.md
+  final_block_csv: outputs/reports/lss_final_block_single_expert_control_report.csv
+  forensic_casebook: outputs/reports/lss_forensic_casebook.md
+  forensic_round_audit: outputs/reports/lss_forensic_round_audit.md
+  forensic_route_locality: outputs/reports/lss_forensic_route_locality.md
+  forensic_decision_memo: outputs/reports/lss_forensic_atlas_decision_memo.md
+  resume_scorecard: outputs/reports/lss_resume_qualification_scorecard.md
+  keycorridor_transfer_report: outputs/reports/lss_keycorridor_transfer_report.md
+  keycorridor_transfer_csv: outputs/reports/lss_keycorridor_transfer_report.csv
+
+thresholds:
+  combined_means:
+    recovered_token_dense: 0.5586
+    kl_lss_token_dense: 0.6354
+    kl_lss_single_expert: 0.6862
+    baseline_sare: 0.0000
+    kl_lss_sare: 0.7122
+  combined_complete_seed_failures:
+    recovered_token_dense: 5
+    kl_lss_token_dense: 4
+    kl_lss_single_expert: 1
+    baseline_sare: 12
+    kl_lss_sare: 1
+  retry_block_means:
+    recovered_token_dense: 1.0000
+    kl_lss_token_dense: 1.0000
+    kl_lss_single_expert: 0.4635
+    baseline_sare: 0.0000
+    kl_lss_sare: 0.3125
+  retry_block_complete_seed_failures:
+    recovered_token_dense: 0
+    kl_lss_token_dense: 0
+    kl_lss_single_expert: 0
+    baseline_sare: 3
+    kl_lss_sare: 1
+  keycorridor_transfer_means:
+    recovered_token_dense: 0.0000
+    baseline_sare: 0.0000
+    kl_lss_sare: 0.0000
+  keycorridor_transfer_status: no_claim_transfer
+
+thaw_gate:
+  required_controls:
+    - recovered_token_dense
+    - kl_lss_token_dense
+    - kl_lss_single_expert
+    - baseline_sare
+  required_evaluation:
+    path_key: external_policy_diagnostics
+    episodes: 64
+    task: DoorKey
+  retry_block:
+    lane: fresh_final
+    seeds: [47, 53, 59]
+    candidate_sare_mean_must_exceed: 0.3125
+    candidate_sare_must_match_or_beat_same_block_single_expert: true
+    candidate_sare_complete_seed_failures_must_be_lte: 1
+  combined_picture:
+    candidate_sare_mean_must_be_gte: 0.7122
+    candidate_sare_complete_seed_failures_must_be_lte: 1
+  disallowed_claim_keys:
+    - ppo_only_routed_win
+    - specifically_multi_expert_routed_advantage
+    - cross_task_routed_advantage
+    - keycorridor_transfer_claim
+  current_expected_gate_status: "FAIL: claim remains frozen"

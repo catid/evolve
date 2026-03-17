@@ -1,0 +1,27 @@
+# Frozen Claim Envelope
+
+- manifest: `configs/claims/doorkey_frozen_claim.yaml`
+- git commit: `acf13060031180632c5db77f2025ef4dda5ceb04`
+- git dirty: `True`
+
+## Allowed Claim
+
+- `bounded teacher-guided DoorKey SARE result`
+
+## Not Allowed
+
+- `ppo_only_routed_win`
+- `specifically_multi_expert_routed_advantage`
+- `cross_task_routed_advantage`
+- `keycorridor_transfer_claim`
+
+## Future Thaw Bar
+
+- Any future DoorKey retry must use the `external 64-episode policy_diagnostics path`.
+- On seeds `[47, 53, 59]`, candidate KL learner-state `SARE` must beat the frozen retry-block mean `0.3125`.
+- On that same block, candidate KL learner-state `SARE` must at least match the matched KL learner-state `single_expert` result.
+- The candidate must not worsen the combined DoorKey KL learner-state `SARE` mean `0.7122`.
+
+## Operational Rule
+
+- No future DoorKey result should be treated as a thaw candidate until it passes the automated claim gate against this manifest.

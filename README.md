@@ -134,6 +134,9 @@ Key scripts:
 ./scripts/run_lss_multi_expert_hardening_broader_route_dependence.sh
 ./scripts/run_lss_multi_expert_hardening_final_fresh_block.sh
 ./scripts/run_lss_multi_expert_hardening_finalize.sh
+./scripts/run_frozen_baseline_validation.sh
+./scripts/run_claim_gate.sh
+./scripts/run_freeze_hardening_finalize.sh
 ```
 
 Resume a run from a checkpoint:
@@ -180,6 +183,13 @@ The current repo conclusion is still control-first, but the routed story has now
 
 Canonical reports for the current phase:
 
+- `outputs/reports/frozen_claim_envelope.md`
+- `outputs/reports/frozen_claim_manifest_report.md`
+- `outputs/reports/frozen_baseline_validation.md`
+- `outputs/reports/claim_gate_dry_run.md`
+- `outputs/reports/claim_ledger.md`
+- `outputs/reports/future_retry_template.md`
+- `outputs/reports/freeze_hardening_decision_memo.md`
 - `outputs/reports/lss_forensic_atlas_reproduction_note.md`
 - `outputs/reports/lss_forensic_casebook.md`
 - `outputs/reports/lss_forensic_round_audit.md`
@@ -188,6 +198,34 @@ Canonical reports for the current phase:
 - `outputs/reports/lss_forensic_atlas_decision_memo.md`
 - `outputs/reports/lss_final_block_single_expert_control_report.md`
 - `outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.md`
+
+## Frozen Claim Scope
+
+Allowed:
+
+- bounded teacher-guided DoorKey `SARE` result only
+
+Not allowed:
+
+- PPO-only routed win
+- specifically multi-expert routed advantage
+- cross-task routed advantage
+- KeyCorridor transfer claim
+
+Future thaw candidates must:
+
+- use the external `64`-episode `policy_diagnostics` path
+- beat the frozen retry-block KL learner-state `SARE` mean `0.3125` on seeds `47/53/59`
+- at least match matched KL learner-state `single_expert` on that same block
+- preserve the combined DoorKey KL learner-state `SARE` mean `0.7122`
+
+Canonical gate artifacts:
+
+- `configs/claims/doorkey_frozen_claim.yaml`
+- `outputs/reports/frozen_claim_envelope.md`
+- `outputs/reports/frozen_claim_manifest_report.md`
+- `outputs/reports/frozen_baseline_validation.md`
+- `outputs/reports/claim_gate_dry_run.md`
 
 ## Repository Layout
 

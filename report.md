@@ -14,10 +14,45 @@
   - still frozen after the final fairness closure, the resume-gate audit, and the deeper forensic atlas
   - not strong enough to promote into a specifically multi-expert routed DoorKey edge
 
+## Frozen Claim Envelope
+
+Allowed:
+
+- bounded teacher-guided DoorKey `SARE` result only
+
+Not allowed:
+
+- PPO-only routed win
+- specifically multi-expert routed DoorKey advantage
+- cross-task routed advantage
+- KeyCorridor transfer claim
+
+Future thaw candidates must clear all of:
+
+- external `64`-episode `policy_diagnostics` evaluation
+- retry-block KL learner-state `SARE` mean strictly above `0.3125` on seeds `47/53/59`
+- retry-block KL learner-state `SARE` at least matching same-block KL learner-state `single_expert`
+- combined DoorKey KL learner-state `SARE` mean preserved at or above `0.7122`
+
+Canonical gate artifacts:
+
+- [frozen_claim_envelope.md](outputs/reports/frozen_claim_envelope.md)
+- [frozen_claim_manifest_report.md](outputs/reports/frozen_claim_manifest_report.md)
+- [frozen_baseline_validation.md](outputs/reports/frozen_baseline_validation.md)
+- [claim_gate_dry_run.md](outputs/reports/claim_gate_dry_run.md)
+- [freeze_hardening_decision_memo.md](outputs/reports/freeze_hardening_decision_memo.md)
+
 ## Final Decision Path
 
 Source artifacts:
 
+- [frozen_claim_envelope.md](outputs/reports/frozen_claim_envelope.md)
+- [frozen_claim_manifest_report.md](outputs/reports/frozen_claim_manifest_report.md)
+- [frozen_baseline_validation.md](outputs/reports/frozen_baseline_validation.md)
+- [claim_gate_dry_run.md](outputs/reports/claim_gate_dry_run.md)
+- [claim_ledger.md](outputs/reports/claim_ledger.md)
+- [future_retry_template.md](outputs/reports/future_retry_template.md)
+- [freeze_hardening_decision_memo.md](outputs/reports/freeze_hardening_decision_memo.md)
 - [lss_forensic_atlas_reproduction_note.md](outputs/reports/lss_forensic_atlas_reproduction_note.md)
 - [lss_forensic_casebook.md](outputs/reports/lss_forensic_casebook.md)
 - [lss_forensic_round_audit.md](outputs/reports/lss_forensic_round_audit.md)
@@ -157,6 +192,10 @@ All three KeyCorridor seeds stayed flat:
   - matched `single_expert` beats or matches `SARE` on the final fresh block
   - the deep forensic package still finds only a mixed, plausible-but-weak mechanism signature
   - the combined DoorKey picture still does not clear a thaw bar
+- Future work must use the manifest and automated gate rather than ad hoc narrative comparison:
+  - `configs/claims/doorkey_frozen_claim.yaml`
+  - [frozen_baseline_validation.md](outputs/reports/frozen_baseline_validation.md)
+  - [claim_gate_dry_run.md](outputs/reports/claim_gate_dry_run.md)
 - Keep the scope explicit:
   - teacher-guided extraction only
   - DoorKey only
