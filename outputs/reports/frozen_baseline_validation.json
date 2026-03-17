@@ -386,7 +386,7 @@
   "provenance": {
     "combined_doorkey_csv": "outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.csv",
     "final_block_csv": "outputs/reports/lss_final_block_single_expert_control_report.csv",
-    "git_commit": "1604c1e30ff9bd6f07abe0f35c8fabb82bb63449",
+    "git_commit": "7a5b35e2829ddbcbaf1eaea6cf59614070f5a33e",
     "git_dirty": true,
     "keycorridor_transfer_csv": "outputs/reports/lss_keycorridor_transfer_report.csv"
   },

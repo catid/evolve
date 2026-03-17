@@ -168,7 +168,7 @@ def _candidate_pack(tmp_path: Path, frozen_pack_path: Path, frozen_pack: dict) -
 
 def test_validate_frozen_benchmark_pack_passes_for_matching_manifest_and_hashes(tmp_path: Path) -> None:
     manifest_path, manifest = _manifest(tmp_path)
-    pack = build_frozen_benchmark_pack(manifest_path, manifest, source_commit="abc123", source_dirty=False)
+    pack = build_frozen_benchmark_pack(manifest_path, manifest, source_commit="deadbeef", source_dirty=False)
     verdict, checks = validate_frozen_benchmark_pack(pack)
     assert verdict == "PASS: frozen benchmark pack validated"
     assert any(check.name == "manifest_hash" and check.status == "PASS" for check in checks)
@@ -176,11 +176,65 @@ def test_validate_frozen_benchmark_pack_passes_for_matching_manifest_and_hashes(
 
 def test_validate_candidate_result_pack_fails_for_missing_controls(tmp_path: Path) -> None:
     manifest_path, manifest = _manifest(tmp_path)
-    frozen_pack = build_frozen_benchmark_pack(manifest_path, manifest, source_commit="abc123", source_dirty=False)
+    frozen_pack = build_frozen_benchmark_pack(manifest_path, manifest, source_commit="deadbeef", source_dirty=False)
     frozen_pack_path = tmp_path / "frozen_pack.json"
     frozen_pack_path.write_text(json.dumps(frozen_pack, indent=2, sort_keys=True), encoding="utf-8")
     candidate = _candidate_pack(tmp_path, frozen_pack_path, frozen_pack)
+    metrics_artifact_path = Path(candidate["artifacts"][1]["path"])
+    metrics_artifact_path.write_text(
+        json.dumps(
+            {
+                "schema_version": candidate["schema_version"],
+                "candidate_name": candidate["candidate_name"],
+                "task": candidate["task"],
+                "evaluation": candidate["evaluation"],
+                "requested_claims": candidate["requested_claims"],
+                "controls_present": candidate["controls_present"],
+                "metrics": candidate["metrics"],
+                "actual_sets": candidate["actual_sets"],
+                "provenance": candidate["provenance"],
+            },
+            indent=2,
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+    candidate["artifacts"][1]["sha256"] = sha256_path(metrics_artifact_path)
+    candidate["artifacts"][1]["size_bytes"] = metrics_artifact_path.stat().st_size
     candidate["controls_present"] = ["kl_lss_sare"]
     verdict, checks = validate_candidate_result_pack(frozen_pack, frozen_pack_path, candidate)
     assert verdict == "FAIL: candidate result pack invalid"
     assert any(check.name == "controls_present" and check.status == "FAIL" for check in checks)
+
+
+def test_validate_candidate_result_pack_fails_when_metrics_artifact_diverges(tmp_path: Path) -> None:
+    manifest_path, manifest = _manifest(tmp_path)
+    frozen_pack = build_frozen_benchmark_pack(manifest_path, manifest, source_commit="deadbeef", source_dirty=False)
+    frozen_pack_path = tmp_path / "frozen_pack.json"
+    frozen_pack_path.write_text(json.dumps(frozen_pack, indent=2, sort_keys=True), encoding="utf-8")
+    candidate = _candidate_pack(tmp_path, frozen_pack_path, frozen_pack)
+    metrics_artifact_path = Path(candidate["artifacts"][1]["path"])
+    metrics_artifact_path.write_text(
+        json.dumps(
+            {
+                "schema_version": candidate["schema_version"],
+                "candidate_name": candidate["candidate_name"],
+                "task": candidate["task"],
+                "evaluation": candidate["evaluation"],
+                "requested_claims": candidate["requested_claims"],
+                "controls_present": candidate["controls_present"],
+                "metrics": candidate["metrics"],
+                "actual_sets": candidate["actual_sets"],
+                "provenance": candidate["provenance"],
+            },
+            indent=2,
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+    candidate["artifacts"][1]["sha256"] = sha256_path(metrics_artifact_path)
+    candidate["artifacts"][1]["size_bytes"] = metrics_artifact_path.stat().st_size
+    candidate["metrics"]["retry_block"]["kl_lss_sare"]["mean"] = 0.95
+    verdict, checks = validate_candidate_result_pack(frozen_pack, frozen_pack_path, candidate)
+    assert verdict == "FAIL: candidate result pack invalid"
+    assert any(check.name == "artifact_consistency::candidate_metrics_json" and check.status == "FAIL" for check in checks)

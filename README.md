@@ -137,6 +137,8 @@ Key scripts:
 ./scripts/run_frozen_baseline_validation.sh
 ./scripts/run_frozen_benchmark_pack_validation.sh
 ./scripts/run_claim_gate.sh
+./scripts/run_claim_gate_conformance.sh
+./scripts/run_claim_gate_redteam_finalize.sh
 ./scripts/run_freeze_hardening_finalize.sh
 ```
 
@@ -186,6 +188,12 @@ Run the pack-based gate against a candidate pack:
   outputs/reports/claim_gate_pack_dry_run.json
 ```
 
+Ad hoc markdown summaries are not enough for thaw consideration. Future DoorKey candidates must be packaged with the candidate-pack schema, run through the pack-based gate, and clear the adversarial conformance lane:
+
+```bash
+bash ./scripts/run_claim_gate_conformance.sh
+```
+
 ## Current DoorKey Result
 
 The current repo conclusion is still control-first, but the routed story has now split cleanly:
@@ -218,6 +226,8 @@ Canonical reports for the current phase:
 - `outputs/reports/claim_ledger.md`
 - `outputs/reports/future_retry_template.md`
 - `outputs/reports/freeze_hardening_decision_memo.md`
+- `outputs/reports/claim_gate_conformance_report.md`
+- `outputs/reports/claim_gate_redteam_decision_memo.md`
 - `outputs/reports/lss_forensic_atlas_reproduction_note.md`
 - `outputs/reports/lss_forensic_casebook.md`
 - `outputs/reports/lss_forensic_round_audit.md`

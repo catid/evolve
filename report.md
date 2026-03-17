@@ -59,7 +59,12 @@ Future thaw discussion must use the pack-based gate, not ad hoc report compariso
 - candidate pack template: [candidate_result_pack_template.json](outputs/reports/candidate_result_pack_template.json)
 - current frozen dry run: [claim_gate_pack_dry_run.md](outputs/reports/claim_gate_pack_dry_run.md)
 - malformed candidate example: [claim_gate_pack_inconclusive.md](outputs/reports/claim_gate_pack_inconclusive.md)
+- adversarial conformance corpus: [claim_gate_corpus_report.md](outputs/reports/claim_gate_corpus_report.md)
+- adversarial conformance result: [claim_gate_conformance_report.md](outputs/reports/claim_gate_conformance_report.md)
+- red-team memo: [claim_gate_redteam_decision_memo.md](outputs/reports/claim_gate_redteam_decision_memo.md)
 - operational memo: [freeze_hardening_operational_memo.md](outputs/reports/freeze_hardening_operational_memo.md)
+
+Ad hoc markdown reports are insufficient for thaw consideration. Any future DoorKey thaw candidate must be packaged as a candidate result pack and clear the pack-based gate.
 
 ## Final Decision Path
 

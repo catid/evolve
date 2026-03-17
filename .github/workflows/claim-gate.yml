@@ -10,14 +10,19 @@ on:
       - "configs/claims/**"
       - "outputs/reports/**"
       - "scripts/run_claim_gate.sh"
+      - "scripts/run_claim_gate_conformance.sh"
+      - "scripts/run_claim_gate_redteam_finalize.sh"
       - "scripts/run_frozen_baseline_validation.sh"
       - "scripts/run_frozen_benchmark_pack_validation.sh"
       - "scripts/run_freeze_hardening_finalize.sh"
       - "src/psmn_rl/analysis/benchmark_pack.py"
       - "src/psmn_rl/analysis/claim_gate.py"
+      - "src/psmn_rl/analysis/claim_gate_conformance.py"
       - "src/psmn_rl/analysis/freeze_hardening.py"
+      - "tests/data/claim_gate_corpus/**"
       - "tests/test_benchmark_pack.py"
       - "tests/test_claim_gate.py"
+      - "tests/test_claim_gate_conformance.py"
       - "tests/test_freeze_hardening.py"
   workflow_dispatch:
 
@@ -45,12 +50,19 @@ jobs:
           bash -n scripts/run_frozen_baseline_validation.sh
           bash -n scripts/run_frozen_benchmark_pack_validation.sh
           bash -n scripts/run_claim_gate.sh
+          bash -n scripts/run_claim_gate_conformance.sh
+          bash -n scripts/run_claim_gate_redteam_finalize.sh
           bash -n scripts/run_freeze_hardening_finalize.sh
 
       - name: Validate frozen pack and claim gate
         run: |
           source .venv/bin/activate
           ./scripts/run_freeze_hardening_finalize.sh
+
+      - name: Run adversarial claim-gate conformance
+        run: |
+          source .venv/bin/activate
+          bash ./scripts/run_claim_gate_conformance.sh
 
       - name: Run tests
         run: |

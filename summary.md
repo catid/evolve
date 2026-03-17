@@ -31,3 +31,5 @@
 - Package any future thaw candidate using: [candidate_result_pack_schema.md](outputs/reports/candidate_result_pack_schema.md) and [candidate_result_pack_template.json](outputs/reports/candidate_result_pack_template.json)
 - The current frozen candidate still fails the pack-based gate: [claim_gate_pack_dry_run.md](outputs/reports/claim_gate_pack_dry_run.md)
 - Malformed or incomplete candidates should be treated as missing prerequisites: [claim_gate_pack_inconclusive.md](outputs/reports/claim_gate_pack_inconclusive.md)
+- The adversarial corpus now exercises PASS / FAIL / INCONCLUSIVE paths and is the conformance reference for future gate changes: [claim_gate_corpus_report.md](outputs/reports/claim_gate_corpus_report.md) and [claim_gate_conformance_report.md](outputs/reports/claim_gate_conformance_report.md)
+- Ad hoc markdown reports are insufficient for thaw consideration; the candidate pack plus pack-based gate are the only thaw triage surface. See [claim_gate_redteam_decision_memo.md](outputs/reports/claim_gate_redteam_decision_memo.md).

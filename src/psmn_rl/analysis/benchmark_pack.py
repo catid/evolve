@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
@@ -23,6 +24,7 @@ DEFAULT_CANDIDATE_ARTIFACT_ROLES = [
     "retry_block_report_csv",
 ]
 METRIC_FIELDS = ["mean", "min", "max", "complete_seed_failures", "seed_count"]
+HEX_RE = re.compile(r"^[0-9a-f]{7,40}$")
 
 
 @dataclass(slots=True)
@@ -39,6 +41,13 @@ def load_structured_file(path: Path) -> dict[str, Any]:
     if suffix in {".yaml", ".yml"}:
         return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     raise ValueError(f"Unsupported structured file: {path}")
+
+
+def safe_load_structured_file(path: Path) -> tuple[dict[str, Any] | None, str | None]:
+    try:
+        return load_structured_file(path), None
+    except Exception as exc:  # pragma: no cover - exercised through conformance CLI paths
+        return None, f"{type(exc).__name__}: {exc}"
 
 
 def sha256_path(path: Path) -> str:
@@ -73,6 +82,36 @@ def _lane_seed_set_from_payload(payload: dict[str, Any], key: str) -> set[tuple[
     actual_sets = payload.get("actual_sets", {})
     values = actual_sets.get(key, [])
     return {(str(lane), int(seed)) for lane, seed in values}
+
+
+def _as_mapping(value: Any) -> dict[str, Any] | None:
+    return value if isinstance(value, dict) else None
+
+
+def _as_list(value: Any) -> list[Any] | None:
+    return value if isinstance(value, list) else None
+
+
+def _coerce_int(value: Any) -> int | None:
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        return value
+    if isinstance(value, float) and value.is_integer():
+        return int(value)
+    return None
+
+
+def _coerce_float(value: Any) -> float | None:
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    return None
+
+
+def _valid_commitish(value: Any) -> bool:
+    return isinstance(value, str) and bool(HEX_RE.match(value))
 
 
 def _required_benchmark_artifact_keys(manifest: dict[str, Any]) -> list[str]:
@@ -177,6 +216,19 @@ def validate_frozen_benchmark_pack(pack: dict[str, Any]) -> tuple[str, list[Pack
     else:
         checks.append(PackCheck("pack_type", "PASS", f"pack type is `{FROZEN_PACK_TYPE}`"))
 
+    provenance = _as_mapping(pack.get("provenance"))
+    if provenance is None:
+        checks.append(PackCheck("provenance", "FAIL", "frozen pack provenance must be a mapping"))
+        return "FAIL: frozen benchmark pack invalid", checks
+    if not _valid_commitish(provenance.get("sealed_source_commit")):
+        checks.append(PackCheck("provenance.sealed_source_commit", "FAIL", "sealed source commit must look like a git commit hash"))
+    else:
+        checks.append(PackCheck("provenance.sealed_source_commit", "PASS", f"sealed source commit `{provenance.get('sealed_source_commit')}` is well formed"))
+    if not isinstance(provenance.get("sealed_source_dirty"), bool):
+        checks.append(PackCheck("provenance.sealed_source_dirty", "FAIL", "sealed source dirty flag must be boolean"))
+    else:
+        checks.append(PackCheck("provenance.sealed_source_dirty", "PASS", f"sealed source dirty flag is `{provenance.get('sealed_source_dirty')}`"))
+
     manifest_reference = pack.get("manifest_reference", {})
     manifest_path = Path(str(manifest_reference.get("path", "")))
     if not manifest_path.exists():
@@ -197,7 +249,8 @@ def validate_frozen_benchmark_pack(pack: dict[str, Any]) -> tuple[str, list[Pack
 
     manifest = load_structured_file(manifest_path)
     expected_schema = int(manifest.get("benchmark_pack", {}).get("schema_version", 1))
-    if int(pack.get("schema_version", 0)) != expected_schema:
+    actual_schema = _coerce_int(pack.get("schema_version"))
+    if actual_schema is None or actual_schema != expected_schema:
         checks.append(PackCheck("schema_version", "FAIL", f"pack schema `{pack.get('schema_version')}` does not match manifest `{expected_schema}`"))
     else:
         checks.append(PackCheck("schema_version", "PASS", f"pack schema version `{expected_schema}` is recognized"))
@@ -246,8 +299,12 @@ def _metric_block_has_required_shape(block: dict[str, Any], variants: list[str])
         if variant not in block:
             missing.append(f"{variant}:<variant>")
             continue
+        payload = _as_mapping(block[variant])
+        if payload is None:
+            missing.append(f"{variant}:<mapping>")
+            continue
         for field in METRIC_FIELDS:
-            if field not in block[variant]:
+            if field not in payload:
                 missing.append(f"{variant}:{field}")
     return (not missing), missing
 
@@ -282,12 +339,22 @@ def validate_candidate_result_pack(
         checks.append(PackCheck("pack_type", "FAIL", f"expected `{CANDIDATE_PACK_TYPE}`, found `{candidate_pack.get('pack_type')}`"))
     else:
         checks.append(PackCheck("pack_type", "PASS", f"pack type is `{CANDIDATE_PACK_TYPE}`"))
-    if int(candidate_pack.get("schema_version", 0)) != expected_schema:
+    actual_schema = _coerce_int(candidate_pack.get("schema_version"))
+    if actual_schema is None or actual_schema != expected_schema:
         checks.append(PackCheck("schema_version", "FAIL", f"candidate schema `{candidate_pack.get('schema_version')}` does not match frozen requirement `{expected_schema}`"))
     else:
         checks.append(PackCheck("schema_version", "PASS", f"candidate schema version `{expected_schema}` is recognized"))
 
-    frozen_reference = candidate_pack.get("frozen_pack_reference", {})
+    candidate_name = candidate_pack.get("candidate_name")
+    if not isinstance(candidate_name, str) or not candidate_name.strip():
+        checks.append(PackCheck("candidate_name", "FAIL", "candidate name must be a non-empty string"))
+    else:
+        checks.append(PackCheck("candidate_name", "PASS", f"candidate name is `{candidate_name}`"))
+
+    frozen_reference = _as_mapping(candidate_pack.get("frozen_pack_reference"))
+    if frozen_reference is None:
+        checks.append(PackCheck("frozen_pack_reference", "FAIL", "frozen_pack_reference must be a mapping"))
+        return "FAIL: candidate result pack invalid", checks
     frozen_hash = sha256_path(frozen_pack_path) if frozen_pack_path.exists() else None
     if str(frozen_reference.get("path", "")) != str(frozen_pack_path):
         checks.append(PackCheck("frozen_pack_reference.path", "FAIL", f"candidate references `{frozen_reference.get('path')}` instead of `{frozen_pack_path}`"))
@@ -303,14 +370,22 @@ def validate_candidate_result_pack(
     else:
         checks.append(PackCheck("frozen_pack_reference.claim_id", "PASS", f"candidate claim id matches `{claim_id}`"))
 
-    evaluation = candidate_pack.get("evaluation", {})
+    evaluation = _as_mapping(candidate_pack.get("evaluation"))
+    if evaluation is None:
+        checks.append(PackCheck("evaluation", "FAIL", "candidate evaluation must be a mapping"))
+        return "FAIL: candidate result pack invalid", checks
     frozen_eval = frozen_pack.get("evaluation", {})
     task = str(candidate_pack.get("task", ""))
     if task != str(frozen_eval.get("task", "")):
         checks.append(PackCheck("task", "FAIL", f"candidate task `{task or '-'}` does not match frozen `{frozen_eval.get('task')}`"))
     else:
         checks.append(PackCheck("task", "PASS", f"candidate task matches `{task}`"))
-    if str(evaluation.get("path_key", "")) != str(frozen_eval.get("path_key", "")) or int(evaluation.get("episodes", 0)) != int(frozen_eval.get("episodes", 0)):
+    candidate_episodes = _coerce_int(evaluation.get("episodes"))
+    if (
+        not isinstance(evaluation.get("path_key"), str)
+        or str(evaluation.get("path_key", "")) != str(frozen_eval.get("path_key", ""))
+        or candidate_episodes != int(frozen_eval.get("episodes", 0))
+    ):
         checks.append(
             PackCheck(
                 "evaluation",
@@ -321,8 +396,20 @@ def validate_candidate_result_pack(
     else:
         checks.append(PackCheck("evaluation", "PASS", "candidate uses the required DoorKey external-64 evaluation path"))
 
+    requested_claims = _as_list(candidate_pack.get("requested_claims"))
+    if requested_claims is None or not all(isinstance(item, str) for item in requested_claims):
+        checks.append(PackCheck("requested_claims", "FAIL", "requested_claims must be a list of strings"))
+    else:
+        checks.append(PackCheck("requested_claims", "PASS", "requested claim keys are well formed"))
+
     required_controls = set(frozen_pack.get("thaw_gate", {}).get("required_controls", []))
-    controls_present = set(candidate_pack.get("controls_present", []))
+    controls_list = _as_list(candidate_pack.get("controls_present"))
+    if controls_list is None or not all(isinstance(item, str) for item in controls_list):
+        checks.append(PackCheck("controls_present.type", "FAIL", "controls_present must be a list of strings"))
+        controls_present: set[str] = set()
+    else:
+        checks.append(PackCheck("controls_present.type", "PASS", "controls_present is a list of strings"))
+        controls_present = set(controls_list)
     missing_controls = sorted(required_controls - controls_present)
     if missing_controls:
         checks.append(PackCheck("controls_present", "FAIL", "candidate is missing required controls: " + ", ".join(f"`{control}`" for control in missing_controls)))
@@ -330,11 +417,24 @@ def validate_candidate_result_pack(
         checks.append(PackCheck("controls_present", "PASS", "candidate includes all required fairness controls"))
 
     variants = list(frozen_pack.get("variants", {}).keys())
-    metrics = candidate_pack.get("metrics", {})
-    combined = metrics.get("combined", {})
-    retry_block = metrics.get("retry_block", {})
-    ok_combined, missing_combined = _metric_block_has_required_shape(combined, variants)
-    ok_retry, missing_retry = _metric_block_has_required_shape(retry_block, variants)
+    metrics = _as_mapping(candidate_pack.get("metrics"))
+    if metrics is None:
+        checks.append(PackCheck("metrics", "FAIL", "metrics must be a mapping"))
+        return "FAIL: candidate result pack invalid", checks
+    combined = _as_mapping(metrics.get("combined"))
+    retry_block = _as_mapping(metrics.get("retry_block"))
+    if combined is None:
+        checks.append(PackCheck("metrics.combined.type", "FAIL", "combined metrics must be a mapping"))
+        ok_combined, missing_combined = False, ["<combined-mapping>"]
+    else:
+        checks.append(PackCheck("metrics.combined.type", "PASS", "combined metrics are a mapping"))
+        ok_combined, missing_combined = _metric_block_has_required_shape(combined, variants)
+    if retry_block is None:
+        checks.append(PackCheck("metrics.retry_block.type", "FAIL", "retry-block metrics must be a mapping"))
+        ok_retry, missing_retry = False, ["<retry-block-mapping>"]
+    else:
+        checks.append(PackCheck("metrics.retry_block.type", "PASS", "retry-block metrics are a mapping"))
+        ok_retry, missing_retry = _metric_block_has_required_shape(retry_block, variants)
     if not ok_combined:
         checks.append(PackCheck("metrics.combined", "FAIL", "combined metrics are missing fields: " + ", ".join(f"`{item}`" for item in missing_combined)))
     else:
@@ -343,22 +443,75 @@ def validate_candidate_result_pack(
         checks.append(PackCheck("metrics.retry_block", "FAIL", "retry-block metrics are missing fields: " + ", ".join(f"`{item}`" for item in missing_retry)))
     else:
         checks.append(PackCheck("metrics.retry_block", "PASS", "retry-block metrics expose every required variant field"))
+    for block_name, block in [("combined", combined), ("retry_block", retry_block)]:
+        if block is None:
+            continue
+        for variant in variants:
+            payload = _as_mapping(block.get(variant))
+            if payload is None:
+                continue
+            for field in ["mean", "min", "max"]:
+                if _coerce_float(payload.get(field)) is None:
+                    checks.append(PackCheck(f"metrics.{block_name}.{variant}.{field}", "FAIL", f"`{field}` must be numeric"))
+            for field in ["complete_seed_failures", "seed_count"]:
+                if _coerce_int(payload.get(field)) is None:
+                    checks.append(PackCheck(f"metrics.{block_name}.{variant}.{field}", "FAIL", f"`{field}` must be an integer"))
+
+    actual_sets = _as_mapping(candidate_pack.get("actual_sets"))
+    if actual_sets is None:
+        checks.append(PackCheck("actual_sets", "FAIL", "actual_sets must be a mapping"))
+        return "FAIL: candidate result pack invalid", checks
+    combined_set_values = _as_list(actual_sets.get("combined_lane_seeds"))
+    retry_set_values = _as_list(actual_sets.get("retry_block_lane_seeds"))
+    actual_set_errors: list[str] = []
+
+    def _safe_lane_seed_set(values: list[Any] | None, label: str) -> set[tuple[str, int]]:
+        result: set[tuple[str, int]] = set()
+        if values is None:
+            actual_set_errors.append(f"{label} must be a list")
+            return result
+        for item in values:
+            if not isinstance(item, list) or len(item) != 2 or not isinstance(item[0], str) or _coerce_int(item[1]) is None:
+                actual_set_errors.append(f"{label} contains malformed entry `{item}`")
+                continue
+            result.add((item[0], int(item[1])))
+        return result
 
     expected_combined_set = _expected_lane_seed_set(frozen_pack.get("seed_groups", {}).get("combined", {}))
-    actual_combined_set = _lane_seed_set_from_payload(candidate_pack, "combined_lane_seeds")
+    actual_combined_set = _safe_lane_seed_set(combined_set_values, "combined_lane_seeds")
     if actual_combined_set != expected_combined_set:
         checks.append(PackCheck("actual_sets.combined", "FAIL", f"candidate combined lane/seed set `{sorted(actual_combined_set)}` does not match frozen `{sorted(expected_combined_set)}`"))
     else:
         checks.append(PackCheck("actual_sets.combined", "PASS", "candidate combined lane/seed set matches the frozen benchmark"))
     expected_retry_set = _expected_lane_seed_set(frozen_pack.get("seed_groups", {}).get("retry_block", {}))
-    actual_retry_set = _lane_seed_set_from_payload(candidate_pack, "retry_block_lane_seeds")
+    actual_retry_set = _safe_lane_seed_set(retry_set_values, "retry_block_lane_seeds")
     if actual_retry_set != expected_retry_set:
         checks.append(PackCheck("actual_sets.retry_block", "FAIL", f"candidate retry-block lane/seed set `{sorted(actual_retry_set)}` does not match frozen `{sorted(expected_retry_set)}`"))
     else:
         checks.append(PackCheck("actual_sets.retry_block", "PASS", "candidate retry-block lane/seed set matches the frozen benchmark"))
+    for error in actual_set_errors:
+        checks.append(PackCheck("actual_sets.shape", "FAIL", error))
 
     required_roles = set(_required_candidate_artifact_roles(frozen_pack))
-    artifacts = {str(item.get("role")): item for item in candidate_pack.get("artifacts", [])}
+    artifacts_list = _as_list(candidate_pack.get("artifacts"))
+    if artifacts_list is None:
+        checks.append(PackCheck("artifacts.type", "FAIL", "artifacts must be a list"))
+        return "FAIL: candidate result pack invalid", checks
+    duplicate_roles: set[str] = set()
+    artifacts: dict[str, dict[str, Any]] = {}
+    for item in artifacts_list:
+        artifact = _as_mapping(item)
+        if artifact is None:
+            checks.append(PackCheck("artifacts.shape", "FAIL", f"artifact entry `{item}` must be a mapping"))
+            continue
+        role = str(artifact.get("role", ""))
+        if role in artifacts:
+            duplicate_roles.add(role)
+        artifacts[role] = artifact
+    if duplicate_roles:
+        checks.append(PackCheck("artifacts.duplicates", "FAIL", "duplicate artifact roles: " + ", ".join(f"`{role}`" for role in sorted(duplicate_roles))))
+    else:
+        checks.append(PackCheck("artifacts.duplicates", "PASS", "artifact roles are unique"))
     missing_roles = sorted(required_roles - set(artifacts))
     if missing_roles:
         checks.append(PackCheck("artifacts", "FAIL", "candidate pack is missing required artifact roles: " + ", ".join(f"`{role}`" for role in missing_roles)))
@@ -367,6 +520,9 @@ def validate_candidate_result_pack(
     for role in sorted(required_roles):
         artifact = artifacts.get(role)
         if artifact is None:
+            continue
+        if not isinstance(artifact.get("path"), str) or not isinstance(artifact.get("sha256"), str) or _coerce_int(artifact.get("size_bytes")) is None:
+            checks.append(PackCheck(f"artifact_shape::{role}", "FAIL", f"candidate artifact `{role}` must include string path/hash and integer size_bytes"))
             continue
         path = Path(str(artifact.get("path", "")))
         if not path.exists():
@@ -377,6 +533,55 @@ def validate_candidate_result_pack(
             checks.append(PackCheck(f"artifact_hash::{role}", "FAIL", f"candidate artifact `{path}` hash drifted from `{artifact.get('sha256')}` to `{current_hash}`"))
         else:
             checks.append(PackCheck(f"artifact_hash::{role}", "PASS", f"candidate artifact `{path}` hash matches `{current_hash}`"))
+
+    metrics_artifact = artifacts.get("candidate_metrics_json")
+    if metrics_artifact is not None and isinstance(metrics_artifact.get("path"), str):
+        metrics_artifact_path = Path(str(metrics_artifact["path"]))
+        if metrics_artifact_path.exists():
+            metrics_payload, metrics_error = safe_load_structured_file(metrics_artifact_path)
+            if metrics_error is not None or metrics_payload is None:
+                checks.append(
+                    PackCheck(
+                        "artifact_consistency::candidate_metrics_json",
+                        "FAIL",
+                        f"candidate metrics artifact `{metrics_artifact_path}` could not be parsed: {metrics_error}",
+                    )
+                )
+            else:
+                mismatched_fields: list[str] = []
+                for field in ["task", "evaluation", "requested_claims", "controls_present", "metrics", "actual_sets"]:
+                    if metrics_payload.get(field) != candidate_pack.get(field):
+                        mismatched_fields.append(field)
+                if mismatched_fields:
+                    checks.append(
+                        PackCheck(
+                            "artifact_consistency::candidate_metrics_json",
+                            "FAIL",
+                            "candidate pack diverges from candidate_metrics_json on: "
+                            + ", ".join(f"`{field}`" for field in mismatched_fields),
+                        )
+                    )
+                else:
+                    checks.append(
+                        PackCheck(
+                            "artifact_consistency::candidate_metrics_json",
+                            "PASS",
+                            "candidate pack matches the candidate_metrics_json artifact on task, evaluation, controls, metrics, and actual sets",
+                        )
+                    )
+
+    provenance = _as_mapping(candidate_pack.get("provenance"))
+    if provenance is None:
+        checks.append(PackCheck("provenance", "FAIL", "candidate provenance must be a mapping"))
+    else:
+        if not _valid_commitish(provenance.get("git_commit")):
+            checks.append(PackCheck("provenance.git_commit", "FAIL", "candidate provenance git_commit must look like a git commit hash"))
+        else:
+            checks.append(PackCheck("provenance.git_commit", "PASS", f"candidate provenance git_commit `{provenance.get('git_commit')}` is well formed"))
+        if not isinstance(provenance.get("git_dirty"), bool):
+            checks.append(PackCheck("provenance.git_dirty", "FAIL", "candidate provenance git_dirty must be boolean"))
+        else:
+            checks.append(PackCheck("provenance.git_dirty", "PASS", f"candidate provenance git_dirty is `{provenance.get('git_dirty')}`"))
 
     verdict = "PASS: candidate result pack validated" if all(check.status == "PASS" for check in checks) else "FAIL: candidate result pack invalid"
     return verdict, checks

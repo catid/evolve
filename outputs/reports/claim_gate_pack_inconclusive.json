@@ -12,12 +12,17 @@
       "status": "PASS"
     },
     {
+      "detail": "candidate name is `incomplete_candidate_pack_example`",
+      "name": "candidate_name",
+      "status": "PASS"
+    },
+    {
       "detail": "candidate references `outputs/reports/frozen_benchmark_pack.json`",
       "name": "frozen_pack_reference.path",
       "status": "PASS"
     },
     {
-      "detail": "candidate references frozen-pack hash `ee4e6d5076c1b090289d56e480a48b6dcff4fe816f6ba27703eefcdc4a5594d7`",
+      "detail": "candidate references frozen-pack hash `1d0bdccf1a16e0368f087ed73952b41ed4647a48d1c7dbed917da7dde41ac9ae`",
       "name": "frozen_pack_reference.sha256",
       "status": "PASS"
     },
@@ -37,8 +42,28 @@
       "status": "PASS"
     },
     {
+      "detail": "requested claim keys are well formed",
+      "name": "requested_claims",
+      "status": "PASS"
+    },
+    {
+      "detail": "controls_present is a list of strings",
+      "name": "controls_present.type",
+      "status": "PASS"
+    },
+    {
       "detail": "candidate is missing required controls: `baseline_sare`, `kl_lss_single_expert`, `kl_lss_token_dense`",
       "name": "controls_present",
+      "status": "FAIL"
+    },
+    {
+      "detail": "combined metrics are a mapping",
+      "name": "metrics.combined.type",
+      "status": "PASS"
+    },
+    {
+      "detail": "retry-block metrics must be a mapping",
+      "name": "metrics.retry_block.type",
       "status": "FAIL"
     },
     {
@@ -47,7 +72,7 @@
       "status": "FAIL"
     },
     {
-      "detail": "retry-block metrics are missing fields: `baseline_sare:<variant>`, `kl_lss_sare:<variant>`, `kl_lss_single_expert:<variant>`, `kl_lss_token_dense:<variant>`, `recovered_token_dense:<variant>`",
+      "detail": "retry-block metrics are missing fields: `<retry-block-mapping>`",
       "name": "metrics.retry_block",
       "status": "FAIL"
     },
@@ -62,6 +87,11 @@
       "status": "FAIL"
     },
     {
+      "detail": "artifact roles are unique",
+      "name": "artifacts.duplicates",
+      "status": "PASS"
+    },
+    {
       "detail": "candidate pack is missing required artifact roles: `candidate_summary_markdown`, `combined_report_csv`, `combined_report_markdown`, `retry_block_report_csv`, `retry_block_report_markdown`",
       "name": "artifacts",
       "status": "FAIL"
@@ -70,12 +100,32 @@
       "detail": "candidate artifact `outputs/reports/does_not_exist.json` is missing",
       "name": "artifact_hash::candidate_metrics_json",
       "status": "FAIL"
+    },
+    {
+      "detail": "candidate provenance git_commit `7a5b35e2829ddbcbaf1eaea6cf59614070f5a33e` is well formed",
+      "name": "provenance.git_commit",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate provenance git_dirty is `True`",
+      "name": "provenance.git_dirty",
+      "status": "PASS"
     }
   ],
   "checks": [
     {
       "detail": "pack type is `frozen_benchmark_pack`",
       "name": "frozen_pack::pack_type",
+      "status": "PASS"
+    },
+    {
+      "detail": "sealed source commit `7a5b35e2829ddbcbaf1eaea6cf59614070f5a33e` is well formed",
+      "name": "frozen_pack::provenance.sealed_source_commit",
+      "status": "PASS"
+    },
+    {
+      "detail": "sealed source dirty flag is `True`",
+      "name": "frozen_pack::provenance.sealed_source_dirty",
       "status": "PASS"
     },
     {
@@ -129,12 +179,12 @@
       "status": "PASS"
     },
     {
-      "detail": "artifact `outputs/reports/claim_gate_dry_run.md` hash matches `dff3558d5deca2813ad46f696e9a6e6090fe1f2efd85c57b90bc63bfaea61616`",
+      "detail": "artifact `outputs/reports/claim_gate_dry_run.md` hash matches `c38ee9a1df0197f405ed6aa16ad90a27f4d6b8f3d9f960588c0e3bbd70cf8dd7`",
       "name": "frozen_pack::artifact_hash::claim_gate_dry_run",
       "status": "PASS"
     },
     {
-      "detail": "artifact `outputs/reports/claim_gate_dry_run.json` hash matches `2a2b08864bcf16de89123b87e2cfe946e3ee0757cd1b3901b4f5f130df353e96`",
+      "detail": "artifact `outputs/reports/claim_gate_dry_run.json` hash matches `152056ccf996def48d342cfb6f98cdea2e30eae915a3333fdcc1721d8db7f41d`",
       "name": "frozen_pack::artifact_hash::claim_gate_dry_run_json",
       "status": "PASS"
     },
@@ -189,7 +239,7 @@
       "status": "PASS"
     },
     {
-      "detail": "artifact `outputs/reports/frozen_claim_envelope.md` hash matches `bef4f19a6c41cf1f8545d5aa893942e3c735d9a033d36706a0da4037052d5b01`",
+      "detail": "artifact `outputs/reports/frozen_claim_envelope.md` hash matches `f27bf0ef77d41823ef407de83af4ee97673d863bb9f3214fe9a129ee1d473f3c`",
       "name": "frozen_pack::artifact_hash::frozen_claim_envelope",
       "status": "PASS"
     },
@@ -199,12 +249,12 @@
       "status": "PASS"
     },
     {
-      "detail": "artifact `outputs/reports/frozen_baseline_validation.json` hash matches `3cca58ab671490cf6361f52cacb6478d163a4be5aaac07c3fbf438415bb884fc`",
+      "detail": "artifact `outputs/reports/frozen_baseline_validation.json` hash matches `03f5b1d49e3effdbf508aa69e12842a35cb06d365f0b9bd1e3dca0bf9c048351`",
       "name": "frozen_pack::artifact_hash::frozen_validation_json",
       "status": "PASS"
     },
     {
-      "detail": "artifact `outputs/reports/frozen_baseline_validation.md` hash matches `ee2b6485c33762cd1b9d72338c48d51a6617efb31c12d53818b5d2422aeb34f1`",
+      "detail": "artifact `outputs/reports/frozen_baseline_validation.md` hash matches `e068beabe92f80c105345bf900c528b448d7f133906478ff152497f8a6b28063`",
       "name": "frozen_pack::artifact_hash::frozen_validation_report",
       "status": "PASS"
     },
@@ -244,12 +294,17 @@
       "status": "PASS"
     },
     {
+      "detail": "candidate name is `incomplete_candidate_pack_example`",
+      "name": "candidate_pack::candidate_name",
+      "status": "PASS"
+    },
+    {
       "detail": "candidate references `outputs/reports/frozen_benchmark_pack.json`",
       "name": "candidate_pack::frozen_pack_reference.path",
       "status": "PASS"
     },
     {
-      "detail": "candidate references frozen-pack hash `ee4e6d5076c1b090289d56e480a48b6dcff4fe816f6ba27703eefcdc4a5594d7`",
+      "detail": "candidate references frozen-pack hash `1d0bdccf1a16e0368f087ed73952b41ed4647a48d1c7dbed917da7dde41ac9ae`",
       "name": "candidate_pack::frozen_pack_reference.sha256",
       "status": "PASS"
     },
@@ -269,8 +324,28 @@
       "status": "PASS"
     },
     {
+      "detail": "requested claim keys are well formed",
+      "name": "candidate_pack::requested_claims",
+      "status": "PASS"
+    },
+    {
+      "detail": "controls_present is a list of strings",
+      "name": "candidate_pack::controls_present.type",
+      "status": "PASS"
+    },
+    {
       "detail": "candidate is missing required controls: `baseline_sare`, `kl_lss_single_expert`, `kl_lss_token_dense`",
       "name": "candidate_pack::controls_present",
+      "status": "INCONCLUSIVE"
+    },
+    {
+      "detail": "combined metrics are a mapping",
+      "name": "candidate_pack::metrics.combined.type",
+      "status": "PASS"
+    },
+    {
+      "detail": "retry-block metrics must be a mapping",
+      "name": "candidate_pack::metrics.retry_block.type",
       "status": "INCONCLUSIVE"
     },
     {
@@ -279,7 +354,7 @@
       "status": "INCONCLUSIVE"
     },
     {
-      "detail": "retry-block metrics are missing fields: `baseline_sare:<variant>`, `kl_lss_sare:<variant>`, `kl_lss_single_expert:<variant>`, `kl_lss_token_dense:<variant>`, `recovered_token_dense:<variant>`",
+      "detail": "retry-block metrics are missing fields: `<retry-block-mapping>`",
       "name": "candidate_pack::metrics.retry_block",
       "status": "INCONCLUSIVE"
     },
@@ -294,6 +369,11 @@
       "status": "INCONCLUSIVE"
     },
     {
+      "detail": "artifact roles are unique",
+      "name": "candidate_pack::artifacts.duplicates",
+      "status": "PASS"
+    },
+    {
       "detail": "candidate pack is missing required artifact roles: `candidate_summary_markdown`, `combined_report_csv`, `combined_report_markdown`, `retry_block_report_csv`, `retry_block_report_markdown`",
       "name": "candidate_pack::artifacts",
       "status": "INCONCLUSIVE"
@@ -302,6 +382,16 @@
       "detail": "candidate artifact `outputs/reports/does_not_exist.json` is missing",
       "name": "candidate_pack::artifact_hash::candidate_metrics_json",
       "status": "INCONCLUSIVE"
+    },
+    {
+      "detail": "candidate provenance git_commit `7a5b35e2829ddbcbaf1eaea6cf59614070f5a33e` is well formed",
+      "name": "candidate_pack::provenance.git_commit",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate provenance git_dirty is `True`",
+      "name": "candidate_pack::provenance.git_dirty",
+      "status": "PASS"
     }
   ],
   "frozen_pack": "outputs/reports/frozen_benchmark_pack.json",
@@ -309,6 +399,16 @@
     {
       "detail": "pack type is `frozen_benchmark_pack`",
       "name": "pack_type",
+      "status": "PASS"
+    },
+    {
+      "detail": "sealed source commit `7a5b35e2829ddbcbaf1eaea6cf59614070f5a33e` is well formed",
+      "name": "provenance.sealed_source_commit",
+      "status": "PASS"
+    },
+    {
+      "detail": "sealed source dirty flag is `True`",
+      "name": "provenance.sealed_source_dirty",
       "status": "PASS"
     },
     {
@@ -362,12 +462,12 @@
       "status": "PASS"
     },
     {
-      "detail": "artifact `outputs/reports/claim_gate_dry_run.md` hash matches `dff3558d5deca2813ad46f696e9a6e6090fe1f2efd85c57b90bc63bfaea61616`",
+      "detail": "artifact `outputs/reports/claim_gate_dry_run.md` hash matches `c38ee9a1df0197f405ed6aa16ad90a27f4d6b8f3d9f960588c0e3bbd70cf8dd7`",
       "name": "artifact_hash::claim_gate_dry_run",
       "status": "PASS"
     },
     {
-      "detail": "artifact `outputs/reports/claim_gate_dry_run.json` hash matches `2a2b08864bcf16de89123b87e2cfe946e3ee0757cd1b3901b4f5f130df353e96`",
+      "detail": "artifact `outputs/reports/claim_gate_dry_run.json` hash matches `152056ccf996def48d342cfb6f98cdea2e30eae915a3333fdcc1721d8db7f41d`",
       "name": "artifact_hash::claim_gate_dry_run_json",
       "status": "PASS"
     },
@@ -422,7 +522,7 @@
       "status": "PASS"
     },
     {
-      "detail": "artifact `outputs/reports/frozen_claim_envelope.md` hash matches `bef4f19a6c41cf1f8545d5aa893942e3c735d9a033d36706a0da4037052d5b01`",
+      "detail": "artifact `outputs/reports/frozen_claim_envelope.md` hash matches `f27bf0ef77d41823ef407de83af4ee97673d863bb9f3214fe9a129ee1d473f3c`",
       "name": "artifact_hash::frozen_claim_envelope",
       "status": "PASS"
     },
@@ -432,12 +532,12 @@
       "status": "PASS"
     },
     {
-      "detail": "artifact `outputs/reports/frozen_baseline_validation.json` hash matches `3cca58ab671490cf6361f52cacb6478d163a4be5aaac07c3fbf438415bb884fc`",
+      "detail": "artifact `outputs/reports/frozen_baseline_validation.json` hash matches `03f5b1d49e3effdbf508aa69e12842a35cb06d365f0b9bd1e3dca0bf9c048351`",
       "name": "artifact_hash::frozen_validation_json",
       "status": "PASS"
     },
     {
-      "detail": "artifact `outputs/reports/frozen_baseline_validation.md` hash matches `ee2b6485c33762cd1b9d72338c48d51a6617efb31c12d53818b5d2422aeb34f1`",
+      "detail": "artifact `outputs/reports/frozen_baseline_validation.md` hash matches `e068beabe92f80c105345bf900c528b448d7f133906478ff152497f8a6b28063`",
       "name": "artifact_hash::frozen_validation_report",
       "status": "PASS"
     },

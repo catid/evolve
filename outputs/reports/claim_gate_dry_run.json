@@ -2,6 +2,11 @@
   "candidate": "outputs/reports/frozen_baseline_validation.json",
   "checks": [
     {
+      "detail": "candidate evaluation is a mapping",
+      "name": "evaluation_shape",
+      "status": "PASS"
+    },
+    {
       "detail": "candidate task matches `DoorKey`",
       "name": "task",
       "status": "PASS"
@@ -12,13 +17,38 @@
       "status": "PASS"
     },
     {
+      "detail": "controls_present is a list of strings",
+      "name": "fairness_controls_shape",
+      "status": "PASS"
+    },
+    {
       "detail": "all required structured controls are present",
       "name": "fairness_controls",
       "status": "PASS"
     },
     {
+      "detail": "requested_claims is a list of strings",
+      "name": "claim_scope_shape",
+      "status": "PASS"
+    },
+    {
       "detail": "candidate stays inside the frozen claim envelope",
       "name": "claim_scope",
+      "status": "PASS"
+    },
+    {
+      "detail": "metrics is a mapping",
+      "name": "candidate_metrics_shape",
+      "status": "PASS"
+    },
+    {
+      "detail": "metrics.combined is a mapping",
+      "name": "candidate_metrics_combined_shape",
+      "status": "PASS"
+    },
+    {
+      "detail": "metrics.retry_block is a mapping",
+      "name": "candidate_metrics_retry_block_shape",
       "status": "PASS"
     },
     {

@@ -1,0 +1,150 @@
+{
+  "case_verdicts": [
+    {
+      "actual_verdict": "FAIL: claim remains frozen",
+      "expected_verdict": "FAIL: claim remains frozen",
+      "id": "happy_path_reference_fail"
+    },
+    {
+      "actual_verdict": "PASS: thaw consideration allowed",
+      "expected_verdict": "PASS: thaw consideration allowed",
+      "id": "synthetic_pass_reference"
+    },
+    {
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+      "id": "incomplete_missing_controls"
+    },
+    {
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+      "id": "incomplete_missing_retry_metrics"
+    },
+    {
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+      "id": "incomplete_missing_combined_metrics"
+    },
+    {
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+      "id": "incomplete_missing_provenance_commit"
+    },
+    {
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+      "id": "schema_wrong_schema_version"
+    },
+    {
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+      "id": "schema_wrong_controls_type"
+    },
+    {
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+      "id": "schema_missing_actual_sets"
+    },
+    {
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+      "id": "schema_malformed_json"
+    },
+    {
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+      "id": "semantic_wrong_task"
+    },
+    {
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+      "id": "semantic_wrong_eval_path"
+    },
+    {
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+      "id": "semantic_wrong_retry_seeds"
+    },
+    {
+      "actual_verdict": "FAIL: claim remains frozen",
+      "expected_verdict": "FAIL: claim remains frozen",
+      "id": "near_miss_below_single_expert"
+    },
+    {
+      "actual_verdict": "FAIL: claim remains frozen",
+      "expected_verdict": "FAIL: claim remains frozen",
+      "id": "near_miss_regress_combined"
+    },
+    {
+      "actual_verdict": "FAIL: claim remains frozen",
+      "expected_verdict": "FAIL: claim remains frozen",
+      "id": "near_miss_extra_seed_failure"
+    },
+    {
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+      "id": "provenance_hash_mismatch"
+    },
+    {
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+      "id": "provenance_missing_file"
+    },
+    {
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
+      "id": "tampered_metrics_artifact_mismatch"
+    },
+    {
+      "actual_verdict": "FAIL: claim remains frozen",
+      "expected_verdict": "FAIL: claim remains frozen",
+      "id": "overclaim_keycorridor_transfer"
+    },
+    {
+      "actual_verdict": "FAIL: claim remains frozen",
+      "expected_verdict": "FAIL: claim remains frozen",
+      "id": "overclaim_missing_controls"
+    }
+  ],
+  "frozen_candidate_verdict": "FAIL: claim remains frozen",
+  "frozen_pack_summary": {
+    "allowed_claim_key": "bounded_teacher_guided_doorkey_sare",
+    "candidate_pack_schema_version": 1,
+    "claim_id": "doorkey_frozen_claim",
+    "claim_status": "frozen",
+    "combined_thresholds": {
+      "candidate_sare_complete_seed_failures_must_be_lte": 1,
+      "candidate_sare_mean_must_be_gte": 0.7122
+    },
+    "disallowed_claim_keys": [
+      "ppo_only_routed_win",
+      "specifically_multi_expert_routed_advantage",
+      "cross_task_routed_advantage",
+      "keycorridor_transfer_claim"
+    ],
+    "evaluation": {
+      "episodes": 64,
+      "path_key": "external_policy_diagnostics",
+      "path_text": "external 64-episode policy_diagnostics path",
+      "task": "DoorKey"
+    },
+    "required_controls": [
+      "recovered_token_dense",
+      "kl_lss_token_dense",
+      "kl_lss_single_expert",
+      "baseline_sare"
+    ],
+    "retry_block_thresholds": {
+      "candidate_sare_complete_seed_failures_must_be_lte": 1,
+      "candidate_sare_mean_must_exceed": 0.3125,
+      "candidate_sare_must_match_or_beat_same_block_single_expert": true,
+      "lane": "fresh_final",
+      "seeds": [
+        47,
+        53,
+        59
+      ]
+    }
+  },
+  "schema_version": 1
+}

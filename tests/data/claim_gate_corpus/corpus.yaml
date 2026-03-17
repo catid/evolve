@@ -1,0 +1,199 @@
+name: doorkey_frozen_claim_gate_redteam_corpus
+schema_version: 1
+cases:
+  - id: happy_path_reference_fail
+    category: happy_path_reference
+    description: Current frozen candidate pack should remain frozen under the gate.
+    expected_verdict: "FAIL: claim remains frozen"
+    rationale: Comparable DoorKey candidate stays inside scope but fails the retry-block and same-block single_expert bars.
+
+  - id: synthetic_pass_reference
+    category: synthetic_pass
+    description: Synthetic comparable candidate that clears every thaw threshold.
+    expected_verdict: "PASS: thaw consideration allowed"
+    rationale: Keeps the PASS path covered so the gate is not only tested on failures.
+    set:
+      metrics.retry_block.kl_lss_sare.mean: 0.6000
+      metrics.retry_block.kl_lss_sare.complete_seed_failures: 0
+      metrics.retry_block.kl_lss_single_expert.mean: 0.5000
+      metrics.combined.kl_lss_sare.mean: 0.7500
+      metrics.combined.kl_lss_sare.complete_seed_failures: 0
+
+  - id: incomplete_missing_controls
+    category: incomplete
+    description: Candidate omits required fairness controls.
+    expected_verdict: "INCONCLUSIVE: missing prerequisites"
+    rationale: Missing fairness controls means the gate cannot compare the candidate cleanly.
+    set:
+      controls_present:
+        - recovered_token_dense
+        - kl_lss_sare
+
+  - id: incomplete_missing_retry_metrics
+    category: incomplete
+    description: Candidate omits retry-block metrics.
+    expected_verdict: "INCONCLUSIVE: missing prerequisites"
+    rationale: Retry-block metrics are required to evaluate thaw eligibility.
+    delete:
+      - metrics.retry_block
+
+  - id: incomplete_missing_combined_metrics
+    category: incomplete
+    description: Candidate omits combined DoorKey metrics.
+    expected_verdict: "INCONCLUSIVE: missing prerequisites"
+    rationale: Combined DoorKey preservation is a required thaw bar.
+    delete:
+      - metrics.combined
+
+  - id: incomplete_missing_provenance_commit
+    category: incomplete
+    description: Candidate omits provenance fields.
+    expected_verdict: "INCONCLUSIVE: missing prerequisites"
+    rationale: Candidate provenance must be complete and well formed before the pack is comparable.
+    post_delete:
+      - provenance.git_commit
+
+  - id: schema_wrong_schema_version
+    category: schema_invalid
+    description: Candidate pack uses an unrecognized schema version.
+    expected_verdict: "INCONCLUSIVE: missing prerequisites"
+    rationale: Unknown schema versions are not comparable to the sealed frozen pack.
+    set:
+      schema_version: 999
+
+  - id: schema_wrong_controls_type
+    category: schema_invalid
+    description: Candidate uses the wrong type for controls_present.
+    expected_verdict: "INCONCLUSIVE: missing prerequisites"
+    rationale: controls_present must stay machine-readable for fairness validation.
+    set:
+      controls_present: bad_controls_type
+
+  - id: schema_missing_actual_sets
+    category: schema_invalid
+    description: Candidate omits actual lane/seed coverage.
+    expected_verdict: "INCONCLUSIVE: missing prerequisites"
+    rationale: Lane/seed coverage must be explicit so the gate cannot compare mismatched slices.
+    delete:
+      - actual_sets
+
+  - id: schema_malformed_json
+    category: schema_invalid
+    description: Candidate file is malformed JSON.
+    expected_verdict: "INCONCLUSIVE: missing prerequisites"
+    rationale: Malformed structured input must surface as a concrete load failure rather than crashing the gate.
+    source_file: tests/data/claim_gate_corpus/malformed_candidate.json
+
+  - id: semantic_wrong_task
+    category: semantically_invalid
+    description: Candidate uses the wrong task.
+    expected_verdict: "INCONCLUSIVE: missing prerequisites"
+    rationale: DoorKey-only thaw consideration cannot use a KeyCorridor candidate pack.
+    set:
+      task: KeyCorridor
+
+  - id: semantic_wrong_eval_path
+    category: semantically_invalid
+    description: Candidate uses the wrong evaluation path and episode count.
+    expected_verdict: "INCONCLUSIVE: missing prerequisites"
+    rationale: The frozen claim is defined on external 64-episode DoorKey evaluation only.
+    set:
+      evaluation.path_key: sampled_policy_diagnostics
+      evaluation.episodes: 16
+
+  - id: semantic_wrong_retry_seeds
+    category: semantically_invalid
+    description: Candidate reports the wrong retry-block seed set.
+    expected_verdict: "INCONCLUSIVE: missing prerequisites"
+    rationale: Retry-block comparisons must stay on the canonical 47/53/59 slice.
+    set:
+      actual_sets.retry_block_lane_seeds:
+        - [fresh_final, 47]
+        - [fresh_final, 53]
+        - [fresh_final, 61]
+
+  - id: near_miss_below_single_expert
+    category: near_miss
+    description: Candidate beats the frozen retry-block SARE mean but still trails same-block single_expert.
+    expected_verdict: "FAIL: claim remains frozen"
+    rationale: Beating the frozen SARE baseline alone is insufficient for thaw consideration.
+    set:
+      metrics.retry_block.kl_lss_sare.mean: 0.4000
+      metrics.retry_block.kl_lss_sare.complete_seed_failures: 0
+      metrics.retry_block.kl_lss_single_expert.mean: 0.5000
+      metrics.combined.kl_lss_sare.mean: 0.7500
+      metrics.combined.kl_lss_sare.complete_seed_failures: 0
+
+  - id: near_miss_regress_combined
+    category: near_miss
+    description: Candidate clears the retry block but regresses the combined DoorKey picture.
+    expected_verdict: "FAIL: claim remains frozen"
+    rationale: Thaw consideration requires preserving the full combined DoorKey picture.
+    set:
+      metrics.retry_block.kl_lss_sare.mean: 0.5200
+      metrics.retry_block.kl_lss_sare.complete_seed_failures: 0
+      metrics.retry_block.kl_lss_single_expert.mean: 0.5000
+      metrics.combined.kl_lss_sare.mean: 0.7000
+      metrics.combined.kl_lss_sare.complete_seed_failures: 0
+
+  - id: near_miss_extra_seed_failure
+    category: near_miss
+    description: Candidate clears the retry mean but adds too many retry-block complete-seed failures.
+    expected_verdict: "FAIL: claim remains frozen"
+    rationale: The retry block still fails if SARE picks up extra complete-seed failures.
+    set:
+      metrics.retry_block.kl_lss_sare.mean: 0.5200
+      metrics.retry_block.kl_lss_sare.complete_seed_failures: 2
+      metrics.retry_block.kl_lss_single_expert.mean: 0.5000
+      metrics.combined.kl_lss_sare.mean: 0.7500
+      metrics.combined.kl_lss_sare.complete_seed_failures: 0
+
+  - id: provenance_hash_mismatch
+    category: provenance_tampering
+    description: Candidate artifact path exists but the sealed hash is wrong.
+    expected_verdict: "INCONCLUSIVE: missing prerequisites"
+    rationale: Artifact hash mismatches should invalidate the pack before any thaw comparison happens.
+    post_set:
+      artifacts.0.sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+
+  - id: provenance_missing_file
+    category: provenance_tampering
+    description: Candidate references a missing report artifact.
+    expected_verdict: "INCONCLUSIVE: missing prerequisites"
+    rationale: Missing support artifacts invalidate the candidate pack.
+    post_set:
+      artifacts.5.path: outputs/reports/claim_gate_corpus/does_not_exist.csv
+      artifacts.5.sha256: missing
+      artifacts.5.size_bytes: 0
+
+  - id: tampered_metrics_artifact_mismatch
+    category: provenance_tampering
+    description: Candidate pack metrics diverge from its candidate_metrics_json artifact.
+    expected_verdict: "INCONCLUSIVE: missing prerequisites"
+    rationale: Metrics/artifact mismatches are a direct candidate-pack tampering case and must be blocked.
+    sync_candidate_metrics_artifact: false
+    set:
+      metrics.retry_block.kl_lss_sare.mean: 0.6000
+
+  - id: overclaim_keycorridor_transfer
+    category: overclaim
+    description: Candidate requests disallowed KeyCorridor transfer language.
+    expected_verdict: "FAIL: claim remains frozen"
+    rationale: Disallowed claim widening must stay a hard fail.
+    set:
+      requested_claims:
+        - bounded_teacher_guided_doorkey_sare
+        - keycorridor_transfer_claim
+
+  - id: overclaim_missing_controls
+    category: overclaim
+    description: Candidate both omits required controls and requests a disallowed multi-expert claim.
+    expected_verdict: "FAIL: claim remains frozen"
+    rationale: Missing controls must not downgrade an explicit overclaim into inconclusive status.
+    set:
+      controls_present:
+        - recovered_token_dense
+        - kl_lss_sare
+      requested_claims:
+        - bounded_teacher_guided_doorkey_sare
+        - specifically_multi_expert_routed_advantage
