@@ -167,9 +167,9 @@ The current repo conclusion is still control-first, but the routed story has now
   - teacher-logit KL learner-state supervision for `SARE`
   - DoorKey only
   - external `64`-episode evaluation only
-- After the resume-gate pass, the best reading of that result is:
+- After the forensic-atlas pass, the best reading of that result is:
   - on the final fresh block `47/53/59`, matched KL learner-state `single_expert` reaches mean greedy success `0.4635` versus `0.3125` for KL learner-state `SARE`
-  - the weak final-block `SARE` seeds keep high teacher confidence but show a mixed failure signature: higher disagreement, somewhat lower coverage, and elevated route-pair concentration, but not one clean resume-worthy mechanism
+  - the deep forensic package shows a mixed failure signature rather than one clean retry lever: seed `47` is the clearest route-fragile `SARE` case, while `53/59` look closer to shared structured-student post-unlock collapse
   - the full combined DoorKey picture still leaves KL learner-state `SARE` slightly ahead:
     - `KL` learner-state `token_dense`: mean greedy success `0.6354`
     - `KL` learner-state `single_expert`: mean greedy success `0.6862`
@@ -180,9 +180,12 @@ The current repo conclusion is still control-first, but the routed story has now
 
 Canonical reports for the current phase:
 
-- `outputs/reports/lss_resume_gate_reproduction_note.md`
-- `outputs/reports/lss_resume_gate_failure_mechanism_report.md`
-- `outputs/reports/lss_resume_gate_decision_memo.md`
+- `outputs/reports/lss_forensic_atlas_reproduction_note.md`
+- `outputs/reports/lss_forensic_casebook.md`
+- `outputs/reports/lss_forensic_round_audit.md`
+- `outputs/reports/lss_forensic_route_locality.md`
+- `outputs/reports/lss_resume_qualification_scorecard.md`
+- `outputs/reports/lss_forensic_atlas_decision_memo.md`
 - `outputs/reports/lss_final_block_single_expert_control_report.md`
 - `outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.md`
 

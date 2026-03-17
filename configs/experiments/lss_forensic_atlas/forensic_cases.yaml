@@ -1,0 +1,38 @@
+episodes: 64
+max_steps: 256
+phase_sample_limit: 128
+route_counterfactual_sample_limit: 128
+
+weak_cases:
+  - lane: fresh_final
+    seed: 47
+    teacher: outputs/experiments/lss_multi_expert_hardening/final_fresh_block/seed_47/flat_dense_ent1e3
+    token_dense: outputs/experiments/lss_multi_expert_hardening/final_fresh_matched_controls/seed_47/kl_lss_token_dense
+    single_expert: outputs/experiments/lss_frozen_claim/final_block_single_expert_controls/seed_47/kl_lss_single_expert
+    sare: outputs/experiments/lss_multi_expert_hardening/final_fresh_block/seed_47/kl_lss_sare
+  - lane: fresh_final
+    seed: 53
+    teacher: outputs/experiments/lss_multi_expert_hardening/final_fresh_block/seed_53/flat_dense_ent1e3
+    token_dense: outputs/experiments/lss_multi_expert_hardening/final_fresh_matched_controls/seed_53/kl_lss_token_dense
+    single_expert: outputs/experiments/lss_frozen_claim/final_block_single_expert_controls/seed_53/kl_lss_single_expert
+    sare: outputs/experiments/lss_multi_expert_hardening/final_fresh_block/seed_53/kl_lss_sare
+  - lane: fresh_final
+    seed: 59
+    teacher: outputs/experiments/lss_multi_expert_hardening/final_fresh_block/seed_59/flat_dense_ent1e3
+    token_dense: outputs/experiments/lss_multi_expert_hardening/final_fresh_matched_controls/seed_59/kl_lss_token_dense
+    single_expert: outputs/experiments/lss_frozen_claim/final_block_single_expert_controls/seed_59/kl_lss_single_expert
+    sare: outputs/experiments/lss_multi_expert_hardening/final_fresh_block/seed_59/kl_lss_sare
+
+strong_cases:
+  - lane: original
+    seed: 7
+    teacher: outputs/reproductions/lss_robustness_baseline/seed_7/flat_dense_ent1e3
+    token_dense: outputs/experiments/lss_claim_hardening/matched_controls/seed_7/kl_lss_token_dense
+    single_expert: outputs/experiments/lss_claim_broadening/single_expert_controls/seed_7/kl_lss_single_expert
+    sare: outputs/reproductions/lss_claim_hardening_baseline/seed_7/kl_lss_sare
+  - lane: fresh
+    seed: 23
+    teacher: outputs/experiments/lss_claim_hardening/additional_seeds/seed_23/flat_dense_ent1e3
+    token_dense: outputs/experiments/lss_claim_consolidation/fresh_matched_controls/seed_23/kl_lss_token_dense
+    single_expert: outputs/experiments/lss_multi_expert_hardening/fresh_single_expert_controls/seed_23/kl_lss_single_expert
+    sare: outputs/experiments/lss_claim_hardening/additional_seeds/seed_23/kl_lss_sare

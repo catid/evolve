@@ -9,18 +9,21 @@
   - teacher-logit `KL` learner-state supervision for `SARE`
   - DoorKey only
   - external `64`-episode evaluation only
-- After the resume-gate pass, the best description of the result is:
+- After the forensic-atlas pass, the best description of the result is:
   - a bounded DoorKey teacher-guided `SARE` win
-  - still frozen after the final fairness closure and the resume-gate audit
+  - still frozen after the final fairness closure, the resume-gate audit, and the deeper forensic atlas
   - not strong enough to promote into a specifically multi-expert routed DoorKey edge
 
 ## Final Decision Path
 
 Source artifacts:
 
-- [lss_resume_gate_reproduction_note.md](outputs/reports/lss_resume_gate_reproduction_note.md)
-- [lss_resume_gate_failure_mechanism_report.md](outputs/reports/lss_resume_gate_failure_mechanism_report.md)
-- [lss_resume_gate_decision_memo.md](outputs/reports/lss_resume_gate_decision_memo.md)
+- [lss_forensic_atlas_reproduction_note.md](outputs/reports/lss_forensic_atlas_reproduction_note.md)
+- [lss_forensic_casebook.md](outputs/reports/lss_forensic_casebook.md)
+- [lss_forensic_round_audit.md](outputs/reports/lss_forensic_round_audit.md)
+- [lss_forensic_route_locality.md](outputs/reports/lss_forensic_route_locality.md)
+- [lss_resume_qualification_scorecard.md](outputs/reports/lss_resume_qualification_scorecard.md)
+- [lss_forensic_atlas_decision_memo.md](outputs/reports/lss_forensic_atlas_decision_memo.md)
 - [lss_final_block_single_expert_control_report.md](outputs/reports/lss_final_block_single_expert_control_report.md)
 - [lss_frozen_claim_updated_combined_doorkey_report.md](outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.md)
 - [lss_keycorridor_transfer_report.md](outputs/reports/lss_keycorridor_transfer_report.md)
@@ -45,16 +48,18 @@ These earlier no-go results still stand:
 
 So the repo’s positive routed result still does not come from PPO tuning or offline imitation.
 
-## What Changed In The Resume-Gate Phase
+## What Changed In The Forensic-Atlas Phase
 
-The resume-gate phase answered one last DoorKey-only question:
+The forensic-atlas phase answered the last DoorKey-only question:
 
 - is there a specific, auditable failure mechanism behind the weak `47/53/59` block that justifies one bounded retry?
 
 The answer is:
 
-- the weak block has a plausible but weak mechanism signature
-- that signature is not clean or actionable enough to justify a bounded resume attempt
+- the deeper trajectory casebook, round audit, and phase-local route analysis show a mixed mechanism story rather than one clean failure mode
+- seed `47` is the clearest route-fragile `SARE` case, while seeds `53` and `59` look closer to shared structured-student post-unlock collapse
+- the weak block still has only a plausible but weak mechanism signature overall
+- that signature is not clean or actionable enough to justify a bounded retry
 - no on thawing the claim
 - still no on bounded KeyCorridor transfer
 
@@ -103,11 +108,11 @@ Across the final combined DoorKey picture:
 | baseline PPO `SARE` | `0.0000` | `12` |
 | `KL` learner-state `SARE` | `0.7122` | `1` |
 
-So the right claim after the resume-gate pass is:
+So the right claim after the forensic-atlas pass is:
 
 - teacher-guided KL learner-state supervision helps structured students generally
 - `SARE` still ends slightly ahead of the matched structured controls in the full combined DoorKey picture
-- but the weak final block does not expose one clean resume-worthy mechanism
+- but the weak final block still does not expose one clean resume-worthy mechanism after the deeper forensic package
 - the evidence is no longer strong enough to justify a retry or strengthen the claim into a specifically multi-expert routed DoorKey edge
 
 ## Route Dependence
@@ -150,7 +155,7 @@ All three KeyCorridor seeds stayed flat:
 - Stay frozen at the current DoorKey-only scope.
 - The current evidence still supports a bounded teacher-guided DoorKey `SARE` win, but it is not strong enough to justify a resume attempt or strengthen into a specifically multi-expert routed claim because:
   - matched `single_expert` beats or matches `SARE` on the final fresh block
-  - the weak final-block seeds show only a plausible but weak mechanism signature
+  - the deep forensic package still finds only a mixed, plausible-but-weak mechanism signature
   - the combined DoorKey picture still does not clear a thaw bar
 - Keep the scope explicit:
   - teacher-guided extraction only
