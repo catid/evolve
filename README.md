@@ -128,6 +128,12 @@ Key scripts:
 ./scripts/run_lss_claim_broadening_single_expert_controls.sh
 ./scripts/run_lss_claim_broadening_extended_route_dependence.sh
 ./scripts/run_lss_claim_broadening_additional_fresh_block.sh
+./scripts/run_lss_multi_expert_hardening_reproduction.sh
+./scripts/run_lss_multi_expert_hardening_fresh_single_expert_controls.sh
+./scripts/run_lss_multi_expert_hardening_seed29_forensics.sh
+./scripts/run_lss_multi_expert_hardening_broader_route_dependence.sh
+./scripts/run_lss_multi_expert_hardening_final_fresh_block.sh
+./scripts/run_lss_multi_expert_hardening_finalize.sh
 ```
 
 Resume a run from a checkpoint:
@@ -157,43 +163,35 @@ The current repo conclusion is still control-first, but the routed story has now
 - `token_dense` with `ppo.ent_coef=0.001` remains the canonical recovered tokenized control.
 - PPO-only `SARE` is still greedy-negative.
 - Offline teacher distillation and other bounded recovery families remain negative.
-- The only reopened routed result is narrower and teacher-guided:
+- The only positive routed result is still narrower and teacher-guided:
   - teacher-logit KL learner-state supervision for `SARE`
-  - external 64-episode DoorKey gate
-  - original `7/11/19` mean greedy success `0.7135` for routed `SARE` vs `0.6667` for matched KL learner-state `token_dense`
-  - combined original+fresh six-seed DoorKey mean greedy success `0.8568` for routed `SARE` vs `0.6042` for matched KL learner-state `token_dense`
-  - no routed DoorKey seed remains at `0.0`
-- That reopened claim is an extraction-method result, not a PPO-alone routed win.
-- The current claim-consolidation phase strengthens that DoorKey result with two extra checks:
-  - fresh matched teacher-guided `token_dense` controls on DoorKey seeds `23/29/31`
-  - causal route-dependence probes on recovered `SARE` checkpoints
-
-Current bounded-positive DoorKey result:
-
-- teacher-guided `KL` learner-state `SARE` still holds the strongest routed DoorKey result in the repo
-- the missing matched `single_expert` control does not erase that DoorKey edge on the original lane:
-  - original seeds `7/11/19`: `KL` learner-state `single_expert` mean greedy success `0.6667`
-  - original seeds `7/11/19`: `KL` learner-state `SARE` mean greedy success `0.7135`
-- one more fresh matched seed block keeps the edge alive:
-  - fresh-extra seeds `37/41/43`: `KL` learner-state `token_dense` mean greedy success `0.3333`
-  - fresh-extra seeds `37/41/43`: `KL` learner-state `SARE` mean greedy success `0.8229`
-- the expanded nine-seed DoorKey picture still favors routed `SARE`:
-  - `KL` learner-state `token_dense`: mean greedy success `0.5139`
-  - `KL` learner-state `SARE`: mean greedy success `0.8455`
-  - no routed DoorKey seed remains at `0.0`
-- causal routing dependence now extends beyond the original `7/23` demonstration:
-  - expert ablation and fixed-router override still collapse or severely damage recovered success on seeds `7`, `19`, `23`, and `29`
-  - route randomization remains catastrophic on `7`, `19`, and `23`, but is only weakly harmful on fresh seed `29`
-- the same method still shows no bounded KeyCorridor transfer, so the claim remains DoorKey-specific
+  - DoorKey only
+  - external `64`-episode evaluation only
+- After the multi-expert hardening pass, the best reading of that result is:
+  - on the matched structured DoorKey slice, KL learner-state `SARE` still leads:
+    - `KL` learner-state `token_dense`: mean greedy success `0.5139`
+    - `KL` learner-state `single_expert`: mean greedy success `0.7604`
+    - `KL` learner-state `SARE`: mean greedy success `0.8455`
+  - seed `29` is a genuine but narrow exception to the route-randomization story:
+    - fixed-pair router overrides and most expert ablations still collapse success
+    - repeated current and stronger randomization ladders stay only weakly harmful there
+  - one final fresh matched DoorKey seed block weakens the broader routed edge:
+    - fresh-final seeds `47/53/59`: `KL` learner-state `token_dense` mean greedy success `1.0000`
+    - fresh-final seeds `47/53/59`: `KL` learner-state `SARE` mean greedy success `0.3125`
+    - `KL` learner-state `SARE` picks up a complete-seed failure again
+  - the full combined DoorKey picture still favors KL learner-state `SARE` over KL learner-state `token_dense`, but not clearly enough over `single_expert` to justify a specifically multi-expert routed claim
+- That positive result is still an extraction-method result, not a PPO-alone routed win.
+- The current repo recommendation is to stay frozen at this scope rather than broaden further.
 
 Canonical reports for the current phase:
 
-- `outputs/reports/lss_claim_broadening_reproduction_note.md`
-- `outputs/reports/lss_single_expert_matched_control_report.md`
-- `outputs/reports/lss_extended_route_dependence_report.md`
-- `outputs/reports/lss_additional_fresh_seed_block_report.md`
-- `outputs/reports/lss_expanded_combined_doorkey_report.md`
-- `outputs/reports/lss_claim_broadening_decision_memo.md`
+- `outputs/reports/lss_multi_expert_hardening_reproduction_note.md`
+- `outputs/reports/lss_fresh_single_expert_matched_control_report.md`
+- `outputs/reports/lss_seed29_route_randomization_forensics.md`
+- `outputs/reports/lss_broader_route_dependence_report.md`
+- `outputs/reports/lss_final_fresh_seed_block_report.md`
+- `outputs/reports/lss_final_combined_doorkey_report.md`
+- `outputs/reports/lss_multi_expert_hardening_decision_memo.md`
 
 ## Repository Layout
 

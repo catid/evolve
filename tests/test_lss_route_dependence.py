@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from argparse import Namespace
 
-from psmn_rl.analysis.lss_route_dependence import _build_report, _parse_cases
+from psmn_rl.analysis.lss_route_dependence import _build_report, _parse_cases, _parse_probe_detail
 
 
 def test_route_dependence_report_mentions_material_drop() -> None:
@@ -31,3 +31,9 @@ def test_parse_cases_supports_explicit_case_list() -> None:
         ("fresh", 29, "outputs/fresh"),
         ("original", 19, "outputs/original"),
     ]
+
+
+def test_parse_probe_detail_supports_trial_option() -> None:
+    mode, options = _parse_probe_detail("random_single_expert:trial=3")
+    assert mode == "random_single_expert"
+    assert options == {"trial": "3"}

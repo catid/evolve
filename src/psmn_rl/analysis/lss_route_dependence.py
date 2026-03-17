@@ -75,6 +75,20 @@ def _top_experts(metrics: dict[str, Any], expert_count: int, top_k: int) -> list
     return selected
 
 
+def _parse_probe_detail(detail: str | None) -> tuple[str, dict[str, str]]:
+    if detail is None or detail in {"", "-"}:
+        return "default", {}
+    parts = detail.split(":")
+    mode = parts[0]
+    options: dict[str, str] = {}
+    for part in parts[1:]:
+        if "=" not in part:
+            continue
+        key, value = part.split("=", 1)
+        options[key] = value
+    return mode, options
+
+
 @contextmanager
 def _patched_core(core: RoutedExpertCore, probe: str, detail: str | None, fixed_experts: list[int] | None) -> Iterator[None]:
     original_route = core.route
@@ -106,14 +120,51 @@ def _patched_core(core: RoutedExpertCore, probe: str, detail: str | None, fixed_
 
             core.route = MethodType(route, core)
         elif probe == "route_randomization":
+            mode, options = _parse_probe_detail(detail)
+            if mode == "default":
+                mode = "uniform_topk_random"
+            trial = int(options.get("trial", "0"))
+            generator_by_device: dict[str, torch.Generator] = {}
+
             def route(self: RoutedExpertCore, tokens: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
                 batch, token_count, _hidden = tokens.shape
                 top_k = min(self.top_k, self.expert_count)
-                random_scores = torch.rand(batch, token_count, self.expert_count, device=tokens.device, dtype=tokens.dtype)
-                topk_idx = torch.topk(random_scores, k=top_k, dim=-1).indices
                 route_probs = torch.zeros(batch, token_count, self.expert_count, device=tokens.device, dtype=tokens.dtype)
-                route_probs.scatter_(-1, topk_idx, 1.0 / top_k)
-                topk_values = torch.full((batch, token_count, top_k), 1.0 / top_k, device=tokens.device, dtype=tokens.dtype)
+                device_key = str(tokens.device)
+                if device_key not in generator_by_device:
+                    generator = torch.Generator(device=tokens.device)
+                    generator.manual_seed(20_000 + trial)
+                    generator_by_device[device_key] = generator
+                generator = generator_by_device[device_key]
+                if mode == "uniform_topk_random":
+                    random_scores = torch.rand(
+                        batch,
+                        token_count,
+                        self.expert_count,
+                        device=tokens.device,
+                        dtype=tokens.dtype,
+                        generator=generator,
+                    )
+                    topk_idx = torch.topk(random_scores, k=top_k, dim=-1).indices
+                    route_probs.scatter_(-1, topk_idx, 1.0 / top_k)
+                    topk_values = torch.full((batch, token_count, top_k), 1.0 / top_k, device=tokens.device, dtype=tokens.dtype)
+                elif mode == "random_single_expert":
+                    top1_idx = torch.randint(
+                        self.expert_count,
+                        (batch, token_count, 1),
+                        device=tokens.device,
+                        generator=generator,
+                    )
+                    if top_k > 1:
+                        topk_idx = top1_idx.expand(batch, token_count, top_k).clone()
+                        topk_values = torch.zeros((batch, token_count, top_k), device=tokens.device, dtype=tokens.dtype)
+                        topk_values[..., 0] = 1.0
+                    else:
+                        topk_idx = top1_idx
+                        topk_values = torch.ones((batch, token_count, 1), device=tokens.device, dtype=tokens.dtype)
+                    route_probs.scatter_(-1, top1_idx, 1.0)
+                else:
+                    raise ValueError(f"unsupported route randomization mode: {mode}")
                 return route_probs, topk_values, topk_idx
 
             core.route = MethodType(route, core)

@@ -11,6 +11,7 @@ BASE_CONFIG="${PSMN_BASE_CONFIG:-configs/experiments/minigrid_doorkey_single_exp
 REPORT_OUTPUT="${PSMN_REPORT_OUTPUT:-outputs/reports/lss_single_expert_matched_control_report.md}"
 REPORT_CSV="${PSMN_REPORT_CSV:-outputs/reports/lss_single_expert_matched_control_report.csv}"
 ORIGINAL_MATCHED_CSV="${PSMN_ORIGINAL_MATCHED_CSV:-outputs/reports/lss_matched_control_report.csv}"
+SKIP_REPORT="${PSMN_SKIP_REPORT:-0}"
 
 mkdir -p "$OUTPUT_ROOT"
 
@@ -159,11 +160,13 @@ done
 
 run_lss_specs_parallel "${specs[@]}"
 
-source .venv/bin/activate
-python -m psmn_rl.analysis.lss_claim_broadening single-expert-matched-control-report \
-  --original-csv "$ORIGINAL_MATCHED_CSV" \
-  --single-expert-root "$OUTPUT_ROOT" \
-  --episodes "$EPISODES" \
-  --device "$DEVICE" \
-  --output "$REPORT_OUTPUT" \
-  --csv "$REPORT_CSV"
+if [[ "$SKIP_REPORT" != "1" ]]; then
+  source .venv/bin/activate
+  python -m psmn_rl.analysis.lss_claim_broadening single-expert-matched-control-report \
+    --original-csv "$ORIGINAL_MATCHED_CSV" \
+    --single-expert-root "$OUTPUT_ROOT" \
+    --episodes "$EPISODES" \
+    --device "$DEVICE" \
+    --output "$REPORT_OUTPUT" \
+    --csv "$REPORT_CSV"
+fi
