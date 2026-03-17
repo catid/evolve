@@ -121,6 +121,9 @@ Key scripts:
 ./scripts/run_token_control_recovery_sweep.sh
 ./scripts/run_sare_fair_retest.sh
 ./scripts/eval_policy_modes.sh
+./scripts/run_lss_claim_consolidation_reproduction.sh
+./scripts/run_lss_claim_consolidation_fresh_matched_controls.sh
+./scripts/run_lss_claim_consolidation_route_probes.sh
 ```
 
 Resume a run from a checkpoint:
@@ -152,30 +155,30 @@ The current repo conclusion is still control-first, but the routed story has now
 - Offline teacher distillation and other bounded recovery families remain negative.
 - The only reopened routed result is narrower and teacher-guided:
   - teacher-logit KL learner-state supervision for `SARE`
-  - external 3-seed 64-episode DoorKey gate
-  - mean greedy success `0.7135` for routed `SARE` vs `0.5677` for recovered `token_dense`
-  - no routed seed remains at `0.0`
+  - external 64-episode DoorKey gate
+  - original `7/11/19` mean greedy success `0.7135` for routed `SARE` vs `0.6667` for matched KL learner-state `token_dense`
+  - combined original+fresh six-seed DoorKey mean greedy success `0.8568` for routed `SARE` vs `0.6042` for matched KL learner-state `token_dense`
+  - no routed DoorKey seed remains at `0.0`
 - That reopened claim is an extraction-method result, not a PPO-alone routed win.
-- The current phase is hardening that claim with:
-  - an additional small DoorKey seed set
-  - matched teacher-guided tokenized controls under the same external 64-episode evaluation path
-  - no transfer claims unless the hardened DoorKey result survives both checks
+- The current claim-consolidation phase strengthens that DoorKey result with two extra checks:
+  - fresh matched teacher-guided `token_dense` controls on DoorKey seeds `23/29/31`
+  - causal route-dependence probes on recovered `SARE` checkpoints
 
-Current hardening result:
+Current consolidated DoorKey result:
 
-- the DoorKey claim is stronger on fresh seeds: KL learner-state `SARE` reaches greedy `1.0` on added seeds `23`, `29`, and `31`
-- matched teacher-guided `token_dense` also improves, so the right story is still method-first
-- `SARE` still keeps the higher mean on the original `7/11/19` DoorKey lane under matched teacher-guided extraction
-- the same method shows no bounded KeyCorridor transfer, so the claim remains narrowly DoorKey-specific
+- fresh matched controls still favor routed `SARE`: KL learner-state `token_dense` reaches `0.0000/0.6250/1.0000`, while KL learner-state `SARE` stays at `1.0000/1.0000/1.0000`
+- the combined six-seed DoorKey picture still favors routed `SARE`: mean greedy success `0.8568` vs `0.6042` for matched KL learner-state `token_dense`
+- the recovered routed policy is causally routing-dependent under bounded evaluation-time perturbations: expert ablation, fixed-router override, and route randomization each drop greedy success from `1.0` to `0.0` on recovered seeds `7` and `23`
+- the same method still shows no bounded KeyCorridor transfer, so the claim remains DoorKey-specific
 
 Canonical reports for the current phase:
 
-- `outputs/reports/lss_claim_hardening_reproduction_note.md`
-- `outputs/reports/lss_additional_seed_report.md`
-- `outputs/reports/lss_matched_control_report.md`
-- `outputs/reports/lss_new_case_route_integrity_report.md`
+- `outputs/reports/lss_claim_consolidation_reproduction_note.md`
+- `outputs/reports/lss_fresh_matched_control_report.md`
+- `outputs/reports/lss_combined_doorkey_report.md`
+- `outputs/reports/lss_causal_route_dependence_report.md`
 - `outputs/reports/lss_keycorridor_transfer_report.md`
-- `outputs/reports/lss_claim_hardening_decision_memo.md`
+- `outputs/reports/lss_claim_consolidation_decision_memo.md`
 
 ## Repository Layout
 

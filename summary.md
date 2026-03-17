@@ -3,8 +3,11 @@
 - `flat_dense` remains the strongest greedy DoorKey control.
 - recovered `token_dense` with `ppo.ent_coef=0.001` remains the canonical tokenized control.
 - PPO-only `SARE` is still negative on greedy DoorKey.
-- The reopened teacher-guided DoorKey `SARE` claim is now stronger on fresh seeds: KL learner-state `SARE` reached greedy `1.0` on all added DoorKey seeds `23`, `29`, and `31`. See [lss_additional_seed_report.md](outputs/reports/lss_additional_seed_report.md).
-- Matched teacher-guided KL learner-state supervision helps `token_dense` too, but `SARE` still keeps the higher DoorKey mean on the original `7/11/19` lane. See [lss_matched_control_report.md](outputs/reports/lss_matched_control_report.md).
-- On the newly recovered DoorKey seed `23`, routing still looks meaningful rather than collapsed. See [lss_new_case_route_integrity_report.md](outputs/reports/lss_new_case_route_integrity_report.md).
+- The DoorKey teacher-guided `SARE` claim is now stronger under fresh matched controls:
+  - fresh seeds `23/29/31`: KL learner-state `token_dense` reaches `0.0000/0.6250/1.0000`, while KL learner-state `SARE` stays at `1.0000/1.0000/1.0000`
+  - combined six-seed DoorKey mean: KL learner-state `token_dense` `0.6042`, KL learner-state `SARE` `0.8568`
+  - no KL learner-state `SARE` seed remains at greedy success `0.0`
+  - see [lss_fresh_matched_control_report.md](outputs/reports/lss_fresh_matched_control_report.md) and [lss_combined_doorkey_report.md](outputs/reports/lss_combined_doorkey_report.md)
+- The recovered DoorKey `SARE` policy is now causally routing-dependent under bounded eval-time probes: on recovered seeds `7` and `23`, every single-expert ablation, fixed-router override, and route randomization drops greedy success from `1.0` to `0.0`. See [lss_causal_route_dependence_report.md](outputs/reports/lss_causal_route_dependence_report.md).
 - The exact same method shows no bounded KeyCorridor transfer. See [lss_keycorridor_transfer_report.md](outputs/reports/lss_keycorridor_transfer_report.md).
-- The current repo recommendation is to stay narrowly scoped: keep the DoorKey teacher-guided extraction claim, but do not generalize it into a PPO-only or cross-task routed advantage. See [lss_claim_hardening_decision_memo.md](outputs/reports/lss_claim_hardening_decision_memo.md).
+- The current repo recommendation is to broaden within DoorKey only: keep the claim explicitly teacher-guided and DoorKey-only, and do not generalize it into a PPO-only or cross-task routed advantage. See [lss_claim_consolidation_decision_memo.md](outputs/reports/lss_claim_consolidation_decision_memo.md).

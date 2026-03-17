@@ -9,6 +9,9 @@ EPISODES="${PSMN_EVAL_EPISODES:-64}"
 SEED_LIST="${PSMN_SEEDS:-7 11 19}"
 TEMPLATE="${PSMN_TEMPLATE:-configs/experiments/lss_claim_hardening/lss_kl.yaml}"
 RUN_SINGLE_EXPERT="${PSMN_RUN_SINGLE_EXPERT:-0}"
+REPORT_OUTPUT="${PSMN_REPORT_OUTPUT:-outputs/reports/lss_matched_control_report.md}"
+REPORT_CSV="${PSMN_REPORT_CSV:-outputs/reports/lss_matched_control_report.csv}"
+SKIP_REPORT="${PSMN_SKIP_REPORT:-0}"
 
 mkdir -p "$OUTPUT_ROOT"
 
@@ -52,7 +55,7 @@ gpu_count() {
   source .venv/bin/activate
   python - <<'PY'
 import torch
-print(torch.cuda.device_count())
+print(torch.cuda.device_count() if torch.cuda.is_available() else 0)
 PY
 }
 
@@ -91,11 +94,17 @@ run_lss_specs_parallel() {
 }
 
 analysis_launcher() {
-  if [[ "$DEVICE" == "cpu" ]]; then
+  source .venv/bin/activate
+  local cuda_ok
+  cuda_ok=$(python - <<'PY'
+import torch
+print(1 if torch.cuda.is_available() else 0)
+PY
+)
+  if [[ "$DEVICE" == "cpu" || "$cuda_ok" -ne 1 ]]; then
     echo "python -m psmn_rl.analysis.lss_claim_hardening"
     return
   fi
-  source .venv/bin/activate
   local nproc
   nproc=$(python - <<'PY'
 import torch
@@ -139,6 +148,8 @@ done
 
 run_lss_specs_parallel "${specs[@]}"
 
-ANALYSIS_LAUNCHER="$(analysis_launcher)"
-source .venv/bin/activate
-eval "${ANALYSIS_LAUNCHER} matched-control-report --baseline-root \"$BASELINE_ROOT\" --sare-root \"$SARE_ROOT\" --token-root \"$OUTPUT_ROOT\" --episodes \"$EPISODES\" --device \"$DEVICE\" --output outputs/reports/lss_matched_control_report.md --csv outputs/reports/lss_matched_control_report.csv"
+if [[ "$SKIP_REPORT" != "1" ]]; then
+  ANALYSIS_LAUNCHER="$(analysis_launcher)"
+  source .venv/bin/activate
+  eval "${ANALYSIS_LAUNCHER} matched-control-report --baseline-root \"$BASELINE_ROOT\" --sare-root \"$SARE_ROOT\" --token-root \"$OUTPUT_ROOT\" --episodes \"$EPISODES\" --device \"$DEVICE\" --output \"$REPORT_OUTPUT\" --csv \"$REPORT_CSV\""
+fi

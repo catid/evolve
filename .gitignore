@@ -1,4 +1,5 @@
 .beads/.jsonl.lock
+.beads/bd.sock.startlock
 .venv/
 __pycache__/
 .pytest_cache/
