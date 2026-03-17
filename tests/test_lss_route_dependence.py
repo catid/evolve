@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from psmn_rl.analysis.lss_route_dependence import _build_report
+from argparse import Namespace
+
+from psmn_rl.analysis.lss_route_dependence import _build_report, _parse_cases
 
 
 def test_route_dependence_report_mentions_material_drop() -> None:
@@ -15,3 +17,17 @@ def test_route_dependence_report_mentions_material_drop() -> None:
     ]
     report = _build_report(rows, {("original", 7): [0, 1]}, episodes=64)
     assert "causally relevant" in report
+
+
+def test_parse_cases_supports_explicit_case_list() -> None:
+    cases = _parse_cases(
+        Namespace(
+            case=[["fresh", "29", "outputs/fresh"], ["original", "19", "outputs/original"]],
+            original_run=None,
+            fresh_run=None,
+        )
+    )
+    assert [(case["lane"], case["seed"], str(case["run_dir"])) for case in cases] == [
+        ("fresh", 29, "outputs/fresh"),
+        ("original", 19, "outputs/original"),
+    ]

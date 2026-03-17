@@ -6,6 +6,8 @@ OUTPUT_ROOT="${PSMN_OUTPUT_ROOT:-outputs/experiments/lss_claim_hardening/additio
 EPISODES="${PSMN_EVAL_EPISODES:-64}"
 SEED_LIST="${PSMN_SEEDS:-23 29 31}"
 TEMPLATE="${PSMN_TEMPLATE:-configs/experiments/lss_claim_hardening/lss_kl.yaml}"
+REPORT_OUTPUT="${PSMN_REPORT_OUTPUT:-outputs/reports/lss_additional_seed_report.md}"
+REPORT_CSV="${PSMN_REPORT_CSV:-outputs/reports/lss_additional_seed_report.csv}"
 
 mkdir -p "$OUTPUT_ROOT"
 
@@ -186,4 +188,4 @@ run_lss_specs_parallel "${specs[@]}"
 
 ANALYSIS_LAUNCHER="$(analysis_launcher)"
 source .venv/bin/activate
-eval "${ANALYSIS_LAUNCHER} additional-seed-report --baseline-root \"$OUTPUT_ROOT\" --improved-root \"$OUTPUT_ROOT\" --episodes \"$EPISODES\" --device \"$DEVICE\" --output outputs/reports/lss_additional_seed_report.md --csv outputs/reports/lss_additional_seed_report.csv"
+eval "${ANALYSIS_LAUNCHER} additional-seed-report --baseline-root \"$OUTPUT_ROOT\" --improved-root \"$OUTPUT_ROOT\" --episodes \"$EPISODES\" --device \"$DEVICE\" --output \"$REPORT_OUTPUT\" --csv \"$REPORT_CSV\""

@@ -30,6 +30,20 @@ def _discover_case(run_dir: Path, lane: str, seed: int) -> dict[str, Any]:
     }
 
 
+def _parse_cases(args: argparse.Namespace) -> list[dict[str, Any]]:
+    if args.case:
+        return [
+            _discover_case(Path(run_dir), str(lane), int(seed))
+            for lane, seed, run_dir in args.case
+        ]
+    if args.original_run is None or args.fresh_run is None:
+        raise ValueError("either --case must be provided or both --original-run and --fresh-run must be set")
+    return [
+        _discover_case(Path(args.original_run), "original", 7),
+        _discover_case(Path(args.fresh_run), "fresh", 23),
+    ]
+
+
 def _build_model(case: dict[str, Any], device: torch.device) -> tuple[Any, Any]:
     config = load_config(case["config_path"])
     config.system.device = str(device)
@@ -212,18 +226,22 @@ def _build_report(rows: list[dict[str, Any]], top_experts_by_case: dict[tuple[st
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run causal route-dependence probes for recovered SARE checkpoints.")
-    parser.add_argument("--original-run", required=True)
-    parser.add_argument("--fresh-run", required=True)
+    parser.add_argument("--original-run", default=None)
+    parser.add_argument("--fresh-run", default=None)
+    parser.add_argument(
+        "--case",
+        nargs=3,
+        action="append",
+        metavar=("LANE", "SEED", "RUN_DIR"),
+        help="Evaluate one recovered SARE run as lane/seed/run_dir. May be repeated.",
+    )
     parser.add_argument("--episodes", type=int, default=64)
     parser.add_argument("--device", default="auto")
     parser.add_argument("--output", required=True)
     parser.add_argument("--csv", default=None)
     args = parser.parse_args()
 
-    cases = [
-        _discover_case(Path(args.original_run), "original", 7),
-        _discover_case(Path(args.fresh_run), "fresh", 23),
-    ]
+    cases = _parse_cases(args)
     ctx = init_distributed(args.device, "auto")
     configure_logging(ctx.is_main_process)
     try:
