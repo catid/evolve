@@ -3,8 +3,8 @@
 - pack json: `outputs/reports/frozen_benchmark_pack.json`
 - claim id: `doorkey_frozen_claim`
 - frozen status: `frozen`
-- sealed source commit: `e9eab1761bbe3eb1d768a58f439f7072ccf87ab9`
-- sealed source dirty: `True`
+- sealed source commit: `1604c1e30ff9bd6f07abe0f35c8fabb82bb63449`
+- sealed source dirty: `False`
 - schema version: `1`
 - manifest: `configs/claims/doorkey_frozen_claim.yaml`
 
@@ -27,11 +27,11 @@
 
 | Key | Path | SHA256 | Size (bytes) |
 | --- | --- | --- | ---: |
-| `frozen_claim_envelope` | `outputs/reports/frozen_claim_envelope.md` | `9e27aae6c2d5fa1125a490045436c838e052c5ae38ac71d437c13a58a51dec16` | 1083 |
+| `frozen_claim_envelope` | `outputs/reports/frozen_claim_envelope.md` | `bef4f19a6c41cf1f8545d5aa893942e3c735d9a033d36706a0da4037052d5b01` | 1084 |
 | `manifest_report` | `outputs/reports/frozen_claim_manifest_report.md` | `a47eb42e06e4c8ba02e773c099e7a07917a071d2d0511c7aa325f2cc871947b6` | 3157 |
-| `frozen_validation_report` | `outputs/reports/frozen_baseline_validation.md` | `ee5776dc56290d9a281a900f9dd2dd395f3432f655a405eca086c387ad2e5af3` | 3115 |
+| `frozen_validation_report` | `outputs/reports/frozen_baseline_validation.md` | `ee2b6485c33762cd1b9d72338c48d51a6617efb31c12d53818b5d2422aeb34f1` | 3115 |
 | `frozen_validation_csv` | `outputs/reports/frozen_baseline_validation.csv` | `3ec73864f9ab0d2cca0b115f9bee267ffd1e448231a15f70eebd8e3a7c03f162` | 2046 |
-| `frozen_validation_json` | `outputs/reports/frozen_baseline_validation.json` | `eb99e4bd94fd436ee7d78852b1366fdabc922f3b7327afc8b857f32db8695152` | 9679 |
+| `frozen_validation_json` | `outputs/reports/frozen_baseline_validation.json` | `3cca58ab671490cf6361f52cacb6478d163a4be5aaac07c3fbf438415bb884fc` | 9679 |
 | `claim_gate_dry_run` | `outputs/reports/claim_gate_dry_run.md` | `dff3558d5deca2813ad46f696e9a6e6090fe1f2efd85c57b90bc63bfaea61616` | 1264 |
 | `claim_gate_dry_run_json` | `outputs/reports/claim_gate_dry_run.json` | `2a2b08864bcf16de89123b87e2cfe946e3ee0757cd1b3901b4f5f130df353e96` | 1778 |
 | `claim_ledger` | `outputs/reports/claim_ledger.md` | `edce380e5fb0f3224e18fd1612e2c809ec54d109c756f428e869a93905122487` | 2846 |
