@@ -9,20 +9,20 @@
   - teacher-logit `KL` learner-state supervision for `SARE`
   - DoorKey only
   - external `64`-episode evaluation only
-- After the final fairness-and-failure analysis pass, the best description of the result is:
+- After the resume-gate pass, the best description of the result is:
   - a bounded DoorKey teacher-guided `SARE` win
-  - narrower and more method-first than the earlier broadened DoorKey reading
+  - still frozen after the final fairness closure and the resume-gate audit
   - not strong enough to promote into a specifically multi-expert routed DoorKey edge
 
 ## Final Decision Path
 
 Source artifacts:
 
-- [lss_frozen_claim_reproduction_note.md](outputs/reports/lss_frozen_claim_reproduction_note.md)
+- [lss_resume_gate_reproduction_note.md](outputs/reports/lss_resume_gate_reproduction_note.md)
+- [lss_resume_gate_failure_mechanism_report.md](outputs/reports/lss_resume_gate_failure_mechanism_report.md)
+- [lss_resume_gate_decision_memo.md](outputs/reports/lss_resume_gate_decision_memo.md)
 - [lss_final_block_single_expert_control_report.md](outputs/reports/lss_final_block_single_expert_control_report.md)
-- [lss_final_block_failure_analysis.md](outputs/reports/lss_final_block_failure_analysis.md)
 - [lss_frozen_claim_updated_combined_doorkey_report.md](outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.md)
-- [lss_frozen_claim_decision_memo.md](outputs/reports/lss_frozen_claim_decision_memo.md)
 - [lss_keycorridor_transfer_report.md](outputs/reports/lss_keycorridor_transfer_report.md)
 
 All final claims in this phase use the external `64`-episode `policy_diagnostics` path.
@@ -45,18 +45,16 @@ These earlier no-go results still stand:
 
 So the repo’s positive routed result still does not come from PPO tuning or offline imitation.
 
-## What Changed In The Frozen-Claim Analysis Phase
+## What Changed In The Resume-Gate Phase
 
-The final fairness-and-failure phase answered three remaining DoorKey-only questions:
+The resume-gate phase answered one last DoorKey-only question:
 
-- does `SARE` stay ahead once the missing final-block matched `single_expert` control is added?
-- why does the final fresh block `47/53/59` flip toward `token_dense`?
-- does the updated combined DoorKey fairness picture justify thawing the claim?
+- is there a specific, auditable failure mechanism behind the weak `47/53/59` block that justifies one bounded retry?
 
 The answer is:
 
-- no on the final-block `single_expert` fairness check
-- the weak final-block seeds look more like extraction mismatch than bad teacher labels
+- the weak block has a plausible but weak mechanism signature
+- that signature is not clean or actionable enough to justify a bounded resume attempt
 - no on thawing the claim
 - still no on bounded KeyCorridor transfer
 
@@ -105,12 +103,12 @@ Across the final combined DoorKey picture:
 | baseline PPO `SARE` | `0.0000` | `12` |
 | `KL` learner-state `SARE` | `0.7122` | `1` |
 
-So the right claim after the frozen-claim analysis pass is:
+So the right claim after the resume-gate pass is:
 
 - teacher-guided KL learner-state supervision helps structured students generally
 - `SARE` still ends slightly ahead of the matched structured controls in the full combined DoorKey picture
-- but the final fresh block plus the missing `single_expert` fairness control push the result back toward a method-first interpretation
-- the evidence is no longer strong enough to strengthen the claim into a specifically multi-expert routed DoorKey edge
+- but the weak final block does not expose one clean resume-worthy mechanism
+- the evidence is no longer strong enough to justify a retry or strengthen the claim into a specifically multi-expert routed DoorKey edge
 
 ## Route Dependence
 
@@ -149,11 +147,11 @@ All three KeyCorridor seeds stayed flat:
 
 ## Recommendation
 
-- Stay frozen at the current DoorKey-only scope, and narrow the wording further.
-- The current evidence still supports a bounded teacher-guided DoorKey `SARE` win, but it is not strong enough to strengthen into a specifically multi-expert routed claim because:
+- Stay frozen at the current DoorKey-only scope.
+- The current evidence still supports a bounded teacher-guided DoorKey `SARE` win, but it is not strong enough to justify a resume attempt or strengthen into a specifically multi-expert routed claim because:
   - matched `single_expert` beats or matches `SARE` on the final fresh block
-  - the weak final-block seeds show extraction mismatch without a teacher-quality failure
-  - one final fresh matched DoorKey block materially weakens the edge
+  - the weak final-block seeds show only a plausible but weak mechanism signature
+  - the combined DoorKey picture still does not clear a thaw bar
 - Keep the scope explicit:
   - teacher-guided extraction only
   - DoorKey only

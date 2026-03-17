@@ -167,24 +167,24 @@ The current repo conclusion is still control-first, but the routed story has now
   - teacher-logit KL learner-state supervision for `SARE`
   - DoorKey only
   - external `64`-episode evaluation only
-- After the final fairness-and-failure analysis pass, the best reading of that result is:
+- After the resume-gate pass, the best reading of that result is:
   - on the final fresh block `47/53/59`, matched KL learner-state `single_expert` reaches mean greedy success `0.4635` versus `0.3125` for KL learner-state `SARE`
-  - the weak final-block `SARE` seeds keep high teacher confidence but show higher disagreement and no better learner-state coverage, which points to extraction mismatch rather than weak teacher labels
+  - the weak final-block `SARE` seeds keep high teacher confidence but show a mixed failure signature: higher disagreement, somewhat lower coverage, and elevated route-pair concentration, but not one clean resume-worthy mechanism
   - the full combined DoorKey picture still leaves KL learner-state `SARE` slightly ahead:
     - `KL` learner-state `token_dense`: mean greedy success `0.6354`
     - `KL` learner-state `single_expert`: mean greedy success `0.6862`
     - `KL` learner-state `SARE`: mean greedy success `0.7122`
-  - that edge is too small and too final-block-sensitive to justify a specifically multi-expert routed DoorKey claim
+  - that edge is still too small and too final-block-sensitive to justify either a bounded resume attempt or a specifically multi-expert routed DoorKey claim
 - That positive result is still an extraction-method result, not a PPO-alone routed win.
-- The current repo recommendation is to stay frozen at this scope and narrow the wording further rather than broaden it.
+- The current repo recommendation is to stay frozen at this scope rather than reopen the DoorKey claim.
 
 Canonical reports for the current phase:
 
-- `outputs/reports/lss_frozen_claim_reproduction_note.md`
+- `outputs/reports/lss_resume_gate_reproduction_note.md`
+- `outputs/reports/lss_resume_gate_failure_mechanism_report.md`
+- `outputs/reports/lss_resume_gate_decision_memo.md`
 - `outputs/reports/lss_final_block_single_expert_control_report.md`
-- `outputs/reports/lss_final_block_failure_analysis.md`
 - `outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.md`
-- `outputs/reports/lss_frozen_claim_decision_memo.md`
 
 ## Repository Layout
 
