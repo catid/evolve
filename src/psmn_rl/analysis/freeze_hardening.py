@@ -192,6 +192,42 @@ LEDGER_ROWS = [
             "outputs/reports/hard_family_canonization_decision_memo.md",
         ],
     },
+    {
+        "family": "Saturation-scale hard-family program",
+        "status": "qualified for canonization",
+        "scope": "DoorKey-only successor qualification of the `round6` teacher-guided KL learner-state candidate",
+        "claim_effect": "the larger hard-family program expanded the dev/holdout family, screened twenty bounded candidates across ten mechanism directions, and found that `round6` tied matched KL learner-state `token_dense` on the hard-family dev and holdout splits, preserved the healthy-block picture, stayed routed, and cleared the pack-based gate, so it became the qualified successor for canonization within DoorKey",
+        "reports": [
+            "outputs/reports/hard_family_saturation_definition.md",
+            "outputs/reports/hard_family_saturation_registration.md",
+            "outputs/reports/hard_family_saturation_stage1_screening.md",
+            "outputs/reports/hard_family_saturation_stage2_fairness.md",
+            "outputs/reports/hard_family_saturation_stage3_holdout.md",
+            "outputs/reports/hard_family_saturation_stage4_antiregression.md",
+            "outputs/reports/hard_family_saturation_stage5_route_validation.md",
+            "outputs/reports/hard_family_saturation_stage6_stability.md",
+            "outputs/reports/hard_family_saturation_gate_report.md",
+            "outputs/reports/hard_family_saturation_decision_memo.md",
+        ],
+    },
+    {
+        "family": "Post-canonization migration and challenger league",
+        "status": "active canonical benchmark",
+        "scope": "DoorKey-only challenger league and benchmark migration for the `round6` teacher-guided KL learner-state successor",
+        "claim_effect": "twelve bounded challengers across six mechanism directions failed to displace `round6` on the development league, so the program shifted to migration readiness: `round6` held the holdout and healthy pictures, passed the corrected dev/holdout/healthy route probes, remained stable, cleared the pack-based gate, and was promoted to the active DoorKey benchmark while the frozen pack stayed archived as the legacy baseline",
+        "reports": [
+            "outputs/reports/successor_migration_registration.md",
+            "outputs/reports/successor_migration_baseline_sync.md",
+            "outputs/reports/successor_migration_stage1_screening.md",
+            "outputs/reports/successor_migration_stage2_fairness.md",
+            "outputs/reports/successor_migration_stage3_holdout.md",
+            "outputs/reports/successor_migration_stage4_antiregression.md",
+            "outputs/reports/successor_migration_stage5_route_validation.md",
+            "outputs/reports/successor_migration_stage6_stability.md",
+            "outputs/reports/successor_migration_gate_report.md",
+            "outputs/reports/successor_migration_decision_memo.md",
+        ],
+    },
 ]
 
 

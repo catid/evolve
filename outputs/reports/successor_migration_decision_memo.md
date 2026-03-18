@@ -1,8 +1,8 @@
 # Successor Migration Decision Memo
 
-- final status: `round6 remains thaw-qualified but not canonical`
+- final status: `round6 canonized as active DoorKey benchmark`
 - winning line: `round6`
-- gate verdict: `INCONCLUSIVE: missing prerequisites`
+- gate verdict: `PASS: thaw consideration allowed`
 
 ## Challenger League Summary
 
@@ -17,4 +17,4 @@
 
 ## Decision
 
-- No challenger displaced round6, but the migration program stops short of active canonization, so round6 remains thaw-qualified only.
+- No challenger displaced round6 cleanly enough. Round6 stayed strong across the challenger league and now becomes the active DoorKey benchmark while the frozen pack remains archived as the legacy baseline.

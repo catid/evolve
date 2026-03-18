@@ -233,7 +233,7 @@ Validate the sealed pack with one command:
 The active canonical DoorKey benchmark is now the `round6` teacher-guided KL learner-state successor, while the frozen benchmark pack remains archived as the legacy baseline.
 
 - migration decision: `outputs/reports/successor_migration_decision_memo.md`
-- active benchmark pack: `outputs/reports/successor_migration_candidate_pack.json`
+- active benchmark pack: `outputs/reports/successor_mega_league_candidate_pack.json`
 - migration gate report: `outputs/reports/successor_migration_gate_report.md`
 - archived frozen pack: `outputs/reports/frozen_benchmark_pack.json`
 

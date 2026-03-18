@@ -82,7 +82,7 @@
   - route randomization is catastrophic on most recovered seeds, but seed `29` is now a genuine narrow exception rather than a weak-probe artifact
   - see [lss_seed29_route_randomization_forensics.md](outputs/reports/lss_seed29_route_randomization_forensics.md) and [lss_broader_route_dependence_report.md](outputs/reports/lss_broader_route_dependence_report.md)
 - The exact same method shows no bounded KeyCorridor transfer. See [lss_keycorridor_transfer_report.md](outputs/reports/lss_keycorridor_transfer_report.md).
-- The current repo recommendation is that `round6` is the active canonical DoorKey benchmark, while future candidates still have to go through the automated gate and candidate-pack discipline against that active benchmark and the archived frozen pack. See [successor_migration_decision_memo.md](outputs/reports/successor_migration_decision_memo.md), [successor_migration_candidate_pack.json](outputs/reports/successor_migration_candidate_pack.json), and [freeze_hardening_operational_memo.md](outputs/reports/freeze_hardening_operational_memo.md).
+- The current repo recommendation is that `round6` is the active canonical DoorKey benchmark, now explicitly confirmed and sealed after the mega challenger league, while future candidates still have to go through the automated gate and candidate-pack discipline against that active benchmark and the archived frozen pack. See [successor_mega_league_decision_memo.md](outputs/reports/successor_mega_league_decision_memo.md), [successor_mega_league_candidate_pack.json](outputs/reports/successor_mega_league_candidate_pack.json), and [freeze_hardening_operational_memo.md](outputs/reports/freeze_hardening_operational_memo.md).
 
 ## Claim Gate
 

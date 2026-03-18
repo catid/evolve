@@ -23,7 +23,7 @@
   "frozen_pack_reference": {
     "claim_id": "doorkey_frozen_claim",
     "path": "outputs/reports/frozen_benchmark_pack.json",
-    "sha256": "73de8eb598cdc360336220fc1e51e23c2e93630958cee3f848e7cd5cf37cb4a1"
+    "sha256": "8e36f4623ad584549f0b3a4be7bef9fbec62053704cef6672b6bb28a2608f205"
   },
   "metrics": {
     "combined": {
@@ -38,7 +38,7 @@
   },
   "pack_type": "candidate_result_pack",
   "provenance": {
-    "git_commit": "6e7277a8d8489cb74927ff7c7b3e072809491bab",
+    "git_commit": "91fab1f7a3f91402fcca730ad15a9185aac92cf1",
     "git_dirty": true
   },
   "requested_claims": [

@@ -941,6 +941,12 @@ def _render_candidate_reports(campaign: dict[str, Any], candidate: str, stage3: 
 
 def _round6_migration_pack(campaign: dict[str, Any], stage3: dict[str, Any], stage4: dict[str, Any], stage5: dict[str, Any], stage6: dict[str, Any]) -> dict[str, Any]:
     current_pack = copy.deepcopy(_read_json(Path(campaign["current_canonical_pack"])))
+    frozen_pack = _read_json(Path(campaign["frozen_pack"]))
+    current_pack["frozen_pack_reference"] = {
+        "path": str(campaign["frozen_pack"]),
+        "sha256": sha256_path(Path(campaign["frozen_pack"])),
+        "claim_id": frozen_pack["claim"]["id"],
+    }
     current_pack["migration"] = {
         "decision": "round6 canonized as active DoorKey benchmark",
         "active_canonical_candidate": str(campaign["current_canonical_name"]),
