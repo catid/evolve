@@ -1,0 +1,23 @@
+{
+  "candidate": "post_unlock_weighted",
+  "stage": "stage5",
+  "stage5_pass": true,
+  "summaries": [
+    {
+      "baseline": 1.0,
+      "fixed_drop": 1.0,
+      "lane": "fresh",
+      "random_drop": 1.0,
+      "seed": 23,
+      "worst_ablation_drop": 1.0
+    },
+    {
+      "baseline": 0.515625,
+      "fixed_drop": 0.515625,
+      "lane": "fresh_final",
+      "random_drop": 0.515625,
+      "seed": 53,
+      "worst_ablation_drop": 0.515625
+    }
+  ]
+}

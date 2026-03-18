@@ -101,6 +101,8 @@ def test_learner_state_supervision_run_and_report_smoke(tmp_path: Path) -> None:
     assert dataset["round_diagnostics"]["collection/steps"] > 0.0
     assert "collection/disagreement_rate" in dataset["round_diagnostics"]
     assert "teacher_confidence" in dataset
+    assert "phase_ids" in dataset
+    assert "disagreement" in dataset
 
     report_path = tmp_path / "learner_state_report.md"
     csv_path = tmp_path / "learner_state_report.csv"

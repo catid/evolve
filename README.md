@@ -141,6 +141,13 @@ Key scripts:
 ./scripts/run_claim_history_replay.sh
 ./scripts/run_claim_gate_redteam_finalize.sh
 ./scripts/run_freeze_hardening_finalize.sh
+./scripts/run_lss_long_campaign_register.sh
+./scripts/run_lss_long_campaign_stage2.sh
+./scripts/run_lss_long_campaign_stage3.sh
+./scripts/run_lss_long_campaign_stage4.sh
+./scripts/run_lss_long_campaign_stage5.sh
+./scripts/run_lss_long_campaign_stage6.sh
+./scripts/run_lss_long_campaign_finalize.sh
 ```
 
 Resume a run from a checkpoint:
@@ -205,26 +212,29 @@ That replay is the check that the current sealed gate still agrees with the acce
 
 ## Current DoorKey Result
 
-The current repo conclusion is still control-first, but the routed story has now split cleanly:
+The current repo conclusion is still control-first, and the frozen benchmark pack remains the baseline comparison unit. Inside that baseline, the first staged DoorKey thaw-qualified candidate now exists.
 
 - `flat_dense` remains the best verified greedy DoorKey control.
 - `token_dense` with `ppo.ent_coef=0.001` remains the canonical recovered tokenized control.
 - PPO-only `SARE` is still greedy-negative.
 - Offline teacher distillation and other bounded recovery families remain negative.
-- The only positive routed result is still narrower and teacher-guided:
+- The routed result that survives is still teacher-guided and bounded:
   - teacher-logit KL learner-state supervision for `SARE`
   - DoorKey only
   - external `64`-episode evaluation only
-- After the forensic-atlas pass, the best reading of that result is:
-  - on the final fresh block `47/53/59`, matched KL learner-state `single_expert` reaches mean greedy success `0.4635` versus `0.3125` for KL learner-state `SARE`
-  - the deep forensic package shows a mixed failure signature rather than one clean retry lever: seed `47` is the clearest route-fragile `SARE` case, while `53/59` look closer to shared structured-student post-unlock collapse
-  - the full combined DoorKey picture still leaves KL learner-state `SARE` slightly ahead:
-    - `KL` learner-state `token_dense`: mean greedy success `0.6354`
-    - `KL` learner-state `single_expert`: mean greedy success `0.6862`
-    - `KL` learner-state `SARE`: mean greedy success `0.7122`
-  - that edge is still too small and too final-block-sensitive to justify either a bounded resume attempt or a specifically multi-expert routed DoorKey claim
-- That positive result is still an extraction-method result, not a PPO-alone routed win.
-- The current repo recommendation is to stay frozen at this scope rather than reopen the DoorKey claim.
+- The long-horizon staged campaign produced the first pack that clears the existing DoorKey gate:
+  - candidate: `post_unlock_weighted`
+  - weak-block KL learner-state `SARE` mean on `47/53/59`: `0.4635`
+  - same-block KL learner-state `single_expert` mean: `0.4635`
+  - combined DoorKey KL learner-state `SARE` mean: `0.7500`
+  - pack verdict: `PASS: thaw consideration allowed`
+- That result is still an extraction-method result, not a PPO-alone routed win.
+- The allowed current interpretation is still narrow:
+  - thaw consideration within DoorKey only
+  - no PPO-only routed claim
+  - no specifically multi-expert routed claim
+  - no cross-task claim
+  - no KeyCorridor transfer claim
 
 Canonical reports for the current phase:
 
@@ -238,6 +248,14 @@ Canonical reports for the current phase:
 - `outputs/reports/claim_gate_conformance_report.md`
 - `outputs/reports/claim_gate_redteam_decision_memo.md`
 - `outputs/reports/lss_forensic_atlas_reproduction_note.md`
+- `outputs/reports/long_campaign_registration.md`
+- `outputs/reports/long_campaign_stage2_screening.md`
+- `outputs/reports/long_campaign_stage3_fairness.md`
+- `outputs/reports/long_campaign_stage4_replication.md`
+- `outputs/reports/long_campaign_stage5_route_validation.md`
+- `outputs/reports/long_campaign_candidate_pack.json`
+- `outputs/reports/long_campaign_gate_report.md`
+- `outputs/reports/long_campaign_decision_memo.md`
 - `outputs/reports/lss_forensic_casebook.md`
 - `outputs/reports/lss_forensic_round_audit.md`
 - `outputs/reports/lss_forensic_route_locality.md`

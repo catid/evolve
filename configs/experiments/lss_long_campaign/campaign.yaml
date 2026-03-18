@@ -1,0 +1,84 @@
+schema_version: 1
+name: lss_long_campaign
+frozen_manifest: configs/claims/doorkey_frozen_claim.yaml
+canonical_teacher: flat_dense
+evaluation:
+  episodes: 64
+  task: DoorKey
+  path_key: external_policy_diagnostics
+
+seed_groups:
+  weak_block:
+    lane: fresh_final
+    seeds: [47, 53, 59]
+  original:
+    lane: original
+    seeds: [7, 11, 19]
+  fresh:
+    lane: fresh
+    seeds: [23, 29, 31]
+  fresh_extra:
+    lane: fresh_extra
+    seeds: [37, 41, 43]
+
+lane_roots:
+  original:
+    teacher_root: outputs/reproductions/lss_robustness_baseline
+    sare_student_root: outputs/reproductions/lss_robustness_baseline
+    token_student_root: outputs/reproductions/lss_robustness_baseline
+    single_expert_root: outputs/experiments/lss_claim_broadening/single_expert_controls
+  fresh:
+    teacher_root: outputs/experiments/lss_claim_hardening/additional_seeds
+    sare_student_root: outputs/experiments/lss_claim_hardening/additional_seeds
+    token_student_root: outputs/experiments/lss_claim_hardening/additional_seeds
+    single_expert_root: outputs/experiments/lss_multi_expert_hardening/fresh_single_expert_controls
+  fresh_extra:
+    teacher_root: outputs/experiments/lss_claim_broadening/additional_fresh_block
+    sare_student_root: outputs/experiments/lss_claim_broadening/additional_fresh_block
+    token_student_root: outputs/experiments/lss_claim_broadening/additional_fresh_block
+    single_expert_root: outputs/experiments/lss_multi_expert_hardening/fresh_extra_single_expert_controls
+  fresh_final:
+    teacher_root: outputs/experiments/lss_multi_expert_hardening/final_fresh_block
+    sare_student_root: outputs/experiments/lss_multi_expert_hardening/final_fresh_block
+    token_student_root: outputs/experiments/lss_multi_expert_hardening/final_fresh_block
+    single_expert_root: outputs/experiments/lss_frozen_claim/final_block_single_expert_controls
+
+students:
+  sare:
+    config_name: sare_ent1e3.yaml
+    run_name: sare_ent1e3
+    output_label: kl_lss_sare
+  token_dense:
+    config_name: token_dense_ent1e3.yaml
+    run_name: token_dense_ent1e3
+    output_label: kl_lss_token_dense
+  single_expert:
+    config_name: single_expert_ent1e3.yaml
+    run_name: single_expert_ent1e3
+    output_label: kl_lss_single_expert
+
+candidates:
+  cap_recent_4096:
+    template: configs/experiments/lss_long_campaign/lss_kl_cap_recent_4096.yaml
+    intervention_family: stale_append_all_cap
+    hypothesis: a more moderate recent-step cap can suppress stale failed append-all accumulation without fully erasing useful late rounds
+    target_seeds: [47, 53, 59]
+    expected_failure_mode: underfits the healthy strong blocks by throwing away too much context
+  phase_balanced_recent_4096:
+    template: configs/experiments/lss_long_campaign/lss_kl_phase_balanced_recent_4096.yaml
+    intervention_family: phase_balanced_data_shaping
+    hypothesis: capping by phase with extra post-unlock quota can rebalance weak-block late-phase coverage without a new extraction family
+    target_seeds: [53, 59]
+    expected_failure_mode: over-samples failing late states and keeps the same wrong action pattern
+  post_unlock_weighted:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    intervention_family: phase_aware_kl_weighting
+    hypothesis: heavier KL on post-unlock states can target the shared late collapse on 53 and 59 while leaving earlier phases intact
+    target_seeds: [53, 59]
+    expected_failure_mode: helps all structured students equally and stays method-first rather than routed-first
+  phase_balanced_recent_4096_post_unlock_weighted:
+    template: configs/experiments/lss_long_campaign/lss_kl_phase_balanced_recent_4096_post_unlock_weighted.yaml
+    intervention_family: combined_phase_shaping
+    hypothesis: combining moderate phase-balanced recency with post-unlock KL emphasis can address both route-fragile seed 47 and the shared post-unlock failures on 53 and 59
+    target_seeds: [47, 53, 59]
+    expected_failure_mode: overfits the weak block and regresses the stronger historical seeds

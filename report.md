@@ -5,16 +5,15 @@
 - `flat_dense` remains the strongest greedy DoorKey control.
 - recovered `token_dense` (`ppo.ent_coef=0.001`) remains the canonical tokenized control.
 - PPO-only `SARE` still loses the fair greedy DoorKey comparison.
-- The only positive routed result is still teacher-guided:
-  - teacher-logit `KL` learner-state supervision for `SARE`
-  - DoorKey only
-  - external `64`-episode evaluation only
-- After the forensic-atlas pass, the best description of the result is:
-  - a bounded DoorKey teacher-guided `SARE` win
-  - still frozen after the final fairness closure, the resume-gate audit, and the deeper forensic atlas
-  - not strong enough to promote into a specifically multi-expert routed DoorKey edge
+- The frozen benchmark pack remains the baseline comparison unit for DoorKey thaw work.
+- The first staged candidate that clears that baseline now exists inside the same teacher-guided `KL` learner-state family:
+  - candidate: `post_unlock_weighted`
+  - scope: DoorKey only
+  - evaluation: external `64`-episode `policy_diagnostics`
+  - result: `PASS: thaw consideration allowed`
+- This is still not a PPO-only, specifically multi-expert, cross-task, or KeyCorridor claim.
 
-## Frozen Claim Envelope
+## Frozen Benchmark Baseline
 
 Allowed:
 
@@ -44,7 +43,7 @@ Canonical gate artifacts:
 
 ## Frozen Benchmark Pack
 
-The current frozen DoorKey state is now sealed as an explicit benchmark pack instead of only a report bundle.
+The frozen DoorKey state remains sealed as an explicit benchmark pack instead of only a report bundle.
 
 - [frozen_benchmark_pack.md](outputs/reports/frozen_benchmark_pack.md)
 - [frozen_benchmark_pack.json](outputs/reports/frozen_benchmark_pack.json)
@@ -58,6 +57,8 @@ Future thaw discussion must use the pack-based gate, not ad hoc report compariso
 - candidate pack format: [candidate_result_pack_schema.md](outputs/reports/candidate_result_pack_schema.md)
 - candidate pack template: [candidate_result_pack_template.json](outputs/reports/candidate_result_pack_template.json)
 - current frozen dry run: [claim_gate_pack_dry_run.md](outputs/reports/claim_gate_pack_dry_run.md)
+- long-campaign passing candidate: [long_campaign_candidate_pack.json](outputs/reports/long_campaign_candidate_pack.json)
+- long-campaign gate result: [long_campaign_gate_report.md](outputs/reports/long_campaign_gate_report.md)
 - malformed candidate example: [claim_gate_pack_inconclusive.md](outputs/reports/claim_gate_pack_inconclusive.md)
 - adversarial conformance corpus: [claim_gate_corpus_report.md](outputs/reports/claim_gate_corpus_report.md)
 - adversarial conformance result: [claim_gate_conformance_report.md](outputs/reports/claim_gate_conformance_report.md)
@@ -96,8 +97,40 @@ Source artifacts:
 - [lss_final_block_single_expert_control_report.md](outputs/reports/lss_final_block_single_expert_control_report.md)
 - [lss_frozen_claim_updated_combined_doorkey_report.md](outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.md)
 - [lss_keycorridor_transfer_report.md](outputs/reports/lss_keycorridor_transfer_report.md)
+- [long_campaign_registration.md](outputs/reports/long_campaign_registration.md)
+- [long_campaign_mechanism_shortlist.md](outputs/reports/long_campaign_mechanism_shortlist.md)
+- [long_campaign_stage2_screening.md](outputs/reports/long_campaign_stage2_screening.md)
+- [long_campaign_stage3_fairness.md](outputs/reports/long_campaign_stage3_fairness.md)
+- [long_campaign_stage4_replication.md](outputs/reports/long_campaign_stage4_replication.md)
+- [long_campaign_stage5_route_validation.md](outputs/reports/long_campaign_stage5_route_validation.md)
+- [long_campaign_gate_report.md](outputs/reports/long_campaign_gate_report.md)
+- [long_campaign_decision_memo.md](outputs/reports/long_campaign_decision_memo.md)
 
 All final claims in this phase use the external `64`-episode `policy_diagnostics` path.
+
+## Long Campaign Result
+
+The staged DoorKey-only campaign produced the first within-envelope thaw-qualified candidate.
+
+- Stage 2 weak-block screening kept only `post_unlock_weighted`; all recency and phase-balanced variants collapsed to `0.0000` mean on `47/53/59`. See [long_campaign_stage2_screening.md](outputs/reports/long_campaign_stage2_screening.md).
+- Stage 3 fairness showed the candidate raises weak-block KL learner-state `SARE` mean from frozen `0.3125` to `0.4635`, exactly matching same-block KL learner-state `single_expert`, while KL learner-state `token_dense` stays at `1.0000`. See [long_campaign_stage3_fairness.md](outputs/reports/long_campaign_stage3_fairness.md).
+- Stage 4 replication preserved and improved the stronger historical picture:
+  - combined KL learner-state `SARE`: `0.7500`
+  - combined KL learner-state `single_expert`: `0.6862`
+  - combined KL learner-state `token_dense`: `0.6354`
+  - no complete-seed failures for candidate KL learner-state `SARE`
+  - no new complete-seed failures on previously healthy strong seeds
+  See [long_campaign_stage4_replication.md](outputs/reports/long_campaign_stage4_replication.md).
+- Stage 5 route checks still show materially harmful routing disruption on the selected weak case `(fresh_final, 53)` and strong case `(fresh, 23)`. See [long_campaign_stage5_route_validation.md](outputs/reports/long_campaign_stage5_route_validation.md).
+- Stage 6 packaged the candidate and the automated gate returned `PASS: thaw consideration allowed`. See [long_campaign_gate_report.md](outputs/reports/long_campaign_gate_report.md) and [long_campaign_decision_memo.md](outputs/reports/long_campaign_decision_memo.md).
+
+The right current wording is now:
+
+- thaw consideration is allowed within DoorKey only
+- still teacher-guided only
+- still KL learner-state only
+- still external `64`-episode evaluation only
+- still not a PPO-only, specifically multi-expert, cross-task, or KeyCorridor claim
 
 ## What Still Stands Negative
 
@@ -221,17 +254,19 @@ All three KeyCorridor seeds stayed flat:
 
 ## Recommendation
 
-- Stay frozen at the current DoorKey-only scope.
-- The current evidence still supports a bounded teacher-guided DoorKey `SARE` win, but it is not strong enough to justify a resume attempt or strengthen into a specifically multi-expert routed claim because:
-  - matched `single_expert` beats or matches `SARE` on the final fresh block
-  - the deep forensic package still finds only a mixed, plausible-but-weak mechanism signature
-  - the combined DoorKey picture still does not clear a thaw bar
-- Future work must use the manifest and automated gate rather than ad hoc narrative comparison:
-  - `configs/claims/doorkey_frozen_claim.yaml`
-  - [frozen_baseline_validation.md](outputs/reports/frozen_baseline_validation.md)
-  - [claim_gate_dry_run.md](outputs/reports/claim_gate_dry_run.md)
+- Allow thaw consideration within DoorKey only for the gate-cleared `post_unlock_weighted` candidate pack.
 - Keep the scope explicit:
   - teacher-guided extraction only
+  - KL learner-state only
   - DoorKey only
   - external `64`-episode evaluation only
-- Do not broaden this into a PPO-only, specifically multi-expert, or cross-task routed advantage claim while the bounded KeyCorridor transfer check remains flat.
+- Keep the disallowed claims explicit:
+  - no PPO-only routed win
+  - no specifically multi-expert routed advantage
+  - no cross-task routed advantage
+  - no KeyCorridor transfer claim
+- Future work must still use the manifest and automated gate rather than narrative override:
+  - `configs/claims/doorkey_frozen_claim.yaml`
+  - [frozen_benchmark_pack.json](outputs/reports/frozen_benchmark_pack.json)
+  - [long_campaign_candidate_pack.json](outputs/reports/long_campaign_candidate_pack.json)
+  - [long_campaign_gate_report.md](outputs/reports/long_campaign_gate_report.md)

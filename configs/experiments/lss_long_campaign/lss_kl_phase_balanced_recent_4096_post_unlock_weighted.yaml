@@ -1,0 +1,26 @@
+name: lss_kl_phase_balanced_recent_4096_post_unlock_weighted
+teacher:
+  greedy: true
+  temperature: 1.0
+student:
+  target: policy_head_plus_last_shared
+  loss: kl
+  weighting: uniform
+  phase_weights:
+    post_unlock: 3.0
+  default_phase_weight: 1.0
+  disagreement_bonus: 1.0
+  learning_rate: 0.0001
+  batch_size: 128
+  epochs: 4
+loop:
+  rounds: 4
+  episodes_per_round: 64
+  max_episodes_per_round: 96
+  aggregation: phase_balanced_recent
+  max_dataset_steps: 4096
+  phase_quota_weights:
+    default: 1.0
+    post_unlock: 2.5
+evaluation:
+  episodes: 64

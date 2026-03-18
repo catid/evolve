@@ -44,6 +44,7 @@ class LoopConfig:
     max_episodes_per_round: int = 96
     aggregation: str = "append_all"
     max_dataset_steps: int | None = None
+    phase_quota_weights: dict[str, float] | None = None
 
 
 @dataclass(slots=True)
@@ -60,6 +61,17 @@ class LearnerStateSpec:
     student: StudentConfig
     loop: LoopConfig
     evaluation: EvalConfig
+
+
+PHASE_NAMES: tuple[str, ...] = (
+    "search_key",
+    "at_key",
+    "carry_key",
+    "at_locked_door",
+    "post_unlock",
+)
+PHASE_TO_ID: dict[str, int] = {name: index for index, name in enumerate(PHASE_NAMES)}
+PHASE_ID_TO_NAME: dict[int, str] = {index: name for name, index in PHASE_TO_ID.items()}
 
 
 def _load_yaml(path: str | Path) -> dict[str, Any]:
@@ -99,6 +111,8 @@ def _concat_batches(left: DistillationBatch | None, right: DistillationBatch) ->
         teacher_logits=torch.cat([left.teacher_logits, right.teacher_logits], dim=0),
         weights=torch.cat([left.weights, right.weights], dim=0),
         teacher_confidence=_combine_optional_tensor(left.teacher_confidence, right.teacher_confidence),
+        phase_ids=_combine_optional_tensor(left.phase_ids, right.phase_ids),
+        disagreement=_combine_optional_tensor(left.disagreement, right.disagreement),
         accepted_episodes=left.accepted_episodes + right.accepted_episodes,
         episodes_seen=left.episodes_seen + right.episodes_seen,
         steps=int(left.steps + right.steps),
@@ -119,6 +133,8 @@ def _slice_batch(batch: DistillationBatch, indices: torch.Tensor) -> Distillatio
         mean_return=batch.mean_return,
         mean_length=batch.mean_length,
         teacher_confidence=batch.teacher_confidence[indices] if batch.teacher_confidence is not None else None,
+        phase_ids=batch.phase_ids[indices] if batch.phase_ids is not None else None,
+        disagreement=batch.disagreement[indices] if batch.disagreement is not None else None,
     )
 
 
@@ -154,6 +170,62 @@ def _cap_recent_balanced_indices(actions: torch.Tensor, max_steps: int) -> torch
     return torch.as_tensor(kept, dtype=torch.long)
 
 
+def _phase_weight_lookup(weights: dict[str, float] | None, phase_name: str) -> float:
+    if not weights:
+        return 1.0
+    return float(weights.get(phase_name, weights.get("default", 1.0)))
+
+
+def _phase_balanced_recent_indices(
+    phase_ids: torch.Tensor | None,
+    max_steps: int,
+    phase_quota_weights: dict[str, float] | None,
+) -> torch.Tensor:
+    if phase_ids is None or phase_ids.numel() == 0:
+        return torch.empty(0, dtype=torch.long)
+    phases_present = sorted(
+        {
+            int(phase_id.item())
+            for phase_id in phase_ids.unique(sorted=True)
+            if int(phase_id.item()) in PHASE_ID_TO_NAME
+        }
+    )
+    if not phases_present:
+        return torch.empty(0, dtype=torch.long)
+    raw_weights = {
+        phase_id: max(_phase_weight_lookup(phase_quota_weights, PHASE_ID_TO_NAME[phase_id]), 0.0)
+        for phase_id in phases_present
+    }
+    if sum(raw_weights.values()) <= 0.0:
+        raw_weights = {phase_id: 1.0 for phase_id in phases_present}
+    quotas = {
+        phase_id: max(int(round(max_steps * (weight / sum(raw_weights.values())))), 1)
+        for phase_id, weight in raw_weights.items()
+    }
+    kept: list[int] = []
+    per_phase = {phase_id: 0 for phase_id in phases_present}
+    for index in range(phase_ids.numel() - 1, -1, -1):
+        phase_id = int(phase_ids[index].item())
+        if phase_id not in per_phase:
+            continue
+        if per_phase[phase_id] >= quotas[phase_id]:
+            continue
+        kept.append(index)
+        per_phase[phase_id] += 1
+        if len(kept) >= max_steps:
+            break
+    if len(kept) < max_steps:
+        seen = set(kept)
+        for index in range(phase_ids.numel() - 1, -1, -1):
+            if index in seen:
+                continue
+            kept.append(index)
+            if len(kept) >= max_steps:
+                break
+    kept.sort()
+    return torch.as_tensor(kept, dtype=torch.long)
+
+
 def _apply_aggregation_policy(spec: LearnerStateSpec, batch: DistillationBatch) -> DistillationBatch:
     if spec.loop.aggregation == "append_all" or spec.loop.max_dataset_steps is None:
         batch.steps = int(batch.actions.numel())
@@ -166,9 +238,77 @@ def _apply_aggregation_policy(spec: LearnerStateSpec, batch: DistillationBatch) 
         keep = _cap_recent_indices(int(batch.actions.numel()), max_steps)
     elif spec.loop.aggregation == "cap_recent_balanced":
         keep = _cap_recent_balanced_indices(batch.actions, max_steps)
+    elif spec.loop.aggregation == "phase_balanced_recent":
+        keep = _phase_balanced_recent_indices(batch.phase_ids, max_steps, spec.loop.phase_quota_weights)
     else:
         raise ValueError(f"unsupported aggregation mode: {spec.loop.aggregation}")
     return _slice_batch(batch, keep)
+
+
+def _extract_phase(env: Any) -> str:
+    unwrapped = env.unwrapped
+    carrying = unwrapped.carrying
+    agent_pos = tuple(int(value) for value in unwrapped.agent_pos)
+    door_pos = None
+    key_pos = None
+    door_locked = False
+    door_open = False
+    for x in range(int(unwrapped.width)):
+        for y in range(int(unwrapped.height)):
+            obj = unwrapped.grid.get(x, y)
+            if obj is None:
+                continue
+            name = type(obj).__name__.lower()
+            if name == "door":
+                door_pos = (x, y)
+                door_locked = bool(getattr(obj, "is_locked", False))
+                door_open = bool(getattr(obj, "is_open", False))
+            elif name == "key":
+                key_pos = (x, y)
+
+    def distance(position: tuple[int, int] | None) -> int | None:
+        if position is None:
+            return None
+        return abs(agent_pos[0] - position[0]) + abs(agent_pos[1] - position[1])
+
+    carrying_key = carrying is not None and type(carrying).__name__.lower() == "key"
+    key_distance = distance(key_pos)
+    door_distance = distance(door_pos)
+    near_key = key_distance is not None and key_distance <= 1
+    near_door = door_distance is not None and door_distance <= 1
+    if carrying_key and door_locked:
+        return "at_locked_door" if near_door else "carry_key"
+    if carrying_key and (door_open or not door_locked):
+        return "post_unlock"
+    if not carrying_key and key_pos is not None:
+        return "at_key" if near_key else "search_key"
+    if door_open or not door_locked:
+        return "post_unlock"
+    return "search_key"
+
+
+def _apply_weight_adjustments(spec: StudentConfig, dataset: DistillationBatch, weights: torch.Tensor, device: torch.device) -> torch.Tensor:
+    adjusted = weights.clone()
+    if spec.phase_weights:
+        if dataset.phase_ids is None:
+            raise ValueError("phase_weights requested but dataset lacks phase_ids")
+        phase_ids = dataset.phase_ids.to(device)
+        phase_multiplier = torch.full_like(adjusted, float(spec.default_phase_weight))
+        for phase_name, phase_weight in spec.phase_weights.items():
+            phase_id = PHASE_TO_ID.get(phase_name)
+            if phase_id is None:
+                raise ValueError(f"unsupported phase weight key: {phase_name}")
+            phase_multiplier = torch.where(
+                phase_ids == phase_id,
+                torch.full_like(phase_multiplier, float(phase_weight)),
+                phase_multiplier,
+            )
+        adjusted = adjusted * phase_multiplier
+    if spec.disagreement_bonus:
+        if dataset.disagreement is None:
+            raise ValueError("disagreement_bonus requested but dataset lacks disagreement")
+        adjusted = adjusted * (1.0 + dataset.disagreement.to(device) * float(spec.disagreement_bonus))
+    return adjusted
 
 
 def _hash_raw_obs(obs_sample: dict[str, np.ndarray]) -> str:
@@ -227,6 +367,7 @@ def _collect_teacher_labels_for_student_states(
     episode_student_confidence: list[list[float]] = [[] for _ in range(env_config.env.num_eval_envs)]
     episode_student_entropy: list[list[float]] = [[] for _ in range(env_config.env.num_eval_envs)]
     episode_disagreement: list[list[float]] = [[] for _ in range(env_config.env.num_eval_envs)]
+    episode_phase_ids: list[list[int]] = [[] for _ in range(env_config.env.num_eval_envs)]
     episode_returns = np.zeros(env_config.env.num_eval_envs, dtype=np.float32)
     episode_lengths = np.zeros(env_config.env.num_eval_envs, dtype=np.int32)
     collected_obs: list[dict[str, np.ndarray]] = []
@@ -239,6 +380,7 @@ def _collect_teacher_labels_for_student_states(
     collected_student_confidence: list[float] = []
     collected_student_entropy: list[float] = []
     collected_disagreements: list[float] = []
+    collected_phase_ids: list[int] = []
     collected_returns: list[float] = []
     collected_lengths: list[float] = []
     collected_success_flags: list[float] = []
@@ -274,6 +416,7 @@ def _collect_teacher_labels_for_student_states(
             teacher_logits_np = teacher_output.logits.detach().cpu().numpy()
             student_action_np = student_action.detach().cpu().numpy()
             raw_obs = _capture_raw_obs(obs)
+            phase_names = [_extract_phase(eval_env.envs[index]) for index in range(env_config.env.num_eval_envs)]
             for index in range(env_config.env.num_eval_envs):
                 episode_obs[index].append({key: value[index].copy() for key, value in raw_obs.items()})
                 episode_actions[index].append(int(teacher_action_np[index]))
@@ -284,6 +427,7 @@ def _collect_teacher_labels_for_student_states(
                 episode_student_confidence[index].append(float(step_diag["student_confidence"][index]))
                 episode_student_entropy[index].append(float(step_diag["student_entropy"][index]))
                 episode_disagreement[index].append(float(step_diag["teacher_student_disagreement"][index]))
+                episode_phase_ids[index].append(PHASE_TO_ID[phase_names[index]])
 
             next_obs, reward, terminated, truncated, info = eval_env.step(student_action_np)
             done_np = np.logical_or(terminated, truncated)
@@ -310,6 +454,7 @@ def _collect_teacher_labels_for_student_states(
                 collected_student_confidence.extend(episode_student_confidence[index])
                 collected_student_entropy.extend(episode_student_entropy[index])
                 collected_disagreements.extend(episode_disagreement[index])
+                collected_phase_ids.extend(episode_phase_ids[index])
                 mean_disagreement = float(np.mean(episode_disagreement[index])) if episode_disagreement[index] else 0.0
                 if step_success[index] > 0.0:
                     success_episode_disagreement.append(mean_disagreement)
@@ -324,6 +469,7 @@ def _collect_teacher_labels_for_student_states(
                 episode_student_confidence[index].clear()
                 episode_student_entropy[index].clear()
                 episode_disagreement[index].clear()
+                episode_phase_ids[index].clear()
                 episode_returns[index] = 0.0
                 episode_lengths[index] = 0
 
@@ -354,6 +500,8 @@ def _collect_teacher_labels_for_student_states(
         teacher_logits=teacher_logits_t,
         weights=torch.as_tensor(collected_weights, dtype=torch.float32),
         teacher_confidence=torch.as_tensor(collected_teacher_confidence, dtype=torch.float32),
+        phase_ids=torch.as_tensor(collected_phase_ids, dtype=torch.long),
+        disagreement=torch.as_tensor(collected_disagreements, dtype=torch.float32),
         accepted_episodes=accepted_episodes,
         episodes_seen=episodes_seen,
         steps=len(collected_actions),
@@ -383,6 +531,12 @@ def _collect_teacher_labels_for_student_states(
     for action_index, count in enumerate(action_hist):
         diagnostics[f"collection/action_count_{action_index}"] = float(count)
         diagnostics[f"collection/action_frac_{action_index}"] = float(count / max(len(collected_actions), 1))
+    if collected_phase_ids:
+        phase_hist = np.bincount(np.asarray(collected_phase_ids, dtype=np.int64), minlength=len(PHASE_NAMES))
+        for phase_index, phase_name in enumerate(PHASE_NAMES):
+            count = float(phase_hist[phase_index])
+            diagnostics[f"collection/phase_count_{phase_name}"] = count
+            diagnostics[f"collection/phase_frac_{phase_name}"] = float(count / max(len(collected_phase_ids), 1))
     diagnostics.update({f"collection/{key}": value for key, value in route_metrics.compute().items()})
     return RoundCollection(batch=batch, diagnostics=diagnostics)
 
@@ -402,7 +556,7 @@ def _fine_tune_student(
     obs = {key: value.to(device) for key, value in dataset.obs.items()}
     actions = dataset.actions.to(device)
     teacher_logits = dataset.teacher_logits.to(device)
-    weights = _dataset_weights(spec.student, dataset, device)
+    weights = _apply_weight_adjustments(spec.student, dataset, _dataset_weights(spec.student, dataset, device), device)
     done = torch.zeros(actions.size(0), device=device, dtype=torch.bool)
     losses: list[float] = []
 
@@ -459,8 +613,12 @@ def _write_single_run_summary(
         "target": spec.student.target,
         "loss": spec.student.loss,
         "weighting": spec.student.weighting,
+        "phase_weights": spec.student.phase_weights,
+        "default_phase_weight": spec.student.default_phase_weight,
+        "disagreement_bonus": spec.student.disagreement_bonus,
         "aggregation": spec.loop.aggregation,
         "max_dataset_steps": spec.loop.max_dataset_steps,
+        "phase_quota_weights": spec.loop.phase_quota_weights,
         "before_greedy_success": float(before["greedy"].get("eval_success_rate", 0.0)),
         "before_best_sampled_mode": before_best_mode,
         "before_best_sampled_success": before_best_sampled,
@@ -481,6 +639,7 @@ def _write_single_run_summary(
         f"- target: `{spec.student.target}`",
         f"- loss: `{spec.student.loss}`",
         f"- aggregation: `{spec.loop.aggregation}`",
+        f"- weighting: `{spec.student.weighting}`",
         f"- before_greedy_success: `{summary['before_greedy_success']:.3f}`",
         f"- best_round_greedy_success: `{summary['best_round_greedy_success']:.3f}`",
         f"- final_greedy_success: `{summary['final_greedy_success']:.3f}`",
@@ -608,6 +767,8 @@ def run_once(args: argparse.Namespace) -> None:
                 "teacher_logits": aggregate.teacher_logits,
                 "weights": aggregate.weights,
                 "teacher_confidence": aggregate.teacher_confidence,
+                "phase_ids": aggregate.phase_ids,
+                "disagreement": aggregate.disagreement,
                 "accepted_episodes": aggregate.accepted_episodes,
                 "episodes_seen": aggregate.episodes_seen,
                 "steps": aggregate.steps,
@@ -625,6 +786,10 @@ def run_once(args: argparse.Namespace) -> None:
             "loss": spec.student.loss,
             "aggregation": spec.loop.aggregation,
             "weighting": spec.student.weighting,
+            "phase_weights": spec.student.phase_weights,
+            "default_phase_weight": spec.student.default_phase_weight,
+            "disagreement_bonus": spec.student.disagreement_bonus,
+            "phase_quota_weights": spec.loop.phase_quota_weights,
             **fine_tune_metrics,
             **round_collection.diagnostics,
         }

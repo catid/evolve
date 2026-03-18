@@ -40,6 +40,9 @@ class StudentConfig:
     ce_weight: float = 1.0
     kl_weight: float = 1.0
     weighting: str = "uniform"
+    phase_weights: dict[str, float] | None = None
+    default_phase_weight: float = 1.0
+    disagreement_bonus: float = 0.0
     learning_rate: float = 1e-4
     batch_size: int = 128
     epochs: int = 8
@@ -79,6 +82,8 @@ class DistillationBatch:
     mean_return: float
     mean_length: float
     teacher_confidence: torch.Tensor | None = None
+    phase_ids: torch.Tensor | None = None
+    disagreement: torch.Tensor | None = None
 
 
 def _load_yaml(path: str | Path) -> dict[str, Any]:

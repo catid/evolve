@@ -1,0 +1,210 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [
+      [
+        "original",
+        7
+      ],
+      [
+        "original",
+        11
+      ],
+      [
+        "original",
+        19
+      ],
+      [
+        "fresh",
+        23
+      ],
+      [
+        "fresh",
+        29
+      ],
+      [
+        "fresh",
+        31
+      ],
+      [
+        "fresh_extra",
+        37
+      ],
+      [
+        "fresh_extra",
+        41
+      ],
+      [
+        "fresh_extra",
+        43
+      ],
+      [
+        "fresh_final",
+        47
+      ],
+      [
+        "fresh_final",
+        53
+      ],
+      [
+        "fresh_final",
+        59
+      ]
+    ],
+    "retry_block_lane_seeds": [
+      [
+        "fresh_final",
+        47
+      ],
+      [
+        "fresh_final",
+        53
+      ],
+      [
+        "fresh_final",
+        59
+      ]
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "outputs/reports/long_campaign_candidate_summary.md",
+      "role": "candidate_summary_markdown",
+      "sha256": "1dbdb887c30da41355859368418453607816b45c652861e9c56af77643f6485b",
+      "size_bytes": 236
+    },
+    {
+      "path": "outputs/reports/long_campaign_candidate_metrics.json",
+      "role": "candidate_metrics_json",
+      "sha256": "e35dbed0bba38946c533f5fb6b35a003516b40777a72f9052c396a95e493c8e7",
+      "size_bytes": 3209
+    },
+    {
+      "path": "outputs/reports/long_campaign_candidate_combined_report.md",
+      "role": "combined_report_markdown",
+      "sha256": "27e58ab51590de25964598b73fc95d00620e35762255b4f6bdc7321b95831e45",
+      "size_bytes": 3699
+    },
+    {
+      "path": "outputs/reports/long_campaign_candidate_combined_report.csv",
+      "role": "combined_report_csv",
+      "sha256": "ea70a9ad4f204d18d188317301923c9cb3ac583ea57acbf11e2cebe90aa07ddd",
+      "size_bytes": 36681
+    },
+    {
+      "path": "outputs/reports/long_campaign_candidate_retry_block_report.md",
+      "role": "retry_block_report_markdown",
+      "sha256": "bf2f94fbff849cbc2e4dfbcea776bfba82445fb8ff0469dc8f54d6689886d5a1",
+      "size_bytes": 704
+    },
+    {
+      "path": "outputs/reports/long_campaign_candidate_retry_block_report.csv",
+      "role": "retry_block_report_csv",
+      "sha256": "ff7337d52066a9c452969f10960d6414042c2c4fec17c2e3d597151110d42e9f",
+      "size_bytes": 10192
+    }
+  ],
+  "candidate_name": "post_unlock_weighted",
+  "controls_present": [
+    "recovered_token_dense",
+    "kl_lss_token_dense",
+    "kl_lss_single_expert",
+    "baseline_sare",
+    "kl_lss_sare"
+  ],
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "external_policy_diagnostics"
+  },
+  "frozen_pack_reference": {
+    "claim_id": "doorkey_frozen_claim",
+    "path": "outputs/reports/frozen_benchmark_pack.json",
+    "sha256": "21f69b44b2a1567f6432e0ec2a0f5dce2c4f74ea256196d865fbdf384580a873"
+  },
+  "metrics": {
+    "combined": {
+      "baseline_sare": {
+        "complete_seed_failures": 12.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 12.0
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 0.0,
+        "max": 1.0,
+        "mean": 0.75,
+        "min": 0.421875,
+        "seed_count": 12.0
+      },
+      "kl_lss_single_expert": {
+        "complete_seed_failures": 1.0,
+        "max": 1.0,
+        "mean": 0.6861979166666666,
+        "min": 0.0,
+        "seed_count": 12.0
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 4.0,
+        "max": 1.0,
+        "mean": 0.6354166666666666,
+        "min": 0.0,
+        "seed_count": 12.0
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 5.0,
+        "max": 1.0,
+        "mean": 0.55859375,
+        "min": 0.0,
+        "seed_count": 12.0
+      }
+    },
+    "retry_block": {
+      "baseline_sare": {
+        "complete_seed_failures": 3.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3.0
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 0.0,
+        "max": 0.515625,
+        "mean": 0.4635416666666667,
+        "min": 0.421875,
+        "seed_count": 3.0
+      },
+      "kl_lss_single_expert": {
+        "complete_seed_failures": 0.0,
+        "max": 0.515625,
+        "mean": 0.4635416666666667,
+        "min": 0.421875,
+        "seed_count": 3.0
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 0.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3.0
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 0.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3.0
+      }
+    }
+  },
+  "pack_type": "candidate_result_pack",
+  "provenance": {
+    "git_commit": "e9f3257e660833253ed59f4c59923f5184139347",
+    "git_dirty": true,
+    "notes": "long campaign candidate `post_unlock_weighted`"
+  },
+  "requested_claims": [
+    "bounded_teacher_guided_doorkey_sare"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}
