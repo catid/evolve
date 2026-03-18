@@ -1,0 +1,18 @@
+{
+  "best_challenger": "round7",
+  "route_pass": true,
+  "route_summary": {
+    "baseline_active_compute": 0.5,
+    "baseline_route_entropy": 1.3758657732229123,
+    "baseline_success": 1.0,
+    "fixed_router_drop": 1.0,
+    "lane": "prospective_f",
+    "route_randomization_drop": 1.0,
+    "seed": 233,
+    "worst_ablation_drop": 1.0,
+    "worst_ablation_expert": "0"
+  },
+  "selected_candidate": "round6",
+  "selected_stability": "stable_plateau",
+  "stability_pass": true
+}
