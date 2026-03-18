@@ -2,7 +2,7 @@
 
 ## Current Claim State
 
-- The frozen benchmark pack remains the baseline DoorKey comparison unit.
+- The frozen benchmark pack remains the archived legacy DoorKey baseline and provenance anchor.
 - The staged long-horizon candidate `post_unlock_weighted` still matters because it opened the first within-envelope gate-cleared DoorKey lane.
 - The saturation-scale hard-family program then qualified the `round6` successor for canonization within DoorKey only:
   - hard-family dev KL learner-state `SARE`: `1.0000` vs matched `token_dense` `1.0000`
@@ -10,6 +10,12 @@
   - frozen-comparable combined KL learner-state `SARE`: `1.0000`
   - route validation: `pass`
   - stability: `stable_plateau`
+- The post-canonization migration and challenger league then promoted `round6` to the active DoorKey benchmark:
+  - no challenger survived the dev league
+  - migration route validation: `pass`
+  - migration stability: `pass`
+  - migration gate verdict: `PASS: thaw consideration allowed`
+  - final status: `round6 canonized as active DoorKey benchmark`
 - Allowed current scope:
   - teacher-guided KL learner-state DoorKey `SARE` result
   - external `64`-episode evaluation only
@@ -28,6 +34,7 @@
 - Hard-block canonization artifacts: [canonization_campaign_registration.md](outputs/reports/canonization_campaign_registration.md), [canonization_stage2_hard_block_screening.md](outputs/reports/canonization_stage2_hard_block_screening.md), [canonization_stage3_hard_block_fairness.md](outputs/reports/canonization_stage3_hard_block_fairness.md), [canonization_gate_report.md](outputs/reports/canonization_gate_report.md), and [canonization_decision_memo.md](outputs/reports/canonization_decision_memo.md).
 - Long hard-family program artifacts: [hard_family_definition.md](outputs/reports/hard_family_definition.md), [hard_family_campaign_registration.md](outputs/reports/hard_family_campaign_registration.md), [hard_family_stage2_dev_screening.md](outputs/reports/hard_family_stage2_dev_screening.md), [hard_family_stage3_fairness.md](outputs/reports/hard_family_stage3_fairness.md), [hard_family_gate_report.md](outputs/reports/hard_family_gate_report.md), and [hard_family_canonization_decision_memo.md](outputs/reports/hard_family_canonization_decision_memo.md).
 - Saturation-scale canonization artifacts: [hard_family_saturation_definition.md](outputs/reports/hard_family_saturation_definition.md), [hard_family_saturation_registration.md](outputs/reports/hard_family_saturation_registration.md), [hard_family_saturation_stage1_screening.md](outputs/reports/hard_family_saturation_stage1_screening.md), [hard_family_saturation_stage2_fairness.md](outputs/reports/hard_family_saturation_stage2_fairness.md), [hard_family_saturation_stage3_holdout.md](outputs/reports/hard_family_saturation_stage3_holdout.md), [hard_family_saturation_stage4_antiregression.md](outputs/reports/hard_family_saturation_stage4_antiregression.md), [hard_family_saturation_stage5_route_validation.md](outputs/reports/hard_family_saturation_stage5_route_validation.md), [hard_family_saturation_stage6_stability.md](outputs/reports/hard_family_saturation_stage6_stability.md), [hard_family_saturation_successor_pack.md](outputs/reports/hard_family_saturation_successor_pack.md), [hard_family_saturation_gate_report.md](outputs/reports/hard_family_saturation_gate_report.md), and [hard_family_saturation_decision_memo.md](outputs/reports/hard_family_saturation_decision_memo.md).
+- Migration artifacts: [successor_migration_registration.md](outputs/reports/successor_migration_registration.md), [successor_migration_baseline_sync.md](outputs/reports/successor_migration_baseline_sync.md), [successor_migration_stage1_screening.md](outputs/reports/successor_migration_stage1_screening.md), [successor_migration_stage2_fairness.md](outputs/reports/successor_migration_stage2_fairness.md), [successor_migration_stage3_holdout.md](outputs/reports/successor_migration_stage3_holdout.md), [successor_migration_stage4_antiregression.md](outputs/reports/successor_migration_stage4_antiregression.md), [successor_migration_stage5_route_validation.md](outputs/reports/successor_migration_stage5_route_validation.md), [successor_migration_stage6_stability.md](outputs/reports/successor_migration_stage6_stability.md), [successor_migration_candidate_pack.json](outputs/reports/successor_migration_candidate_pack.json), [successor_migration_gate_report.md](outputs/reports/successor_migration_gate_report.md), and [successor_migration_decision_memo.md](outputs/reports/successor_migration_decision_memo.md).
 
 - `flat_dense` remains the strongest greedy DoorKey control.
 - recovered `token_dense` with `ppo.ent_coef=0.001` remains the canonical tokenized control.
@@ -75,7 +82,7 @@
   - route randomization is catastrophic on most recovered seeds, but seed `29` is now a genuine narrow exception rather than a weak-probe artifact
   - see [lss_seed29_route_randomization_forensics.md](outputs/reports/lss_seed29_route_randomization_forensics.md) and [lss_broader_route_dependence_report.md](outputs/reports/lss_broader_route_dependence_report.md)
 - The exact same method shows no bounded KeyCorridor transfer. See [lss_keycorridor_transfer_report.md](outputs/reports/lss_keycorridor_transfer_report.md).
-- The current repo recommendation is that the `round6` successor is qualified for canonization within DoorKey only, while still requiring the automated gate and candidate-pack discipline for any future candidate. See [hard_family_saturation_decision_memo.md](outputs/reports/hard_family_saturation_decision_memo.md) and [freeze_hardening_operational_memo.md](outputs/reports/freeze_hardening_operational_memo.md).
+- The current repo recommendation is that `round6` is the active canonical DoorKey benchmark, while future candidates still have to go through the automated gate and candidate-pack discipline against that active benchmark and the archived frozen pack. See [successor_migration_decision_memo.md](outputs/reports/successor_migration_decision_memo.md), [successor_migration_candidate_pack.json](outputs/reports/successor_migration_candidate_pack.json), and [freeze_hardening_operational_memo.md](outputs/reports/freeze_hardening_operational_memo.md).
 
 ## Claim Gate
 

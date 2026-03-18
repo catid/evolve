@@ -181,6 +181,15 @@ Key scripts:
 ./scripts/run_lss_hard_family_saturation_stage6.sh
 ./scripts/run_lss_hard_family_saturation_stage7.sh
 ./scripts/run_lss_hard_family_saturation_finalize.sh
+./scripts/run_lss_successor_migration_register.sh
+./scripts/run_lss_successor_migration_stage1.sh
+./scripts/run_lss_successor_migration_stage2.sh
+./scripts/run_lss_successor_migration_stage3.sh
+./scripts/run_lss_successor_migration_stage4.sh
+./scripts/run_lss_successor_migration_stage5.sh
+./scripts/run_lss_successor_migration_stage6.sh
+./scripts/run_lss_successor_migration_stage7.sh
+./scripts/run_lss_successor_migration_finalize.sh
 ```
 
 Resume a run from a checkpoint:
@@ -218,6 +227,15 @@ Validate the sealed pack with one command:
 ```bash
 ./scripts/run_frozen_benchmark_pack_validation.sh
 ```
+
+## Active DoorKey Benchmark
+
+The active canonical DoorKey benchmark is now the `round6` teacher-guided KL learner-state successor, while the frozen benchmark pack remains archived as the legacy baseline.
+
+- migration decision: `outputs/reports/successor_migration_decision_memo.md`
+- active benchmark pack: `outputs/reports/successor_migration_candidate_pack.json`
+- migration gate report: `outputs/reports/successor_migration_gate_report.md`
+- archived frozen pack: `outputs/reports/frozen_benchmark_pack.json`
 
 Run the pack-based gate against a candidate pack:
 

@@ -6,13 +6,14 @@
 - recovered `token_dense` (`ppo.ent_coef=0.001`) remains the canonical tokenized control.
 - PPO-only `SARE` still loses the fair greedy DoorKey comparison.
 - The frozen benchmark pack remains the baseline comparison unit for DoorKey thaw work.
-- The current within-envelope successor that now clears the canonization bar exists inside the same teacher-guided `KL` learner-state family:
-  - candidate: `round6`
+- The current active DoorKey benchmark now sits inside the same teacher-guided `KL` learner-state family:
+  - benchmark: `round6`
   - lineage: successor to `post_unlock_weighted`
   - scope: DoorKey only
   - evaluation: external `64`-episode `policy_diagnostics`
-  - result: `PASS: thaw consideration allowed`
-  - saturation-program result: `qualified for canonization within DoorKey`
+  - gate result: `PASS: thaw consideration allowed`
+  - migration result: `round6 canonized as active DoorKey benchmark`
+  - legacy baseline: the frozen benchmark pack remains archived for provenance and historical comparison
 - This is still not a PPO-only, specifically multi-expert, cross-task, or KeyCorridor claim.
 
 ## Frozen Benchmark Baseline
@@ -82,6 +83,14 @@ Future thaw discussion must use the pack-based gate, not ad hoc report compariso
 - saturation successor pack: [hard_family_saturation_successor_pack.md](outputs/reports/hard_family_saturation_successor_pack.md)
 - saturation gate result: [hard_family_saturation_gate_report.md](outputs/reports/hard_family_saturation_gate_report.md)
 - saturation decision: [hard_family_saturation_decision_memo.md](outputs/reports/hard_family_saturation_decision_memo.md)
+- migration registration: [successor_migration_registration.md](outputs/reports/successor_migration_registration.md)
+- migration screening: [successor_migration_stage1_screening.md](outputs/reports/successor_migration_stage1_screening.md)
+- migration holdout: [successor_migration_stage3_holdout.md](outputs/reports/successor_migration_stage3_holdout.md)
+- migration route validation: [successor_migration_stage5_route_validation.md](outputs/reports/successor_migration_stage5_route_validation.md)
+- migration stability: [successor_migration_stage6_stability.md](outputs/reports/successor_migration_stage6_stability.md)
+- migration candidate pack: [successor_migration_candidate_pack.json](outputs/reports/successor_migration_candidate_pack.json)
+- migration gate result: [successor_migration_gate_report.md](outputs/reports/successor_migration_gate_report.md)
+- migration decision: [successor_migration_decision_memo.md](outputs/reports/successor_migration_decision_memo.md)
 - malformed candidate example: [claim_gate_pack_inconclusive.md](outputs/reports/claim_gate_pack_inconclusive.md)
 - adversarial conformance corpus: [claim_gate_corpus_report.md](outputs/reports/claim_gate_corpus_report.md)
 - adversarial conformance result: [claim_gate_conformance_report.md](outputs/reports/claim_gate_conformance_report.md)
@@ -152,20 +161,23 @@ The staged DoorKey-only campaign produced the first within-envelope thaw-qualifi
   - `post_unlock_weighted_round5`: dev KL learner-state `SARE` `0.8464` vs matched `token_dense` `0.9453`
   - `post_unlock_weighted_disagreement075`: dev KL learner-state `SARE` `0.6875` vs matched `token_dense` `0.8333`
   so the program stopped at Stage 3 before holdout testing and again left the accepted state `thaw-qualified but not canonical`. See [hard_family_definition.md](outputs/reports/hard_family_definition.md), [hard_family_stage2_dev_screening.md](outputs/reports/hard_family_stage2_dev_screening.md), [hard_family_stage3_fairness.md](outputs/reports/hard_family_stage3_fairness.md), and [hard_family_canonization_decision_memo.md](outputs/reports/hard_family_canonization_decision_memo.md).
-- The saturation-scale hard-family program finally turned that boundary into a canonization result. It expanded the hard family to three development blocks and two holdout blocks, screened twenty bounded candidates across ten mechanism directions, and advanced only `round6` through the full verification lane:
+- The saturation-scale hard-family program turned that boundary into a canonization-qualified result. It expanded the hard family to three development blocks and two holdout blocks, screened twenty bounded candidates across ten mechanism directions, and advanced only `round6` through the full verification lane:
   - hard-family dev KL learner-state `SARE`: `1.0000` vs matched `token_dense` `1.0000`
   - hard-family holdout KL learner-state `SARE`: `1.0000` vs matched `token_dense` `1.0000`
   - healthy-block KL learner-state `SARE`: `1.0000` vs matched `token_dense` `0.9141`
   - route validation: `pass`
   - stability: `stable_plateau` on the selected dev, holdout, and healthy probes
   - successor pack gate verdict: `PASS: thaw consideration allowed`
-  so the accepted status is now `qualified for canonization within DoorKey`. See [hard_family_saturation_definition.md](outputs/reports/hard_family_saturation_definition.md), [hard_family_saturation_stage1_screening.md](outputs/reports/hard_family_saturation_stage1_screening.md), [hard_family_saturation_stage2_fairness.md](outputs/reports/hard_family_saturation_stage2_fairness.md), [hard_family_saturation_stage3_holdout.md](outputs/reports/hard_family_saturation_stage3_holdout.md), [hard_family_saturation_stage4_antiregression.md](outputs/reports/hard_family_saturation_stage4_antiregression.md), [hard_family_saturation_stage5_route_validation.md](outputs/reports/hard_family_saturation_stage5_route_validation.md), [hard_family_saturation_stage6_stability.md](outputs/reports/hard_family_saturation_stage6_stability.md), [hard_family_saturation_gate_report.md](outputs/reports/hard_family_saturation_gate_report.md), and [hard_family_saturation_decision_memo.md](outputs/reports/hard_family_saturation_decision_memo.md).
+  so the accepted status became `qualified for canonization within DoorKey`. See [hard_family_saturation_definition.md](outputs/reports/hard_family_saturation_definition.md), [hard_family_saturation_stage1_screening.md](outputs/reports/hard_family_saturation_stage1_screening.md), [hard_family_saturation_stage2_fairness.md](outputs/reports/hard_family_saturation_stage2_fairness.md), [hard_family_saturation_stage3_holdout.md](outputs/reports/hard_family_saturation_stage3_holdout.md), [hard_family_saturation_stage4_antiregression.md](outputs/reports/hard_family_saturation_stage4_antiregression.md), [hard_family_saturation_stage5_route_validation.md](outputs/reports/hard_family_saturation_stage5_route_validation.md), [hard_family_saturation_stage6_stability.md](outputs/reports/hard_family_saturation_stage6_stability.md), [hard_family_saturation_gate_report.md](outputs/reports/hard_family_saturation_gate_report.md), and [hard_family_saturation_decision_memo.md](outputs/reports/hard_family_saturation_decision_memo.md).
+
+- The post-canonization migration and challenger league then answered the remaining operational question. It ran twelve bounded challengers across six mechanism directions on two development families, and none displaced `round6` cleanly enough to reach matched fairness. The program then shifted to migration readiness, where `round6` held the holdout and healthy-block pictures, passed the corrected dev/holdout/healthy route probes, remained `stable_plateau`, and preserved the gate `PASS`, so `round6` became the active DoorKey benchmark while the frozen pack remained archived as the legacy baseline. See [successor_migration_registration.md](outputs/reports/successor_migration_registration.md), [successor_migration_stage1_screening.md](outputs/reports/successor_migration_stage1_screening.md), [successor_migration_stage3_holdout.md](outputs/reports/successor_migration_stage3_holdout.md), [successor_migration_stage4_antiregression.md](outputs/reports/successor_migration_stage4_antiregression.md), [successor_migration_stage5_route_validation.md](outputs/reports/successor_migration_stage5_route_validation.md), [successor_migration_stage6_stability.md](outputs/reports/successor_migration_stage6_stability.md), [successor_migration_gate_report.md](outputs/reports/successor_migration_gate_report.md), and [successor_migration_decision_memo.md](outputs/reports/successor_migration_decision_memo.md).
 
 The right current wording is now:
 
-- `round6` is qualified for canonization within DoorKey only
+- `round6` is the active canonical benchmark within DoorKey only
 - `post_unlock_weighted` remains the earlier thaw-qualified predecessor that opened the lane, not the final canonical successor itself
 - the hard-block canonization campaign and the earlier hard-family dev/holdout program remain negative waypoints inside that longer lineage, not the final status
+- the frozen benchmark pack remains archived as the legacy baseline and provenance anchor, not the active benchmark
 - still teacher-guided only
 - still KL learner-state only
 - still external `64`-episode evaluation only

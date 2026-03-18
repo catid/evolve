@@ -1,7 +1,7 @@
 # Pack-Based Claim Gate Dry Run
 
 - frozen benchmark pack: `outputs/reports/frozen_benchmark_pack.json`
-- candidate result pack: `outputs/reports/candidate_result_pack_incomplete.json`
+- candidate result pack: `outputs/reports/successor_migration_candidate_pack.json`
 
 ## Frozen Pack Validation
 
@@ -48,24 +48,30 @@
 | --- | --- | --- |
 | pack_type | `PASS` | pack type is `candidate_result_pack` |
 | schema_version | `PASS` | candidate schema version `1` is recognized |
-| candidate_name | `PASS` | candidate name is `incomplete_candidate_pack_example` |
+| candidate_name | `PASS` | candidate name is `round6` |
 | frozen_pack_reference.path | `PASS` | candidate references `outputs/reports/frozen_benchmark_pack.json` |
-| frozen_pack_reference.sha256 | `PASS` | candidate references frozen-pack hash `73de8eb598cdc360336220fc1e51e23c2e93630958cee3f848e7cd5cf37cb4a1` |
+| frozen_pack_reference.sha256 | `FAIL` | candidate references frozen-pack hash `0426cb3a034046523769ad6066188796a684ce2cc7553468ed8c00f1e73f0a3c` instead of current `73de8eb598cdc360336220fc1e51e23c2e93630958cee3f848e7cd5cf37cb4a1` |
 | frozen_pack_reference.claim_id | `PASS` | candidate claim id matches `doorkey_frozen_claim` |
 | task | `PASS` | candidate task matches `DoorKey` |
 | evaluation | `PASS` | candidate uses the required DoorKey external-64 evaluation path |
 | requested_claims | `PASS` | requested claim keys are well formed |
 | controls_present.type | `PASS` | controls_present is a list of strings |
-| controls_present | `FAIL` | candidate is missing required controls: `baseline_sare`, `kl_lss_single_expert`, `kl_lss_token_dense` |
+| controls_present | `PASS` | candidate includes all required fairness controls |
 | metrics.combined.type | `PASS` | combined metrics are a mapping |
-| metrics.retry_block.type | `FAIL` | retry-block metrics must be a mapping |
-| metrics.combined | `FAIL` | combined metrics are missing fields: `baseline_sare:<variant>`, `kl_lss_single_expert:<variant>`, `kl_lss_token_dense:<variant>`, `recovered_token_dense:<variant>` |
-| metrics.retry_block | `FAIL` | retry-block metrics are missing fields: `<retry-block-mapping>` |
-| actual_sets.combined | `FAIL` | candidate combined lane/seed set `[]` does not match frozen `[('fresh', 23), ('fresh', 29), ('fresh', 31), ('fresh_extra', 37), ('fresh_extra', 41), ('fresh_extra', 43), ('fresh_final', 47), ('fresh_final', 53), ('fresh_final', 59), ('original', 7), ('original', 11), ('original', 19)]` |
-| actual_sets.retry_block | `FAIL` | candidate retry-block lane/seed set `[]` does not match frozen `[('fresh_final', 47), ('fresh_final', 53), ('fresh_final', 59)]` |
+| metrics.retry_block.type | `PASS` | retry-block metrics are a mapping |
+| metrics.combined | `PASS` | combined metrics expose every required variant field |
+| metrics.retry_block | `PASS` | retry-block metrics expose every required variant field |
+| actual_sets.combined | `PASS` | candidate combined lane/seed set matches the frozen benchmark |
+| actual_sets.retry_block | `PASS` | candidate retry-block lane/seed set matches the frozen benchmark |
 | artifacts.duplicates | `PASS` | artifact roles are unique |
-| artifacts | `FAIL` | candidate pack is missing required artifact roles: `candidate_summary_markdown`, `combined_report_csv`, `combined_report_markdown`, `retry_block_report_csv`, `retry_block_report_markdown` |
-| artifact_hash::candidate_metrics_json | `FAIL` | candidate artifact `outputs/reports/does_not_exist.json` is missing |
+| artifacts | `PASS` | candidate pack exposes all required artifact roles |
+| artifact_hash::candidate_metrics_json | `PASS` | candidate artifact `outputs/reports/hard_family_saturation_candidate_metrics.json` hash matches `3ae5f73f05fc570d149c0ab6545703283510c6ecdeb7507fd3b02356861856b8` |
+| artifact_hash::candidate_summary_markdown | `PASS` | candidate artifact `outputs/reports/hard_family_saturation_candidate_summary.md` hash matches `98eede059cabe12591c4bb9b61918fe7c339f378da158d6397b322ecfc95e405` |
+| artifact_hash::combined_report_csv | `PASS` | candidate artifact `outputs/reports/hard_family_saturation_candidate_combined_report.csv` hash matches `1e676f86903ad8b10901d01c1963bb2572966dc425c057e7194af639ff1e1481` |
+| artifact_hash::combined_report_markdown | `PASS` | candidate artifact `outputs/reports/hard_family_saturation_candidate_combined_report.md` hash matches `d4ee90580be5c466626674124862c8d5b0d858c11450dafdb3def68c649d2cee` |
+| artifact_hash::retry_block_report_csv | `PASS` | candidate artifact `outputs/reports/hard_family_saturation_candidate_retry_block_report.csv` hash matches `e63732861aeb3158e6ecec7824457f79aefa97015ab798a3da49f779399515ed` |
+| artifact_hash::retry_block_report_markdown | `PASS` | candidate artifact `outputs/reports/hard_family_saturation_candidate_retry_block_report.md` hash matches `a758621f40f4b4700fd506b33da7ae28caf5916851ddb15c72d102a72d8e2867` |
+| artifact_consistency::candidate_metrics_json | `PASS` | candidate pack matches the candidate_metrics_json artifact on task, evaluation, controls, metrics, and actual sets |
 | provenance.git_commit | `PASS` | candidate provenance git_commit `6e7277a8d8489cb74927ff7c7b3e072809491bab` is well formed |
 | provenance.git_dirty | `PASS` | candidate provenance git_dirty is `True` |
 
@@ -109,24 +115,30 @@
 | frozen_pack::artifact_hash::resume_scorecard | `PASS` | artifact `outputs/reports/lss_resume_qualification_scorecard.md` hash matches `843470eb82a25313b09cc796d3ef5f01f9efa6b02dfaf96aaa61e1bc80265028` |
 | candidate_pack::pack_type | `PASS` | pack type is `candidate_result_pack` |
 | candidate_pack::schema_version | `PASS` | candidate schema version `1` is recognized |
-| candidate_pack::candidate_name | `PASS` | candidate name is `incomplete_candidate_pack_example` |
+| candidate_pack::candidate_name | `PASS` | candidate name is `round6` |
 | candidate_pack::frozen_pack_reference.path | `PASS` | candidate references `outputs/reports/frozen_benchmark_pack.json` |
-| candidate_pack::frozen_pack_reference.sha256 | `PASS` | candidate references frozen-pack hash `73de8eb598cdc360336220fc1e51e23c2e93630958cee3f848e7cd5cf37cb4a1` |
+| candidate_pack::frozen_pack_reference.sha256 | `INCONCLUSIVE` | candidate references frozen-pack hash `0426cb3a034046523769ad6066188796a684ce2cc7553468ed8c00f1e73f0a3c` instead of current `73de8eb598cdc360336220fc1e51e23c2e93630958cee3f848e7cd5cf37cb4a1` |
 | candidate_pack::frozen_pack_reference.claim_id | `PASS` | candidate claim id matches `doorkey_frozen_claim` |
 | candidate_pack::task | `PASS` | candidate task matches `DoorKey` |
 | candidate_pack::evaluation | `PASS` | candidate uses the required DoorKey external-64 evaluation path |
 | candidate_pack::requested_claims | `PASS` | requested claim keys are well formed |
 | candidate_pack::controls_present.type | `PASS` | controls_present is a list of strings |
-| candidate_pack::controls_present | `INCONCLUSIVE` | candidate is missing required controls: `baseline_sare`, `kl_lss_single_expert`, `kl_lss_token_dense` |
+| candidate_pack::controls_present | `PASS` | candidate includes all required fairness controls |
 | candidate_pack::metrics.combined.type | `PASS` | combined metrics are a mapping |
-| candidate_pack::metrics.retry_block.type | `INCONCLUSIVE` | retry-block metrics must be a mapping |
-| candidate_pack::metrics.combined | `INCONCLUSIVE` | combined metrics are missing fields: `baseline_sare:<variant>`, `kl_lss_single_expert:<variant>`, `kl_lss_token_dense:<variant>`, `recovered_token_dense:<variant>` |
-| candidate_pack::metrics.retry_block | `INCONCLUSIVE` | retry-block metrics are missing fields: `<retry-block-mapping>` |
-| candidate_pack::actual_sets.combined | `INCONCLUSIVE` | candidate combined lane/seed set `[]` does not match frozen `[('fresh', 23), ('fresh', 29), ('fresh', 31), ('fresh_extra', 37), ('fresh_extra', 41), ('fresh_extra', 43), ('fresh_final', 47), ('fresh_final', 53), ('fresh_final', 59), ('original', 7), ('original', 11), ('original', 19)]` |
-| candidate_pack::actual_sets.retry_block | `INCONCLUSIVE` | candidate retry-block lane/seed set `[]` does not match frozen `[('fresh_final', 47), ('fresh_final', 53), ('fresh_final', 59)]` |
+| candidate_pack::metrics.retry_block.type | `PASS` | retry-block metrics are a mapping |
+| candidate_pack::metrics.combined | `PASS` | combined metrics expose every required variant field |
+| candidate_pack::metrics.retry_block | `PASS` | retry-block metrics expose every required variant field |
+| candidate_pack::actual_sets.combined | `PASS` | candidate combined lane/seed set matches the frozen benchmark |
+| candidate_pack::actual_sets.retry_block | `PASS` | candidate retry-block lane/seed set matches the frozen benchmark |
 | candidate_pack::artifacts.duplicates | `PASS` | artifact roles are unique |
-| candidate_pack::artifacts | `INCONCLUSIVE` | candidate pack is missing required artifact roles: `candidate_summary_markdown`, `combined_report_csv`, `combined_report_markdown`, `retry_block_report_csv`, `retry_block_report_markdown` |
-| candidate_pack::artifact_hash::candidate_metrics_json | `INCONCLUSIVE` | candidate artifact `outputs/reports/does_not_exist.json` is missing |
+| candidate_pack::artifacts | `PASS` | candidate pack exposes all required artifact roles |
+| candidate_pack::artifact_hash::candidate_metrics_json | `PASS` | candidate artifact `outputs/reports/hard_family_saturation_candidate_metrics.json` hash matches `3ae5f73f05fc570d149c0ab6545703283510c6ecdeb7507fd3b02356861856b8` |
+| candidate_pack::artifact_hash::candidate_summary_markdown | `PASS` | candidate artifact `outputs/reports/hard_family_saturation_candidate_summary.md` hash matches `98eede059cabe12591c4bb9b61918fe7c339f378da158d6397b322ecfc95e405` |
+| candidate_pack::artifact_hash::combined_report_csv | `PASS` | candidate artifact `outputs/reports/hard_family_saturation_candidate_combined_report.csv` hash matches `1e676f86903ad8b10901d01c1963bb2572966dc425c057e7194af639ff1e1481` |
+| candidate_pack::artifact_hash::combined_report_markdown | `PASS` | candidate artifact `outputs/reports/hard_family_saturation_candidate_combined_report.md` hash matches `d4ee90580be5c466626674124862c8d5b0d858c11450dafdb3def68c649d2cee` |
+| candidate_pack::artifact_hash::retry_block_report_csv | `PASS` | candidate artifact `outputs/reports/hard_family_saturation_candidate_retry_block_report.csv` hash matches `e63732861aeb3158e6ecec7824457f79aefa97015ab798a3da49f779399515ed` |
+| candidate_pack::artifact_hash::retry_block_report_markdown | `PASS` | candidate artifact `outputs/reports/hard_family_saturation_candidate_retry_block_report.md` hash matches `a758621f40f4b4700fd506b33da7ae28caf5916851ddb15c72d102a72d8e2867` |
+| candidate_pack::artifact_consistency::candidate_metrics_json | `PASS` | candidate pack matches the candidate_metrics_json artifact on task, evaluation, controls, metrics, and actual sets |
 | candidate_pack::provenance.git_commit | `PASS` | candidate provenance git_commit `6e7277a8d8489cb74927ff7c7b3e072809491bab` is well formed |
 | candidate_pack::provenance.git_dirty | `PASS` | candidate provenance git_dirty is `True` |
 

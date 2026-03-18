@@ -1,7 +1,7 @@
 # Frozen Claim Envelope
 
 - manifest: `configs/claims/doorkey_frozen_claim.yaml`
-- git commit: `21a890285831feb89c6de03ea16619239ff732e3`
+- git commit: `6e7277a8d8489cb74927ff7c7b3e072809491bab`
 - git dirty: `True`
 
 ## Allowed Claim

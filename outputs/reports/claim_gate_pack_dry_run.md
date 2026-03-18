@@ -8,7 +8,7 @@
 | Check | Result | Detail |
 | --- | --- | --- |
 | pack_type | `PASS` | pack type is `frozen_benchmark_pack` |
-| provenance.sealed_source_commit | `PASS` | sealed source commit `21a890285831feb89c6de03ea16619239ff732e3` is well formed |
+| provenance.sealed_source_commit | `PASS` | sealed source commit `6e7277a8d8489cb74927ff7c7b3e072809491bab` is well formed |
 | provenance.sealed_source_dirty | `PASS` | sealed source dirty flag is `True` |
 | manifest_hash | `PASS` | manifest hash matches `d10db1cff6f8cb55f434d3d11f0079d8f7e72ea45d2c46adc1c03909dece0bd6` |
 | schema_version | `PASS` | pack schema version `1` is recognized |
@@ -32,10 +32,10 @@
 | artifact_hash::forensic_round_audit | `PASS` | artifact `outputs/reports/lss_forensic_round_audit.md` hash matches `cb9cb1a8fee052cca94fb6bfb078e1a01f6e7e286585dbea9337a27fb2c4505b` |
 | artifact_hash::forensic_route_locality | `PASS` | artifact `outputs/reports/lss_forensic_route_locality.md` hash matches `30ae43a28d514956eebac92c9af81490e04f8c4e1e64b6240ce44f9f1baf026c` |
 | artifact_hash::freeze_hardening_decision_memo | `PASS` | artifact `outputs/reports/freeze_hardening_decision_memo.md` hash matches `da0fdc73426b31c2a042bc71cef4a30307364c7c3333d4a3867b0b0b843bc7a5` |
-| artifact_hash::frozen_claim_envelope | `PASS` | artifact `outputs/reports/frozen_claim_envelope.md` hash matches `566d777b34a002a98719e2e8f56d2e20c61868b15f6151fa52115125048e8dcf` |
+| artifact_hash::frozen_claim_envelope | `PASS` | artifact `outputs/reports/frozen_claim_envelope.md` hash matches `38c65d92a6ed2b8c82877c061c82d463b8d1b042b5333dd16a7df7db4ca4be9c` |
 | artifact_hash::frozen_validation_csv | `PASS` | artifact `outputs/reports/frozen_baseline_validation.csv` hash matches `3ec73864f9ab0d2cca0b115f9bee267ffd1e448231a15f70eebd8e3a7c03f162` |
-| artifact_hash::frozen_validation_json | `PASS` | artifact `outputs/reports/frozen_baseline_validation.json` hash matches `f8aa55424502e42c03bdd20eaa920ad24f4fdc20a4105bd92620e7b6a3498ba9` |
-| artifact_hash::frozen_validation_report | `PASS` | artifact `outputs/reports/frozen_baseline_validation.md` hash matches `f778f060dded331c9eec1e7b22dea04420698494249218a3020e466e42dd23df` |
+| artifact_hash::frozen_validation_json | `PASS` | artifact `outputs/reports/frozen_baseline_validation.json` hash matches `5d139efb63fcd804cf3272c95c8fc26fcd4d76d3eb1f1f7dd583ff22ed4a3ade` |
+| artifact_hash::frozen_validation_report | `PASS` | artifact `outputs/reports/frozen_baseline_validation.md` hash matches `df7663a2dd24866a011b5b69ca1098ce2dc7c3de583989b8df827a4e7544c919` |
 | artifact_hash::future_retry_template | `PASS` | artifact `outputs/reports/future_retry_template.md` hash matches `9ecaa4ac44e4ced4025bbb90959f3158dd3dbecab8b834b618f0e7270eb6e84e` |
 | artifact_hash::keycorridor_transfer_csv | `PASS` | artifact `outputs/reports/lss_keycorridor_transfer_report.csv` hash matches `fbc84ede909faa0a7170390451f09ada21a94e674d8b7ee1643effdb14468538` |
 | artifact_hash::keycorridor_transfer_report | `PASS` | artifact `outputs/reports/lss_keycorridor_transfer_report.md` hash matches `ee81af42d6e12ee8167c84a531db219627bdc8622913554c79d418be93ac93f9` |
@@ -50,7 +50,7 @@
 | schema_version | `PASS` | candidate schema version `1` is recognized |
 | candidate_name | `PASS` | candidate name is `current_frozen_candidate_pack` |
 | frozen_pack_reference.path | `PASS` | candidate references `outputs/reports/frozen_benchmark_pack.json` |
-| frozen_pack_reference.sha256 | `PASS` | candidate references frozen-pack hash `0426cb3a034046523769ad6066188796a684ce2cc7553468ed8c00f1e73f0a3c` |
+| frozen_pack_reference.sha256 | `PASS` | candidate references frozen-pack hash `73de8eb598cdc360336220fc1e51e23c2e93630958cee3f848e7cd5cf37cb4a1` |
 | frozen_pack_reference.claim_id | `PASS` | candidate claim id matches `doorkey_frozen_claim` |
 | task | `PASS` | candidate task matches `DoorKey` |
 | evaluation | `PASS` | candidate uses the required DoorKey external-64 evaluation path |
@@ -65,14 +65,14 @@
 | actual_sets.retry_block | `PASS` | candidate retry-block lane/seed set matches the frozen benchmark |
 | artifacts.duplicates | `PASS` | artifact roles are unique |
 | artifacts | `PASS` | candidate pack exposes all required artifact roles |
-| artifact_hash::candidate_metrics_json | `PASS` | candidate artifact `outputs/reports/frozen_baseline_validation.json` hash matches `f8aa55424502e42c03bdd20eaa920ad24f4fdc20a4105bd92620e7b6a3498ba9` |
-| artifact_hash::candidate_summary_markdown | `PASS` | candidate artifact `outputs/reports/frozen_baseline_validation.md` hash matches `f778f060dded331c9eec1e7b22dea04420698494249218a3020e466e42dd23df` |
+| artifact_hash::candidate_metrics_json | `PASS` | candidate artifact `outputs/reports/frozen_baseline_validation.json` hash matches `5d139efb63fcd804cf3272c95c8fc26fcd4d76d3eb1f1f7dd583ff22ed4a3ade` |
+| artifact_hash::candidate_summary_markdown | `PASS` | candidate artifact `outputs/reports/frozen_baseline_validation.md` hash matches `df7663a2dd24866a011b5b69ca1098ce2dc7c3de583989b8df827a4e7544c919` |
 | artifact_hash::combined_report_csv | `PASS` | candidate artifact `outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.csv` hash matches `f0c83d833ef9bfe3fa9e2db97f10e5bc42f6c1ab42805c14b21aa53ca0744b3b` |
 | artifact_hash::combined_report_markdown | `PASS` | candidate artifact `outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.md` hash matches `e0cdd2b799538aad926156a19bdf88da19cb8c62a091ab16799a3e94cc87e19d` |
 | artifact_hash::retry_block_report_csv | `PASS` | candidate artifact `outputs/reports/lss_final_block_single_expert_control_report.csv` hash matches `8a7c5491529286337be0a727d2a71649ca4804b0e33efe8eba497354f46f7f2c` |
 | artifact_hash::retry_block_report_markdown | `PASS` | candidate artifact `outputs/reports/lss_final_block_single_expert_control_report.md` hash matches `084c6b96a5dfac5536af36009fe08664a42b21a61b230a3a03aa5e48a772812f` |
 | artifact_consistency::candidate_metrics_json | `PASS` | candidate pack matches the candidate_metrics_json artifact on task, evaluation, controls, metrics, and actual sets |
-| provenance.git_commit | `PASS` | candidate provenance git_commit `21a890285831feb89c6de03ea16619239ff732e3` is well formed |
+| provenance.git_commit | `PASS` | candidate provenance git_commit `6e7277a8d8489cb74927ff7c7b3e072809491bab` is well formed |
 | provenance.git_dirty | `PASS` | candidate provenance git_dirty is `True` |
 
 ## Claim Gate Checks
