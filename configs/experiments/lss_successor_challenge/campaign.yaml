@@ -1,0 +1,145 @@
+schema_version: 1
+name: lss_successor_challenge
+frozen_pack: outputs/reports/frozen_benchmark_pack.json
+current_canonical_pack: outputs/reports/hard_family_saturation_successor_pack.json
+current_canonical_name: round6
+base_candidate_template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+
+evaluation:
+  episodes: 64
+  task: DoorKey
+  path_key: external_policy_diagnostics
+
+base_configs:
+  flat_dense: configs/experiments/minigrid_doorkey_flat_dense_ent1e3.yaml
+  token_dense: configs/experiments/minigrid_doorkey_token_dense_ent1e3.yaml
+  single_expert: configs/experiments/minigrid_doorkey_single_expert_ent1e3.yaml
+  sare: configs/experiments/minigrid_doorkey_sare_ent1e3.yaml
+
+students:
+  sare:
+    config_name: sare_ent1e3.yaml
+    run_name: sare_ent1e3
+    output_label: kl_lss_sare
+  token_dense:
+    config_name: token_dense_ent1e3.yaml
+    run_name: token_dense_ent1e3
+    output_label: kl_lss_token_dense
+  single_expert:
+    config_name: single_expert_ent1e3.yaml
+    run_name: single_expert_ent1e3
+    output_label: kl_lss_single_expert
+
+blocks:
+  hard_dev:
+    - lane: post_pass_b
+      seeds: [73, 79, 83]
+    - lane: post_pass_c
+      seeds: [89, 97, 101]
+    - lane: post_pass_f
+      seeds: [137, 139, 149]
+  hard_holdout:
+    - lane: fresh_final
+      seeds: [47, 53, 59]
+    - lane: post_pass_e
+      seeds: [113, 127, 131]
+  healthy:
+    - lane: fresh
+      seeds: [23, 29, 31]
+
+lane_roots:
+  post_pass_b:
+    teacher_root: outputs/experiments/lss_post_pass_campaign/stage1/post_pass_b
+    sare_student_root: outputs/experiments/lss_post_pass_campaign/stage1/post_pass_b
+    token_student_root: outputs/experiments/lss_post_pass_campaign/stage1/post_pass_b
+    single_expert_root: outputs/experiments/lss_post_pass_campaign/stage1/post_pass_b
+  post_pass_c:
+    teacher_root: outputs/experiments/lss_canonization_campaign/stage2_rerun/post_pass_c
+    sare_student_root: outputs/experiments/lss_canonization_campaign/stage2_rerun/post_pass_c
+    token_student_root: outputs/experiments/lss_canonization_campaign/stage2_rerun/post_pass_c
+    single_expert_root: outputs/experiments/lss_canonization_campaign/stage2_rerun/post_pass_c
+  post_pass_f:
+    teacher_root: outputs/experiments/lss_hard_family_saturation/stage0_blocks/post_pass_f
+    sare_student_root: outputs/experiments/lss_hard_family_saturation/stage0_blocks/post_pass_f
+    token_student_root: outputs/experiments/lss_hard_family_saturation/stage0_blocks/post_pass_f
+    single_expert_root: outputs/experiments/lss_hard_family_saturation/stage0_blocks/post_pass_f
+  fresh_final:
+    teacher_root: outputs/experiments/lss_multi_expert_hardening/final_fresh_block
+    sare_student_root: outputs/experiments/lss_multi_expert_hardening/final_fresh_block
+    token_student_root: outputs/experiments/lss_multi_expert_hardening/final_fresh_block
+    single_expert_root: outputs/experiments/lss_frozen_claim/final_block_single_expert_controls
+  post_pass_e:
+    teacher_root: outputs/experiments/lss_hard_family_saturation/stage0_blocks/post_pass_e
+    sare_student_root: outputs/experiments/lss_hard_family_saturation/stage0_blocks/post_pass_e
+    token_student_root: outputs/experiments/lss_hard_family_saturation/stage0_blocks/post_pass_e
+    single_expert_root: outputs/experiments/lss_hard_family_saturation/stage0_blocks/post_pass_e
+  fresh:
+    teacher_root: outputs/experiments/lss_claim_hardening/additional_seeds
+    sare_student_root: outputs/experiments/lss_claim_hardening/additional_seeds
+    token_student_root: outputs/experiments/lss_claim_hardening/additional_seeds
+    single_expert_root: outputs/experiments/lss_multi_expert_hardening/fresh_single_expert_controls
+
+current_round6_roots:
+  post_pass_b: outputs/experiments/lss_hard_family_saturation/stage2_fairness/round6/post_pass_b
+  post_pass_c: outputs/experiments/lss_hard_family_saturation/stage2_fairness/round6/post_pass_c
+  post_pass_f: outputs/experiments/lss_hard_family_saturation/stage2_fairness/round6/post_pass_f
+  fresh_final: outputs/experiments/lss_hard_family_saturation/stage3_holdout/round6/fresh_final
+  post_pass_e: outputs/experiments/lss_hard_family_saturation/stage3_holdout/round6/post_pass_e
+  fresh: outputs/experiments/lss_hard_family_saturation/stage4_antiregression/round6/fresh
+
+candidates:
+  round7:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    description: one-more-round carryover challenger
+    overrides:
+      loop:
+        rounds: 7
+  round8:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    description: two-more-round exploratory challenger
+    overrides:
+      loop:
+        rounds: 8
+
+selection:
+  equality_eps: 0.0001
+  route_drop_min: 0.50
+  route_randomization_drop_min: 0.25
+
+route_cases:
+  hard:
+    lane: fresh_final
+    seed: 53
+  healthy:
+    lane: fresh
+    seed: 23
+
+stability_cases:
+  hard:
+    lane: fresh_final
+    seed: 53
+  healthy:
+    lane: fresh
+    seed: 23
+
+stage_roots:
+  stage1_screening: outputs/experiments/lss_successor_challenge/stage1_screening
+  stage2_fairness: outputs/experiments/lss_successor_challenge/stage2_fairness
+  stage3_route: outputs/experiments/lss_successor_challenge/stage3_route
+
+reports:
+  registration: outputs/reports/successor_challenge_registration.md
+  stage1_report: outputs/reports/successor_challenge_stage1_screening.md
+  stage1_csv: outputs/reports/successor_challenge_stage1_screening.csv
+  stage1_json: outputs/reports/successor_challenge_stage1_screening.json
+  stage2_report: outputs/reports/successor_challenge_stage2_fairness.md
+  stage2_csv: outputs/reports/successor_challenge_stage2_fairness.csv
+  stage2_json: outputs/reports/successor_challenge_stage2_fairness.json
+  route_raw_hard_markdown: outputs/reports/successor_challenge_stage3_route_hard_raw.md
+  route_raw_hard_csv: outputs/reports/successor_challenge_stage3_route_hard_raw.csv
+  route_raw_healthy_markdown: outputs/reports/successor_challenge_stage3_route_healthy_raw.md
+  route_raw_healthy_csv: outputs/reports/successor_challenge_stage3_route_healthy_raw.csv
+  stage3_report: outputs/reports/successor_challenge_stage3_validation.md
+  stage3_csv: outputs/reports/successor_challenge_stage3_validation.csv
+  stage3_json: outputs/reports/successor_challenge_stage3_validation.json
+  decision_memo: outputs/reports/successor_challenge_decision_memo.md

@@ -1,7 +1,7 @@
 # Frozen Baseline Validation
 
 - manifest: `configs/claims/doorkey_frozen_claim.yaml`
-- git commit: `adb5d321cb47166796fd17e87efee8d6cb027c64`
+- git commit: `21a890285831feb89c6de03ea16619239ff732e3`
 - git dirty: `True`
 
 ## Frozen Summary

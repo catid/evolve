@@ -1,0 +1,220 @@
+{
+  "actual_sets": {
+    "combined_lane_seeds": [
+      [
+        "original",
+        7
+      ],
+      [
+        "original",
+        11
+      ],
+      [
+        "original",
+        19
+      ],
+      [
+        "fresh",
+        23
+      ],
+      [
+        "fresh",
+        29
+      ],
+      [
+        "fresh",
+        31
+      ],
+      [
+        "fresh_extra",
+        37
+      ],
+      [
+        "fresh_extra",
+        41
+      ],
+      [
+        "fresh_extra",
+        43
+      ],
+      [
+        "fresh_final",
+        47
+      ],
+      [
+        "fresh_final",
+        53
+      ],
+      [
+        "fresh_final",
+        59
+      ]
+    ],
+    "retry_block_lane_seeds": [
+      [
+        "fresh_final",
+        47
+      ],
+      [
+        "fresh_final",
+        53
+      ],
+      [
+        "fresh_final",
+        59
+      ]
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "outputs/reports/hard_family_saturation_candidate_summary.md",
+      "role": "candidate_summary_markdown",
+      "sha256": "98eede059cabe12591c4bb9b61918fe7c339f378da158d6397b322ecfc95e405",
+      "size_bytes": 544
+    },
+    {
+      "path": "outputs/reports/hard_family_saturation_candidate_metrics.json",
+      "role": "candidate_metrics_json",
+      "sha256": "3ae5f73f05fc570d149c0ab6545703283510c6ecdeb7507fd3b02356861856b8",
+      "size_bytes": 3321
+    },
+    {
+      "path": "outputs/reports/hard_family_saturation_candidate_combined_report.md",
+      "role": "combined_report_markdown",
+      "sha256": "d4ee90580be5c466626674124862c8d5b0d858c11450dafdb3def68c649d2cee",
+      "size_bytes": 3714
+    },
+    {
+      "path": "outputs/reports/hard_family_saturation_candidate_combined_report.csv",
+      "role": "combined_report_csv",
+      "sha256": "1e676f86903ad8b10901d01c1963bb2572966dc425c057e7194af639ff1e1481",
+      "size_bytes": 8055
+    },
+    {
+      "path": "outputs/reports/hard_family_saturation_candidate_retry_block_report.md",
+      "role": "retry_block_report_markdown",
+      "sha256": "a758621f40f4b4700fd506b33da7ae28caf5916851ddb15c72d102a72d8e2867",
+      "size_bytes": 705
+    },
+    {
+      "path": "outputs/reports/hard_family_saturation_candidate_retry_block_report.csv",
+      "role": "retry_block_report_csv",
+      "sha256": "e63732861aeb3158e6ecec7824457f79aefa97015ab798a3da49f779399515ed",
+      "size_bytes": 2095
+    }
+  ],
+  "candidate_name": "round6",
+  "controls_present": [
+    "recovered_token_dense",
+    "kl_lss_token_dense",
+    "kl_lss_single_expert",
+    "baseline_sare",
+    "kl_lss_sare"
+  ],
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "external_policy_diagnostics",
+    "task": "DoorKey"
+  },
+  "frozen_pack_reference": {
+    "claim_id": "doorkey_frozen_claim",
+    "path": "outputs/reports/frozen_benchmark_pack.json",
+    "sha256": "0426cb3a034046523769ad6066188796a684ce2cc7553468ed8c00f1e73f0a3c"
+  },
+  "metrics": {
+    "combined": {
+      "baseline_sare": {
+        "complete_seed_failures": 12.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 12.0
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 0.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 12.0
+      },
+      "kl_lss_single_expert": {
+        "complete_seed_failures": 1.0,
+        "max": 1.0,
+        "mean": 0.9166666666666666,
+        "min": 0.0,
+        "seed_count": 12.0
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 0.0,
+        "max": 1.0,
+        "mean": 0.9140625,
+        "min": 0.46875,
+        "seed_count": 12.0
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 5.0,
+        "max": 1.0,
+        "mean": 0.55859375,
+        "min": 0.0,
+        "seed_count": 12.0
+      }
+    },
+    "retry_block": {
+      "baseline_sare": {
+        "complete_seed_failures": 3.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3.0
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 0.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3.0
+      },
+      "kl_lss_single_expert": {
+        "complete_seed_failures": 0.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3.0
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 0.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3.0
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 0.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3.0
+      }
+    }
+  },
+  "pack_type": "candidate_result_pack",
+  "provenance": {
+    "git_commit": "21a890285831feb89c6de03ea16619239ff732e3",
+    "git_dirty": true,
+    "notes": "hard-family successor candidate `round6`"
+  },
+  "qualification": {
+    "hard_family_dev_sare_mean": 1.0,
+    "hard_family_dev_token_mean": 1.0,
+    "hard_family_holdout_sare_mean": 1.0,
+    "hard_family_holdout_token_mean": 1.0,
+    "healthy_block_sare_mean": 1.0,
+    "route_validation_pass": true,
+    "stability_pass": true
+  },
+  "requested_claims": [
+    "bounded_teacher_guided_doorkey_sare"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

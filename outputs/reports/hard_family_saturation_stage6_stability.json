@@ -1,0 +1,91 @@
+{
+  "best_candidate": "round6",
+  "stability_summaries": [
+    {
+      "case_kind": "dev",
+      "classification": "stable_plateau",
+      "lane": "post_pass_f",
+      "round_successes": [
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seed": 137,
+      "source": "candidate"
+    },
+    {
+      "case_kind": "dev",
+      "classification": "stable_plateau",
+      "lane": "post_pass_f",
+      "round_successes": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "seed": 137,
+      "source": "baseline"
+    },
+    {
+      "case_kind": "holdout",
+      "classification": "stable_plateau",
+      "lane": "fresh_final",
+      "round_successes": [
+        0.0,
+        0.0,
+        0.0,
+        0.453125,
+        1.0,
+        1.0
+      ],
+      "seed": 47,
+      "source": "candidate"
+    },
+    {
+      "case_kind": "holdout",
+      "classification": "narrow_spike",
+      "lane": "fresh_final",
+      "round_successes": [
+        0.0,
+        0.0,
+        0.0,
+        0.453125
+      ],
+      "seed": 47,
+      "source": "baseline"
+    },
+    {
+      "case_kind": "healthy",
+      "classification": "stable_plateau",
+      "lane": "post_pass_a",
+      "round_successes": [
+        0.0,
+        0.5625,
+        0.578125,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seed": 67,
+      "source": "candidate"
+    },
+    {
+      "case_kind": "healthy",
+      "classification": "narrow_spike",
+      "lane": "post_pass_a",
+      "round_successes": [
+        0.0,
+        0.5625,
+        0.578125,
+        1.0
+      ],
+      "seed": 67,
+      "source": "baseline"
+    }
+  ],
+  "stage": "stage7",
+  "stage7_pass": true
+}

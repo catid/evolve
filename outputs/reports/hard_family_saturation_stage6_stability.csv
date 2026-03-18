@@ -1,0 +1,7 @@
+case_kind,classification,lane,round_successes,seed,source
+dev,stable_plateau,post_pass_f,"[0.0, 0.0, 1.0, 1.0, 1.0, 1.0]",137,candidate
+dev,stable_plateau,post_pass_f,"[0.0, 0.0, 1.0, 1.0]",137,baseline
+holdout,stable_plateau,fresh_final,"[0.0, 0.0, 0.0, 0.453125, 1.0, 1.0]",47,candidate
+holdout,narrow_spike,fresh_final,"[0.0, 0.0, 0.0, 0.453125]",47,baseline
+healthy,stable_plateau,post_pass_a,"[0.0, 0.5625, 0.578125, 1.0, 1.0, 1.0]",67,candidate
+healthy,narrow_spike,post_pass_a,"[0.0, 0.5625, 0.578125, 1.0]",67,baseline

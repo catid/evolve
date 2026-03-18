@@ -1,0 +1,93 @@
+{
+  "challenger_stability": {
+    "hard": {
+      "best_round_greedy_success": 1.0,
+      "best_round_index": 5,
+      "curve": [
+        0.0,
+        0.0,
+        0.515625,
+        0.515625,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "final_greedy_success": 1.0,
+      "run_dir": "outputs/experiments/lss_successor_challenge/stage1_screening/round7/fresh_final/seed_53/kl_lss_sare",
+      "stability_class": "stable_plateau"
+    },
+    "healthy": {
+      "best_round_greedy_success": 1.0,
+      "best_round_index": 4,
+      "curve": [
+        0.0,
+        0.0,
+        0.59375,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "final_greedy_success": 1.0,
+      "run_dir": "outputs/experiments/lss_successor_challenge/stage1_screening/round7/fresh/seed_23/kl_lss_sare",
+      "stability_class": "stable_plateau"
+    }
+  },
+  "hard_route": {
+    "baseline_active_compute": 0.5,
+    "baseline_route_entropy": 1.3787251313527424,
+    "baseline_success": 1.0,
+    "fixed_router_drop": 1.0,
+    "lane": "fresh_final",
+    "route_randomization_drop": 1.0,
+    "seed": 53,
+    "worst_ablation_drop": 1.0,
+    "worst_ablation_expert": "0"
+  },
+  "healthy_route": {
+    "baseline_active_compute": 0.5,
+    "baseline_route_entropy": 1.3799423561209725,
+    "baseline_success": 1.0,
+    "fixed_router_drop": 1.0,
+    "lane": "fresh",
+    "route_randomization_drop": 1.0,
+    "seed": 23,
+    "worst_ablation_drop": 1.0,
+    "worst_ablation_expert": "0"
+  },
+  "incumbent_stability": {
+    "hard": {
+      "best_round_greedy_success": 1.0,
+      "best_round_index": 5,
+      "curve": [
+        0.0,
+        0.0,
+        0.515625,
+        0.515625,
+        1.0,
+        1.0
+      ],
+      "final_greedy_success": 1.0,
+      "run_dir": "outputs/experiments/lss_hard_family_saturation/stage3_holdout/round6/fresh_final/seed_53/kl_lss_sare",
+      "stability_class": "stable_plateau"
+    },
+    "healthy": {
+      "best_round_greedy_success": 1.0,
+      "best_round_index": 4,
+      "curve": [
+        0.0,
+        0.0,
+        0.59375,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "final_greedy_success": 1.0,
+      "run_dir": "outputs/experiments/lss_hard_family_saturation/stage4_antiregression/round6/fresh/seed_23/kl_lss_sare",
+      "stability_class": "stable_plateau"
+    }
+  },
+  "route_pass": true,
+  "selected_challenger": "round7",
+  "stability_pass": true
+}

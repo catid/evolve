@@ -6,14 +6,13 @@
 - recovered `token_dense` (`ppo.ent_coef=0.001`) remains the canonical tokenized control.
 - PPO-only `SARE` still loses the fair greedy DoorKey comparison.
 - The frozen benchmark pack remains the baseline comparison unit for DoorKey thaw work.
-- The first staged candidate that clears that baseline now exists inside the same teacher-guided `KL` learner-state family:
-  - candidate: `post_unlock_weighted`
+- The current within-envelope successor that now clears the canonization bar exists inside the same teacher-guided `KL` learner-state family:
+  - candidate: `round6`
+  - lineage: successor to `post_unlock_weighted`
   - scope: DoorKey only
   - evaluation: external `64`-episode `policy_diagnostics`
   - result: `PASS: thaw consideration allowed`
-  - post-pass qualification result: `remains thaw-qualified but not canonical`
-  - hard-block canonization result: `remains thaw-qualified but not canonical`
-  - long hard-family qualification result: `remains thaw-qualified but not canonical`
+  - saturation-program result: `qualified for canonization within DoorKey`
 - This is still not a PPO-only, specifically multi-expert, cross-task, or KeyCorridor claim.
 
 ## Frozen Benchmark Baseline
@@ -73,6 +72,16 @@ Future thaw discussion must use the pack-based gate, not ad hoc report compariso
 - hard-family dev screening: [hard_family_stage2_dev_screening.md](outputs/reports/hard_family_stage2_dev_screening.md)
 - hard-family dev fairness: [hard_family_stage3_fairness.md](outputs/reports/hard_family_stage3_fairness.md)
 - hard-family decision: [hard_family_canonization_decision_memo.md](outputs/reports/hard_family_canonization_decision_memo.md)
+- saturation definition: [hard_family_saturation_definition.md](outputs/reports/hard_family_saturation_definition.md)
+- saturation screening: [hard_family_saturation_stage1_screening.md](outputs/reports/hard_family_saturation_stage1_screening.md)
+- saturation fairness: [hard_family_saturation_stage2_fairness.md](outputs/reports/hard_family_saturation_stage2_fairness.md)
+- saturation holdout: [hard_family_saturation_stage3_holdout.md](outputs/reports/hard_family_saturation_stage3_holdout.md)
+- saturation anti-regression: [hard_family_saturation_stage4_antiregression.md](outputs/reports/hard_family_saturation_stage4_antiregression.md)
+- saturation route validation: [hard_family_saturation_stage5_route_validation.md](outputs/reports/hard_family_saturation_stage5_route_validation.md)
+- saturation stability: [hard_family_saturation_stage6_stability.md](outputs/reports/hard_family_saturation_stage6_stability.md)
+- saturation successor pack: [hard_family_saturation_successor_pack.md](outputs/reports/hard_family_saturation_successor_pack.md)
+- saturation gate result: [hard_family_saturation_gate_report.md](outputs/reports/hard_family_saturation_gate_report.md)
+- saturation decision: [hard_family_saturation_decision_memo.md](outputs/reports/hard_family_saturation_decision_memo.md)
 - malformed candidate example: [claim_gate_pack_inconclusive.md](outputs/reports/claim_gate_pack_inconclusive.md)
 - adversarial conformance corpus: [claim_gate_corpus_report.md](outputs/reports/claim_gate_corpus_report.md)
 - adversarial conformance result: [claim_gate_conformance_report.md](outputs/reports/claim_gate_conformance_report.md)
@@ -143,12 +152,20 @@ The staged DoorKey-only campaign produced the first within-envelope thaw-qualifi
   - `post_unlock_weighted_round5`: dev KL learner-state `SARE` `0.8464` vs matched `token_dense` `0.9453`
   - `post_unlock_weighted_disagreement075`: dev KL learner-state `SARE` `0.6875` vs matched `token_dense` `0.8333`
   so the program stopped at Stage 3 before holdout testing and again left the accepted state `thaw-qualified but not canonical`. See [hard_family_definition.md](outputs/reports/hard_family_definition.md), [hard_family_stage2_dev_screening.md](outputs/reports/hard_family_stage2_dev_screening.md), [hard_family_stage3_fairness.md](outputs/reports/hard_family_stage3_fairness.md), and [hard_family_canonization_decision_memo.md](outputs/reports/hard_family_canonization_decision_memo.md).
+- The saturation-scale hard-family program finally turned that boundary into a canonization result. It expanded the hard family to three development blocks and two holdout blocks, screened twenty bounded candidates across ten mechanism directions, and advanced only `round6` through the full verification lane:
+  - hard-family dev KL learner-state `SARE`: `1.0000` vs matched `token_dense` `1.0000`
+  - hard-family holdout KL learner-state `SARE`: `1.0000` vs matched `token_dense` `1.0000`
+  - healthy-block KL learner-state `SARE`: `1.0000` vs matched `token_dense` `0.9141`
+  - route validation: `pass`
+  - stability: `stable_plateau` on the selected dev, holdout, and healthy probes
+  - successor pack gate verdict: `PASS: thaw consideration allowed`
+  so the accepted status is now `qualified for canonization within DoorKey`. See [hard_family_saturation_definition.md](outputs/reports/hard_family_saturation_definition.md), [hard_family_saturation_stage1_screening.md](outputs/reports/hard_family_saturation_stage1_screening.md), [hard_family_saturation_stage2_fairness.md](outputs/reports/hard_family_saturation_stage2_fairness.md), [hard_family_saturation_stage3_holdout.md](outputs/reports/hard_family_saturation_stage3_holdout.md), [hard_family_saturation_stage4_antiregression.md](outputs/reports/hard_family_saturation_stage4_antiregression.md), [hard_family_saturation_stage5_route_validation.md](outputs/reports/hard_family_saturation_stage5_route_validation.md), [hard_family_saturation_stage6_stability.md](outputs/reports/hard_family_saturation_stage6_stability.md), [hard_family_saturation_gate_report.md](outputs/reports/hard_family_saturation_gate_report.md), and [hard_family_saturation_decision_memo.md](outputs/reports/hard_family_saturation_decision_memo.md).
 
 The right current wording is now:
 
-- thaw consideration is allowed within DoorKey only
-- `post_unlock_weighted` remains thaw-qualified but not canonical
-- the hard-block canonization campaign and the later hard-family dev/holdout program both strengthen that same conclusion rather than changing it
+- `round6` is qualified for canonization within DoorKey only
+- `post_unlock_weighted` remains the earlier thaw-qualified predecessor that opened the lane, not the final canonical successor itself
+- the hard-block canonization campaign and the earlier hard-family dev/holdout program remain negative waypoints inside that longer lineage, not the final status
 - still teacher-guided only
 - still KL learner-state only
 - still external `64`-episode evaluation only
@@ -276,7 +293,7 @@ All three KeyCorridor seeds stayed flat:
 
 ## Recommendation
 
-- Allow thaw consideration within DoorKey only for the gate-cleared `post_unlock_weighted` candidate pack.
+- Qualify the `round6` successor for canonization within DoorKey only.
 - Keep the scope explicit:
   - teacher-guided extraction only
   - KL learner-state only
@@ -290,5 +307,5 @@ All three KeyCorridor seeds stayed flat:
 - Future work must still use the manifest and automated gate rather than narrative override:
   - `configs/claims/doorkey_frozen_claim.yaml`
   - [frozen_benchmark_pack.json](outputs/reports/frozen_benchmark_pack.json)
-  - [long_campaign_candidate_pack.json](outputs/reports/long_campaign_candidate_pack.json)
-  - [long_campaign_gate_report.md](outputs/reports/long_campaign_gate_report.md)
+  - [hard_family_saturation_successor_pack.json](outputs/reports/hard_family_saturation_successor_pack.json)
+  - [hard_family_saturation_gate_report.md](outputs/reports/hard_family_saturation_gate_report.md)

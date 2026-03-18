@@ -3,7 +3,7 @@
 - pack json: `outputs/reports/frozen_benchmark_pack.json`
 - claim id: `doorkey_frozen_claim`
 - frozen status: `frozen`
-- sealed source commit: `adb5d321cb47166796fd17e87efee8d6cb027c64`
+- sealed source commit: `21a890285831feb89c6de03ea16619239ff732e3`
 - sealed source dirty: `True`
 - schema version: `1`
 - manifest: `configs/claims/doorkey_frozen_claim.yaml`
@@ -27,11 +27,11 @@
 
 | Key | Path | SHA256 | Size (bytes) |
 | --- | --- | --- | ---: |
-| `frozen_claim_envelope` | `outputs/reports/frozen_claim_envelope.md` | `adbc2d922d06bd54a1649c8272fba7756765cf0290de0d6944afe6db8ab7d31e` | 1083 |
+| `frozen_claim_envelope` | `outputs/reports/frozen_claim_envelope.md` | `566d777b34a002a98719e2e8f56d2e20c61868b15f6151fa52115125048e8dcf` | 1083 |
 | `manifest_report` | `outputs/reports/frozen_claim_manifest_report.md` | `a47eb42e06e4c8ba02e773c099e7a07917a071d2d0511c7aa325f2cc871947b6` | 3157 |
-| `frozen_validation_report` | `outputs/reports/frozen_baseline_validation.md` | `28e91e0173616dea787564cea650e52a0ad037391f76fd9927fb9d7fc858a0b7` | 3115 |
+| `frozen_validation_report` | `outputs/reports/frozen_baseline_validation.md` | `f778f060dded331c9eec1e7b22dea04420698494249218a3020e466e42dd23df` | 3115 |
 | `frozen_validation_csv` | `outputs/reports/frozen_baseline_validation.csv` | `3ec73864f9ab0d2cca0b115f9bee267ffd1e448231a15f70eebd8e3a7c03f162` | 2046 |
-| `frozen_validation_json` | `outputs/reports/frozen_baseline_validation.json` | `114c4479135dc4ee64adf4c8443c0aebfde65a5c38cbf9f42150952872198a9c` | 9679 |
+| `frozen_validation_json` | `outputs/reports/frozen_baseline_validation.json` | `f8aa55424502e42c03bdd20eaa920ad24f4fdc20a4105bd92620e7b6a3498ba9` | 9679 |
 | `claim_gate_dry_run` | `outputs/reports/claim_gate_dry_run.md` | `c38ee9a1df0197f405ed6aa16ad90a27f4d6b8f3d9f960588c0e3bbd70cf8dd7` | 1700 |
 | `claim_gate_dry_run_json` | `outputs/reports/claim_gate_dry_run.json` | `152056ccf996def48d342cfb6f98cdea2e30eae915a3333fdcc1721d8db7f41d` | 2556 |
 | `claim_ledger` | `outputs/reports/claim_ledger.md` | `4145f1f38643a7742410eeedf48713123a10cf225eef0cf4dfe80f8e95b9054e` | 7761 |

@@ -172,6 +172,15 @@ Key scripts:
 ./scripts/run_lss_hard_family_stage7.sh
 ./scripts/run_lss_hard_family_stage8.sh
 ./scripts/run_lss_hard_family_finalize.sh
+./scripts/run_lss_hard_family_saturation_register.sh
+./scripts/run_lss_hard_family_saturation_stage1.sh
+./scripts/run_lss_hard_family_saturation_stage2.sh
+./scripts/run_lss_hard_family_saturation_stage3.sh
+./scripts/run_lss_hard_family_saturation_stage4.sh
+./scripts/run_lss_hard_family_saturation_stage5.sh
+./scripts/run_lss_hard_family_saturation_stage6.sh
+./scripts/run_lss_hard_family_saturation_stage7.sh
+./scripts/run_lss_hard_family_saturation_finalize.sh
 ```
 
 Resume a run from a checkpoint:
@@ -226,14 +235,20 @@ Ad hoc markdown summaries are not enough for thaw consideration. Future DoorKey 
 bash ./scripts/run_claim_gate_conformance.sh
 ```
 
-Historical trust now also includes replaying the gate against the repo's real claim history:
+Historical trust now also includes replaying the gate against the repo's real claim history and the later saturation-scale hard-family canonization result:
 
-- the longer hard-family qualification program is the current canonization-boundary test for the thaw-qualified DoorKey candidate lineage:
+- earlier hard-family boundary test:
   - [hard_family_definition.md](outputs/reports/hard_family_definition.md)
   - [hard_family_campaign_registration.md](outputs/reports/hard_family_campaign_registration.md)
   - [hard_family_stage2_dev_screening.md](outputs/reports/hard_family_stage2_dev_screening.md)
   - [hard_family_stage3_fairness.md](outputs/reports/hard_family_stage3_fairness.md)
   - [hard_family_canonization_decision_memo.md](outputs/reports/hard_family_canonization_decision_memo.md)
+- current saturation-scale canonization result:
+  - [hard_family_saturation_definition.md](outputs/reports/hard_family_saturation_definition.md)
+  - [hard_family_saturation_stage1_screening.md](outputs/reports/hard_family_saturation_stage1_screening.md)
+  - [hard_family_saturation_stage3_holdout.md](outputs/reports/hard_family_saturation_stage3_holdout.md)
+  - [hard_family_saturation_gate_report.md](outputs/reports/hard_family_saturation_gate_report.md)
+  - [hard_family_saturation_decision_memo.md](outputs/reports/hard_family_saturation_decision_memo.md)
 
 ```bash
 bash ./scripts/run_claim_history_replay.sh
@@ -243,33 +258,36 @@ That replay is the check that the current sealed gate still agrees with the acce
 
 ## Current DoorKey Result
 
-The current repo conclusion is still control-first, and the frozen benchmark pack remains the baseline comparison unit. Inside that baseline, the first staged DoorKey thaw-qualified candidate now exists, but it is still not the canonical benchmark replacement.
+The current repo conclusion is still control-first, and the frozen benchmark pack remains the baseline comparison unit for pack-based comparisons. Inside that baseline, the saturation-scale hard-family program produced a successor candidate that is now qualified for canonization within DoorKey only.
 
 - `flat_dense` remains the best verified greedy DoorKey control.
 - `token_dense` with `ppo.ent_coef=0.001` remains the canonical recovered tokenized control.
 - PPO-only `SARE` is still greedy-negative.
-- `post_unlock_weighted` remains thaw-qualified within DoorKey only after the post-pass qualification campaign:
+- `post_unlock_weighted` remains the first thaw-qualified DoorKey candidate:
   - it keeps a gate `PASS` against the frozen benchmark pack
   - it survives expanded fairness, route validation, and longitudinal stability
-  - it does not become canonical because it still trails matched `token_dense` on the harder fresh block `post_pass_b`
-- The hard-block canonization campaign reinforces that same boundary:
-  - bounded hard-block fixes improved the `post_pass_b` plus `post_pass_c` family relative to the current candidate
-  - but none made KL learner-state `SARE` stop trailing matched KL learner-state `token_dense` on the hard-block family
-  - so the candidate still remains thaw-qualified but not canonical
+  - it created the within-envelope successor line, but it did not itself become canonical because `post_pass_b` stayed token-dense-led
+- The saturation-scale hard-family program then promoted the `round6` successor inside that same family:
+  - hard-family dev KL learner-state `SARE`: `1.0000` versus matched `token_dense` `1.0000`
+  - hard-family holdout KL learner-state `SARE`: `1.0000` versus matched `token_dense` `1.0000`
+  - frozen-comparable combined KL learner-state `SARE`: `1.0000`
+  - route validation: `pass`
+  - stability: `stable_plateau` on dev, holdout, and healthy probes
+  - decision: `qualified for canonization within DoorKey`
 - Offline teacher distillation and other bounded recovery families remain negative.
 - The routed result that survives is still teacher-guided and bounded:
   - teacher-logit KL learner-state supervision for `SARE`
   - DoorKey only
   - external `64`-episode evaluation only
-- The long-horizon staged campaign produced the first pack that clears the existing DoorKey gate:
-  - candidate: `post_unlock_weighted`
-  - weak-block KL learner-state `SARE` mean on `47/53/59`: `0.4635`
-  - same-block KL learner-state `single_expert` mean: `0.4635`
-  - combined DoorKey KL learner-state `SARE` mean: `0.7500`
+- The current canonization-qualified successor pack is:
+  - candidate: `round6`
+  - retry-block KL learner-state `SARE` mean on `47/53/59`: `1.0000`
+  - same-block KL learner-state `single_expert` mean: `1.0000`
+  - frozen-comparable combined DoorKey KL learner-state `SARE` mean: `1.0000`
   - pack verdict: `PASS: thaw consideration allowed`
 - That result is still an extraction-method result, not a PPO-alone routed win.
 - The allowed current interpretation is still narrow:
-  - thaw consideration within DoorKey only
+  - canonization within DoorKey only for the `round6` successor line
   - no PPO-only routed claim
   - no specifically multi-expert routed claim
   - no cross-task claim
@@ -300,6 +318,17 @@ Canonical reports for the current phase:
 - `outputs/reports/canonization_stage3_hard_block_fairness.md`
 - `outputs/reports/canonization_gate_report.md`
 - `outputs/reports/canonization_decision_memo.md`
+- `outputs/reports/hard_family_saturation_definition.md`
+- `outputs/reports/hard_family_saturation_registration.md`
+- `outputs/reports/hard_family_saturation_stage1_screening.md`
+- `outputs/reports/hard_family_saturation_stage2_fairness.md`
+- `outputs/reports/hard_family_saturation_stage3_holdout.md`
+- `outputs/reports/hard_family_saturation_stage4_antiregression.md`
+- `outputs/reports/hard_family_saturation_stage5_route_validation.md`
+- `outputs/reports/hard_family_saturation_stage6_stability.md`
+- `outputs/reports/hard_family_saturation_successor_pack.json`
+- `outputs/reports/hard_family_saturation_gate_report.md`
+- `outputs/reports/hard_family_saturation_decision_memo.md`
 - `outputs/reports/lss_forensic_casebook.md`
 - `outputs/reports/lss_forensic_round_audit.md`
 - `outputs/reports/lss_forensic_route_locality.md`

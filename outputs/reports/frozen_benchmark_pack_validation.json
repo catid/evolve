@@ -6,7 +6,7 @@
       "status": "PASS"
     },
     {
-      "detail": "sealed source commit `adb5d321cb47166796fd17e87efee8d6cb027c64` is well formed",
+      "detail": "sealed source commit `21a890285831feb89c6de03ea16619239ff732e3` is well formed",
       "name": "provenance.sealed_source_commit",
       "status": "PASS"
     },
@@ -126,7 +126,7 @@
       "status": "PASS"
     },
     {
-      "detail": "artifact `outputs/reports/frozen_claim_envelope.md` hash matches `adbc2d922d06bd54a1649c8272fba7756765cf0290de0d6944afe6db8ab7d31e`",
+      "detail": "artifact `outputs/reports/frozen_claim_envelope.md` hash matches `566d777b34a002a98719e2e8f56d2e20c61868b15f6151fa52115125048e8dcf`",
       "name": "artifact_hash::frozen_claim_envelope",
       "status": "PASS"
     },
@@ -136,12 +136,12 @@
       "status": "PASS"
     },
     {
-      "detail": "artifact `outputs/reports/frozen_baseline_validation.json` hash matches `114c4479135dc4ee64adf4c8443c0aebfde65a5c38cbf9f42150952872198a9c`",
+      "detail": "artifact `outputs/reports/frozen_baseline_validation.json` hash matches `f8aa55424502e42c03bdd20eaa920ad24f4fdc20a4105bd92620e7b6a3498ba9`",
       "name": "artifact_hash::frozen_validation_json",
       "status": "PASS"
     },
     {
-      "detail": "artifact `outputs/reports/frozen_baseline_validation.md` hash matches `28e91e0173616dea787564cea650e52a0ad037391f76fd9927fb9d7fc858a0b7`",
+      "detail": "artifact `outputs/reports/frozen_baseline_validation.md` hash matches `f778f060dded331c9eec1e7b22dea04420698494249218a3020e466e42dd23df`",
       "name": "artifact_hash::frozen_validation_report",
       "status": "PASS"
     },
