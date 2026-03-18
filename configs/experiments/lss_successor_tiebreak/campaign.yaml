@@ -1,0 +1,86 @@
+schema_version: 1
+name: lss_successor_tiebreak
+frozen_pack: outputs/reports/frozen_benchmark_pack.json
+current_canonical_pack: outputs/reports/hard_family_saturation_successor_pack.json
+current_canonical_name: round6
+incumbent_candidate_name: post_unlock_weighted
+base_candidate_template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+
+evaluation:
+  episodes: 64
+  task: DoorKey
+  path_key: external_policy_diagnostics
+
+base_configs:
+  flat_dense: configs/experiments/minigrid_doorkey_flat_dense_ent1e3.yaml
+  token_dense: configs/experiments/minigrid_doorkey_token_dense_ent1e3.yaml
+  single_expert: configs/experiments/minigrid_doorkey_single_expert_ent1e3.yaml
+  sare: configs/experiments/minigrid_doorkey_sare_ent1e3.yaml
+
+students:
+  sare:
+    config_name: sare_ent1e3.yaml
+    run_name: sare_ent1e3
+    output_label: kl_lss_sare
+  token_dense:
+    config_name: token_dense_ent1e3.yaml
+    run_name: token_dense_ent1e3
+    output_label: kl_lss_token_dense
+  single_expert:
+    config_name: single_expert_ent1e3.yaml
+    run_name: single_expert_ent1e3
+    output_label: kl_lss_single_expert
+
+prospective_blocks:
+  blocks:
+    - lane: prospective_i
+      seeds: [281, 283, 293]
+    - lane: prospective_j
+      seeds: [307, 311, 313]
+
+candidates:
+  post_unlock_weighted:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    description: thaw-qualified predecessor line for context
+  round6:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    description: current canonical successor line
+    overrides:
+      loop:
+        rounds: 6
+  round7:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    description: direct tie-break challenger
+    overrides:
+      loop:
+        rounds: 7
+
+selection:
+  stage1_top_k: 2
+  preferred_order: [round6, round7, post_unlock_weighted]
+  challenger_order: [round7]
+  min_mean_gain: 0.05
+  min_margin_gain: 0.05
+  route_drop_min: 0.50
+  route_randomization_drop_min: 0.25
+
+stage_roots:
+  stage0_blocks: outputs/experiments/lss_successor_tiebreak/stage0_blocks
+  stage1_screening: outputs/experiments/lss_successor_tiebreak/stage1_screening
+  stage2_controls: outputs/experiments/lss_successor_tiebreak/stage2_controls
+  stage3_route: outputs/experiments/lss_successor_tiebreak/stage3_route
+
+reports:
+  registration: outputs/reports/successor_tiebreak_registration.md
+  stage1_report: outputs/reports/successor_tiebreak_stage1_screening.md
+  stage1_csv: outputs/reports/successor_tiebreak_stage1_screening.csv
+  stage1_json: outputs/reports/successor_tiebreak_stage1_screening.json
+  stage2_report: outputs/reports/successor_tiebreak_stage2_fairness.md
+  stage2_csv: outputs/reports/successor_tiebreak_stage2_fairness.csv
+  stage2_json: outputs/reports/successor_tiebreak_stage2_fairness.json
+  route_raw_markdown: outputs/reports/successor_tiebreak_stage3_route_raw.md
+  route_raw_csv: outputs/reports/successor_tiebreak_stage3_route_raw.csv
+  stage3_report: outputs/reports/successor_tiebreak_stage3_validation.md
+  stage3_csv: outputs/reports/successor_tiebreak_stage3_validation.csv
+  stage3_json: outputs/reports/successor_tiebreak_stage3_validation.json
+  decision_memo: outputs/reports/successor_tiebreak_decision_memo.md
