@@ -163,6 +163,15 @@ Key scripts:
 ./scripts/run_lss_canonization_campaign_stage5.sh
 ./scripts/run_lss_canonization_campaign_stage6.sh
 ./scripts/run_lss_canonization_campaign_finalize.sh
+./scripts/run_lss_hard_family_register.sh
+./scripts/run_lss_hard_family_stage2.sh
+./scripts/run_lss_hard_family_stage3.sh
+./scripts/run_lss_hard_family_stage4.sh
+./scripts/run_lss_hard_family_stage5.sh
+./scripts/run_lss_hard_family_stage6.sh
+./scripts/run_lss_hard_family_stage7.sh
+./scripts/run_lss_hard_family_stage8.sh
+./scripts/run_lss_hard_family_finalize.sh
 ```
 
 Resume a run from a checkpoint:
@@ -218,6 +227,13 @@ bash ./scripts/run_claim_gate_conformance.sh
 ```
 
 Historical trust now also includes replaying the gate against the repo's real claim history:
+
+- the longer hard-family qualification program is the current canonization-boundary test for the thaw-qualified DoorKey candidate lineage:
+  - [hard_family_definition.md](outputs/reports/hard_family_definition.md)
+  - [hard_family_campaign_registration.md](outputs/reports/hard_family_campaign_registration.md)
+  - [hard_family_stage2_dev_screening.md](outputs/reports/hard_family_stage2_dev_screening.md)
+  - [hard_family_stage3_fairness.md](outputs/reports/hard_family_stage3_fairness.md)
+  - [hard_family_canonization_decision_memo.md](outputs/reports/hard_family_canonization_decision_memo.md)
 
 ```bash
 bash ./scripts/run_claim_history_replay.sh

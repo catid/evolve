@@ -1,0 +1,9 @@
+{
+  "best_candidate": null,
+  "detail_rows": [],
+  "holdout_summary": null,
+  "selected_holdout_case": null,
+  "skipped": true,
+  "stage": "stage4",
+  "stage4_pass": false
+}

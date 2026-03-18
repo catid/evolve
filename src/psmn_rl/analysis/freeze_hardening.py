@@ -172,6 +172,26 @@ LEDGER_ROWS = [
             "outputs/reports/canonization_decision_memo.md",
         ],
     },
+    {
+        "family": "Long hard-family qualification program",
+        "status": "thaw-qualified but not canonical",
+        "scope": "DoorKey-only hard-family dev/holdout qualification of the `post_unlock_weighted` teacher-guided KL learner-state candidate lineage",
+        "claim_effect": "the longer hard-family program promoted `fresh_final` into a withheld hard-family holdout, screened two new phase-balanced round-5 descendants, and still found no dev-split fairness survivor: `post_unlock_weighted_round5` remained the best hard-family candidate but still trailed matched KL learner-state `token_dense` on the `post_pass_b` plus `post_pass_c` development family, so the program stopped at Stage 3 and the accepted state remained thaw-qualified but not canonical",
+        "reports": [
+            "outputs/reports/hard_family_definition.md",
+            "outputs/reports/hard_family_campaign_registration.md",
+            "outputs/reports/hard_family_baseline_sync.md",
+            "outputs/reports/hard_family_stage1_shortlist.md",
+            "outputs/reports/hard_family_stage2_dev_screening.md",
+            "outputs/reports/hard_family_stage3_fairness.md",
+            "outputs/reports/hard_family_stage4_holdout.md",
+            "outputs/reports/hard_family_stage5_antiregression.md",
+            "outputs/reports/hard_family_stage6_route_validation.md",
+            "outputs/reports/hard_family_stage7_stability.md",
+            "outputs/reports/hard_family_gate_report.md",
+            "outputs/reports/hard_family_canonization_decision_memo.md",
+        ],
+    },
 ]
 
 

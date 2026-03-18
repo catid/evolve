@@ -1,0 +1,180 @@
+schema_version: 1
+name: lss_hard_family_program
+frozen_manifest: configs/claims/doorkey_frozen_claim.yaml
+frozen_pack: outputs/reports/frozen_benchmark_pack.json
+frozen_combined_csv: outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.csv
+current_candidate_pack: outputs/reports/post_pass_candidate_pack.json
+current_candidate_stage2_csv: outputs/reports/post_pass_stage2_full_fairness.csv
+current_candidate_stage3_json: outputs/reports/post_pass_stage3_route_validation.json
+current_candidate_stage4_json: outputs/reports/post_pass_stage4_longitudinal_stability.json
+canonical_teacher: flat_dense
+current_candidate_name: post_unlock_weighted
+
+evaluation:
+  episodes: 64
+  task: DoorKey
+  path_key: external_policy_diagnostics
+
+students:
+  sare:
+    config_name: sare_ent1e3.yaml
+    run_name: sare_ent1e3
+    output_label: kl_lss_sare
+  token_dense:
+    config_name: token_dense_ent1e3.yaml
+    run_name: token_dense_ent1e3
+    output_label: kl_lss_token_dense
+  single_expert:
+    config_name: single_expert_ent1e3.yaml
+    run_name: single_expert_ent1e3
+    output_label: kl_lss_single_expert
+
+seed_groups:
+  hard_family_dev:
+    blocks:
+      - lane: post_pass_b
+        seeds: [73, 79, 83]
+      - lane: post_pass_c
+        seeds: [89, 97, 101]
+  hard_family_holdout:
+    blocks:
+      - lane: fresh_final
+        seeds: [47, 53, 59]
+  healthy_blocks:
+    blocks:
+      - lane: original
+        seeds: [7, 11, 19]
+      - lane: fresh
+        seeds: [23, 29, 31]
+      - lane: fresh_extra
+        seeds: [37, 41, 43]
+      - lane: post_pass_a
+        seeds: [61, 67, 71]
+  frozen_combined:
+    blocks:
+      - lane: original
+        seeds: [7, 11, 19]
+      - lane: fresh
+        seeds: [23, 29, 31]
+      - lane: fresh_extra
+        seeds: [37, 41, 43]
+      - lane: fresh_final
+        seeds: [47, 53, 59]
+
+current_candidate_roots:
+  post_pass_a: outputs/experiments/lss_post_pass_campaign/stage1/post_pass_a
+  post_pass_b: outputs/experiments/lss_post_pass_campaign/stage1/post_pass_b
+  post_pass_c: outputs/experiments/lss_canonization_campaign/stage2_rerun/candidates/post_unlock_weighted/post_pass_c
+  original: outputs/experiments/lss_long_campaign/stage4/post_unlock_weighted/original
+  fresh: outputs/experiments/lss_long_campaign/stage4/post_unlock_weighted/fresh
+  fresh_extra: outputs/experiments/lss_long_campaign/stage4/post_unlock_weighted/fresh_extra
+  fresh_final: outputs/experiments/lss_long_campaign/stage3/post_unlock_weighted/fresh_final
+
+lane_roots:
+  post_pass_a:
+    teacher_root: outputs/experiments/lss_post_pass_campaign/stage1/post_pass_a
+    sare_student_root: outputs/experiments/lss_post_pass_campaign/stage1/post_pass_a
+    token_student_root: outputs/experiments/lss_post_pass_campaign/stage1/post_pass_a
+    single_expert_root: outputs/experiments/lss_post_pass_campaign/stage1/post_pass_a
+  post_pass_b:
+    teacher_root: outputs/experiments/lss_post_pass_campaign/stage1/post_pass_b
+    sare_student_root: outputs/experiments/lss_post_pass_campaign/stage1/post_pass_b
+    token_student_root: outputs/experiments/lss_post_pass_campaign/stage1/post_pass_b
+    single_expert_root: outputs/experiments/lss_post_pass_campaign/stage1/post_pass_b
+  post_pass_c:
+    teacher_root: outputs/experiments/lss_canonization_campaign/stage2_rerun/post_pass_c
+    sare_student_root: outputs/experiments/lss_canonization_campaign/stage2_rerun/post_pass_c
+    token_student_root: outputs/experiments/lss_canonization_campaign/stage2_rerun/post_pass_c
+    single_expert_root: outputs/experiments/lss_canonization_campaign/stage2_rerun/post_pass_c
+  original:
+    teacher_root: outputs/reproductions/lss_robustness_baseline
+    sare_student_root: outputs/reproductions/lss_robustness_baseline
+    token_student_root: outputs/reproductions/lss_robustness_baseline
+    single_expert_root: outputs/experiments/lss_claim_broadening/single_expert_controls
+  fresh:
+    teacher_root: outputs/experiments/lss_claim_hardening/additional_seeds
+    sare_student_root: outputs/experiments/lss_claim_hardening/additional_seeds
+    token_student_root: outputs/experiments/lss_claim_hardening/additional_seeds
+    single_expert_root: outputs/experiments/lss_multi_expert_hardening/fresh_single_expert_controls
+  fresh_extra:
+    teacher_root: outputs/experiments/lss_claim_broadening/additional_fresh_block
+    sare_student_root: outputs/experiments/lss_claim_broadening/additional_fresh_block
+    token_student_root: outputs/experiments/lss_claim_broadening/additional_fresh_block
+    single_expert_root: outputs/experiments/lss_multi_expert_hardening/fresh_extra_single_expert_controls
+  fresh_final:
+    teacher_root: outputs/experiments/lss_multi_expert_hardening/final_fresh_block
+    sare_student_root: outputs/experiments/lss_multi_expert_hardening/final_fresh_block
+    token_student_root: outputs/experiments/lss_multi_expert_hardening/final_fresh_block
+    single_expert_root: outputs/experiments/lss_frozen_claim/final_block_single_expert_controls
+
+stage_roots:
+  stage2_dev: outputs/experiments/lss_hard_family_program/stage2
+  stage3_fairness: outputs/experiments/lss_hard_family_program/stage3
+  stage4_holdout: outputs/experiments/lss_hard_family_program/stage4
+  stage5_antiregression: outputs/experiments/lss_hard_family_program/stage5
+  stage8_pack: outputs/experiments/lss_hard_family_program/stage8_pack
+
+candidates:
+  post_unlock_weighted_round5:
+    template: configs/experiments/lss_canonization_campaign/lss_kl_post_unlock_weighted_round5.yaml
+    reuse_root: outputs/experiments/lss_canonization_campaign/stage3/post_unlock_weighted_round5
+    intervention_family: cleanup_round_extension
+    hypothesis: one extra learner-state clean-up round may let the current post-unlock weighting finish the hard-family late cleanup cases without changing the routed architecture or extraction family
+    hard_family_target: fixes the stalled late cleanup on post_pass_b seed 83 and the partial post_pass_c conversion on seed 89
+    broader_risk: a fifth round could overfit late cleanup and create a checkpoint spike that does not transfer to holdout or healthy blocks
+  post_unlock_weighted_disagreement075:
+    template: configs/experiments/lss_canonization_campaign/lss_kl_post_unlock_weighted_disagreement075.yaml
+    reuse_root: outputs/experiments/lss_canonization_campaign/stage3/post_unlock_weighted_disagreement075
+    intervention_family: late_disagreement_bonus
+    hypothesis: a disagreement bonus on top of post-unlock weighting may target the specific hard-family states where routed SARE still disagrees with the teacher after door unlock
+    hard_family_target: amplifies hard-family late disagreement pockets without changing the learner-state extraction family
+    broader_risk: disagreement-heavy weighting may destabilize the healthier blocks and produce new complete-seed failures
+  post_unlock_weighted_round5_phase_balanced:
+    template: configs/experiments/lss_hard_family_program/lss_kl_post_unlock_weighted_round5_phase_balanced.yaml
+    intervention_family: cleanup_round_plus_phase_balanced_replay
+    hypothesis: combining one extra clean-up round with phase-balanced recent replay can keep late post-unlock coverage high while suppressing stale append-all domination on the hard-family dev split
+    hard_family_target: the post_pass_b/post_pass_c family keeps accumulating long failed late episodes, so a recent phase-balanced buffer may protect the good late states that the round-5 variant is trying to convert
+    broader_risk: phase-balanced replay may help the hard-family dev blocks while erasing useful early-phase context on healthy blocks
+  post_unlock_weighted_round5_phase_balanced_disagreement050:
+    template: configs/experiments/lss_hard_family_program/lss_kl_post_unlock_weighted_round5_phase_balanced_disagreement050.yaml
+    intervention_family: cleanup_round_phase_balanced_disagreement
+    hypothesis: a modest disagreement bonus on top of round-5 phase-balanced replay may emphasize the exact hard-family late states that still remain mismatched after phase balancing
+    hard_family_target: combines stale-data control with late-phase teacher-student mismatch targeting on the same dev family
+    broader_risk: may overfocus on disagreement-heavy late states and hurt the broader DoorKey picture
+
+reports:
+  definition: outputs/reports/hard_family_definition.md
+  registration: outputs/reports/hard_family_campaign_registration.md
+  baseline_sync: outputs/reports/hard_family_baseline_sync.md
+  stage1_shortlist: outputs/reports/hard_family_stage1_shortlist.md
+  stage2_report: outputs/reports/hard_family_stage2_dev_screening.md
+  stage2_csv: outputs/reports/hard_family_stage2_dev_screening.csv
+  stage2_json: outputs/reports/hard_family_stage2_dev_screening.json
+  stage3_report: outputs/reports/hard_family_stage3_fairness.md
+  stage3_csv: outputs/reports/hard_family_stage3_fairness.csv
+  stage3_json: outputs/reports/hard_family_stage3_fairness.json
+  stage4_report: outputs/reports/hard_family_stage4_holdout.md
+  stage4_csv: outputs/reports/hard_family_stage4_holdout.csv
+  stage4_json: outputs/reports/hard_family_stage4_holdout.json
+  stage5_report: outputs/reports/hard_family_stage5_antiregression.md
+  stage5_csv: outputs/reports/hard_family_stage5_antiregression.csv
+  stage5_json: outputs/reports/hard_family_stage5_antiregression.json
+  stage6_report: outputs/reports/hard_family_stage6_route_validation.md
+  stage6_csv: outputs/reports/hard_family_stage6_route_validation.csv
+  stage6_json: outputs/reports/hard_family_stage6_route_validation.json
+  stage6_route_raw: outputs/reports/hard_family_stage6_route_raw.md
+  stage6_route_raw_csv: outputs/reports/hard_family_stage6_route_raw.csv
+  stage7_report: outputs/reports/hard_family_stage7_stability.md
+  stage7_csv: outputs/reports/hard_family_stage7_stability.csv
+  stage7_json: outputs/reports/hard_family_stage7_stability.json
+  successor_pack_json: outputs/reports/hard_family_successor_candidate_pack.json
+  successor_pack_markdown: outputs/reports/hard_family_successor_candidate_pack.md
+  candidate_summary_markdown: outputs/reports/hard_family_candidate_summary.md
+  candidate_metrics_json: outputs/reports/hard_family_candidate_metrics.json
+  combined_report_markdown: outputs/reports/hard_family_candidate_combined_report.md
+  combined_report_csv: outputs/reports/hard_family_candidate_combined_report.csv
+  retry_report_markdown: outputs/reports/hard_family_candidate_retry_block_report.md
+  retry_report_csv: outputs/reports/hard_family_candidate_retry_block_report.csv
+  gate_report_markdown: outputs/reports/hard_family_gate_report.md
+  gate_report_json: outputs/reports/hard_family_gate_report.json
+  decision_memo: outputs/reports/hard_family_canonization_decision_memo.md
