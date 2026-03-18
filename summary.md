@@ -5,6 +5,7 @@
 - The frozen benchmark pack remains the baseline DoorKey comparison unit.
 - The staged long-horizon candidate `post_unlock_weighted` now clears the existing pack-based gate, so thaw consideration is allowed within DoorKey only.
 - The post-pass qualification campaign does not upgrade that candidate into the canonical DoorKey benchmark; it remains thaw-qualified but not canonical.
+- The hard-block canonization campaign strengthens that same outcome: bounded hard-block fixes improved the difficult family, but none made KL learner-state `SARE` stop trailing matched KL learner-state `token_dense` on the `post_pass_b` plus `post_pass_c` family.
 - Allowed current scope:
   - teacher-guided KL learner-state DoorKey `SARE` result
   - external `64`-episode evaluation only
@@ -20,6 +21,7 @@
 - Baseline and gate artifacts: [frozen_claim_envelope.md](outputs/reports/frozen_claim_envelope.md), [frozen_benchmark_pack.md](outputs/reports/frozen_benchmark_pack.md), [frozen_benchmark_pack_validation.md](outputs/reports/frozen_benchmark_pack_validation.md), [claim_gate_pack_dry_run.md](outputs/reports/claim_gate_pack_dry_run.md), and [freeze_hardening_operational_memo.md](outputs/reports/freeze_hardening_operational_memo.md).
 - Gate-cleared candidate artifacts: [long_campaign_candidate_pack.json](outputs/reports/long_campaign_candidate_pack.json), [long_campaign_gate_report.md](outputs/reports/long_campaign_gate_report.md), and [long_campaign_decision_memo.md](outputs/reports/long_campaign_decision_memo.md).
 - Post-pass qualification artifacts: [post_pass_stage1_fresh_blocks.md](outputs/reports/post_pass_stage1_fresh_blocks.md), [post_pass_stage2_full_fairness.md](outputs/reports/post_pass_stage2_full_fairness.md), [post_pass_stage3_route_validation.md](outputs/reports/post_pass_stage3_route_validation.md), [post_pass_stage4_longitudinal_stability.md](outputs/reports/post_pass_stage4_longitudinal_stability.md), [post_pass_successor_pack_draft.md](outputs/reports/post_pass_successor_pack_draft.md), [post_pass_gate_report.md](outputs/reports/post_pass_gate_report.md), and [post_pass_canonization_decision_memo.md](outputs/reports/post_pass_canonization_decision_memo.md).
+- Hard-block canonization artifacts: [canonization_campaign_registration.md](outputs/reports/canonization_campaign_registration.md), [canonization_stage2_hard_block_screening.md](outputs/reports/canonization_stage2_hard_block_screening.md), [canonization_stage3_hard_block_fairness.md](outputs/reports/canonization_stage3_hard_block_fairness.md), [canonization_gate_report.md](outputs/reports/canonization_gate_report.md), and [canonization_decision_memo.md](outputs/reports/canonization_decision_memo.md).
 
 - `flat_dense` remains the strongest greedy DoorKey control.
 - recovered `token_dense` with `ppo.ent_coef=0.001` remains the canonical tokenized control.
@@ -45,6 +47,11 @@
   - the successor draft is coherent and the gate still returns `PASS: thaw consideration allowed`
   - the final status is `remains thaw-qualified but not canonical`
   - see [post_pass_stage1_fresh_blocks.md](outputs/reports/post_pass_stage1_fresh_blocks.md), [post_pass_stage2_full_fairness.md](outputs/reports/post_pass_stage2_full_fairness.md), [post_pass_stage3_route_validation.md](outputs/reports/post_pass_stage3_route_validation.md), [post_pass_stage4_longitudinal_stability.md](outputs/reports/post_pass_stage4_longitudinal_stability.md), [post_pass_successor_pack_draft.md](outputs/reports/post_pass_successor_pack_draft.md), [post_pass_gate_report.md](outputs/reports/post_pass_gate_report.md), and [post_pass_canonization_decision_memo.md](outputs/reports/post_pass_canonization_decision_memo.md)
+- The hard-block canonization campaign did not move that status:
+  - `post_unlock_weighted_round5` and `post_unlock_weighted_disagreement075` both improved the hard-block family relative to the current candidate
+  - but neither stopped KL learner-state `SARE` from trailing matched KL learner-state `token_dense` on the hard-block family
+  - the campaign therefore stopped at Stage 3, did not produce a successor pack, and left the candidate `thaw-qualified but not canonical`
+  - see [canonization_stage2_hard_block_screening.md](outputs/reports/canonization_stage2_hard_block_screening.md), [canonization_stage3_hard_block_fairness.md](outputs/reports/canonization_stage3_hard_block_fairness.md), [canonization_gate_report.md](outputs/reports/canonization_gate_report.md), and [canonization_decision_memo.md](outputs/reports/canonization_decision_memo.md)
 - The recovered DoorKey `SARE` policy remains causally routing-dependent under bounded eval-time probes:
   - expert ablation and fixed-router override remain strongly harmful across the expanded recovered-seed set
   - route randomization is catastrophic on most recovered seeds, but seed `29` is now a genuine narrow exception rather than a weak-probe artifact

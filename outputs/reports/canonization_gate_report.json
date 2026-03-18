@@ -1,0 +1,5 @@
+{
+  "status": "not_run",
+  "reason": "no candidate survived hard-block fairness",
+  "stage": "Stage 3"
+}

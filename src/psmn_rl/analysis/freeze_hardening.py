@@ -126,6 +126,52 @@ LEDGER_ROWS = [
             "outputs/reports/freeze_hardening_decision_memo.md",
         ],
     },
+    {
+        "family": "Long-horizon thaw campaign",
+        "status": "thaw consideration allowed",
+        "scope": "DoorKey-only teacher-guided KL learner-state candidate inside the existing family",
+        "claim_effect": "the `post_unlock_weighted` candidate survived weak-block screening, matched same-block `single_expert`, preserved and improved the combined DoorKey picture, retained route dependence on the selected weak and strong cases, and cleared the pack-based gate within DoorKey only",
+        "reports": [
+            "outputs/reports/long_campaign_stage2_screening.md",
+            "outputs/reports/long_campaign_stage3_fairness.md",
+            "outputs/reports/long_campaign_stage4_replication.md",
+            "outputs/reports/long_campaign_stage5_route_validation.md",
+            "outputs/reports/long_campaign_gate_report.md",
+            "outputs/reports/long_campaign_decision_memo.md",
+        ],
+    },
+    {
+        "family": "Post-pass qualification campaign",
+        "status": "thaw-qualified but not canonical",
+        "scope": "DoorKey-only qualification of the `post_unlock_weighted` teacher-guided KL learner-state candidate",
+        "claim_effect": "the candidate stayed above matched `single_expert` on both new fresh blocks, preserved a favorable expanded DoorKey picture, retained routed mechanism signatures, and still cleared the frozen-pack gate, but it did not beat matched `token_dense` on the harder `post_pass_b` block, so it did not earn canonical benchmark replacement",
+        "reports": [
+            "outputs/reports/post_pass_stage1_fresh_blocks.md",
+            "outputs/reports/post_pass_stage2_full_fairness.md",
+            "outputs/reports/post_pass_stage3_route_validation.md",
+            "outputs/reports/post_pass_stage4_longitudinal_stability.md",
+            "outputs/reports/post_pass_successor_pack_draft.md",
+            "outputs/reports/post_pass_gate_report.md",
+            "outputs/reports/post_pass_canonization_decision_memo.md",
+        ],
+    },
+    {
+        "family": "Hard-block canonization campaign",
+        "status": "thaw-qualified but not canonical",
+        "scope": "DoorKey-only hard-block canonization test of the `post_unlock_weighted` teacher-guided KL learner-state candidate",
+        "claim_effect": "the bounded hard-block fixes improved the hard-block family relative to the current candidate, but none of them made KL learner-state `SARE` stop trailing matched KL learner-state `token_dense` on the `post_pass_b` plus `post_pass_c` family, so canonization stopped at Stage 3 and the candidate remained thaw-qualified but not canonical",
+        "reports": [
+            "outputs/reports/canonization_campaign_registration.md",
+            "outputs/reports/canonization_baseline_sync.md",
+            "outputs/reports/canonization_stage1_mechanism_shortlist.md",
+            "outputs/reports/canonization_stage2_hard_block_screening.md",
+            "outputs/reports/canonization_stage3_hard_block_fairness.md",
+            "outputs/reports/canonization_stage4_antiregression.md",
+            "outputs/reports/canonization_stage5_stability_and_route.md",
+            "outputs/reports/canonization_gate_report.md",
+            "outputs/reports/canonization_decision_memo.md",
+        ],
+    },
 ]
 
 

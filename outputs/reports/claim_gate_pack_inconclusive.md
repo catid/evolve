@@ -8,7 +8,7 @@
 | Check | Result | Detail |
 | --- | --- | --- |
 | pack_type | `PASS` | pack type is `frozen_benchmark_pack` |
-| provenance.sealed_source_commit | `PASS` | sealed source commit `8d691d69559de8e2aba18481bebcb7151ac15d84` is well formed |
+| provenance.sealed_source_commit | `PASS` | sealed source commit `d278b1c2ff0f75af6cc5e459091af98e4e5b751f` is well formed |
 | provenance.sealed_source_dirty | `PASS` | sealed source dirty flag is `True` |
 | manifest_hash | `PASS` | manifest hash matches `d10db1cff6f8cb55f434d3d11f0079d8f7e72ea45d2c46adc1c03909dece0bd6` |
 | schema_version | `PASS` | pack schema version `1` is recognized |
@@ -22,7 +22,7 @@
 | authoritative_artifacts | `PASS` | all required artifact keys are present |
 | artifact_hash::claim_gate_dry_run | `PASS` | artifact `outputs/reports/claim_gate_dry_run.md` hash matches `c38ee9a1df0197f405ed6aa16ad90a27f4d6b8f3d9f960588c0e3bbd70cf8dd7` |
 | artifact_hash::claim_gate_dry_run_json | `PASS` | artifact `outputs/reports/claim_gate_dry_run.json` hash matches `152056ccf996def48d342cfb6f98cdea2e30eae915a3333fdcc1721d8db7f41d` |
-| artifact_hash::claim_ledger | `PASS` | artifact `outputs/reports/claim_ledger.md` hash matches `8127d6aeb0b06bd69d13dbb75b37f991abebe4ba501fc60cf4a8d0c6a99d691d` |
+| artifact_hash::claim_ledger | `PASS` | artifact `outputs/reports/claim_ledger.md` hash matches `325344aa8fbaafed30a32e60859f446ce5818e80d70df0ee0e434fc59935ab3d` |
 | artifact_hash::combined_doorkey_csv | `PASS` | artifact `outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.csv` hash matches `f0c83d833ef9bfe3fa9e2db97f10e5bc42f6c1ab42805c14b21aa53ca0744b3b` |
 | artifact_hash::combined_doorkey_report | `PASS` | artifact `outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.md` hash matches `e0cdd2b799538aad926156a19bdf88da19cb8c62a091ab16799a3e94cc87e19d` |
 | artifact_hash::final_block_csv | `PASS` | artifact `outputs/reports/lss_final_block_single_expert_control_report.csv` hash matches `8a7c5491529286337be0a727d2a71649ca4804b0e33efe8eba497354f46f7f2c` |
@@ -32,10 +32,10 @@
 | artifact_hash::forensic_round_audit | `PASS` | artifact `outputs/reports/lss_forensic_round_audit.md` hash matches `cb9cb1a8fee052cca94fb6bfb078e1a01f6e7e286585dbea9337a27fb2c4505b` |
 | artifact_hash::forensic_route_locality | `PASS` | artifact `outputs/reports/lss_forensic_route_locality.md` hash matches `30ae43a28d514956eebac92c9af81490e04f8c4e1e64b6240ce44f9f1baf026c` |
 | artifact_hash::freeze_hardening_decision_memo | `PASS` | artifact `outputs/reports/freeze_hardening_decision_memo.md` hash matches `da0fdc73426b31c2a042bc71cef4a30307364c7c3333d4a3867b0b0b843bc7a5` |
-| artifact_hash::frozen_claim_envelope | `PASS` | artifact `outputs/reports/frozen_claim_envelope.md` hash matches `58cd74802397935f8abc2dbaf1119fa59046c3e15bc352deac098ace03e2a9d8` |
+| artifact_hash::frozen_claim_envelope | `PASS` | artifact `outputs/reports/frozen_claim_envelope.md` hash matches `9615aa8ba1c5472efa42e13392bff32bc0d08ce401bbe7c122e5de2659614a97` |
 | artifact_hash::frozen_validation_csv | `PASS` | artifact `outputs/reports/frozen_baseline_validation.csv` hash matches `3ec73864f9ab0d2cca0b115f9bee267ffd1e448231a15f70eebd8e3a7c03f162` |
-| artifact_hash::frozen_validation_json | `PASS` | artifact `outputs/reports/frozen_baseline_validation.json` hash matches `1888fb7ac3e78dead22811d99b88ee1d6b250c37de8fa0600e4bc7ea12a1918b` |
-| artifact_hash::frozen_validation_report | `PASS` | artifact `outputs/reports/frozen_baseline_validation.md` hash matches `9ce8e7f5055663abea1ea7444bde72ecc3789b9605a644ce24375f0149bf1248` |
+| artifact_hash::frozen_validation_json | `PASS` | artifact `outputs/reports/frozen_baseline_validation.json` hash matches `386e3689b8e20b7057de5702c0f891a2f865f6db51a9cc1f6f6c53aefbfcbfa7` |
+| artifact_hash::frozen_validation_report | `PASS` | artifact `outputs/reports/frozen_baseline_validation.md` hash matches `63ca716a44869c252e897f1b5fe94e024c16d06edce91bfb9ccdc82685fa1927` |
 | artifact_hash::future_retry_template | `PASS` | artifact `outputs/reports/future_retry_template.md` hash matches `9ecaa4ac44e4ced4025bbb90959f3158dd3dbecab8b834b618f0e7270eb6e84e` |
 | artifact_hash::keycorridor_transfer_csv | `PASS` | artifact `outputs/reports/lss_keycorridor_transfer_report.csv` hash matches `fbc84ede909faa0a7170390451f09ada21a94e674d8b7ee1643effdb14468538` |
 | artifact_hash::keycorridor_transfer_report | `PASS` | artifact `outputs/reports/lss_keycorridor_transfer_report.md` hash matches `ee81af42d6e12ee8167c84a531db219627bdc8622913554c79d418be93ac93f9` |
@@ -50,7 +50,7 @@
 | schema_version | `PASS` | candidate schema version `1` is recognized |
 | candidate_name | `PASS` | candidate name is `incomplete_candidate_pack_example` |
 | frozen_pack_reference.path | `PASS` | candidate references `outputs/reports/frozen_benchmark_pack.json` |
-| frozen_pack_reference.sha256 | `PASS` | candidate references frozen-pack hash `21f69b44b2a1567f6432e0ec2a0f5dce2c4f74ea256196d865fbdf384580a873` |
+| frozen_pack_reference.sha256 | `PASS` | candidate references frozen-pack hash `3c4c868b27a85eed48fec26e0c9fa0fa04c35cf7b7cce2d0cddbe1a682b18f33` |
 | frozen_pack_reference.claim_id | `PASS` | candidate claim id matches `doorkey_frozen_claim` |
 | task | `PASS` | candidate task matches `DoorKey` |
 | evaluation | `PASS` | candidate uses the required DoorKey external-64 evaluation path |
@@ -66,7 +66,7 @@
 | artifacts.duplicates | `PASS` | artifact roles are unique |
 | artifacts | `FAIL` | candidate pack is missing required artifact roles: `candidate_summary_markdown`, `combined_report_csv`, `combined_report_markdown`, `retry_block_report_csv`, `retry_block_report_markdown` |
 | artifact_hash::candidate_metrics_json | `FAIL` | candidate artifact `outputs/reports/does_not_exist.json` is missing |
-| provenance.git_commit | `PASS` | candidate provenance git_commit `8d691d69559de8e2aba18481bebcb7151ac15d84` is well formed |
+| provenance.git_commit | `PASS` | candidate provenance git_commit `d278b1c2ff0f75af6cc5e459091af98e4e5b751f` is well formed |
 | provenance.git_dirty | `PASS` | candidate provenance git_dirty is `True` |
 
 ## Claim Gate Checks
@@ -74,7 +74,7 @@
 | Check | Result | Detail |
 | --- | --- | --- |
 | frozen_pack::pack_type | `PASS` | pack type is `frozen_benchmark_pack` |
-| frozen_pack::provenance.sealed_source_commit | `PASS` | sealed source commit `8d691d69559de8e2aba18481bebcb7151ac15d84` is well formed |
+| frozen_pack::provenance.sealed_source_commit | `PASS` | sealed source commit `d278b1c2ff0f75af6cc5e459091af98e4e5b751f` is well formed |
 | frozen_pack::provenance.sealed_source_dirty | `PASS` | sealed source dirty flag is `True` |
 | frozen_pack::manifest_hash | `PASS` | manifest hash matches `d10db1cff6f8cb55f434d3d11f0079d8f7e72ea45d2c46adc1c03909dece0bd6` |
 | frozen_pack::schema_version | `PASS` | pack schema version `1` is recognized |
@@ -88,7 +88,7 @@
 | frozen_pack::authoritative_artifacts | `PASS` | all required artifact keys are present |
 | frozen_pack::artifact_hash::claim_gate_dry_run | `PASS` | artifact `outputs/reports/claim_gate_dry_run.md` hash matches `c38ee9a1df0197f405ed6aa16ad90a27f4d6b8f3d9f960588c0e3bbd70cf8dd7` |
 | frozen_pack::artifact_hash::claim_gate_dry_run_json | `PASS` | artifact `outputs/reports/claim_gate_dry_run.json` hash matches `152056ccf996def48d342cfb6f98cdea2e30eae915a3333fdcc1721d8db7f41d` |
-| frozen_pack::artifact_hash::claim_ledger | `PASS` | artifact `outputs/reports/claim_ledger.md` hash matches `8127d6aeb0b06bd69d13dbb75b37f991abebe4ba501fc60cf4a8d0c6a99d691d` |
+| frozen_pack::artifact_hash::claim_ledger | `PASS` | artifact `outputs/reports/claim_ledger.md` hash matches `325344aa8fbaafed30a32e60859f446ce5818e80d70df0ee0e434fc59935ab3d` |
 | frozen_pack::artifact_hash::combined_doorkey_csv | `PASS` | artifact `outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.csv` hash matches `f0c83d833ef9bfe3fa9e2db97f10e5bc42f6c1ab42805c14b21aa53ca0744b3b` |
 | frozen_pack::artifact_hash::combined_doorkey_report | `PASS` | artifact `outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.md` hash matches `e0cdd2b799538aad926156a19bdf88da19cb8c62a091ab16799a3e94cc87e19d` |
 | frozen_pack::artifact_hash::final_block_csv | `PASS` | artifact `outputs/reports/lss_final_block_single_expert_control_report.csv` hash matches `8a7c5491529286337be0a727d2a71649ca4804b0e33efe8eba497354f46f7f2c` |
@@ -98,10 +98,10 @@
 | frozen_pack::artifact_hash::forensic_round_audit | `PASS` | artifact `outputs/reports/lss_forensic_round_audit.md` hash matches `cb9cb1a8fee052cca94fb6bfb078e1a01f6e7e286585dbea9337a27fb2c4505b` |
 | frozen_pack::artifact_hash::forensic_route_locality | `PASS` | artifact `outputs/reports/lss_forensic_route_locality.md` hash matches `30ae43a28d514956eebac92c9af81490e04f8c4e1e64b6240ce44f9f1baf026c` |
 | frozen_pack::artifact_hash::freeze_hardening_decision_memo | `PASS` | artifact `outputs/reports/freeze_hardening_decision_memo.md` hash matches `da0fdc73426b31c2a042bc71cef4a30307364c7c3333d4a3867b0b0b843bc7a5` |
-| frozen_pack::artifact_hash::frozen_claim_envelope | `PASS` | artifact `outputs/reports/frozen_claim_envelope.md` hash matches `58cd74802397935f8abc2dbaf1119fa59046c3e15bc352deac098ace03e2a9d8` |
+| frozen_pack::artifact_hash::frozen_claim_envelope | `PASS` | artifact `outputs/reports/frozen_claim_envelope.md` hash matches `9615aa8ba1c5472efa42e13392bff32bc0d08ce401bbe7c122e5de2659614a97` |
 | frozen_pack::artifact_hash::frozen_validation_csv | `PASS` | artifact `outputs/reports/frozen_baseline_validation.csv` hash matches `3ec73864f9ab0d2cca0b115f9bee267ffd1e448231a15f70eebd8e3a7c03f162` |
-| frozen_pack::artifact_hash::frozen_validation_json | `PASS` | artifact `outputs/reports/frozen_baseline_validation.json` hash matches `1888fb7ac3e78dead22811d99b88ee1d6b250c37de8fa0600e4bc7ea12a1918b` |
-| frozen_pack::artifact_hash::frozen_validation_report | `PASS` | artifact `outputs/reports/frozen_baseline_validation.md` hash matches `9ce8e7f5055663abea1ea7444bde72ecc3789b9605a644ce24375f0149bf1248` |
+| frozen_pack::artifact_hash::frozen_validation_json | `PASS` | artifact `outputs/reports/frozen_baseline_validation.json` hash matches `386e3689b8e20b7057de5702c0f891a2f865f6db51a9cc1f6f6c53aefbfcbfa7` |
+| frozen_pack::artifact_hash::frozen_validation_report | `PASS` | artifact `outputs/reports/frozen_baseline_validation.md` hash matches `63ca716a44869c252e897f1b5fe94e024c16d06edce91bfb9ccdc82685fa1927` |
 | frozen_pack::artifact_hash::future_retry_template | `PASS` | artifact `outputs/reports/future_retry_template.md` hash matches `9ecaa4ac44e4ced4025bbb90959f3158dd3dbecab8b834b618f0e7270eb6e84e` |
 | frozen_pack::artifact_hash::keycorridor_transfer_csv | `PASS` | artifact `outputs/reports/lss_keycorridor_transfer_report.csv` hash matches `fbc84ede909faa0a7170390451f09ada21a94e674d8b7ee1643effdb14468538` |
 | frozen_pack::artifact_hash::keycorridor_transfer_report | `PASS` | artifact `outputs/reports/lss_keycorridor_transfer_report.md` hash matches `ee81af42d6e12ee8167c84a531db219627bdc8622913554c79d418be93ac93f9` |
@@ -111,7 +111,7 @@
 | candidate_pack::schema_version | `PASS` | candidate schema version `1` is recognized |
 | candidate_pack::candidate_name | `PASS` | candidate name is `incomplete_candidate_pack_example` |
 | candidate_pack::frozen_pack_reference.path | `PASS` | candidate references `outputs/reports/frozen_benchmark_pack.json` |
-| candidate_pack::frozen_pack_reference.sha256 | `PASS` | candidate references frozen-pack hash `21f69b44b2a1567f6432e0ec2a0f5dce2c4f74ea256196d865fbdf384580a873` |
+| candidate_pack::frozen_pack_reference.sha256 | `PASS` | candidate references frozen-pack hash `3c4c868b27a85eed48fec26e0c9fa0fa04c35cf7b7cce2d0cddbe1a682b18f33` |
 | candidate_pack::frozen_pack_reference.claim_id | `PASS` | candidate claim id matches `doorkey_frozen_claim` |
 | candidate_pack::task | `PASS` | candidate task matches `DoorKey` |
 | candidate_pack::evaluation | `PASS` | candidate uses the required DoorKey external-64 evaluation path |
@@ -127,7 +127,7 @@
 | candidate_pack::artifacts.duplicates | `PASS` | artifact roles are unique |
 | candidate_pack::artifacts | `INCONCLUSIVE` | candidate pack is missing required artifact roles: `candidate_summary_markdown`, `combined_report_csv`, `combined_report_markdown`, `retry_block_report_csv`, `retry_block_report_markdown` |
 | candidate_pack::artifact_hash::candidate_metrics_json | `INCONCLUSIVE` | candidate artifact `outputs/reports/does_not_exist.json` is missing |
-| candidate_pack::provenance.git_commit | `PASS` | candidate provenance git_commit `8d691d69559de8e2aba18481bebcb7151ac15d84` is well formed |
+| candidate_pack::provenance.git_commit | `PASS` | candidate provenance git_commit `d278b1c2ff0f75af6cc5e459091af98e4e5b751f` is well formed |
 | candidate_pack::provenance.git_dirty | `PASS` | candidate provenance git_dirty is `True` |
 
 ## Verdict

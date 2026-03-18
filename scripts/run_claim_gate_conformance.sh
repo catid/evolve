@@ -7,6 +7,8 @@ CORPUS=${3:-tests/data/claim_gate_corpus/corpus.yaml}
 GOLDEN=${4:-tests/data/claim_gate_corpus/golden_snapshot.json}
 OUTPUT_DIR=${5:-outputs/reports/claim_gate_corpus}
 
+source .venv/bin/activate
+
 python -m psmn_rl.analysis.claim_gate_conformance \
   --frozen-pack "$FROZEN_PACK" \
   --base-candidate "$BASE_CANDIDATE" \

@@ -1,0 +1,163 @@
+schema_version: 1
+name: lss_canonization_campaign
+frozen_manifest: configs/claims/doorkey_frozen_claim.yaml
+frozen_pack: outputs/reports/frozen_benchmark_pack.json
+frozen_combined_csv: outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.csv
+current_candidate_pack: outputs/reports/post_pass_candidate_pack.json
+current_candidate_stage1_csv: outputs/reports/post_pass_stage1_fresh_blocks.csv
+current_candidate_stage2_csv: outputs/reports/post_pass_stage2_full_fairness.csv
+current_candidate_stage3_json: outputs/reports/post_pass_stage3_route_validation.json
+current_candidate_stage4_json: outputs/reports/post_pass_stage4_longitudinal_stability.json
+canonical_teacher: flat_dense
+current_candidate_name: post_unlock_weighted
+current_candidate_template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+
+evaluation:
+  episodes: 64
+  task: DoorKey
+  path_key: external_policy_diagnostics
+
+base_configs:
+  flat_dense: configs/experiments/minigrid_doorkey_flat_dense_ent1e3.yaml
+  token_dense: configs/experiments/minigrid_doorkey_token_dense_ent1e3.yaml
+  single_expert: configs/experiments/minigrid_doorkey_single_expert_ent1e3.yaml
+  sare: configs/experiments/minigrid_doorkey_sare_ent1e3.yaml
+
+students:
+  sare:
+    config_name: sare_ent1e3.yaml
+    run_name: sare_ent1e3
+    output_label: kl_lss_sare
+  token_dense:
+    config_name: token_dense_ent1e3.yaml
+    run_name: token_dense_ent1e3
+    output_label: kl_lss_token_dense
+  single_expert:
+    config_name: single_expert_ent1e3.yaml
+    run_name: single_expert_ent1e3
+    output_label: kl_lss_single_expert
+
+seed_groups:
+  hard_block_existing:
+    lane: post_pass_b
+    seeds: [73, 79, 83]
+  hard_block_new:
+    lane: post_pass_c
+    seeds: [89, 97, 101]
+  hard_block_family:
+    blocks:
+      - lane: post_pass_b
+        seeds: [73, 79, 83]
+      - lane: post_pass_c
+        seeds: [89, 97, 101]
+  retry_block:
+    lane: fresh_final
+    seeds: [47, 53, 59]
+  strong_blocks:
+    blocks:
+      - lane: original
+        seeds: [7, 11, 19]
+      - lane: fresh
+        seeds: [23, 29, 31]
+      - lane: fresh_extra
+        seeds: [37, 41, 43]
+  frozen_combined:
+    blocks:
+      - lane: original
+        seeds: [7, 11, 19]
+      - lane: fresh
+        seeds: [23, 29, 31]
+      - lane: fresh_extra
+        seeds: [37, 41, 43]
+      - lane: fresh_final
+        seeds: [47, 53, 59]
+
+existing_lane_roots:
+  post_pass_b:
+    root: outputs/experiments/lss_post_pass_campaign/stage1/post_pass_b
+  retry_block:
+    root: outputs/experiments/lss_long_campaign/stage3/post_unlock_weighted/fresh_final
+  strong_candidate:
+    root: outputs/experiments/lss_long_campaign/stage4/post_unlock_weighted
+
+historical_lane_roots:
+  original:
+    teacher_root: outputs/reproductions/lss_robustness_baseline
+    sare_student_root: outputs/reproductions/lss_robustness_baseline
+    token_student_root: outputs/reproductions/lss_robustness_baseline
+    single_expert_root: outputs/experiments/lss_claim_broadening/single_expert_controls
+  fresh:
+    teacher_root: outputs/experiments/lss_claim_hardening/additional_seeds
+    sare_student_root: outputs/experiments/lss_claim_hardening/additional_seeds
+    token_student_root: outputs/experiments/lss_claim_hardening/additional_seeds
+    single_expert_root: outputs/experiments/lss_multi_expert_hardening/fresh_single_expert_controls
+  fresh_extra:
+    teacher_root: outputs/experiments/lss_claim_broadening/additional_fresh_block
+    sare_student_root: outputs/experiments/lss_claim_broadening/additional_fresh_block
+    token_student_root: outputs/experiments/lss_claim_broadening/additional_fresh_block
+    single_expert_root: outputs/experiments/lss_multi_expert_hardening/fresh_extra_single_expert_controls
+  fresh_final:
+    teacher_root: outputs/experiments/lss_multi_expert_hardening/final_fresh_block
+    sare_student_root: outputs/experiments/lss_multi_expert_hardening/final_fresh_block
+    token_student_root: outputs/experiments/lss_multi_expert_hardening/final_fresh_block
+    single_expert_root: outputs/experiments/lss_frozen_claim/final_block_single_expert_controls
+
+stage_roots:
+  stage2_new_block_base: outputs/experiments/lss_canonization_campaign/stage2_rerun/post_pass_c
+  stage2_candidates: outputs/experiments/lss_canonization_campaign/stage2_rerun/candidates
+  stage3_fairness: outputs/experiments/lss_canonization_campaign/stage3
+  stage4_replication: outputs/experiments/lss_canonization_campaign/stage4
+  stage6_retry_pack: outputs/experiments/lss_canonization_campaign/stage6_retry_pack
+
+candidates:
+  post_unlock_weighted_x6:
+    template: configs/experiments/lss_canonization_campaign/lss_kl_post_unlock_weighted_x6.yaml
+    intervention_family: stronger_post_unlock_kl
+    hypothesis: a stronger post-unlock KL weight can close the remaining token_dense gap on hard late-phase blocks without touching the routed architecture
+    targets: [post_pass_b, post_pass_c]
+    failure_mode: overweights late clean-up states and regresses the already healthy strong routed blocks
+    antiregression_risk: may flatten route usage by forcing a narrow late-phase action pattern
+  post_unlock_weighted_disagreement075:
+    template: configs/experiments/lss_canonization_campaign/lss_kl_post_unlock_weighted_disagreement075.yaml
+    intervention_family: post_unlock_plus_disagreement
+    hypothesis: a modest disagreement bonus on top of post-unlock weighting can target the hard-block states where routed SARE still disagrees with the teacher late in the episode
+    targets: [post_pass_b, post_pass_c]
+    failure_mode: amplifies noisy late disagreements and helps all structured students equally
+    antiregression_risk: may destabilize checkpoint selection by chasing disagreement-heavy rounds
+  post_unlock_weighted_round5:
+    template: configs/experiments/lss_canonization_campaign/lss_kl_post_unlock_weighted_round5.yaml
+    intervention_family: cleanup_round_extension
+    hypothesis: one extra learner-state clean-up round can convert near-miss hard-block late episodes without changing the architecture or extraction family
+    targets: [post_pass_b, post_pass_c]
+    failure_mode: overfits late rounds and weakens the stronger blocks through a narrow checkpoint spike
+    antiregression_risk: can produce brittle one-round gains that fail stability checks
+
+reports:
+  registration: outputs/reports/canonization_campaign_registration.md
+  baseline_sync: outputs/reports/canonization_baseline_sync.md
+  stage1_shortlist: outputs/reports/canonization_stage1_mechanism_shortlist.md
+  stage2_report: outputs/reports/canonization_stage2_hard_block_screening.md
+  stage2_csv: outputs/reports/canonization_stage2_hard_block_screening.csv
+  stage2_json: outputs/reports/canonization_stage2_hard_block_screening.json
+  stage3_report: outputs/reports/canonization_stage3_hard_block_fairness.md
+  stage3_csv: outputs/reports/canonization_stage3_hard_block_fairness.csv
+  stage3_json: outputs/reports/canonization_stage3_hard_block_fairness.json
+  stage4_report: outputs/reports/canonization_stage4_antiregression.md
+  stage4_csv: outputs/reports/canonization_stage4_antiregression.csv
+  stage4_json: outputs/reports/canonization_stage4_antiregression.json
+  stage5_report: outputs/reports/canonization_stage5_stability_and_route.md
+  stage5_csv: outputs/reports/canonization_stage5_stability_and_route.csv
+  stage5_json: outputs/reports/canonization_stage5_stability_and_route.json
+  stage5_route_raw: outputs/reports/canonization_stage5_route_raw.md
+  stage5_route_raw_csv: outputs/reports/canonization_stage5_route_raw.csv
+  successor_pack_markdown: outputs/reports/canonization_successor_candidate_pack.md
+  successor_pack_json: outputs/reports/canonization_successor_candidate_pack.json
+  candidate_summary_markdown: outputs/reports/canonization_candidate_summary.md
+  candidate_metrics_json: outputs/reports/canonization_candidate_metrics.json
+  combined_report_markdown: outputs/reports/canonization_candidate_combined_report.md
+  combined_report_csv: outputs/reports/canonization_candidate_combined_report.csv
+  retry_report_markdown: outputs/reports/canonization_candidate_retry_block_report.md
+  retry_report_csv: outputs/reports/canonization_candidate_retry_block_report.csv
+  gate_report_markdown: outputs/reports/canonization_gate_report.md
+  gate_report_json: outputs/reports/canonization_gate_report.json
+  decision_memo: outputs/reports/canonization_decision_memo.md

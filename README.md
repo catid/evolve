@@ -156,6 +156,13 @@ Key scripts:
 ./scripts/run_lss_post_pass_campaign_stage5.sh
 ./scripts/run_lss_post_pass_campaign_stage6.sh
 ./scripts/run_lss_post_pass_campaign_finalize.sh
+./scripts/run_lss_canonization_campaign_register.sh
+./scripts/run_lss_canonization_campaign_stage2.sh
+./scripts/run_lss_canonization_campaign_stage3.sh
+./scripts/run_lss_canonization_campaign_stage4.sh
+./scripts/run_lss_canonization_campaign_stage5.sh
+./scripts/run_lss_canonization_campaign_stage6.sh
+./scripts/run_lss_canonization_campaign_finalize.sh
 ```
 
 Resume a run from a checkpoint:
@@ -229,6 +236,10 @@ The current repo conclusion is still control-first, and the frozen benchmark pac
   - it keeps a gate `PASS` against the frozen benchmark pack
   - it survives expanded fairness, route validation, and longitudinal stability
   - it does not become canonical because it still trails matched `token_dense` on the harder fresh block `post_pass_b`
+- The hard-block canonization campaign reinforces that same boundary:
+  - bounded hard-block fixes improved the `post_pass_b` plus `post_pass_c` family relative to the current candidate
+  - but none made KL learner-state `SARE` stop trailing matched KL learner-state `token_dense` on the hard-block family
+  - so the candidate still remains thaw-qualified but not canonical
 - Offline teacher distillation and other bounded recovery families remain negative.
 - The routed result that survives is still teacher-guided and bounded:
   - teacher-logit KL learner-state supervision for `SARE`
@@ -268,6 +279,11 @@ Canonical reports for the current phase:
 - `outputs/reports/long_campaign_candidate_pack.json`
 - `outputs/reports/long_campaign_gate_report.md`
 - `outputs/reports/long_campaign_decision_memo.md`
+- `outputs/reports/canonization_campaign_registration.md`
+- `outputs/reports/canonization_stage2_hard_block_screening.md`
+- `outputs/reports/canonization_stage3_hard_block_fairness.md`
+- `outputs/reports/canonization_gate_report.md`
+- `outputs/reports/canonization_decision_memo.md`
 - `outputs/reports/lss_forensic_casebook.md`
 - `outputs/reports/lss_forensic_round_audit.md`
 - `outputs/reports/lss_forensic_route_locality.md`

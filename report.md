@@ -12,6 +12,7 @@
   - evaluation: external `64`-episode `policy_diagnostics`
   - result: `PASS: thaw consideration allowed`
   - post-pass qualification result: `remains thaw-qualified but not canonical`
+  - hard-block canonization result: `remains thaw-qualified but not canonical`
 - This is still not a PPO-only, specifically multi-expert, cross-task, or KeyCorridor claim.
 
 ## Frozen Benchmark Baseline
@@ -63,6 +64,10 @@ Future thaw discussion must use the pack-based gate, not ad hoc report compariso
 - post-pass successor draft: [post_pass_successor_pack_draft.md](outputs/reports/post_pass_successor_pack_draft.md)
 - post-pass candidate pack gate result: [post_pass_gate_report.md](outputs/reports/post_pass_gate_report.md)
 - post-pass canonization decision: [post_pass_canonization_decision_memo.md](outputs/reports/post_pass_canonization_decision_memo.md)
+- hard-block canonization screening: [canonization_stage2_hard_block_screening.md](outputs/reports/canonization_stage2_hard_block_screening.md)
+- hard-block canonization fairness: [canonization_stage3_hard_block_fairness.md](outputs/reports/canonization_stage3_hard_block_fairness.md)
+- hard-block canonization gate status: [canonization_gate_report.md](outputs/reports/canonization_gate_report.md)
+- hard-block canonization decision: [canonization_decision_memo.md](outputs/reports/canonization_decision_memo.md)
 - malformed candidate example: [claim_gate_pack_inconclusive.md](outputs/reports/claim_gate_pack_inconclusive.md)
 - adversarial conformance corpus: [claim_gate_corpus_report.md](outputs/reports/claim_gate_corpus_report.md)
 - adversarial conformance result: [claim_gate_conformance_report.md](outputs/reports/claim_gate_conformance_report.md)
@@ -128,11 +133,13 @@ The staged DoorKey-only campaign produced the first within-envelope thaw-qualifi
 - Stage 5 route checks still show materially harmful routing disruption on the selected weak case `(fresh_final, 53)` and strong case `(fresh, 23)`. See [long_campaign_stage5_route_validation.md](outputs/reports/long_campaign_stage5_route_validation.md).
 - Stage 6 packaged the candidate and the automated gate returned `PASS: thaw consideration allowed`. See [long_campaign_gate_report.md](outputs/reports/long_campaign_gate_report.md) and [long_campaign_decision_memo.md](outputs/reports/long_campaign_decision_memo.md).
 - The post-pass qualification campaign kept that gate `PASS`, but did not clear the canonization bar because the candidate still trails matched `token_dense` on the harder new fresh block `post_pass_b`. See [post_pass_stage1_fresh_blocks.md](outputs/reports/post_pass_stage1_fresh_blocks.md), [post_pass_stage2_full_fairness.md](outputs/reports/post_pass_stage2_full_fairness.md), [post_pass_stage3_route_validation.md](outputs/reports/post_pass_stage3_route_validation.md), [post_pass_stage4_longitudinal_stability.md](outputs/reports/post_pass_stage4_longitudinal_stability.md), [post_pass_successor_pack_draft.md](outputs/reports/post_pass_successor_pack_draft.md), [post_pass_gate_report.md](outputs/reports/post_pass_gate_report.md), and [post_pass_canonization_decision_memo.md](outputs/reports/post_pass_canonization_decision_memo.md).
+- The hard-block canonization campaign then attacked that exact blocker with three bounded hard-block interventions. `post_unlock_weighted_round5` improved the hard-block family the most, but even it still trailed matched KL learner-state `token_dense` on `post_pass_b` and on the full `post_pass_b` plus `post_pass_c` family, so the campaign stopped at Stage 3 and did not produce a successor candidate pack. See [canonization_stage2_hard_block_screening.md](outputs/reports/canonization_stage2_hard_block_screening.md), [canonization_stage3_hard_block_fairness.md](outputs/reports/canonization_stage3_hard_block_fairness.md), [canonization_gate_report.md](outputs/reports/canonization_gate_report.md), and [canonization_decision_memo.md](outputs/reports/canonization_decision_memo.md).
 
 The right current wording is now:
 
 - thaw consideration is allowed within DoorKey only
 - `post_unlock_weighted` remains thaw-qualified but not canonical
+- the hard-block canonization campaign strengthens that same conclusion rather than changing it
 - still teacher-guided only
 - still KL learner-state only
 - still external `64`-episode evaluation only
