@@ -1,0 +1,16 @@
+eval_success_rate,label,lane,run_dir,seed
+1.0,recovered_token_dense,fresh_final,outputs/experiments/lss_multi_expert_hardening/final_fresh_block/seed_47/token_dense_ent1e3,47
+0.0,baseline_sare,fresh_final,outputs/experiments/lss_multi_expert_hardening/final_fresh_block/seed_47/sare_ent1e3,47
+1.0,recovered_token_dense,fresh_final,outputs/experiments/lss_multi_expert_hardening/final_fresh_block/seed_53/token_dense_ent1e3,53
+0.0,baseline_sare,fresh_final,outputs/experiments/lss_multi_expert_hardening/final_fresh_block/seed_53/sare_ent1e3,53
+1.0,recovered_token_dense,fresh_final,outputs/experiments/lss_multi_expert_hardening/final_fresh_block/seed_59/token_dense_ent1e3,59
+0.0,baseline_sare,fresh_final,outputs/experiments/lss_multi_expert_hardening/final_fresh_block/seed_59/sare_ent1e3,59
+0.453125,kl_lss_sare,fresh_final,outputs/experiments/lss_long_campaign/stage3/post_unlock_weighted/fresh_final/seed_47/kl_lss_sare,47
+0.453125,kl_lss_single_expert,fresh_final,outputs/experiments/lss_long_campaign/stage3/post_unlock_weighted/fresh_final/seed_47/kl_lss_single_expert,47
+1.0,kl_lss_token_dense,fresh_final,outputs/experiments/lss_long_campaign/stage3/post_unlock_weighted/fresh_final/seed_47/kl_lss_token_dense,47
+0.515625,kl_lss_sare,fresh_final,outputs/experiments/lss_long_campaign/stage3/post_unlock_weighted/fresh_final/seed_53/kl_lss_sare,53
+0.515625,kl_lss_single_expert,fresh_final,outputs/experiments/lss_long_campaign/stage3/post_unlock_weighted/fresh_final/seed_53/kl_lss_single_expert,53
+1.0,kl_lss_token_dense,fresh_final,outputs/experiments/lss_long_campaign/stage3/post_unlock_weighted/fresh_final/seed_53/kl_lss_token_dense,53
+0.421875,kl_lss_sare,fresh_final,outputs/experiments/lss_long_campaign/stage3/post_unlock_weighted/fresh_final/seed_59/kl_lss_sare,59
+0.421875,kl_lss_single_expert,fresh_final,outputs/experiments/lss_long_campaign/stage3/post_unlock_weighted/fresh_final/seed_59/kl_lss_single_expert,59
+1.0,kl_lss_token_dense,fresh_final,outputs/experiments/lss_long_campaign/stage3/post_unlock_weighted/fresh_final/seed_59/kl_lss_token_dense,59

@@ -1,6 +1,9 @@
-# Frozen Benchmark Pack Validation
+# Pack-Based Claim Gate Dry Run
 
-- pack: `outputs/reports/frozen_benchmark_pack.json`
+- frozen benchmark pack: `outputs/reports/frozen_benchmark_pack.json`
+- candidate result pack: `outputs/reports/post_pass_candidate_pack.json`
+
+## Frozen Pack Validation
 
 | Check | Result | Detail |
 | --- | --- | --- |
@@ -39,6 +42,60 @@
 | artifact_hash::manifest_report | `PASS` | artifact `outputs/reports/frozen_claim_manifest_report.md` hash matches `a47eb42e06e4c8ba02e773c099e7a07917a071d2d0511c7aa325f2cc871947b6` |
 | artifact_hash::resume_scorecard | `PASS` | artifact `outputs/reports/lss_resume_qualification_scorecard.md` hash matches `843470eb82a25313b09cc796d3ef5f01f9efa6b02dfaf96aaa61e1bc80265028` |
 
+## Candidate Pack Validation
+
+| Check | Result | Detail |
+| --- | --- | --- |
+| pack_type | `PASS` | pack type is `candidate_result_pack` |
+| schema_version | `PASS` | candidate schema version `1` is recognized |
+| candidate_name | `PASS` | candidate name is `post_unlock_weighted` |
+| frozen_pack_reference.path | `PASS` | candidate references `outputs/reports/frozen_benchmark_pack.json` |
+| frozen_pack_reference.sha256 | `PASS` | candidate references frozen-pack hash `a8c79115f6cbf0e620d1438e5ba1a36b2bb42e3c157a4e225f187e51eef4a351` |
+| frozen_pack_reference.claim_id | `PASS` | candidate claim id matches `doorkey_frozen_claim` |
+| task | `PASS` | candidate task matches `DoorKey` |
+| evaluation | `PASS` | candidate uses the required DoorKey external-64 evaluation path |
+| requested_claims | `PASS` | requested claim keys are well formed |
+| controls_present.type | `PASS` | controls_present is a list of strings |
+| controls_present | `PASS` | candidate includes all required fairness controls |
+| metrics.combined.type | `PASS` | combined metrics are a mapping |
+| metrics.retry_block.type | `PASS` | retry-block metrics are a mapping |
+| metrics.combined | `PASS` | combined metrics expose every required variant field |
+| metrics.retry_block | `PASS` | retry-block metrics expose every required variant field |
+| actual_sets.combined | `PASS` | candidate combined lane/seed set matches the frozen benchmark |
+| actual_sets.retry_block | `PASS` | candidate retry-block lane/seed set matches the frozen benchmark |
+| artifacts.duplicates | `PASS` | artifact roles are unique |
+| artifacts | `PASS` | candidate pack exposes all required artifact roles |
+| artifact_hash::candidate_metrics_json | `PASS` | candidate artifact `outputs/reports/post_pass_candidate_metrics.json` hash matches `d08f0f331e54882f522cd169a55516b5102057b94c16b12d3a8135074fbc711b` |
+| artifact_hash::candidate_summary_markdown | `PASS` | candidate artifact `outputs/reports/post_pass_candidate_summary.md` hash matches `30a12f0a294d4cf1af368cc5d97e9477c8647c1be8818b0e630d29dee95d9248` |
+| artifact_hash::combined_report_csv | `PASS` | candidate artifact `outputs/reports/post_pass_candidate_combined_report.csv` hash matches `b831a99fd386ec74e03bc432cc8e98eeb5a42f503029d5e25b97daa49ff2c573` |
+| artifact_hash::combined_report_markdown | `PASS` | candidate artifact `outputs/reports/post_pass_candidate_combined_report.md` hash matches `f16000de972ee5724b2c267c24d97a4b1b01707d7149263da8ec998147c23ab8` |
+| artifact_hash::retry_block_report_csv | `PASS` | candidate artifact `outputs/reports/post_pass_candidate_retry_block_report.csv` hash matches `2b574a1c70804768d314ec1b1d685165d746883e91bce08f61b653443390d6b2` |
+| artifact_hash::retry_block_report_markdown | `PASS` | candidate artifact `outputs/reports/post_pass_candidate_retry_block_report.md` hash matches `9bed61f00f5cb2159b3bc76d0cace2632f03627cf1fdc851e2cdd8d84425edec` |
+| artifact_consistency::candidate_metrics_json | `PASS` | candidate pack matches the candidate_metrics_json artifact on task, evaluation, controls, metrics, and actual sets |
+| provenance.git_commit | `PASS` | candidate provenance git_commit `90f4ca1e3b9a572156e49d4af86d273a748cea43` is well formed |
+| provenance.git_dirty | `PASS` | candidate provenance git_dirty is `True` |
+
+## Claim Gate Checks
+
+| Check | Result | Detail |
+| --- | --- | --- |
+| evaluation_shape | `PASS` | candidate evaluation is a mapping |
+| task | `PASS` | candidate task matches `DoorKey` |
+| evaluation_path | `PASS` | candidate uses `external_policy_diagnostics` with `64` episodes |
+| fairness_controls_shape | `PASS` | controls_present is a list of strings |
+| fairness_controls | `PASS` | all required structured controls are present |
+| claim_scope_shape | `PASS` | requested_claims is a list of strings |
+| claim_scope | `PASS` | candidate stays inside the frozen claim envelope |
+| candidate_metrics_shape | `PASS` | metrics is a mapping |
+| candidate_metrics_combined_shape | `PASS` | metrics.combined is a mapping |
+| candidate_metrics_retry_block_shape | `PASS` | metrics.retry_block is a mapping |
+| candidate_metrics | `PASS` | candidate exposes retry-block and combined metrics for required variants |
+| retry_block_improvement | `PASS` | candidate retry-block SARE mean `0.4635` exceeds frozen baseline `0.3125` |
+| retry_block_vs_single_expert | `PASS` | candidate retry-block SARE mean `0.4635` matches or beats same-block single_expert `0.4635` |
+| retry_block_failures | `PASS` | candidate retry-block SARE complete-seed failures `0` stay within gate `1` |
+| combined_picture_mean | `PASS` | candidate combined SARE mean `0.7500` preserves or improves frozen baseline `0.7122` |
+| combined_picture_failures | `PASS` | candidate combined SARE complete-seed failures `0` stay within gate `1` |
+
 ## Verdict
 
-PASS: frozen benchmark pack validated
+PASS: thaw consideration allowed

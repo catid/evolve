@@ -1,0 +1,137 @@
+schema_version: 1
+name: lss_post_pass_campaign
+frozen_manifest: configs/claims/doorkey_frozen_claim.yaml
+frozen_pack: outputs/reports/frozen_benchmark_pack.json
+frozen_combined_csv: outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.csv
+current_candidate_pack: outputs/reports/long_campaign_candidate_pack.json
+current_gate_report: outputs/reports/long_campaign_gate_report.md
+canonical_teacher: flat_dense
+current_candidate_name: post_unlock_weighted
+candidate_template: configs/experiments/lss_post_pass_campaign/lss_kl_post_unlock_weighted.yaml
+
+evaluation:
+  episodes: 64
+  task: DoorKey
+  path_key: external_policy_diagnostics
+
+base_configs:
+  flat_dense: configs/experiments/minigrid_doorkey_flat_dense_ent1e3.yaml
+  token_dense: configs/experiments/minigrid_doorkey_token_dense_ent1e3.yaml
+  single_expert: configs/experiments/minigrid_doorkey_single_expert_ent1e3.yaml
+  sare: configs/experiments/minigrid_doorkey_sare_ent1e3.yaml
+
+historical_candidate_roots:
+  weak: outputs/experiments/lss_long_campaign/stage3/post_unlock_weighted
+  strong: outputs/experiments/lss_long_campaign/stage4/post_unlock_weighted
+
+historical_candidate_csv: outputs/reports/long_campaign_stage4_replication.csv
+historical_candidate_json: outputs/reports/long_campaign_stage4_replication.json
+
+baseline_lane_roots:
+  original:
+    teacher_root: outputs/reproductions/lss_robustness_baseline
+    sare_lss_root: outputs/reproductions/lss_robustness_baseline
+    sare_lss_run_name: flat_dense_to_sare_lss
+  fresh:
+    teacher_root: outputs/experiments/lss_claim_hardening/additional_seeds
+    sare_lss_root: outputs/experiments/lss_claim_hardening/additional_seeds
+    sare_lss_run_name: kl_lss_sare
+  fresh_extra:
+    teacher_root: outputs/experiments/lss_claim_broadening/additional_fresh_block
+    sare_lss_root: outputs/experiments/lss_claim_broadening/additional_fresh_block
+    sare_lss_run_name: kl_lss_sare
+  fresh_final:
+    teacher_root: outputs/experiments/lss_multi_expert_hardening/final_fresh_block
+    sare_lss_root: outputs/experiments/lss_multi_expert_hardening/final_fresh_block
+    sare_lss_run_name: kl_lss_sare
+
+students:
+  sare:
+    config_name: sare_ent1e3.yaml
+    run_name: sare_ent1e3
+    output_label: kl_lss_sare
+  token_dense:
+    config_name: token_dense_ent1e3.yaml
+    run_name: token_dense_ent1e3
+    output_label: kl_lss_token_dense
+  single_expert:
+    config_name: single_expert_ent1e3.yaml
+    run_name: single_expert_ent1e3
+    output_label: kl_lss_single_expert
+
+seed_groups:
+  retry_block:
+    lane: fresh_final
+    seeds: [47, 53, 59]
+  historical_blocks:
+    blocks:
+      - lane: original
+        seeds: [7, 11, 19]
+      - lane: fresh
+        seeds: [23, 29, 31]
+      - lane: fresh_extra
+        seeds: [37, 41, 43]
+      - lane: fresh_final
+        seeds: [47, 53, 59]
+  new_block_a:
+    lane: post_pass_a
+    seeds: [61, 67, 71]
+  new_block_b:
+    lane: post_pass_b
+    seeds: [73, 79, 83]
+  expanded_blocks:
+    blocks:
+      - lane: original
+        seeds: [7, 11, 19]
+      - lane: fresh
+        seeds: [23, 29, 31]
+      - lane: fresh_extra
+        seeds: [37, 41, 43]
+      - lane: fresh_final
+        seeds: [47, 53, 59]
+      - lane: post_pass_a
+        seeds: [61, 67, 71]
+      - lane: post_pass_b
+        seeds: [73, 79, 83]
+
+new_block_output_root: outputs/experiments/lss_post_pass_campaign/stage1
+
+route_validation:
+  weak_historical_seeds: [47, 59]
+  strong_new_blocks:
+    - post_pass_a
+    - post_pass_b
+
+stability:
+  weak_historical_seed_pool: [47, 53, 59]
+  strong_source: historical_strong
+
+reports:
+  registration: outputs/reports/post_pass_campaign_registration.md
+  baseline_sync: outputs/reports/post_pass_baseline_sync.md
+  stage1_report: outputs/reports/post_pass_stage1_fresh_blocks.md
+  stage1_csv: outputs/reports/post_pass_stage1_fresh_blocks.csv
+  stage1_json: outputs/reports/post_pass_stage1_fresh_blocks.json
+  stage2_report: outputs/reports/post_pass_stage2_full_fairness.md
+  stage2_csv: outputs/reports/post_pass_stage2_full_fairness.csv
+  stage2_json: outputs/reports/post_pass_stage2_full_fairness.json
+  stage3_report: outputs/reports/post_pass_stage3_route_validation.md
+  stage3_csv: outputs/reports/post_pass_stage3_route_validation.csv
+  stage3_json: outputs/reports/post_pass_stage3_route_validation.json
+  stage3_raw: outputs/reports/post_pass_stage3_route_validation_raw.md
+  stage3_raw_csv: outputs/reports/post_pass_stage3_route_validation_raw.csv
+  stage4_report: outputs/reports/post_pass_stage4_longitudinal_stability.md
+  stage4_csv: outputs/reports/post_pass_stage4_longitudinal_stability.csv
+  stage4_json: outputs/reports/post_pass_stage4_longitudinal_stability.json
+  successor_pack_markdown: outputs/reports/post_pass_successor_pack_draft.md
+  successor_pack_json: outputs/reports/post_pass_successor_pack_draft.json
+  candidate_summary_markdown: outputs/reports/post_pass_candidate_summary.md
+  candidate_metrics_json: outputs/reports/post_pass_candidate_metrics.json
+  combined_report_markdown: outputs/reports/post_pass_candidate_combined_report.md
+  combined_report_csv: outputs/reports/post_pass_candidate_combined_report.csv
+  retry_report_markdown: outputs/reports/post_pass_candidate_retry_block_report.md
+  retry_report_csv: outputs/reports/post_pass_candidate_retry_block_report.csv
+  candidate_pack_json: outputs/reports/post_pass_candidate_pack.json
+  gate_report_markdown: outputs/reports/post_pass_gate_report.md
+  gate_report_json: outputs/reports/post_pass_gate_report.json
+  decision_memo: outputs/reports/post_pass_canonization_decision_memo.md

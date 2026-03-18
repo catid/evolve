@@ -6,7 +6,7 @@
       "status": "PASS"
     },
     {
-      "detail": "sealed source commit `8d691d69559de8e2aba18481bebcb7151ac15d84` is well formed",
+      "detail": "sealed source commit `90f4ca1e3b9a572156e49d4af86d273a748cea43` is well formed",
       "name": "provenance.sealed_source_commit",
       "status": "PASS"
     },
@@ -76,7 +76,7 @@
       "status": "PASS"
     },
     {
-      "detail": "artifact `outputs/reports/claim_ledger.md` hash matches `8127d6aeb0b06bd69d13dbb75b37f991abebe4ba501fc60cf4a8d0c6a99d691d`",
+      "detail": "artifact `outputs/reports/claim_ledger.md` hash matches `b6e21c2b86d6ef74de6f27c986fc566de5652a4d08512094367809c579992f41`",
       "name": "artifact_hash::claim_ledger",
       "status": "PASS"
     },

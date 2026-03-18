@@ -8,7 +8,7 @@
 | Check | Result | Detail |
 | --- | --- | --- |
 | pack_type | `PASS` | pack type is `frozen_benchmark_pack` |
-| provenance.sealed_source_commit | `PASS` | sealed source commit `8d691d69559de8e2aba18481bebcb7151ac15d84` is well formed |
+| provenance.sealed_source_commit | `PASS` | sealed source commit `90f4ca1e3b9a572156e49d4af86d273a748cea43` is well formed |
 | provenance.sealed_source_dirty | `PASS` | sealed source dirty flag is `True` |
 | manifest_hash | `PASS` | manifest hash matches `d10db1cff6f8cb55f434d3d11f0079d8f7e72ea45d2c46adc1c03909dece0bd6` |
 | schema_version | `PASS` | pack schema version `1` is recognized |
@@ -22,7 +22,7 @@
 | authoritative_artifacts | `PASS` | all required artifact keys are present |
 | artifact_hash::claim_gate_dry_run | `PASS` | artifact `outputs/reports/claim_gate_dry_run.md` hash matches `c38ee9a1df0197f405ed6aa16ad90a27f4d6b8f3d9f960588c0e3bbd70cf8dd7` |
 | artifact_hash::claim_gate_dry_run_json | `PASS` | artifact `outputs/reports/claim_gate_dry_run.json` hash matches `152056ccf996def48d342cfb6f98cdea2e30eae915a3333fdcc1721d8db7f41d` |
-| artifact_hash::claim_ledger | `PASS` | artifact `outputs/reports/claim_ledger.md` hash matches `8127d6aeb0b06bd69d13dbb75b37f991abebe4ba501fc60cf4a8d0c6a99d691d` |
+| artifact_hash::claim_ledger | `PASS` | artifact `outputs/reports/claim_ledger.md` hash matches `b6e21c2b86d6ef74de6f27c986fc566de5652a4d08512094367809c579992f41` |
 | artifact_hash::combined_doorkey_csv | `PASS` | artifact `outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.csv` hash matches `f0c83d833ef9bfe3fa9e2db97f10e5bc42f6c1ab42805c14b21aa53ca0744b3b` |
 | artifact_hash::combined_doorkey_report | `PASS` | artifact `outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.md` hash matches `e0cdd2b799538aad926156a19bdf88da19cb8c62a091ab16799a3e94cc87e19d` |
 | artifact_hash::final_block_csv | `PASS` | artifact `outputs/reports/lss_final_block_single_expert_control_report.csv` hash matches `8a7c5491529286337be0a727d2a71649ca4804b0e33efe8eba497354f46f7f2c` |
@@ -50,7 +50,7 @@
 | schema_version | `PASS` | candidate schema version `1` is recognized |
 | candidate_name | `PASS` | candidate name is `current_frozen_candidate_pack` |
 | frozen_pack_reference.path | `PASS` | candidate references `outputs/reports/frozen_benchmark_pack.json` |
-| frozen_pack_reference.sha256 | `PASS` | candidate references frozen-pack hash `21f69b44b2a1567f6432e0ec2a0f5dce2c4f74ea256196d865fbdf384580a873` |
+| frozen_pack_reference.sha256 | `PASS` | candidate references frozen-pack hash `a8c79115f6cbf0e620d1438e5ba1a36b2bb42e3c157a4e225f187e51eef4a351` |
 | frozen_pack_reference.claim_id | `PASS` | candidate claim id matches `doorkey_frozen_claim` |
 | task | `PASS` | candidate task matches `DoorKey` |
 | evaluation | `PASS` | candidate uses the required DoorKey external-64 evaluation path |

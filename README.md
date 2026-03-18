@@ -148,6 +148,14 @@ Key scripts:
 ./scripts/run_lss_long_campaign_stage5.sh
 ./scripts/run_lss_long_campaign_stage6.sh
 ./scripts/run_lss_long_campaign_finalize.sh
+./scripts/run_lss_post_pass_campaign_register.sh
+./scripts/run_lss_post_pass_campaign_stage1.sh
+./scripts/run_lss_post_pass_campaign_stage2.sh
+./scripts/run_lss_post_pass_campaign_stage3.sh
+./scripts/run_lss_post_pass_campaign_stage4.sh
+./scripts/run_lss_post_pass_campaign_stage5.sh
+./scripts/run_lss_post_pass_campaign_stage6.sh
+./scripts/run_lss_post_pass_campaign_finalize.sh
 ```
 
 Resume a run from a checkpoint:
@@ -212,11 +220,15 @@ That replay is the check that the current sealed gate still agrees with the acce
 
 ## Current DoorKey Result
 
-The current repo conclusion is still control-first, and the frozen benchmark pack remains the baseline comparison unit. Inside that baseline, the first staged DoorKey thaw-qualified candidate now exists.
+The current repo conclusion is still control-first, and the frozen benchmark pack remains the baseline comparison unit. Inside that baseline, the first staged DoorKey thaw-qualified candidate now exists, but it is still not the canonical benchmark replacement.
 
 - `flat_dense` remains the best verified greedy DoorKey control.
 - `token_dense` with `ppo.ent_coef=0.001` remains the canonical recovered tokenized control.
 - PPO-only `SARE` is still greedy-negative.
+- `post_unlock_weighted` remains thaw-qualified within DoorKey only after the post-pass qualification campaign:
+  - it keeps a gate `PASS` against the frozen benchmark pack
+  - it survives expanded fairness, route validation, and longitudinal stability
+  - it does not become canonical because it still trails matched `token_dense` on the harder fresh block `post_pass_b`
 - Offline teacher distillation and other bounded recovery families remain negative.
 - The routed result that survives is still teacher-guided and bounded:
   - teacher-logit KL learner-state supervision for `SARE`

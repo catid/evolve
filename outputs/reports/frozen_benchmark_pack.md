@@ -3,7 +3,7 @@
 - pack json: `outputs/reports/frozen_benchmark_pack.json`
 - claim id: `doorkey_frozen_claim`
 - frozen status: `frozen`
-- sealed source commit: `8d691d69559de8e2aba18481bebcb7151ac15d84`
+- sealed source commit: `90f4ca1e3b9a572156e49d4af86d273a748cea43`
 - sealed source dirty: `True`
 - schema version: `1`
 - manifest: `configs/claims/doorkey_frozen_claim.yaml`
@@ -34,7 +34,7 @@
 | `frozen_validation_json` | `outputs/reports/frozen_baseline_validation.json` | `1888fb7ac3e78dead22811d99b88ee1d6b250c37de8fa0600e4bc7ea12a1918b` | 9679 |
 | `claim_gate_dry_run` | `outputs/reports/claim_gate_dry_run.md` | `c38ee9a1df0197f405ed6aa16ad90a27f4d6b8f3d9f960588c0e3bbd70cf8dd7` | 1700 |
 | `claim_gate_dry_run_json` | `outputs/reports/claim_gate_dry_run.json` | `152056ccf996def48d342cfb6f98cdea2e30eae915a3333fdcc1721d8db7f41d` | 2556 |
-| `claim_ledger` | `outputs/reports/claim_ledger.md` | `8127d6aeb0b06bd69d13dbb75b37f991abebe4ba501fc60cf4a8d0c6a99d691d` | 3714 |
+| `claim_ledger` | `outputs/reports/claim_ledger.md` | `b6e21c2b86d6ef74de6f27c986fc566de5652a4d08512094367809c579992f41` | 5371 |
 | `future_retry_template` | `outputs/reports/future_retry_template.md` | `9ecaa4ac44e4ced4025bbb90959f3158dd3dbecab8b834b618f0e7270eb6e84e` | 1555 |
 | `freeze_hardening_decision_memo` | `outputs/reports/freeze_hardening_decision_memo.md` | `da0fdc73426b31c2a042bc71cef4a30307364c7c3333d4a3867b0b0b843bc7a5` | 1474 |
 | `combined_doorkey_report` | `outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.md` | `e0cdd2b799538aad926156a19bdf88da19cb8c62a091ab16799a3e94cc87e19d` | 1687 |

@@ -1,0 +1,126 @@
+{
+  "cases": [
+    {
+      "kind": "weak",
+      "lane": "fresh_final",
+      "seed": 53
+    },
+    {
+      "kind": "strong",
+      "lane": "fresh",
+      "seed": 23
+    }
+  ],
+  "stage": "stage4",
+  "stage4_pass": true,
+  "summaries": [
+    {
+      "best_success": 0.53125,
+      "case_kind": "weak",
+      "classification": "stable_plateau",
+      "final_success": 0.515625,
+      "lane": "fresh_final",
+      "round_successes": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0625,
+        0.0,
+        0.0,
+        0.515625,
+        0.5,
+        0.5,
+        0.53125,
+        0.515625,
+        0.53125,
+        0.515625,
+        0.515625
+      ],
+      "seed": 53,
+      "source": "candidate"
+    },
+    {
+      "best_success": 0.640625,
+      "case_kind": "weak",
+      "classification": "stable_plateau",
+      "final_success": 0.515625,
+      "lane": "fresh_final",
+      "round_successes": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0625,
+        0.0,
+        0.0,
+        0.515625,
+        0.5,
+        0.5,
+        0.53125,
+        0.515625,
+        0.640625,
+        0.515625,
+        0.515625
+      ],
+      "seed": 53,
+      "source": "baseline"
+    },
+    {
+      "best_success": 1.0,
+      "case_kind": "strong",
+      "classification": "stable_plateau",
+      "final_success": 1.0,
+      "lane": "fresh",
+      "round_successes": [
+        0.0,
+        0.109375,
+        0.015625,
+        0.0,
+        0.0,
+        0.234375,
+        0.0625,
+        0.03125,
+        0.59375,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seed": 23,
+      "source": "candidate"
+    },
+    {
+      "best_success": 1.0,
+      "case_kind": "strong",
+      "classification": "stable_plateau",
+      "final_success": 1.0,
+      "lane": "fresh",
+      "round_successes": [
+        0.0,
+        0.109375,
+        0.015625,
+        0.0,
+        0.0,
+        0.234375,
+        0.0625,
+        0.03125,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seed": 23,
+      "source": "baseline"
+    }
+  ]
+}

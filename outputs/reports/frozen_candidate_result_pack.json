@@ -124,7 +124,7 @@
   "frozen_pack_reference": {
     "claim_id": "doorkey_frozen_claim",
     "path": "outputs/reports/frozen_benchmark_pack.json",
-    "sha256": "21f69b44b2a1567f6432e0ec2a0f5dce2c4f74ea256196d865fbdf384580a873"
+    "sha256": "a8c79115f6cbf0e620d1438e5ba1a36b2bb42e3c157a4e225f187e51eef4a351"
   },
   "metrics": {
     "combined": {

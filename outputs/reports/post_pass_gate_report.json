@@ -1,5 +1,5 @@
 {
-  "candidate_pack": "outputs/reports/frozen_candidate_result_pack.json",
+  "candidate_pack": "outputs/reports/post_pass_candidate_pack.json",
   "candidate_pack_validation": [
     {
       "detail": "pack type is `candidate_result_pack`",
@@ -12,7 +12,7 @@
       "status": "PASS"
     },
     {
-      "detail": "candidate name is `current_frozen_candidate_pack`",
+      "detail": "candidate name is `post_unlock_weighted`",
       "name": "candidate_name",
       "status": "PASS"
     },
@@ -97,32 +97,32 @@
       "status": "PASS"
     },
     {
-      "detail": "candidate artifact `outputs/reports/frozen_baseline_validation.json` hash matches `1888fb7ac3e78dead22811d99b88ee1d6b250c37de8fa0600e4bc7ea12a1918b`",
+      "detail": "candidate artifact `outputs/reports/post_pass_candidate_metrics.json` hash matches `d08f0f331e54882f522cd169a55516b5102057b94c16b12d3a8135074fbc711b`",
       "name": "artifact_hash::candidate_metrics_json",
       "status": "PASS"
     },
     {
-      "detail": "candidate artifact `outputs/reports/frozen_baseline_validation.md` hash matches `9ce8e7f5055663abea1ea7444bde72ecc3789b9605a644ce24375f0149bf1248`",
+      "detail": "candidate artifact `outputs/reports/post_pass_candidate_summary.md` hash matches `30a12f0a294d4cf1af368cc5d97e9477c8647c1be8818b0e630d29dee95d9248`",
       "name": "artifact_hash::candidate_summary_markdown",
       "status": "PASS"
     },
     {
-      "detail": "candidate artifact `outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.csv` hash matches `f0c83d833ef9bfe3fa9e2db97f10e5bc42f6c1ab42805c14b21aa53ca0744b3b`",
+      "detail": "candidate artifact `outputs/reports/post_pass_candidate_combined_report.csv` hash matches `b831a99fd386ec74e03bc432cc8e98eeb5a42f503029d5e25b97daa49ff2c573`",
       "name": "artifact_hash::combined_report_csv",
       "status": "PASS"
     },
     {
-      "detail": "candidate artifact `outputs/reports/lss_frozen_claim_updated_combined_doorkey_report.md` hash matches `e0cdd2b799538aad926156a19bdf88da19cb8c62a091ab16799a3e94cc87e19d`",
+      "detail": "candidate artifact `outputs/reports/post_pass_candidate_combined_report.md` hash matches `f16000de972ee5724b2c267c24d97a4b1b01707d7149263da8ec998147c23ab8`",
       "name": "artifact_hash::combined_report_markdown",
       "status": "PASS"
     },
     {
-      "detail": "candidate artifact `outputs/reports/lss_final_block_single_expert_control_report.csv` hash matches `8a7c5491529286337be0a727d2a71649ca4804b0e33efe8eba497354f46f7f2c`",
+      "detail": "candidate artifact `outputs/reports/post_pass_candidate_retry_block_report.csv` hash matches `2b574a1c70804768d314ec1b1d685165d746883e91bce08f61b653443390d6b2`",
       "name": "artifact_hash::retry_block_report_csv",
       "status": "PASS"
     },
     {
-      "detail": "candidate artifact `outputs/reports/lss_final_block_single_expert_control_report.md` hash matches `084c6b96a5dfac5536af36009fe08664a42b21a61b230a3a03aa5e48a772812f`",
+      "detail": "candidate artifact `outputs/reports/post_pass_candidate_retry_block_report.md` hash matches `9bed61f00f5cb2159b3bc76d0cace2632f03627cf1fdc851e2cdd8d84425edec`",
       "name": "artifact_hash::retry_block_report_markdown",
       "status": "PASS"
     },
@@ -132,7 +132,7 @@
       "status": "PASS"
     },
     {
-      "detail": "candidate provenance git_commit `8d691d69559de8e2aba18481bebcb7151ac15d84` is well formed",
+      "detail": "candidate provenance git_commit `90f4ca1e3b9a572156e49d4af86d273a748cea43` is well formed",
       "name": "provenance.git_commit",
       "status": "PASS"
     },
@@ -199,27 +199,27 @@
       "status": "PASS"
     },
     {
-      "detail": "candidate retry-block SARE mean `0.3125` does not exceed frozen baseline `0.3125`",
+      "detail": "candidate retry-block SARE mean `0.4635` exceeds frozen baseline `0.3125`",
       "name": "retry_block_improvement",
-      "status": "FAIL"
+      "status": "PASS"
     },
     {
-      "detail": "candidate retry-block SARE mean `0.3125` trails same-block single_expert `0.4635`",
+      "detail": "candidate retry-block SARE mean `0.4635` matches or beats same-block single_expert `0.4635`",
       "name": "retry_block_vs_single_expert",
-      "status": "FAIL"
+      "status": "PASS"
     },
     {
-      "detail": "candidate retry-block SARE complete-seed failures `1` stay within gate `1`",
+      "detail": "candidate retry-block SARE complete-seed failures `0` stay within gate `1`",
       "name": "retry_block_failures",
       "status": "PASS"
     },
     {
-      "detail": "candidate combined SARE mean `0.7122` preserves or improves frozen baseline `0.7122`",
+      "detail": "candidate combined SARE mean `0.7500` preserves or improves frozen baseline `0.7122`",
       "name": "combined_picture_mean",
       "status": "PASS"
     },
     {
-      "detail": "candidate combined SARE complete-seed failures `1` stay within gate `1`",
+      "detail": "candidate combined SARE complete-seed failures `0` stay within gate `1`",
       "name": "combined_picture_failures",
       "status": "PASS"
     }
@@ -398,5 +398,5 @@
     }
   ],
   "mode": "pack",
-  "verdict": "FAIL: claim remains frozen"
+  "verdict": "PASS: thaw consideration allowed"
 }
