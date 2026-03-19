@@ -71,3 +71,22 @@ jobs:
         run: |
           source .venv/bin/activate
           bash ./scripts/run_portfolio_frontier_guard.sh
+
+      - name: Upload frontier guard artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: portfolio-frontier-guard-reports
+          if-no-files-found: error
+          path: |
+            outputs/reports/portfolio_frontier_docs_audit.md
+            outputs/reports/portfolio_frontier_docs_audit.json
+            outputs/reports/portfolio_frontier_doctor.md
+            outputs/reports/portfolio_frontier_doctor.json
+            outputs/reports/portfolio_frontier_guard_report.md
+            outputs/reports/portfolio_frontier_guard_report.json
+            outputs/reports/portfolio_active_state_doctor.md
+            outputs/reports/portfolio_active_state_doctor.json
+            outputs/reports/portfolio_operational_state.md
+            outputs/reports/portfolio_operational_state.json
+            outputs/reports/portfolio_seed_pack_doctor.md
+            outputs/reports/portfolio_seed_pack_doctor.json

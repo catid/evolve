@@ -66,3 +66,34 @@ def test_guard_job_runs_guard_script() -> None:
     run_steps = [step["run"] for step in steps if "run" in step]
     assert any("bash -n scripts/run_portfolio_frontier_guard.sh" in run for run in run_steps)
     assert any("bash ./scripts/run_portfolio_frontier_guard.sh" in run for run in run_steps)
+
+
+def test_guard_job_uploads_frontier_artifacts() -> None:
+    workflow = load_workflow()
+    steps = workflow["jobs"]["portfolio-frontier-guard"]["steps"]
+    upload_steps = [step for step in steps if step.get("uses") == "actions/upload-artifact@v4"]
+    assert upload_steps
+    upload = upload_steps[-1]
+    with_block = upload["with"]
+    assert with_block["name"] == "portfolio-frontier-guard-reports"
+    assert with_block["if-no-files-found"] == "error"
+    artifact_paths = {
+        line.strip()
+        for line in with_block["path"].splitlines()
+        if line.strip()
+    }
+    required_paths = {
+        "outputs/reports/portfolio_frontier_docs_audit.md",
+        "outputs/reports/portfolio_frontier_docs_audit.json",
+        "outputs/reports/portfolio_frontier_doctor.md",
+        "outputs/reports/portfolio_frontier_doctor.json",
+        "outputs/reports/portfolio_frontier_guard_report.md",
+        "outputs/reports/portfolio_frontier_guard_report.json",
+        "outputs/reports/portfolio_active_state_doctor.md",
+        "outputs/reports/portfolio_active_state_doctor.json",
+        "outputs/reports/portfolio_operational_state.md",
+        "outputs/reports/portfolio_operational_state.json",
+        "outputs/reports/portfolio_seed_pack_doctor.md",
+        "outputs/reports/portfolio_seed_pack_doctor.json",
+    }
+    assert required_paths.issubset(artifact_paths)
