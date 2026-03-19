@@ -21,6 +21,8 @@ set -euo pipefail
   tests/test_portfolio_gate_report_loader.py \
   tests/test_portfolio_active_state_doctor.py \
   tests/test_portfolio_active_state_doctor_loader.py \
+  tests/test_portfolio_operational_state.py \
+  tests/test_portfolio_operational_state_loader.py \
   tests/test_portfolio_seed_pack_loader.py \
   tests/test_portfolio_seed_pack_validation_loader.py \
   tests/test_portfolio_seed_pack_scorer_loader.py \
@@ -41,6 +43,10 @@ set -euo pipefail
   --output outputs/reports/portfolio_active_state_doctor.md \
   --json outputs/reports/portfolio_active_state_doctor.json \
   --fail-on-drift
+
+./.venv/bin/python -m psmn_rl.analysis.portfolio_operational_state \
+  --output outputs/reports/portfolio_operational_state.md \
+  --json outputs/reports/portfolio_operational_state.json
 
 ./.venv/bin/python -m psmn_rl.analysis.portfolio_frontier_guard_report \
   --output outputs/reports/portfolio_frontier_guard_report.md \

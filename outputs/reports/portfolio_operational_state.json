@@ -1,0 +1,19 @@
+{
+  "active_candidate": "round6",
+  "active_candidate_pack": "outputs/reports/portfolio_candidate_pack.json",
+  "active_pack_role": "confirmed_active_round6",
+  "active_state_doctor_overall": "pass",
+  "archived_frozen_pack": "outputs/reports/frozen_benchmark_pack.json",
+  "decision_reference": "outputs/reports/portfolio_decision_memo.md",
+  "default_restart_prior": "round7",
+  "evaluation_episodes": 64,
+  "evaluation_path_key": "external_policy_diagnostics",
+  "evaluation_task": "DoorKey",
+  "frontier_guard_overall": "pass",
+  "gate_mode": "pack",
+  "gate_report_reference": "outputs/reports/portfolio_gate_report.md",
+  "gate_verdict": "PASS: thaw consideration allowed",
+  "ready_for_bounded_restart": true,
+  "replay_validated_alternate": "round10",
+  "status_type": "portfolio_operational_state"
+}
