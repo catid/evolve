@@ -1,0 +1,45 @@
+{
+  "checks": [
+    {
+      "detail": "manifest active=['round6']",
+      "label": "active_benchmark_round6",
+      "status": "pass"
+    },
+    {
+      "detail": "restart=['round7'] manifest=['round7'] pack=['round7']",
+      "label": "restart_default_round7",
+      "status": "pass"
+    },
+    {
+      "detail": "restart=['door3_post5', 'post_unlock_x5'] manifest=['door3_post5', 'post_unlock_x5'] pack=['door3_post5', 'post_unlock_x5']",
+      "label": "retired_priors_match",
+      "status": "pass"
+    },
+    {
+      "detail": "scorer round7=advance_for_broader_dev",
+      "label": "round7_scorer_advances",
+      "status": "pass"
+    },
+    {
+      "detail": "replay round10=advance_for_broader_dev manifest=['round10']",
+      "label": "round10_replay_advances",
+      "status": "pass"
+    },
+    {
+      "detail": "scorer round5=hold_seed_clean_but_below_incumbent manifest=['round5']",
+      "label": "round5_hold_only",
+      "status": "pass"
+    },
+    {
+      "detail": "scorer door3=prune_support_regression manifest=retired_prior",
+      "label": "door3_retired_consistent",
+      "status": "pass"
+    },
+    {
+      "detail": "scorer post_unlock_x5=prune_guardrail_regression manifest=retired_prior",
+      "label": "post_unlock_x5_retired_consistent",
+      "status": "pass"
+    }
+  ],
+  "overall": "pass"
+}
