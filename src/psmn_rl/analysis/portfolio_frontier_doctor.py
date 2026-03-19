@@ -1,16 +1,15 @@
 from __future__ import annotations
 
 import argparse
-import sys
 from pathlib import Path
 from typing import Any
 
-from psmn_rl.analysis.lss_post_pass_campaign import _read_json, _write_json
+from psmn_rl.analysis.lss_post_pass_campaign import _write_json
+from psmn_rl.analysis.portfolio_frontier_consistency_loader import load_frontier_consistency_report
 from psmn_rl.analysis.portfolio_frontier_contract_loader import load_frontier_contract
+from psmn_rl.analysis.portfolio_frontier_docs_audit_loader import load_frontier_docs_audit_report
 from psmn_rl.utils.io import get_git_commit, get_git_dirty
 
-CONSISTENCY_PATH = Path("outputs/reports/portfolio_frontier_consistency.json")
-DOCS_AUDIT_PATH = Path("outputs/reports/portfolio_frontier_docs_audit.json")
 EXPECTED_ACTIVE_PACK = "outputs/reports/portfolio_candidate_pack.json"
 EXPECTED_ARCHIVED_PACK = "outputs/reports/frozen_benchmark_pack.json"
 
@@ -67,16 +66,16 @@ def evaluate_frontier_state(
 
 def render_doctor(output: Path | None, json_output: Path | None) -> dict[str, Any]:
     contract = load_frontier_contract()
-    consistency = _read_json(CONSISTENCY_PATH)
-    docs_audit = _read_json(DOCS_AUDIT_PATH)
+    consistency = load_frontier_consistency_report()
+    docs_audit = load_frontier_docs_audit_report()
     result = evaluate_frontier_state(
         active_candidate=contract.benchmark.active_candidate,
         active_candidate_pack=contract.benchmark.active_candidate_pack,
         archived_frozen_pack=contract.benchmark.archived_frozen_pack,
         default_restart_prior=contract.frontier_roles.default_restart_prior,
         replay_validated_alternate=contract.frontier_roles.replay_validated_alternate,
-        consistency_overall=str(consistency["overall"]),
-        docs_audit_overall=str(docs_audit["overall"]),
+        consistency_overall=consistency.overall,
+        docs_audit_overall=docs_audit.overall,
     )
 
     if output is not None:

@@ -4,14 +4,13 @@ import argparse
 from pathlib import Path
 from typing import Any
 
-from psmn_rl.analysis.lss_post_pass_campaign import _read_json, _write_json
+from psmn_rl.analysis.lss_post_pass_campaign import _write_json
+from psmn_rl.analysis.portfolio_frontier_consistency_loader import load_frontier_consistency_report
 from psmn_rl.analysis.portfolio_frontier_contract_loader import load_frontier_contract
+from psmn_rl.analysis.portfolio_frontier_docs_audit_loader import load_frontier_docs_audit_report
+from psmn_rl.analysis.portfolio_frontier_doctor_loader import load_frontier_doctor_report
+from psmn_rl.analysis.portfolio_seed_pack_doctor_loader import load_seed_pack_doctor_report
 from psmn_rl.utils.io import get_git_commit, get_git_dirty
-
-CONSISTENCY_PATH = Path("outputs/reports/portfolio_frontier_consistency.json")
-DOCS_AUDIT_PATH = Path("outputs/reports/portfolio_frontier_docs_audit.json")
-DOCTOR_PATH = Path("outputs/reports/portfolio_frontier_doctor.json")
-SEED_PACK_DOCTOR_PATH = Path("outputs/reports/portfolio_seed_pack_doctor.json")
 
 
 def evaluate_guard_stack(
@@ -48,15 +47,15 @@ def evaluate_guard_stack(
 
 def render_guard_report(output: Path | None, json_output: Path | None) -> dict[str, Any]:
     contract = load_frontier_contract()
-    consistency = _read_json(CONSISTENCY_PATH)
-    docs_audit = _read_json(DOCS_AUDIT_PATH)
-    doctor = _read_json(DOCTOR_PATH)
-    seed_pack_doctor = _read_json(SEED_PACK_DOCTOR_PATH)
+    consistency = load_frontier_consistency_report()
+    docs_audit = load_frontier_docs_audit_report()
+    doctor = load_frontier_doctor_report()
+    seed_pack_doctor = load_seed_pack_doctor_report()
     result = evaluate_guard_stack(
-        consistency_overall=str(consistency["overall"]),
-        docs_audit_overall=str(docs_audit["overall"]),
-        doctor_overall=str(doctor["overall"]),
-        seed_pack_doctor_overall=str(seed_pack_doctor["overall"]),
+        consistency_overall=consistency.overall,
+        docs_audit_overall=docs_audit.overall,
+        doctor_overall=doctor.overall,
+        seed_pack_doctor_overall=seed_pack_doctor.overall,
     )
     result["active_candidate"] = contract.benchmark.active_candidate
     result["active_candidate_pack"] = contract.benchmark.active_candidate_pack
