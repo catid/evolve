@@ -13,6 +13,7 @@ CURRENT_DECISION_REPORT = "outputs/reports/portfolio_decision_memo.md"
 CURRENT_GATE_REPORT = "outputs/reports/portfolio_gate_report.md"
 FRONTIER_CONTRACT_REPORT = "outputs/reports/portfolio_frontier_contract.json"
 FRONTIER_GUARD_REPORT = "outputs/reports/portfolio_frontier_guard_report.md"
+FRONTIER_GUARD_WORKFLOW_CONTRACT_REPORT = "outputs/reports/portfolio_frontier_guard_workflow_contract.md"
 FRONTIER_GUARD_SCRIPT = "scripts/run_portfolio_frontier_guard.sh"
 ACTIVE_STATE_DOCTOR_REPORT = "outputs/reports/portfolio_active_state_doctor.md"
 OPERATIONAL_STATE_REPORT = "outputs/reports/portfolio_operational_state.md"
@@ -42,6 +43,7 @@ def build_expectations(contract: FrontierContract) -> tuple[FileExpectation, ...
                 CURRENT_GATE_REPORT,
                 FRONTIER_CONTRACT_REPORT,
                 FRONTIER_GUARD_REPORT,
+                FRONTIER_GUARD_WORKFLOW_CONTRACT_REPORT,
                 ACTIVE_STATE_DOCTOR_REPORT,
                 OPERATIONAL_STATE_REPORT,
                 SEED_PACK_REPORT,
@@ -59,6 +61,7 @@ def build_expectations(contract: FrontierContract) -> tuple[FileExpectation, ...
                 CURRENT_DECISION_REPORT,
                 FRONTIER_CONTRACT_REPORT,
                 FRONTIER_GUARD_REPORT,
+                FRONTIER_GUARD_WORKFLOW_CONTRACT_REPORT,
                 ACTIVE_STATE_DOCTOR_REPORT,
                 OPERATIONAL_STATE_REPORT,
                 SEED_PACK_REPORT,
@@ -76,6 +79,7 @@ def build_expectations(contract: FrontierContract) -> tuple[FileExpectation, ...
                 CURRENT_DECISION_REPORT,
                 CURRENT_GATE_REPORT,
                 FRONTIER_GUARD_REPORT,
+                FRONTIER_GUARD_WORKFLOW_CONTRACT_REPORT,
                 ACTIVE_STATE_DOCTOR_REPORT,
                 OPERATIONAL_STATE_REPORT,
                 "portfolio_seed_pack.md",

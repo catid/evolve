@@ -243,6 +243,7 @@ The current measured DoorKey restart frontier is also frozen as an operational b
 
 - frontier contract: `outputs/reports/portfolio_frontier_contract.json`
 - frontier guard report: `outputs/reports/portfolio_frontier_guard_report.md`
+- frontier guard workflow contract: `outputs/reports/portfolio_frontier_guard_workflow_contract.md`
 - frontier active-state doctor: `outputs/reports/portfolio_active_state_doctor.md`
 - frontier operational state: `outputs/reports/portfolio_operational_state.md`
 - frontier schedule: `outputs/reports/portfolio_frontier_schedule.md`
@@ -256,6 +257,15 @@ Run the local frontier guard:
 
 ```bash
 bash ./scripts/run_portfolio_frontier_guard.sh
+```
+
+Render the frontier guard workflow contract directly:
+
+```bash
+python -m psmn_rl.analysis.portfolio_frontier_guard_workflow_contract \
+  --output outputs/reports/portfolio_frontier_guard_workflow_contract.md \
+  --json outputs/reports/portfolio_frontier_guard_workflow_contract.json \
+  --fail-on-drift
 ```
 
 Run the doctor directly:
@@ -297,6 +307,8 @@ The consolidated guard status is written to:
 
 - `outputs/reports/portfolio_frontier_guard_report.md`
 - `outputs/reports/portfolio_frontier_guard_report.json`
+- `outputs/reports/portfolio_frontier_guard_workflow_contract.md`
+- `outputs/reports/portfolio_frontier_guard_workflow_contract.json`
 - `outputs/reports/portfolio_active_state_doctor.md`
 - `outputs/reports/portfolio_active_state_doctor.json`
 - `outputs/reports/portfolio_operational_state.md`

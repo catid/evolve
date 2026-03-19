@@ -36,6 +36,7 @@
   - replay-validated alternate: `round10`
   - local guard entrypoint: `scripts/run_portfolio_frontier_guard.sh`
   - consolidated guard report: [portfolio_frontier_guard_report.md](outputs/reports/portfolio_frontier_guard_report.md)
+  - CI workflow contract: [portfolio_frontier_guard_workflow_contract.md](outputs/reports/portfolio_frontier_guard_workflow_contract.md)
   - active-state doctor: [portfolio_active_state_doctor.md](outputs/reports/portfolio_active_state_doctor.md)
   - operational state snapshot: [portfolio_operational_state.md](outputs/reports/portfolio_operational_state.md)
   - contract artifact: [portfolio_frontier_contract.json](outputs/reports/portfolio_frontier_contract.json)
