@@ -79,6 +79,7 @@ def test_guard_job_uploads_frontier_artifacts() -> None:
     upload_steps = [step for step in steps if step.get("uses") == "actions/upload-artifact@v4"]
     assert upload_steps
     upload = upload_steps[-1]
+    assert upload["if"] == "always()"
     with_block = upload["with"]
     assert with_block["name"] == UPLOAD_ARTIFACT_NAME
     assert with_block["if-no-files-found"] == "error"

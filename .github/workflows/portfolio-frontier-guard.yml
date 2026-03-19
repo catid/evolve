@@ -73,6 +73,7 @@ jobs:
           bash ./scripts/run_portfolio_frontier_guard.sh
 
       - name: Upload frontier guard artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: portfolio-frontier-guard-reports
