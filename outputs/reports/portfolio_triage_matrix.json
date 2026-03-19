@@ -1,0 +1,77 @@
+{
+  "incumbent_269": 0.984375,
+  "rows": [
+    {
+      "benchmark_support_233": 1.0,
+      "bounded_weakness_269": 0.984375,
+      "bucket": "not_better_than_incumbent",
+      "candidate": "round6",
+      "delta_vs_round6_269": 0.0,
+      "global_hard_193": 0.0,
+      "guardrail_277": 1.0,
+      "source": "active"
+    },
+    {
+      "benchmark_support_233": 1.0,
+      "bounded_weakness_269": 1.0,
+      "bucket": "conservative_clean_prior",
+      "candidate": "round5",
+      "delta_vs_round6_269": 0.015625,
+      "global_hard_193": 0.0,
+      "guardrail_277": 1.0,
+      "source": "mixed_round_prior"
+    },
+    {
+      "benchmark_support_233": 1.0,
+      "bounded_weakness_269": 1.0,
+      "bucket": "conservative_clean_prior",
+      "candidate": "round7",
+      "delta_vs_round6_269": 0.015625,
+      "global_hard_193": 0.0,
+      "guardrail_277": 1.0,
+      "source": "mixed_round_prior"
+    },
+    {
+      "benchmark_support_233": 1.0,
+      "bounded_weakness_269": 1.0,
+      "bucket": "conservative_clean_prior",
+      "candidate": "round10",
+      "delta_vs_round6_269": 0.015625,
+      "global_hard_193": 0.0,
+      "guardrail_277": 1.0,
+      "source": "mixed_round_prior"
+    },
+    {
+      "benchmark_support_233": null,
+      "bounded_weakness_269": 1.0,
+      "bucket": "support_unmeasured_structural",
+      "candidate": "door3_post5",
+      "delta_vs_round6_269": 0.015625,
+      "global_hard_193": null,
+      "guardrail_277": 1.0,
+      "source": "migration_only"
+    },
+    {
+      "benchmark_support_233": null,
+      "bounded_weakness_269": 1.0,
+      "bucket": "local_only_fix",
+      "candidate": "post_unlock_x5",
+      "delta_vs_round6_269": 0.015625,
+      "global_hard_193": null,
+      "guardrail_277": 0.890625,
+      "source": "migration_only"
+    }
+  ],
+  "single_scores": {
+    "prospective_c:193": 0.0,
+    "prospective_f:233": 1.0,
+    "prospective_h:269": 1.0,
+    "prospective_h:277": 1.0
+  },
+  "token_scores": {
+    "prospective_c:193": 0.0,
+    "prospective_f:233": 0.625,
+    "prospective_h:269": 1.0,
+    "prospective_h:277": 1.0
+  }
+}
