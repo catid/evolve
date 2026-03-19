@@ -14,7 +14,8 @@ set -euo pipefail
   tests/test_portfolio_frontier_docs_audit_loader.py \
   tests/test_portfolio_frontier_consistency_loader.py \
   tests/test_portfolio_frontier_manifest_loader.py \
-  tests/test_portfolio_frontier_schedule_loader.py
+  tests/test_portfolio_frontier_schedule_loader.py \
+  tests/test_portfolio_frontier_kit_loader.py
 
 ./.venv/bin/python -m psmn_rl.analysis.portfolio_frontier_doctor \
   --output outputs/reports/portfolio_frontier_doctor.md \
