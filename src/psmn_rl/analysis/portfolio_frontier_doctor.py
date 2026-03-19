@@ -10,19 +10,35 @@ from psmn_rl.analysis.portfolio_frontier_contract_loader import load_frontier_co
 from psmn_rl.utils.io import get_git_commit, get_git_dirty
 
 CONSISTENCY_PATH = Path("outputs/reports/portfolio_frontier_consistency.json")
+DOCS_AUDIT_PATH = Path("outputs/reports/portfolio_frontier_docs_audit.json")
+EXPECTED_ACTIVE_PACK = "outputs/reports/portfolio_candidate_pack.json"
+EXPECTED_ARCHIVED_PACK = "outputs/reports/frozen_benchmark_pack.json"
 
 
 def evaluate_frontier_state(
     active_candidate: str,
+    active_candidate_pack: str,
+    archived_frozen_pack: str,
     default_restart_prior: str,
     replay_validated_alternate: str,
     consistency_overall: str,
+    docs_audit_overall: str,
 ) -> dict[str, Any]:
     checks = [
         {
             "label": "active_candidate_round6",
             "status": "pass" if active_candidate == "round6" else "fail",
             "detail": f"active_candidate={active_candidate}",
+        },
+        {
+            "label": "active_pack_current",
+            "status": "pass" if active_candidate_pack == EXPECTED_ACTIVE_PACK else "fail",
+            "detail": f"active_candidate_pack={active_candidate_pack}",
+        },
+        {
+            "label": "archived_pack_frozen",
+            "status": "pass" if archived_frozen_pack == EXPECTED_ARCHIVED_PACK else "fail",
+            "detail": f"archived_frozen_pack={archived_frozen_pack}",
         },
         {
             "label": "default_restart_round7",
@@ -39,6 +55,11 @@ def evaluate_frontier_state(
             "status": "pass" if consistency_overall == "pass" else "fail",
             "detail": f"consistency_overall={consistency_overall}",
         },
+        {
+            "label": "docs_audit_pass",
+            "status": "pass" if docs_audit_overall == "pass" else "fail",
+            "detail": f"docs_audit_overall={docs_audit_overall}",
+        },
     ]
     overall = "pass" if all(check["status"] == "pass" for check in checks) else "fail"
     return {"overall": overall, "checks": checks}
@@ -47,11 +68,15 @@ def evaluate_frontier_state(
 def render_doctor(output: Path | None, json_output: Path | None) -> dict[str, Any]:
     contract = load_frontier_contract()
     consistency = _read_json(CONSISTENCY_PATH)
+    docs_audit = _read_json(DOCS_AUDIT_PATH)
     result = evaluate_frontier_state(
         active_candidate=contract.benchmark.active_candidate,
+        active_candidate_pack=contract.benchmark.active_candidate_pack,
+        archived_frozen_pack=contract.benchmark.archived_frozen_pack,
         default_restart_prior=contract.frontier_roles.default_restart_prior,
         replay_validated_alternate=contract.frontier_roles.replay_validated_alternate,
         consistency_overall=str(consistency["overall"]),
+        docs_audit_overall=str(docs_audit["overall"]),
     )
 
     if output is not None:

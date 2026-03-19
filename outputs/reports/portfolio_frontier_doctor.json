@@ -6,6 +6,16 @@
       "status": "pass"
     },
     {
+      "detail": "active_candidate_pack=outputs/reports/portfolio_candidate_pack.json",
+      "label": "active_pack_current",
+      "status": "pass"
+    },
+    {
+      "detail": "archived_frozen_pack=outputs/reports/frozen_benchmark_pack.json",
+      "label": "archived_pack_frozen",
+      "status": "pass"
+    },
+    {
       "detail": "default_restart_prior=round7",
       "label": "default_restart_round7",
       "status": "pass"
@@ -18,6 +28,11 @@
     {
       "detail": "consistency_overall=pass",
       "label": "consistency_pass",
+      "status": "pass"
+    },
+    {
+      "detail": "docs_audit_overall=pass",
+      "label": "docs_audit_pass",
       "status": "pass"
     }
   ],
