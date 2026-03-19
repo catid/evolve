@@ -18,7 +18,8 @@ set -euo pipefail
   tests/test_portfolio_frontier_kit_loader.py \
   tests/test_portfolio_frontier_replay_loader.py \
   tests/test_portfolio_candidate_pack_loader.py \
-  tests/test_portfolio_seed_pack_loader.py
+  tests/test_portfolio_seed_pack_loader.py \
+  tests/test_portfolio_seed_pack_doctor.py
 
 ./.venv/bin/python -m psmn_rl.analysis.portfolio_frontier_doctor \
   --output outputs/reports/portfolio_frontier_doctor.md \
@@ -33,4 +34,9 @@ set -euo pipefail
 ./.venv/bin/python -m psmn_rl.analysis.portfolio_frontier_guard_report \
   --output outputs/reports/portfolio_frontier_guard_report.md \
   --json outputs/reports/portfolio_frontier_guard_report.json \
+  --fail-on-drift
+
+./.venv/bin/python -m psmn_rl.analysis.portfolio_seed_pack_doctor \
+  --output outputs/reports/portfolio_seed_pack_doctor.md \
+  --json outputs/reports/portfolio_seed_pack_doctor.json \
   --fail-on-drift

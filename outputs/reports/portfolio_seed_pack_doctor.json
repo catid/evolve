@@ -1,0 +1,60 @@
+{
+  "checks": [
+    {
+      "detail": "seed_pack.active_candidate=round6, contract.active_candidate=round6",
+      "label": "active_candidate_round6",
+      "status": "pass"
+    },
+    {
+      "detail": "seed_pack.active_candidate_pack=outputs/reports/portfolio_candidate_pack.json, contract.active_candidate_pack=outputs/reports/portfolio_candidate_pack.json",
+      "label": "active_pack_matches_contract",
+      "status": "pass"
+    },
+    {
+      "detail": "seed_pack.archived_frozen_pack=outputs/reports/frozen_benchmark_pack.json, contract.archived_frozen_pack=outputs/reports/frozen_benchmark_pack.json",
+      "label": "archived_pack_matches_contract",
+      "status": "pass"
+    },
+    {
+      "detail": "restart_default=('round7',)",
+      "label": "restart_default_round7",
+      "status": "pass"
+    },
+    {
+      "detail": "reserve_priors=('round10', 'round5')",
+      "label": "reserve_priors_match_contract_roles",
+      "status": "pass"
+    },
+    {
+      "detail": "retired_priors=('door3_post5', 'post_unlock_x5')",
+      "label": "retired_priors_match_contract_roles",
+      "status": "pass"
+    },
+    {
+      "detail": "support_status=measured_support_regression",
+      "label": "support_status_matches_contract",
+      "status": "pass"
+    },
+    {
+      "detail": "generated_from.active_candidate_pack=outputs/reports/portfolio_candidate_pack.json",
+      "label": "generated_from_active_pack_current",
+      "status": "pass"
+    },
+    {
+      "detail": "support=SeedRole(lane='prospective_f', seed=233, required_min_success=1.0, required_behavior=None), weakness=SeedRole(lane='prospective_h', seed=269, required_min_success=0.984375001, required_behavior=None), guardrail=SeedRole(lane='prospective_h', seed=277, required_min_success=1.0, required_behavior=None), sentinel=SeedRole(lane='prospective_c', seed=193, required_min_success=None, required_behavior='track_only')",
+      "label": "seed_roles_match_contract_thresholds",
+      "status": "pass"
+    },
+    {
+      "detail": "validated_restart_default=['round7'], validated_reserve=['round10', 'round5'], validated_retired=['door3_post5', 'post_unlock_x5'], needs_review=[]",
+      "label": "validation_buckets_match_frontier_roles",
+      "status": "pass"
+    },
+    {
+      "detail": "scorer_grouped={'advance_for_broader_dev': ['round7', 'round10'], 'hold_seed_clean_but_below_incumbent': ['round5'], 'prune_guardrail_regression': ['post_unlock_x5'], 'prune_support_regression': ['door3_post5']}",
+      "label": "scorer_verdicts_match_frontier_roles",
+      "status": "pass"
+    }
+  ],
+  "overall": "pass"
+}
