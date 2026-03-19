@@ -1,0 +1,4 @@
+baseline_active_compute,baseline_path_entropy,baseline_route_entropy,baseline_success,case,fixed_router_drop,lane,line,route_randomization_drop,seed,worst_ablation_drop,worst_ablation_expert
+0.5,0.9775502654327743,1.3758657732229123,1.0,dev,1.0,prospective_f,round6,1.0,233,1.0,0
+0.5,0.8369385775279354,1.3623905314787015,0.984375,holdout,0.984375,prospective_h,round6,0.984375,269,0.984375,0
+0.5,0.8836897036858967,1.3805377710433233,1.0,healthy,1.0,fresh,round6,1.0,23,1.0,0

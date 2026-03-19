@@ -44,6 +44,10 @@ Rules:
 - Use dependencies and parents to model blockers and milestones.
 - Close tasks with a short evidence-backed summary.
 - Use the `bd` CLI only. Do not edit Beads storage by hand.
+- For git pushes on this machine, prefer the current forwarded SSH agent over local keys:
+  if `SSH_AUTH_SOCK` is stale, locate the newest `/tmp/ssh-*/agent*` socket, confirm it with
+  `ssh-add -L` or `ssh -T git@github.com`, and use that socket for `git pull --rebase`, `bd sync`,
+  and `git push`. Do not fall back to stale local GitHub keys unless explicitly requested.
 
 ## Initial Experimental Variants
 

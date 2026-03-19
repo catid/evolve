@@ -1,0 +1,21 @@
+{
+  "candidate_lines": [
+    "round6"
+  ],
+  "historical_baseline_sare_mean": 0.0,
+  "historical_recovered_token_mean": 0.0,
+  "overall_boundary": "clearly negative",
+  "summaries": [
+    {
+      "boundary": "clearly negative",
+      "candidate": "round6",
+      "sare_failures": 3.0,
+      "sare_mean": 0.0,
+      "sare_minus_single": null,
+      "sare_minus_token": 0.0,
+      "single_available": false,
+      "single_mean": null,
+      "token_mean": 0.0
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+candidate,family,original_delta_vs_round6,original_failures,original_mean,rerun_a_delta_vs_round6,rerun_a_failures,rerun_a_mean,rerun_b_delta_vs_round6,rerun_b_failures,rerun_b_mean,track,verified
+round10,near_neighbor_rounds,0.0,1.0,0.8888888888888888,0.0,1.0,0.8888888888888888,0.0,1.0,0.8888888888888888,fruitful,True
+round10_post_unlock_x4_dis025,hard_mixed_weighting,0.0,1.0,0.8888888888888888,0.0,1.0,0.8888888888888888,0.0,1.0,0.8888888888888888,fruitful,True
+round10_post_unlock_x5,hard_postunlock_weighting,0.0,1.0,0.8888888888888888,0.0,1.0,0.8888888888888888,0.0,1.0,0.8888888888888888,fruitful,True
+round10_carry2_post4,bridge_weighting,0.0,1.0,0.8888888888888888,0.0,1.0,0.8888888888888888,0.0,1.0,0.8888888888888888,exploratory,True
+round10_conf_post4,confidence_weighting,0.0,1.0,0.8888888888888888,0.0,1.0,0.8888888888888888,0.0,1.0,0.8888888888888888,exploratory,True
+round10_door2_post4,bridge_weighting,0.0,1.0,0.8888888888888888,0.0,1.0,0.8888888888888888,0.0,1.0,0.8888888888888888,exploratory,True

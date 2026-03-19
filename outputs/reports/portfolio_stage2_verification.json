@@ -1,0 +1,110 @@
+{
+  "round6_summary": {
+    "sare_failures": 1.0,
+    "sare_mean": 0.8888888888888888,
+    "sare_minus_single": 0.0,
+    "sare_minus_token": 0.04166666666666663,
+    "single_mean": 0.8888888888888888,
+    "token_mean": 0.8472222222222222
+  },
+  "verification_rows": [
+    {
+      "candidate": "round10",
+      "family": "near_neighbor_rounds",
+      "original_delta_vs_round6": 0.0,
+      "original_failures": 1.0,
+      "original_mean": 0.8888888888888888,
+      "rerun_a_delta_vs_round6": 0.0,
+      "rerun_a_failures": 1.0,
+      "rerun_a_mean": 0.8888888888888888,
+      "rerun_b_delta_vs_round6": 0.0,
+      "rerun_b_failures": 1.0,
+      "rerun_b_mean": 0.8888888888888888,
+      "track": "fruitful",
+      "verified": true
+    },
+    {
+      "candidate": "round10_post_unlock_x4_dis025",
+      "family": "hard_mixed_weighting",
+      "original_delta_vs_round6": 0.0,
+      "original_failures": 1.0,
+      "original_mean": 0.8888888888888888,
+      "rerun_a_delta_vs_round6": 0.0,
+      "rerun_a_failures": 1.0,
+      "rerun_a_mean": 0.8888888888888888,
+      "rerun_b_delta_vs_round6": 0.0,
+      "rerun_b_failures": 1.0,
+      "rerun_b_mean": 0.8888888888888888,
+      "track": "fruitful",
+      "verified": true
+    },
+    {
+      "candidate": "round10_post_unlock_x5",
+      "family": "hard_postunlock_weighting",
+      "original_delta_vs_round6": 0.0,
+      "original_failures": 1.0,
+      "original_mean": 0.8888888888888888,
+      "rerun_a_delta_vs_round6": 0.0,
+      "rerun_a_failures": 1.0,
+      "rerun_a_mean": 0.8888888888888888,
+      "rerun_b_delta_vs_round6": 0.0,
+      "rerun_b_failures": 1.0,
+      "rerun_b_mean": 0.8888888888888888,
+      "track": "fruitful",
+      "verified": true
+    },
+    {
+      "candidate": "round10_carry2_post4",
+      "family": "bridge_weighting",
+      "original_delta_vs_round6": 0.0,
+      "original_failures": 1.0,
+      "original_mean": 0.8888888888888888,
+      "rerun_a_delta_vs_round6": 0.0,
+      "rerun_a_failures": 1.0,
+      "rerun_a_mean": 0.8888888888888888,
+      "rerun_b_delta_vs_round6": 0.0,
+      "rerun_b_failures": 1.0,
+      "rerun_b_mean": 0.8888888888888888,
+      "track": "exploratory",
+      "verified": true
+    },
+    {
+      "candidate": "round10_conf_post4",
+      "family": "confidence_weighting",
+      "original_delta_vs_round6": 0.0,
+      "original_failures": 1.0,
+      "original_mean": 0.8888888888888888,
+      "rerun_a_delta_vs_round6": 0.0,
+      "rerun_a_failures": 1.0,
+      "rerun_a_mean": 0.8888888888888888,
+      "rerun_b_delta_vs_round6": 0.0,
+      "rerun_b_failures": 1.0,
+      "rerun_b_mean": 0.8888888888888888,
+      "track": "exploratory",
+      "verified": true
+    },
+    {
+      "candidate": "round10_door2_post4",
+      "family": "bridge_weighting",
+      "original_delta_vs_round6": 0.0,
+      "original_failures": 1.0,
+      "original_mean": 0.8888888888888888,
+      "rerun_a_delta_vs_round6": 0.0,
+      "rerun_a_failures": 1.0,
+      "rerun_a_mean": 0.8888888888888888,
+      "rerun_b_delta_vs_round6": 0.0,
+      "rerun_b_failures": 1.0,
+      "rerun_b_mean": 0.8888888888888888,
+      "track": "exploratory",
+      "verified": true
+    }
+  ],
+  "verified_candidates": [
+    "round10",
+    "round10_post_unlock_x4_dis025",
+    "round10_post_unlock_x5",
+    "round10_carry2_post4",
+    "round10_conf_post4",
+    "round10_door2_post4"
+  ]
+}

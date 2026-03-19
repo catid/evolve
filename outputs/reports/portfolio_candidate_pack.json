@@ -1,0 +1,878 @@
+{
+  "active_benchmark_state": {
+    "active_pack_role": "confirmed_active_round6",
+    "anti_regression_summary": {
+      "best_candidate": null,
+      "challenger_pass": false,
+      "challenger_summary": null,
+      "detail_rows": [],
+      "round6_summary": {
+        "sare_failures": 0.0,
+        "sare_mean": 1.0,
+        "sare_minus_single": 0.11111111111111116,
+        "sare_minus_token": 0.11458333333333337,
+        "single_mean": 0.8888888888888888,
+        "token_mean": 0.8854166666666666
+      }
+    },
+    "archived_legacy_frozen_pack": {
+      "path": "outputs/reports/frozen_benchmark_pack.json",
+      "sha256": "8e36f4623ad584549f0b3a4be7bef9fbec62053704cef6672b6bb28a2608f205"
+    },
+    "challenger_viable_pre_gate": false,
+    "current_active_pack": {
+      "path": "outputs/reports/successor_mega_league_candidate_pack.json",
+      "sha256": "ac5d57224835b36f459b3dd8138080c2c3651c5d56f820d3df0932ea66c65b41"
+    },
+    "future_comparison_policy": {
+      "active_canonical_pack": "outputs/reports/successor_mega_league_candidate_pack.json",
+      "archived_legacy_pack": "outputs/reports/frozen_benchmark_pack.json",
+      "gate_reference_pack": "outputs/reports/frozen_benchmark_pack.json"
+    },
+    "holdout_summary": {
+      "best_candidate": null,
+      "challenger_summaries": [],
+      "detail_rows": [],
+      "round6_summary": {
+        "sare_failures": 1.0,
+        "sare_mean": 0.8888888888888888,
+        "sare_minus_single": 0.0,
+        "sare_minus_token": 0.0,
+        "single_mean": 0.8888888888888888,
+        "token_mean": 0.8888888888888888
+      },
+      "surviving_candidates": []
+    },
+    "route_validation": {
+      "best_candidate": null,
+      "challenger_pass": false,
+      "challenger_routes": [],
+      "round6_pass": true,
+      "round6_routes": [
+        {
+          "baseline_active_compute": 0.5,
+          "baseline_path_entropy": 1.0532458947028642,
+          "baseline_route_entropy": 1.382325009063438,
+          "baseline_success": 1.0,
+          "case": "dev",
+          "fixed_router_drop": 1.0,
+          "lane": "post_pass_f",
+          "route_randomization_drop": 0.984375,
+          "seed": 137,
+          "worst_ablation_drop": 1.0,
+          "worst_ablation_expert": "1"
+        },
+        {
+          "baseline_active_compute": 0.5,
+          "baseline_path_entropy": 0.706187572287417,
+          "baseline_route_entropy": 1.3786683151091652,
+          "baseline_success": 1.0,
+          "case": "holdout",
+          "fixed_router_drop": 1.0,
+          "lane": "fresh_final",
+          "route_randomization_drop": 1.0,
+          "seed": 53,
+          "worst_ablation_drop": 1.0,
+          "worst_ablation_expert": "0"
+        },
+        {
+          "baseline_active_compute": 0.5,
+          "baseline_path_entropy": 0.8836897036858967,
+          "baseline_route_entropy": 1.3805377710433233,
+          "baseline_success": 1.0,
+          "case": "healthy",
+          "fixed_router_drop": 1.0,
+          "lane": "fresh",
+          "route_randomization_drop": 1.0,
+          "seed": 23,
+          "worst_ablation_drop": 1.0,
+          "worst_ablation_expert": "0"
+        }
+      ]
+    },
+    "stability_validation": {
+      "best_candidate": null,
+      "challenger_pass": false,
+      "round6_pass": true,
+      "summaries": [
+        {
+          "best_round_greedy_success": 1.0,
+          "best_round_index": 3,
+          "case": "dev",
+          "curve": [
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "final_greedy_success": 1.0,
+          "lane": "post_pass_f",
+          "line": "round6",
+          "run_dir": "outputs/experiments/lss_hard_family_saturation/stage2_fairness/round6/post_pass_f/seed_137/kl_lss_sare",
+          "seed": 137,
+          "stability_class": "stable_plateau"
+        },
+        {
+          "best_round_greedy_success": 1.0,
+          "best_round_index": 5,
+          "case": "holdout",
+          "curve": [
+            0.0,
+            0.0,
+            0.515625,
+            0.515625,
+            1.0,
+            1.0
+          ],
+          "final_greedy_success": 1.0,
+          "lane": "fresh_final",
+          "line": "round6",
+          "run_dir": "outputs/experiments/lss_hard_family_saturation/stage3_holdout/round6/fresh_final/seed_53/kl_lss_sare",
+          "seed": 53,
+          "stability_class": "stable_plateau"
+        },
+        {
+          "best_round_greedy_success": 1.0,
+          "best_round_index": 4,
+          "case": "healthy",
+          "curve": [
+            0.0,
+            0.0,
+            0.59375,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "final_greedy_success": 1.0,
+          "lane": "fresh",
+          "line": "round6",
+          "run_dir": "outputs/experiments/lss_hard_family_saturation/stage4_antiregression/round6/fresh/seed_23/kl_lss_sare",
+          "seed": 23,
+          "stability_class": "stable_plateau"
+        }
+      ]
+    },
+    "winner": "round6"
+  },
+  "actual_sets": {
+    "combined_lane_seeds": [
+      [
+        "original",
+        7
+      ],
+      [
+        "original",
+        11
+      ],
+      [
+        "original",
+        19
+      ],
+      [
+        "fresh",
+        23
+      ],
+      [
+        "fresh",
+        29
+      ],
+      [
+        "fresh",
+        31
+      ],
+      [
+        "fresh_extra",
+        37
+      ],
+      [
+        "fresh_extra",
+        41
+      ],
+      [
+        "fresh_extra",
+        43
+      ],
+      [
+        "fresh_final",
+        47
+      ],
+      [
+        "fresh_final",
+        53
+      ],
+      [
+        "fresh_final",
+        59
+      ]
+    ],
+    "retry_block_lane_seeds": [
+      [
+        "fresh_final",
+        47
+      ],
+      [
+        "fresh_final",
+        53
+      ],
+      [
+        "fresh_final",
+        59
+      ]
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "outputs/reports/hard_family_saturation_candidate_summary.md",
+      "role": "candidate_summary_markdown",
+      "sha256": "98eede059cabe12591c4bb9b61918fe7c339f378da158d6397b322ecfc95e405",
+      "size_bytes": 544
+    },
+    {
+      "path": "outputs/reports/hard_family_saturation_candidate_metrics.json",
+      "role": "candidate_metrics_json",
+      "sha256": "3ae5f73f05fc570d149c0ab6545703283510c6ecdeb7507fd3b02356861856b8",
+      "size_bytes": 3321
+    },
+    {
+      "path": "outputs/reports/hard_family_saturation_candidate_combined_report.md",
+      "role": "combined_report_markdown",
+      "sha256": "d4ee90580be5c466626674124862c8d5b0d858c11450dafdb3def68c649d2cee",
+      "size_bytes": 3714
+    },
+    {
+      "path": "outputs/reports/hard_family_saturation_candidate_combined_report.csv",
+      "role": "combined_report_csv",
+      "sha256": "1e676f86903ad8b10901d01c1963bb2572966dc425c057e7194af639ff1e1481",
+      "size_bytes": 8055
+    },
+    {
+      "path": "outputs/reports/hard_family_saturation_candidate_retry_block_report.md",
+      "role": "retry_block_report_markdown",
+      "sha256": "a758621f40f4b4700fd506b33da7ae28caf5916851ddb15c72d102a72d8e2867",
+      "size_bytes": 705
+    },
+    {
+      "path": "outputs/reports/hard_family_saturation_candidate_retry_block_report.csv",
+      "role": "retry_block_report_csv",
+      "sha256": "e63732861aeb3158e6ecec7824457f79aefa97015ab798a3da49f779399515ed",
+      "size_bytes": 2095
+    }
+  ],
+  "candidate_name": "round6",
+  "controls_present": [
+    "recovered_token_dense",
+    "kl_lss_token_dense",
+    "kl_lss_single_expert",
+    "baseline_sare",
+    "kl_lss_sare"
+  ],
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "external_policy_diagnostics",
+    "task": "DoorKey"
+  },
+  "expansion_program": {
+    "active_pack_before_program": {
+      "path": "outputs/reports/successor_mega_league_candidate_pack.json",
+      "sha256": "2221df785cf70a9d051f29112c1294015ebdcb09d78103b9bc3b83a530511177"
+    },
+    "anti_regression_summary": {
+      "best_candidate": null,
+      "challenger_pass": false,
+      "challenger_summary": null,
+      "detail_rows": [],
+      "round6_summary": {
+        "sare_failures": 0.0,
+        "sare_mean": 1.0,
+        "sare_minus_single": 0.11111111111111116,
+        "sare_minus_token": 0.11458333333333337,
+        "single_mean": 0.8888888888888888,
+        "token_mean": 0.8854166666666666
+      }
+    },
+    "archived_legacy_frozen_pack": {
+      "path": "outputs/reports/frozen_benchmark_pack.json",
+      "sha256": "8e36f4623ad584549f0b3a4be7bef9fbec62053704cef6672b6bb28a2608f205"
+    },
+    "challenger_viable_pre_gate": false,
+    "exploratory_transfer": {
+      "candidate_lines": [
+        "round6"
+      ],
+      "historical_baseline_sare_mean": 0.0,
+      "historical_recovered_token_mean": 0.0,
+      "overall_boundary": "clearly negative",
+      "summaries": [
+        {
+          "boundary": "clearly negative",
+          "candidate": "round6",
+          "sare_failures": 3.0,
+          "sare_mean": 0.0,
+          "sare_minus_single": null,
+          "sare_minus_token": 0.0,
+          "single_available": false,
+          "single_mean": null,
+          "token_mean": 0.0
+        }
+      ]
+    },
+    "future_comparison_policy": {
+      "active_canonical_pack": "outputs/reports/expansion_mega_program_candidate_pack.json",
+      "archived_legacy_pack": "outputs/reports/frozen_benchmark_pack.json",
+      "gate_reference_pack": "outputs/reports/frozen_benchmark_pack.json"
+    },
+    "holdout_summary": {
+      "best_candidate": null,
+      "challenger_summaries": [],
+      "detail_rows": [],
+      "round6_summary": {
+        "sare_failures": 1.0,
+        "sare_mean": 0.9153645833333334,
+        "sare_minus_single": -0.0013020833333332593,
+        "sare_minus_token": -0.0013020833333332593,
+        "single_mean": 0.9166666666666666,
+        "token_mean": 0.9166666666666666
+      },
+      "surviving_candidates": []
+    },
+    "route_validation": {
+      "best_candidate": null,
+      "challenger_pass": false,
+      "challenger_routes": [],
+      "round6_pass": true,
+      "round6_routes": [
+        {
+          "baseline_active_compute": 0.5,
+          "baseline_path_entropy": 1.1182173750866418,
+          "baseline_route_entropy": 1.3538331231851688,
+          "baseline_success": 1.0,
+          "case": "dev",
+          "fixed_router_drop": 1.0,
+          "lane": "prospective_e",
+          "route_randomization_drop": 1.0,
+          "seed": 223,
+          "worst_ablation_drop": 1.0,
+          "worst_ablation_expert": "0"
+        },
+        {
+          "baseline_active_compute": 0.5,
+          "baseline_path_entropy": 0.8369385775279354,
+          "baseline_route_entropy": 1.3623905314787015,
+          "baseline_success": 0.984375,
+          "case": "holdout",
+          "fixed_router_drop": 0.984375,
+          "lane": "prospective_h",
+          "route_randomization_drop": 0.984375,
+          "seed": 269,
+          "worst_ablation_drop": 0.984375,
+          "worst_ablation_expert": "0"
+        },
+        {
+          "baseline_active_compute": 0.5,
+          "baseline_path_entropy": 0.8836897036858967,
+          "baseline_route_entropy": 1.3805377710433233,
+          "baseline_success": 1.0,
+          "case": "healthy",
+          "fixed_router_drop": 1.0,
+          "lane": "fresh",
+          "route_randomization_drop": 1.0,
+          "seed": 23,
+          "worst_ablation_drop": 1.0,
+          "worst_ablation_expert": "0"
+        }
+      ]
+    },
+    "stability_validation": {
+      "best_candidate": null,
+      "challenger_pass": false,
+      "round6_pass": true,
+      "summaries": [
+        {
+          "best_round_greedy_success": 1.0,
+          "best_round_index": 5,
+          "case": "dev",
+          "curve": [
+            0.0,
+            0.0,
+            0.5625,
+            0.5625,
+            1.0,
+            1.0
+          ],
+          "final_greedy_success": 1.0,
+          "lane": "prospective_e",
+          "line": "round6",
+          "run_dir": "outputs/experiments/lss_successor_stress_followup/stage1_screening/round6/prospective_e/seed_223/kl_lss_sare",
+          "seed": 223,
+          "stability_class": "stable_plateau"
+        },
+        {
+          "best_round_greedy_success": 0.0,
+          "best_round_index": 1,
+          "case": "holdout",
+          "curve": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "final_greedy_success": 0.0,
+          "lane": "prospective_g",
+          "line": "round6",
+          "run_dir": "outputs/experiments/lss_successor_stress_extended/stage1_screening/round6/prospective_g/seed_251/kl_lss_sare",
+          "seed": 251,
+          "stability_class": "stable_plateau"
+        },
+        {
+          "best_round_greedy_success": 1.0,
+          "best_round_index": 4,
+          "case": "healthy",
+          "curve": [
+            0.0,
+            0.0,
+            0.625,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "final_greedy_success": 1.0,
+          "lane": "fresh_extra",
+          "line": "round6",
+          "run_dir": "outputs/experiments/lss_hard_family_saturation/stage4_antiregression/round6/fresh_extra/seed_37/kl_lss_sare",
+          "seed": 37,
+          "stability_class": "stable_plateau"
+        }
+      ]
+    },
+    "winner": "round6"
+  },
+  "frozen_pack_reference": {
+    "claim_id": "doorkey_frozen_claim",
+    "path": "outputs/reports/frozen_benchmark_pack.json",
+    "sha256": "8e36f4623ad584549f0b3a4be7bef9fbec62053704cef6672b6bb28a2608f205"
+  },
+  "metrics": {
+    "combined": {
+      "baseline_sare": {
+        "complete_seed_failures": 12.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 12.0
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 0.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 12.0
+      },
+      "kl_lss_single_expert": {
+        "complete_seed_failures": 1.0,
+        "max": 1.0,
+        "mean": 0.9166666666666666,
+        "min": 0.0,
+        "seed_count": 12.0
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 0.0,
+        "max": 1.0,
+        "mean": 0.9140625,
+        "min": 0.46875,
+        "seed_count": 12.0
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 5.0,
+        "max": 1.0,
+        "mean": 0.55859375,
+        "min": 0.0,
+        "seed_count": 12.0
+      }
+    },
+    "retry_block": {
+      "baseline_sare": {
+        "complete_seed_failures": 3.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "seed_count": 3.0
+      },
+      "kl_lss_sare": {
+        "complete_seed_failures": 0.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3.0
+      },
+      "kl_lss_single_expert": {
+        "complete_seed_failures": 0.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3.0
+      },
+      "kl_lss_token_dense": {
+        "complete_seed_failures": 0.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3.0
+      },
+      "recovered_token_dense": {
+        "complete_seed_failures": 0.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "seed_count": 3.0
+      }
+    }
+  },
+  "migration": {
+    "active_canonical_candidate": "round6",
+    "archived_legacy_frozen_pack": {
+      "path": "outputs/reports/frozen_benchmark_pack.json",
+      "sha256": "8e36f4623ad584549f0b3a4be7bef9fbec62053704cef6672b6bb28a2608f205"
+    },
+    "current_source_pack": {
+      "path": "outputs/reports/expansion_mega_program_candidate_pack.json",
+      "sha256": "01e8ec66443e835b66b14e03a3eba29ec145fd7937a555b4756d6363d5c01c1f"
+    },
+    "decision": "round6 canonized as active DoorKey benchmark",
+    "future_comparison_policy": {
+      "active_canonical_pack": "outputs/reports/portfolio_candidate_pack.json",
+      "archived_legacy_pack": "outputs/reports/frozen_benchmark_pack.json"
+    },
+    "healthy_summary": {
+      "sare_failures": 0.0,
+      "sare_mean": 1.0,
+      "sare_minus_single": 0.11111111111111116,
+      "sare_minus_token": 0.11458333333333337,
+      "single_mean": 0.8888888888888888,
+      "token_mean": 0.8854166666666666
+    },
+    "holdout_summary": {
+      "sare_failures": 2.0,
+      "sare_mean": 0.83203125,
+      "sare_minus_single": -0.0013020833333333703,
+      "sare_minus_token": -0.0013020833333333703,
+      "single_mean": 0.8333333333333334,
+      "token_mean": 0.8333333333333334
+    },
+    "route_validation": {
+      "best_candidate": null,
+      "challenger_pass": false,
+      "challenger_routes": [],
+      "round6_pass": true,
+      "round6_routes": [
+        {
+          "baseline_active_compute": 0.5,
+          "baseline_path_entropy": 0.9775502654327743,
+          "baseline_route_entropy": 1.3758657732229123,
+          "baseline_success": 1.0,
+          "case": "dev",
+          "fixed_router_drop": 1.0,
+          "lane": "prospective_f",
+          "route_randomization_drop": 1.0,
+          "seed": 233,
+          "worst_ablation_drop": 1.0,
+          "worst_ablation_expert": "0"
+        },
+        {
+          "baseline_active_compute": 0.5,
+          "baseline_path_entropy": 0.8369385775279354,
+          "baseline_route_entropy": 1.3623905314787015,
+          "baseline_success": 0.984375,
+          "case": "holdout",
+          "fixed_router_drop": 0.984375,
+          "lane": "prospective_h",
+          "route_randomization_drop": 0.984375,
+          "seed": 269,
+          "worst_ablation_drop": 0.984375,
+          "worst_ablation_expert": "0"
+        },
+        {
+          "baseline_active_compute": 0.5,
+          "baseline_path_entropy": 0.8836897036858967,
+          "baseline_route_entropy": 1.3805377710433233,
+          "baseline_success": 1.0,
+          "case": "healthy",
+          "fixed_router_drop": 1.0,
+          "lane": "fresh",
+          "route_randomization_drop": 1.0,
+          "seed": 23,
+          "worst_ablation_drop": 1.0,
+          "worst_ablation_expert": "0"
+        }
+      ]
+    },
+    "stability_validation": {
+      "best_candidate": null,
+      "challenger_pass": false,
+      "round6_pass": true,
+      "summaries": [
+        {
+          "best_round_greedy_success": 1.0,
+          "best_round_index": 5,
+          "case": "dev",
+          "curve": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "final_greedy_success": 1.0,
+          "lane": "prospective_f",
+          "line": "round6",
+          "run_dir": "outputs/experiments/lss_successor_stress_followup/stage1_screening/round6/prospective_f/seed_239/kl_lss_sare",
+          "seed": 239,
+          "stability_class": "stable_plateau"
+        },
+        {
+          "best_round_greedy_success": 0.0,
+          "best_round_index": 1,
+          "case": "holdout",
+          "curve": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "final_greedy_success": 0.0,
+          "lane": "prospective_g",
+          "line": "round6",
+          "run_dir": "outputs/experiments/lss_successor_stress_extended/stage1_screening/round6/prospective_g/seed_251/kl_lss_sare",
+          "seed": 251,
+          "stability_class": "stable_plateau"
+        },
+        {
+          "best_round_greedy_success": 1.0,
+          "best_round_index": 4,
+          "case": "healthy",
+          "curve": [
+            0.0,
+            0.0,
+            0.625,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "final_greedy_success": 1.0,
+          "lane": "fresh_extra",
+          "line": "round6",
+          "run_dir": "outputs/experiments/lss_hard_family_saturation/stage4_antiregression/round6/fresh_extra/seed_37/kl_lss_sare",
+          "seed": 37,
+          "stability_class": "stable_plateau"
+        }
+      ]
+    }
+  },
+  "pack_type": "candidate_result_pack",
+  "portfolio_campaign": {
+    "active_pack_before_program": {
+      "path": "outputs/reports/expansion_mega_program_candidate_pack.json",
+      "sha256": "01e8ec66443e835b66b14e03a3eba29ec145fd7937a555b4756d6363d5c01c1f"
+    },
+    "anti_regression_summary": {
+      "best_candidate": null,
+      "challenger_pass": false,
+      "challenger_summary": null,
+      "detail_rows": [],
+      "round6_summary": {
+        "sare_failures": 0.0,
+        "sare_mean": 1.0,
+        "sare_minus_single": 0.11111111111111116,
+        "sare_minus_token": 0.11458333333333337,
+        "single_mean": 0.8888888888888888,
+        "token_mean": 0.8854166666666666
+      }
+    },
+    "archived_legacy_frozen_pack": {
+      "path": "outputs/reports/frozen_benchmark_pack.json",
+      "sha256": "8e36f4623ad584549f0b3a4be7bef9fbec62053704cef6672b6bb28a2608f205"
+    },
+    "challenger_viable_pre_gate": false,
+    "exploratory_transfer": {
+      "candidate_lines": [
+        "round6"
+      ],
+      "historical_baseline_sare_mean": 0.0,
+      "historical_recovered_token_mean": 0.0,
+      "overall_boundary": "clearly negative",
+      "summaries": [
+        {
+          "boundary": "clearly negative",
+          "candidate": "round6",
+          "sare_failures": 3.0,
+          "sare_mean": 0.0,
+          "sare_minus_single": null,
+          "sare_minus_token": 0.0,
+          "single_available": false,
+          "single_mean": null,
+          "token_mean": 0.0
+        }
+      ]
+    },
+    "future_comparison_policy": {
+      "active_canonical_pack": "outputs/reports/portfolio_candidate_pack.json",
+      "archived_legacy_pack": "outputs/reports/frozen_benchmark_pack.json",
+      "gate_reference_pack": "outputs/reports/frozen_benchmark_pack.json"
+    },
+    "holdout_summary": {
+      "best_candidate": null,
+      "challenger_summaries": [],
+      "detail_rows": [],
+      "round6_summary": {
+        "sare_failures": 2.0,
+        "sare_mean": 0.83203125,
+        "sare_minus_single": -0.0013020833333333703,
+        "sare_minus_token": -0.0013020833333333703,
+        "single_mean": 0.8333333333333334,
+        "token_mean": 0.8333333333333334
+      },
+      "surviving_candidates": []
+    },
+    "route_validation": {
+      "best_candidate": null,
+      "challenger_pass": false,
+      "challenger_routes": [],
+      "round6_pass": true,
+      "round6_routes": [
+        {
+          "baseline_active_compute": 0.5,
+          "baseline_path_entropy": 0.9775502654327743,
+          "baseline_route_entropy": 1.3758657732229123,
+          "baseline_success": 1.0,
+          "case": "dev",
+          "fixed_router_drop": 1.0,
+          "lane": "prospective_f",
+          "route_randomization_drop": 1.0,
+          "seed": 233,
+          "worst_ablation_drop": 1.0,
+          "worst_ablation_expert": "0"
+        },
+        {
+          "baseline_active_compute": 0.5,
+          "baseline_path_entropy": 0.8369385775279354,
+          "baseline_route_entropy": 1.3623905314787015,
+          "baseline_success": 0.984375,
+          "case": "holdout",
+          "fixed_router_drop": 0.984375,
+          "lane": "prospective_h",
+          "route_randomization_drop": 0.984375,
+          "seed": 269,
+          "worst_ablation_drop": 0.984375,
+          "worst_ablation_expert": "0"
+        },
+        {
+          "baseline_active_compute": 0.5,
+          "baseline_path_entropy": 0.8836897036858967,
+          "baseline_route_entropy": 1.3805377710433233,
+          "baseline_success": 1.0,
+          "case": "healthy",
+          "fixed_router_drop": 1.0,
+          "lane": "fresh",
+          "route_randomization_drop": 1.0,
+          "seed": 23,
+          "worst_ablation_drop": 1.0,
+          "worst_ablation_expert": "0"
+        }
+      ]
+    },
+    "stability_validation": {
+      "best_candidate": null,
+      "challenger_pass": false,
+      "round6_pass": true,
+      "summaries": [
+        {
+          "best_round_greedy_success": 1.0,
+          "best_round_index": 5,
+          "case": "dev",
+          "curve": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "final_greedy_success": 1.0,
+          "lane": "prospective_f",
+          "line": "round6",
+          "run_dir": "outputs/experiments/lss_successor_stress_followup/stage1_screening/round6/prospective_f/seed_239/kl_lss_sare",
+          "seed": 239,
+          "stability_class": "stable_plateau"
+        },
+        {
+          "best_round_greedy_success": 0.0,
+          "best_round_index": 1,
+          "case": "holdout",
+          "curve": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "final_greedy_success": 0.0,
+          "lane": "prospective_g",
+          "line": "round6",
+          "run_dir": "outputs/experiments/lss_successor_stress_extended/stage1_screening/round6/prospective_g/seed_251/kl_lss_sare",
+          "seed": 251,
+          "stability_class": "stable_plateau"
+        },
+        {
+          "best_round_greedy_success": 1.0,
+          "best_round_index": 4,
+          "case": "healthy",
+          "curve": [
+            0.0,
+            0.0,
+            0.625,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "final_greedy_success": 1.0,
+          "lane": "fresh_extra",
+          "line": "round6",
+          "run_dir": "outputs/experiments/lss_hard_family_saturation/stage4_antiregression/round6/fresh_extra/seed_37/kl_lss_sare",
+          "seed": 37,
+          "stability_class": "stable_plateau"
+        }
+      ]
+    },
+    "winner": "round6"
+  },
+  "provenance": {
+    "expansion_program_notes": "benchmark expansion + mega challenger + exploratory transfer refresh",
+    "git_commit": "85e2aaadae7c741e625431dbf494372007eb001c",
+    "git_dirty": true,
+    "mega_league_notes": "post-reconciliation mega challenger league refresh",
+    "migration_notes": "round6 promoted to active DoorKey benchmark draft while frozen pack remains archived",
+    "notes": "hard-family successor candidate `round6`",
+    "portfolio_campaign_notes": "50/50 fruitful vs exploratory benchmark campaign refresh"
+  },
+  "qualification": {
+    "hard_family_dev_sare_mean": 1.0,
+    "hard_family_dev_token_mean": 1.0,
+    "hard_family_holdout_sare_mean": 1.0,
+    "hard_family_holdout_token_mean": 1.0,
+    "healthy_block_sare_mean": 1.0,
+    "route_validation_pass": true,
+    "stability_pass": true
+  },
+  "requested_claims": [
+    "bounded_teacher_guided_doorkey_sare"
+  ],
+  "schema_version": 1,
+  "task": "DoorKey"
+}

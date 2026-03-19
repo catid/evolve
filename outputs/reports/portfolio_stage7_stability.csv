@@ -1,0 +1,4 @@
+best_round_greedy_success,best_round_index,case,curve,final_greedy_success,lane,line,run_dir,seed,stability_class
+1.0,5,dev,"[0.0, 0.0, 0.0, 0.0, 1.0, 1.0]",1.0,prospective_f,round6,outputs/experiments/lss_successor_stress_followup/stage1_screening/round6/prospective_f/seed_239/kl_lss_sare,239,stable_plateau
+0.0,1,holdout,"[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",0.0,prospective_g,round6,outputs/experiments/lss_successor_stress_extended/stage1_screening/round6/prospective_g/seed_251/kl_lss_sare,251,stable_plateau
+1.0,4,healthy,"[0.0, 0.0, 0.625, 1.0, 1.0, 1.0]",1.0,fresh_extra,round6,outputs/experiments/lss_hard_family_saturation/stage4_antiregression/round6/fresh_extra/seed_37/kl_lss_sare,37,stable_plateau
