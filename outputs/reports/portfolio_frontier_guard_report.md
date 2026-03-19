@@ -1,6 +1,6 @@
 # Portfolio Frontier Guard Report
 
-- git commit: `fecd93de1a14e45266f7376cc6404989696c26aa`
+- git commit: `b4f1b19b69135cbaff94fa407fc25beea253fdca`
 - git dirty: `True`
 - overall: `pass`
 - active candidate: `round6`
