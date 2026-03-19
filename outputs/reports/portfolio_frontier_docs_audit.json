@@ -1,0 +1,29 @@
+{
+  "active_candidate": "round6",
+  "active_candidate_pack": "outputs/reports/portfolio_candidate_pack.json",
+  "checks": [
+    {
+      "missing": [],
+      "path": "README.md",
+      "status": "pass"
+    },
+    {
+      "missing": [],
+      "path": "summary.md",
+      "status": "pass"
+    },
+    {
+      "missing": [],
+      "path": "report.md",
+      "status": "pass"
+    },
+    {
+      "missing": [],
+      "path": "outputs/reports/claim_ledger.md",
+      "status": "pass"
+    }
+  ],
+  "default_restart_prior": "round7",
+  "overall": "pass",
+  "replay_validated_alternate": "round10"
+}

@@ -24,6 +24,12 @@
   - stability: `stable_plateau`, with one holdout probe that stayed a flat-zero plateau
   - exploratory KeyCorridor track: `clearly negative`
   - final status: `round6 confirmed as active DoorKey benchmark and internal DoorKey envelope strengthened`
+- The later 50/50 portfolio campaign then re-confirmed `round6` after a broader fruitful/exploratory challenger split:
+  - forty substantive challenger runs split `20/20` fruitful vs exploratory advanced only verified `0.8889` ties
+  - no challenger survived matched fairness
+  - holdout, healthy anti-regression, route validation, and stability all stayed favorable for `round6`
+  - exploratory KeyCorridor remained `clearly negative`
+  - final status: `round6 confirmed as active DoorKey benchmark and internal DoorKey benchmark state strengthened`
 - The active benchmark now also has a frozen operational frontier:
   - active benchmark: `round6`
   - default bounded restart prior: `round7`
@@ -96,7 +102,7 @@
   - route randomization is catastrophic on most recovered seeds, but seed `29` is now a genuine narrow exception rather than a weak-probe artifact
   - see [lss_seed29_route_randomization_forensics.md](outputs/reports/lss_seed29_route_randomization_forensics.md) and [lss_broader_route_dependence_report.md](outputs/reports/lss_broader_route_dependence_report.md)
 - The exact same method shows no bounded KeyCorridor transfer. See [lss_keycorridor_transfer_report.md](outputs/reports/lss_keycorridor_transfer_report.md).
-- The current repo recommendation is that `round6` is the active canonical DoorKey benchmark, now explicitly re-confirmed after the expansion mega-program, while future candidates still have to go through the automated gate and candidate-pack discipline against that active benchmark and the archived frozen pack. See [expansion_mega_program_decision_memo.md](outputs/reports/expansion_mega_program_decision_memo.md), [expansion_mega_program_candidate_pack.json](outputs/reports/expansion_mega_program_candidate_pack.json), and [freeze_hardening_operational_memo.md](outputs/reports/freeze_hardening_operational_memo.md).
+- The current repo recommendation is that `round6` is the active canonical DoorKey benchmark, now explicitly re-confirmed after the 50/50 portfolio campaign, while future candidates still have to go through the automated gate and candidate-pack discipline against that active benchmark and the archived frozen pack. See [portfolio_decision_memo.md](outputs/reports/portfolio_decision_memo.md), [portfolio_candidate_pack.json](outputs/reports/portfolio_candidate_pack.json), [portfolio_frontier_contract.json](outputs/reports/portfolio_frontier_contract.json), and [freeze_hardening_operational_memo.md](outputs/reports/freeze_hardening_operational_memo.md).
 
 ## Claim Gate
 

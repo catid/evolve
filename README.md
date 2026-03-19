@@ -232,9 +232,9 @@ Validate the sealed pack with one command:
 
 The active canonical DoorKey benchmark is now the `round6` teacher-guided KL learner-state successor, while the frozen benchmark pack remains archived as the legacy baseline.
 
-- current confirmation decision: `outputs/reports/expansion_mega_program_decision_memo.md`
-- active benchmark pack: `outputs/reports/expansion_mega_program_candidate_pack.json`
-- current gate report: `outputs/reports/expansion_mega_program_gate_report.md`
+- current confirmation decision: `outputs/reports/portfolio_decision_memo.md`
+- active benchmark pack: `outputs/reports/portfolio_candidate_pack.json`
+- current gate report: `outputs/reports/portfolio_gate_report.md`
 - archived frozen pack: `outputs/reports/frozen_benchmark_pack.json`
 
 ### Frozen Frontier Operations
@@ -336,6 +336,12 @@ The current repo conclusion is still control-first, and the frozen benchmark pac
   - stability: `stable_plateau`, with one holdout probe that is a flat-zero plateau rather than a late-round spike
   - exploratory KeyCorridor track: `clearly negative`
   - decision: `round6 confirmed as active DoorKey benchmark and internal DoorKey envelope strengthened`
+- The later 50/50 portfolio campaign then re-confirmed the same benchmark under a broader fruitful/exploratory split:
+  - forty substantive challenger runs split `20/20` fruitful vs exploratory advanced only verified `0.8889` ties
+  - no challenger survived matched fairness
+  - holdout, healthy anti-regression, route validation, and stability all stayed favorable for `round6`
+  - exploratory KeyCorridor remained `clearly negative`
+  - decision: `round6 confirmed as active DoorKey benchmark and internal DoorKey benchmark state strengthened`
 - That result is still an extraction-method result, not a PPO-alone routed win.
 - The allowed current interpretation is still narrow:
   - active canonical DoorKey benchmark within the existing teacher-guided KL learner-state envelope
@@ -380,6 +386,18 @@ Canonical reports for the current phase:
 - `outputs/reports/hard_family_saturation_successor_pack.json`
 - `outputs/reports/hard_family_saturation_gate_report.md`
 - `outputs/reports/hard_family_saturation_decision_memo.md`
+- `outputs/reports/portfolio_stage1_screening_fruitful.md`
+- `outputs/reports/portfolio_stage1_screening_exploratory.md`
+- `outputs/reports/portfolio_stage3_fairness.md`
+- `outputs/reports/portfolio_stage4_holdout.md`
+- `outputs/reports/portfolio_stage5_antiregression.md`
+- `outputs/reports/portfolio_stage6_route_validation.md`
+- `outputs/reports/portfolio_stage7_stability.md`
+- `outputs/reports/portfolio_stage8_exploratory_transfer.md`
+- `outputs/reports/portfolio_candidate_pack.json`
+- `outputs/reports/portfolio_gate_report.md`
+- `outputs/reports/portfolio_decision_memo.md`
+- `outputs/reports/portfolio_frontier_contract.json`
 - `outputs/reports/lss_forensic_casebook.md`
 - `outputs/reports/lss_forensic_round_audit.md`
 - `outputs/reports/lss_forensic_route_locality.md`
