@@ -5,7 +5,8 @@ set -euo pipefail
   tests/test_portfolio_frontier_contract_snapshot.py \
   tests/test_portfolio_frontier_contract_loader.py \
   tests/test_portfolio_frontier_doctor.py \
-  tests/test_portfolio_frontier_docs_audit.py
+  tests/test_portfolio_frontier_docs_audit.py \
+  tests/test_portfolio_frontier_guard_workflow.py
 
 ./.venv/bin/python -m psmn_rl.analysis.portfolio_frontier_doctor \
   --output outputs/reports/portfolio_frontier_doctor.md \
