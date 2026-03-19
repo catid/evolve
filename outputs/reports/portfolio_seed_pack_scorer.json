@@ -1,0 +1,75 @@
+{
+  "grouped": {
+    "advance_for_broader_dev": [
+      "round7",
+      "round10"
+    ],
+    "hold_seed_clean_but_below_incumbent": [
+      "round5"
+    ],
+    "prune_guardrail_regression": [
+      "post_unlock_x5"
+    ],
+    "prune_support_regression": [
+      "door3_post5"
+    ]
+  },
+  "incumbent_269": 0.984375,
+  "rows": [
+    {
+      "candidate": "round7",
+      "dev_delta_vs_round6": 0.0,
+      "dev_mean": 0.8888888888888888,
+      "guardrail_277": 1.0,
+      "policy_bucket": "restart_default",
+      "support_233": 1.0,
+      "tier": "restart_default",
+      "verdict": "advance_for_broader_dev",
+      "weakness_269": 1.0
+    },
+    {
+      "candidate": "round10",
+      "dev_delta_vs_round6": 0.0,
+      "dev_mean": 0.8888888888888888,
+      "guardrail_277": 1.0,
+      "policy_bucket": "reserve_same_signal_higher_cost",
+      "support_233": 1.0,
+      "tier": "reserve",
+      "verdict": "advance_for_broader_dev",
+      "weakness_269": 1.0
+    },
+    {
+      "candidate": "round5",
+      "dev_delta_vs_round6": -0.05208333333333326,
+      "dev_mean": 0.8368055555555556,
+      "guardrail_277": 1.0,
+      "policy_bucket": "reserve_below_incumbent",
+      "support_233": 1.0,
+      "tier": "reserve",
+      "verdict": "hold_seed_clean_but_below_incumbent",
+      "weakness_269": 1.0
+    },
+    {
+      "candidate": "door3_post5",
+      "dev_delta_vs_round6": null,
+      "dev_mean": null,
+      "guardrail_277": 1.0,
+      "policy_bucket": "retire_structural_regression",
+      "support_233": 0.453125,
+      "tier": "retired",
+      "verdict": "prune_support_regression",
+      "weakness_269": 1.0
+    },
+    {
+      "candidate": "post_unlock_x5",
+      "dev_delta_vs_round6": null,
+      "dev_mean": null,
+      "guardrail_277": 0.890625,
+      "policy_bucket": "retire_local_only_fix",
+      "support_233": null,
+      "tier": "retired",
+      "verdict": "prune_guardrail_regression",
+      "weakness_269": 1.0
+    }
+  ]
+}
