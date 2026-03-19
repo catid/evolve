@@ -1,0 +1,70 @@
+{
+  "benchmark": {
+    "active_candidate": "round6",
+    "active_candidate_pack": "outputs/reports/portfolio_candidate_pack.json",
+    "archived_frozen_pack": "outputs/reports/frozen_benchmark_pack.json"
+  },
+  "campaign_name": "lss_portfolio_campaign",
+  "consistency": {
+    "checked_labels": [
+      "active_benchmark_round6",
+      "restart_default_round7",
+      "retired_priors_match",
+      "round7_scorer_advances",
+      "round10_replay_advances",
+      "round5_hold_only",
+      "door3_retired_consistent",
+      "post_unlock_x5_retired_consistent"
+    ],
+    "overall": "pass"
+  },
+  "contract_type": "portfolio_frontier_contract",
+  "frontier_roles": {
+    "default_restart_prior": "round7",
+    "hold_only_priors": [
+      "round5"
+    ],
+    "replay_validated_alternate": "round10",
+    "retired_priors": [
+      "door3_post5",
+      "post_unlock_x5"
+    ]
+  },
+  "frontier_support_status": "measured_support_regression",
+  "provenance": {
+    "git_commit": "a9d089c1aaaf11bdbe569a92684ca96676c4aed3",
+    "git_dirty": true
+  },
+  "schema_version": 1,
+  "screening_thresholds": {
+    "guardrail_min_success": 1.0,
+    "support_min_success": 1.0,
+    "weakness_min_success_exclusive": 0.984375001
+  },
+  "seed_labels": {
+    "differentiator": [
+      "prospective_f:233"
+    ],
+    "global_hard": [
+      "prospective_c:193"
+    ]
+  },
+  "seed_roles": {
+    "guardrail": {
+      "lane": "prospective_h",
+      "seed": 277
+    },
+    "ranking_support": {
+      "lane": "prospective_f",
+      "seed": 233
+    },
+    "ranking_weakness": {
+      "lane": "prospective_h",
+      "seed": 269
+    },
+    "sentinel": {
+      "lane": "prospective_c",
+      "seed": 193
+    }
+  }
+}
