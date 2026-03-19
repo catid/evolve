@@ -1,0 +1,212 @@
+{
+  "aggregated": [
+    {
+      "best_lane_mean": 1.0,
+      "best_seed_269": 1.0,
+      "bucket": "conservative_round_prior",
+      "candidate": "round5",
+      "min_seed_277": 1.0,
+      "source_count": 2,
+      "sources": [
+        "migration",
+        "stress_extended"
+      ]
+    },
+    {
+      "best_lane_mean": 1.0,
+      "best_seed_269": 1.0,
+      "bucket": "conservative_round_prior",
+      "candidate": "round7",
+      "min_seed_277": 1.0,
+      "source_count": 2,
+      "sources": [
+        "migration",
+        "stress_extended"
+      ]
+    },
+    {
+      "best_lane_mean": 1.0,
+      "best_seed_269": 1.0,
+      "bucket": "structural_full_lane_prior",
+      "candidate": "door3_post5",
+      "min_seed_277": 1.0,
+      "source_count": 1,
+      "sources": [
+        "migration"
+      ]
+    },
+    {
+      "best_lane_mean": 1.0,
+      "best_seed_269": 1.0,
+      "bucket": "conservative_round_prior",
+      "candidate": "round10",
+      "min_seed_277": 1.0,
+      "source_count": 1,
+      "sources": [
+        "stress_extended"
+      ]
+    },
+    {
+      "best_lane_mean": 0.9635416666666666,
+      "best_seed_269": 1.0,
+      "bucket": "partial_revisit",
+      "candidate": "post_unlock_x5",
+      "min_seed_277": 0.890625,
+      "source_count": 1,
+      "sources": [
+        "migration"
+      ]
+    },
+    {
+      "best_lane_mean": 0.8697916666666666,
+      "best_seed_269": 1.0,
+      "bucket": "local_only_fix",
+      "candidate": "door2_post4",
+      "min_seed_277": 0.609375,
+      "source_count": 1,
+      "sources": [
+        "migration"
+      ]
+    },
+    {
+      "best_lane_mean": 0.8697916666666666,
+      "best_seed_269": 1.0,
+      "bucket": "local_only_fix",
+      "candidate": "post_unlock_weighted",
+      "min_seed_277": 0.609375,
+      "source_count": 1,
+      "sources": [
+        "stress_extended"
+      ]
+    },
+    {
+      "best_lane_mean": 0.8333333333333334,
+      "best_seed_269": 1.0,
+      "bucket": "local_only_fix",
+      "candidate": "carry2_post4",
+      "min_seed_277": 0.5,
+      "source_count": 1,
+      "sources": [
+        "migration"
+      ]
+    },
+    {
+      "best_lane_mean": 0.6666666666666666,
+      "best_seed_269": 1.0,
+      "bucket": "local_only_fix",
+      "candidate": "disagree100",
+      "min_seed_277": 0.0,
+      "source_count": 1,
+      "sources": [
+        "migration"
+      ]
+    },
+    {
+      "best_lane_mean": 0.9947916666666666,
+      "best_seed_269": 0.984375,
+      "bucket": "incumbent_parity",
+      "candidate": "round12",
+      "min_seed_277": 1.0,
+      "source_count": 1,
+      "sources": [
+        "stress_extended"
+      ]
+    },
+    {
+      "best_lane_mean": 0.9947916666666666,
+      "best_seed_269": 0.984375,
+      "bucket": "incumbent_parity",
+      "candidate": "round6",
+      "min_seed_277": 1.0,
+      "source_count": 1,
+      "sources": [
+        "stress_extended"
+      ]
+    },
+    {
+      "best_lane_mean": 0.7447916666666666,
+      "best_seed_269": 0.625,
+      "bucket": "dead_end",
+      "candidate": "post_unlock_x6",
+      "min_seed_277": 0.609375,
+      "source_count": 1,
+      "sources": [
+        "migration"
+      ]
+    },
+    {
+      "best_lane_mean": 0.5416666666666666,
+      "best_seed_269": 0.625,
+      "bucket": "dead_end",
+      "candidate": "disagree050",
+      "min_seed_277": 0.0,
+      "source_count": 1,
+      "sources": [
+        "migration"
+      ]
+    },
+    {
+      "best_lane_mean": 0.6666666666666666,
+      "best_seed_269": 0.0,
+      "bucket": "dead_end",
+      "candidate": "carry3_post5",
+      "min_seed_277": 1.0,
+      "source_count": 1,
+      "sources": [
+        "migration"
+      ]
+    },
+    {
+      "best_lane_mean": 0.0,
+      "best_seed_269": 0.0,
+      "bucket": "dead_end",
+      "candidate": "round5_phase_balanced_dis050",
+      "min_seed_277": 0.0,
+      "source_count": 1,
+      "sources": [
+        "migration"
+      ]
+    },
+    {
+      "best_lane_mean": 0.0,
+      "best_seed_269": 0.0,
+      "bucket": "dead_end",
+      "candidate": "round5_phase_balanced_dis100",
+      "min_seed_277": 0.0,
+      "source_count": 1,
+      "sources": [
+        "migration"
+      ]
+    }
+  ],
+  "buckets": {
+    "conservative_round_prior": [
+      "round5",
+      "round7",
+      "round10"
+    ],
+    "dead_end": [
+      "post_unlock_x6",
+      "disagree050",
+      "carry3_post5",
+      "round5_phase_balanced_dis050",
+      "round5_phase_balanced_dis100"
+    ],
+    "incumbent_parity": [
+      "round12",
+      "round6"
+    ],
+    "local_only_fix": [
+      "door2_post4",
+      "post_unlock_weighted",
+      "carry2_post4",
+      "disagree100"
+    ],
+    "partial_revisit": [
+      "post_unlock_x5"
+    ],
+    "structural_full_lane_prior": [
+      "door3_post5"
+    ]
+  }
+}
