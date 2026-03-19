@@ -11,12 +11,14 @@ from psmn_rl.utils.io import get_git_commit, get_git_dirty
 CONSISTENCY_PATH = Path("outputs/reports/portfolio_frontier_consistency.json")
 DOCS_AUDIT_PATH = Path("outputs/reports/portfolio_frontier_docs_audit.json")
 DOCTOR_PATH = Path("outputs/reports/portfolio_frontier_doctor.json")
+SEED_PACK_DOCTOR_PATH = Path("outputs/reports/portfolio_seed_pack_doctor.json")
 
 
 def evaluate_guard_stack(
     consistency_overall: str,
     docs_audit_overall: str,
     doctor_overall: str,
+    seed_pack_doctor_overall: str,
 ) -> dict[str, Any]:
     checks = [
         {
@@ -34,6 +36,11 @@ def evaluate_guard_stack(
             "status": "pass" if doctor_overall == "pass" else "fail",
             "detail": f"doctor_overall={doctor_overall}",
         },
+        {
+            "label": "seed_pack_doctor_pass",
+            "status": "pass" if seed_pack_doctor_overall == "pass" else "fail",
+            "detail": f"seed_pack_doctor_overall={seed_pack_doctor_overall}",
+        },
     ]
     overall = "pass" if all(check["status"] == "pass" for check in checks) else "fail"
     return {"overall": overall, "checks": checks}
@@ -44,10 +51,12 @@ def render_guard_report(output: Path | None, json_output: Path | None) -> dict[s
     consistency = _read_json(CONSISTENCY_PATH)
     docs_audit = _read_json(DOCS_AUDIT_PATH)
     doctor = _read_json(DOCTOR_PATH)
+    seed_pack_doctor = _read_json(SEED_PACK_DOCTOR_PATH)
     result = evaluate_guard_stack(
         consistency_overall=str(consistency["overall"]),
         docs_audit_overall=str(docs_audit["overall"]),
         doctor_overall=str(doctor["overall"]),
+        seed_pack_doctor_overall=str(seed_pack_doctor["overall"]),
     )
     result["active_candidate"] = contract.benchmark.active_candidate
     result["active_candidate_pack"] = contract.benchmark.active_candidate_pack
