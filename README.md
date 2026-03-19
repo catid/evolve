@@ -232,9 +232,9 @@ Validate the sealed pack with one command:
 
 The active canonical DoorKey benchmark is now the `round6` teacher-guided KL learner-state successor, while the frozen benchmark pack remains archived as the legacy baseline.
 
-- migration decision: `outputs/reports/successor_migration_decision_memo.md`
-- active benchmark pack: `outputs/reports/successor_mega_league_candidate_pack.json`
-- migration gate report: `outputs/reports/successor_migration_gate_report.md`
+- current confirmation decision: `outputs/reports/expansion_mega_program_decision_memo.md`
+- active benchmark pack: `outputs/reports/expansion_mega_program_candidate_pack.json`
+- current gate report: `outputs/reports/expansion_mega_program_gate_report.md`
 - archived frozen pack: `outputs/reports/frozen_benchmark_pack.json`
 
 Run the pack-based gate against a candidate pack:
@@ -303,9 +303,17 @@ The current repo conclusion is still control-first, and the frozen benchmark pac
   - same-block KL learner-state `single_expert` mean: `1.0000`
   - frozen-comparable combined DoorKey KL learner-state `SARE` mean: `1.0000`
   - pack verdict: `PASS: thaw consideration allowed`
+- The larger benchmark-expansion program then confirmed `round6` as the active benchmark under a broader DoorKey family:
+  - thirty challenger runs across fifteen bounded mechanism directions advanced only four verified ties, and none survived matched fairness
+  - holdout DoorKey KL learner-state `SARE`: `0.9154` versus matched `token_dense` `0.9167` and matched `single_expert` `0.9167`
+  - healthy-family KL learner-state `SARE`: `1.0000` versus matched `token_dense` `0.8854` and matched `single_expert` `0.8889`
+  - route validation: `pass`
+  - stability: `stable_plateau`, with one holdout probe that is a flat-zero plateau rather than a late-round spike
+  - exploratory KeyCorridor track: `clearly negative`
+  - decision: `round6 confirmed as active DoorKey benchmark and internal DoorKey envelope strengthened`
 - That result is still an extraction-method result, not a PPO-alone routed win.
 - The allowed current interpretation is still narrow:
-  - canonization within DoorKey only for the `round6` successor line
+  - active canonical DoorKey benchmark within the existing teacher-guided KL learner-state envelope
   - no PPO-only routed claim
   - no specifically multi-expert routed claim
   - no cross-task claim

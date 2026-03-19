@@ -1,0 +1,360 @@
+schema_version: 1
+name: lss_successor_finetune_replay_league
+frozen_pack: outputs/reports/frozen_benchmark_pack.json
+legacy_frozen_pack: outputs/reports/frozen_benchmark_pack.json
+current_canonical_pack: outputs/reports/expansion_mega_program_candidate_pack.json
+current_canonical_name: round6
+previous_candidate_pack: outputs/reports/successor_mega_league_candidate_pack.json
+base_candidate_template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+incumbent_candidate:
+  template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+  overrides:
+    loop:
+      rounds: 6
+
+evaluation:
+  episodes: 64
+  task: DoorKey
+  path_key: external_policy_diagnostics
+
+base_configs:
+  flat_dense: configs/experiments/minigrid_doorkey_flat_dense_ent1e3.yaml
+  token_dense: configs/experiments/minigrid_doorkey_token_dense_ent1e3.yaml
+  single_expert: configs/experiments/minigrid_doorkey_single_expert_ent1e3.yaml
+  sare: configs/experiments/minigrid_doorkey_sare_ent1e3.yaml
+
+students:
+  sare:
+    config_name: sare_ent1e3.yaml
+    run_name: sare_ent1e3
+    output_label: kl_lss_sare
+  token_dense:
+    config_name: token_dense_ent1e3.yaml
+    run_name: token_dense_ent1e3
+    output_label: kl_lss_token_dense
+  single_expert:
+    config_name: single_expert_ent1e3.yaml
+    run_name: single_expert_ent1e3
+    output_label: kl_lss_single_expert
+
+blocks:
+  dev:
+    - lane: prospective_c
+      seeds: [181, 191, 193]
+    - lane: prospective_d
+      seeds: [197, 199, 211]
+    - lane: prospective_f
+      seeds: [233, 239, 241]
+  holdout:
+    - lane: prospective_g
+      seeds: [251, 257, 263]
+    - lane: prospective_h
+      seeds: [269, 271, 277]
+    - lane: prospective_i
+      seeds: [281, 283, 293]
+    - lane: prospective_j
+      seeds: [307, 311, 313]
+  healthy:
+    - lane: original
+      seeds: [7, 11, 19]
+    - lane: fresh
+      seeds: [23, 29, 31]
+    - lane: fresh_extra
+      seeds: [37, 41, 43]
+  exploratory:
+    - lane: keycorridor
+      seeds: [7, 11, 19]
+
+lane_roots:
+  prospective_c:
+    teacher_root: outputs/experiments/lss_successor_stress/stage0_blocks/prospective_c
+    sare_student_root: outputs/experiments/lss_successor_stress/stage0_blocks/prospective_c
+    token_student_root: outputs/experiments/lss_successor_stress/stage0_blocks/prospective_c
+    single_expert_root: outputs/experiments/lss_successor_stress/stage0_blocks/prospective_c
+  prospective_d:
+    teacher_root: outputs/experiments/lss_successor_stress/stage0_blocks/prospective_d
+    sare_student_root: outputs/experiments/lss_successor_stress/stage0_blocks/prospective_d
+    token_student_root: outputs/experiments/lss_successor_stress/stage0_blocks/prospective_d
+    single_expert_root: outputs/experiments/lss_successor_stress/stage0_blocks/prospective_d
+  prospective_f:
+    teacher_root: outputs/experiments/lss_successor_stress_followup/stage0_blocks/prospective_f
+    sare_student_root: outputs/experiments/lss_successor_stress_followup/stage0_blocks/prospective_f
+    token_student_root: outputs/experiments/lss_successor_stress_followup/stage0_blocks/prospective_f
+    single_expert_root: outputs/experiments/lss_successor_stress_followup/stage0_blocks/prospective_f
+  prospective_g:
+    teacher_root: outputs/experiments/lss_successor_stress_extended/stage0_blocks/prospective_g
+    sare_student_root: outputs/experiments/lss_successor_stress_extended/stage0_blocks/prospective_g
+    token_student_root: outputs/experiments/lss_successor_stress_extended/stage0_blocks/prospective_g
+    single_expert_root: outputs/experiments/lss_successor_stress_extended/stage0_blocks/prospective_g
+  prospective_h:
+    teacher_root: outputs/experiments/lss_successor_stress_extended/stage0_blocks/prospective_h
+    sare_student_root: outputs/experiments/lss_successor_stress_extended/stage0_blocks/prospective_h
+    token_student_root: outputs/experiments/lss_successor_stress_extended/stage0_blocks/prospective_h
+    single_expert_root: outputs/experiments/lss_successor_stress_extended/stage0_blocks/prospective_h
+  prospective_i:
+    teacher_root: outputs/experiments/lss_successor_tiebreak/stage0_blocks/prospective_i
+    sare_student_root: outputs/experiments/lss_successor_tiebreak/stage0_blocks/prospective_i
+    token_student_root: outputs/experiments/lss_successor_tiebreak/stage0_blocks/prospective_i
+    single_expert_root: outputs/experiments/lss_successor_tiebreak/stage0_blocks/prospective_i
+  prospective_j:
+    teacher_root: outputs/experiments/lss_successor_tiebreak/stage0_blocks/prospective_j
+    sare_student_root: outputs/experiments/lss_successor_tiebreak/stage0_blocks/prospective_j
+    token_student_root: outputs/experiments/lss_successor_tiebreak/stage0_blocks/prospective_j
+    single_expert_root: outputs/experiments/lss_successor_tiebreak/stage0_blocks/prospective_j
+  original:
+    teacher_root: outputs/reproductions/lss_robustness_baseline
+    sare_student_root: outputs/reproductions/lss_robustness_baseline
+    token_student_root: outputs/reproductions/lss_robustness_baseline
+    single_expert_root: outputs/experiments/lss_claim_broadening/single_expert_controls
+  fresh:
+    teacher_root: outputs/experiments/lss_claim_hardening/additional_seeds
+    sare_student_root: outputs/experiments/lss_claim_hardening/additional_seeds
+    token_student_root: outputs/experiments/lss_claim_hardening/additional_seeds
+    single_expert_root: outputs/experiments/lss_multi_expert_hardening/fresh_single_expert_controls
+  fresh_extra:
+    teacher_root: outputs/experiments/lss_claim_broadening/additional_fresh_block
+    sare_student_root: outputs/experiments/lss_claim_broadening/additional_fresh_block
+    token_student_root: outputs/experiments/lss_claim_broadening/additional_fresh_block
+    single_expert_root: outputs/experiments/lss_multi_expert_hardening/fresh_extra_single_expert_controls
+  keycorridor:
+    teacher_root: outputs/experiments/lss_claim_hardening/keycorridor
+    sare_student_root: outputs/experiments/lss_claim_hardening/keycorridor
+    token_student_root: outputs/experiments/lss_claim_hardening/keycorridor
+    single_expert_root: outputs/experiments/minigrid_baselines/minigrid_keycorridor_single_expert
+
+current_round6_sare_roots:
+  prospective_c: outputs/experiments/lss_successor_stress/stage1_screening/round6/prospective_c
+  prospective_d: outputs/experiments/lss_successor_stress/stage1_screening/round6/prospective_d
+  prospective_f: outputs/experiments/lss_successor_stress_followup/stage1_screening/round6/prospective_f
+  prospective_g: outputs/experiments/lss_successor_stress_extended/stage1_screening/round6/prospective_g
+  prospective_h: outputs/experiments/lss_successor_stress_extended/stage1_screening/round6/prospective_h
+  prospective_i: outputs/experiments/lss_successor_tiebreak/stage1_screening/round6/prospective_i
+  prospective_j: outputs/experiments/lss_successor_tiebreak/stage1_screening/round6/prospective_j
+  original: outputs/experiments/lss_hard_family_saturation/stage4_antiregression/round6/original
+  fresh: outputs/experiments/lss_hard_family_saturation/stage4_antiregression/round6/fresh
+  fresh_extra: outputs/experiments/lss_hard_family_saturation/stage4_antiregression/round6/fresh_extra
+
+current_round6_control_roots:
+  prospective_c: outputs/experiments/lss_successor_stress/stage2_controls/round6/prospective_c
+  prospective_d: outputs/experiments/lss_successor_stress/stage2_controls/round6/prospective_d
+  prospective_f: outputs/experiments/lss_successor_stress_followup/stage2_controls/round6/prospective_f
+  prospective_g: outputs/experiments/lss_successor_stress_extended/stage2_controls/round6/prospective_g
+  prospective_h: outputs/experiments/lss_successor_stress_extended/stage2_controls/round6/prospective_h
+  prospective_i: outputs/experiments/lss_successor_tiebreak/stage2_controls/round6/prospective_i
+  prospective_j: outputs/experiments/lss_successor_tiebreak/stage2_controls/round6/prospective_j
+  original: outputs/experiments/lss_hard_family_saturation/stage4_antiregression/round6/original
+  fresh: outputs/experiments/lss_hard_family_saturation/stage4_antiregression/round6/fresh
+  fresh_extra: outputs/experiments/lss_hard_family_saturation/stage4_antiregression/round6/fresh_extra
+
+candidates:
+  round7_phase_balanced_4096:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    direction: late_round_phase_balanced_replay
+    description: round7 with phase-balanced replay and post-unlock emphasis
+    overrides:
+      loop:
+        rounds: 7
+        aggregation: phase_balanced_recent
+        max_dataset_steps: 4096
+        phase_quota_weights:
+          default: 1.0
+          post_unlock: 2.5
+  round10_phase_balanced_4096:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    direction: late_round_phase_balanced_replay
+    description: round10 with phase-balanced replay and post-unlock emphasis
+    overrides:
+      loop:
+        rounds: 10
+        aggregation: phase_balanced_recent
+        max_dataset_steps: 4096
+        phase_quota_weights:
+          default: 1.0
+          post_unlock: 2.5
+  round12_phase_balanced_4096:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    direction: late_round_phase_balanced_replay
+    description: round12 with phase-balanced replay and post-unlock emphasis
+    overrides:
+      loop:
+        rounds: 12
+        aggregation: phase_balanced_recent
+        max_dataset_steps: 4096
+        phase_quota_weights:
+          default: 1.0
+          post_unlock: 2.5
+  round10_phase_balanced_6144:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    direction: larger_phase_balanced_replay
+    description: round10 with larger phase-balanced replay
+    overrides:
+      loop:
+        rounds: 10
+        aggregation: phase_balanced_recent
+        max_dataset_steps: 6144
+        phase_quota_weights:
+          default: 1.0
+          post_unlock: 3.0
+  round12_phase_balanced_6144:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    direction: larger_phase_balanced_replay
+    description: round12 with larger phase-balanced replay
+    overrides:
+      loop:
+        rounds: 12
+        aggregation: phase_balanced_recent
+        max_dataset_steps: 6144
+        phase_quota_weights:
+          default: 1.0
+          post_unlock: 3.0
+  round10_cap_balanced_4096:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    direction: cap_balanced_recent_replay
+    description: round10 with cap-balanced recent replay
+    overrides:
+      loop:
+        rounds: 10
+        aggregation: cap_recent_balanced
+        max_dataset_steps: 4096
+  round12_cap_balanced_6144:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    direction: cap_balanced_recent_replay
+    description: round12 with larger cap-balanced recent replay
+    overrides:
+      loop:
+        rounds: 12
+        aggregation: cap_recent_balanced
+        max_dataset_steps: 6144
+  round10_cap_recent_4096:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    direction: cap_recent_replay
+    description: round10 with bounded cap-recent replay
+    overrides:
+      loop:
+        rounds: 10
+        aggregation: cap_recent
+        max_dataset_steps: 4096
+  round12_cap_recent_8192:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    direction: cap_recent_replay
+    description: round12 with larger cap-recent replay
+    overrides:
+      loop:
+        rounds: 12
+        aggregation: cap_recent
+        max_dataset_steps: 8192
+
+selection:
+  min_dev_gain: 0.0000
+  stage1_top_k: 3
+  verification_tolerance: 0.0500
+  verification_margin_floor: -0.0200
+  control_eps: 0.0100
+  margin_eps: 0.0050
+  stage2_top_k: 1
+  min_holdout_gain: 0.0100
+  anti_regression_tolerance: 0.0200
+  route_drop_min: 0.5000
+  route_randomization_drop_min: 0.2500
+  pack_gate_required_verdict: "PASS: thaw consideration allowed"
+
+route_cases:
+  dev:
+    lane: prospective_f
+    seed: 233
+  holdout:
+    lane: prospective_h
+    seed: 269
+  healthy:
+    lane: fresh
+    seed: 23
+
+stability_cases:
+  dev:
+    lane: prospective_f
+    seed: 233
+  holdout:
+    lane: prospective_i
+    seed: 283
+  healthy:
+    lane: fresh_extra
+    seed: 37
+
+stage_roots:
+  stage1_screening: outputs/experiments/lss_successor_finetune_replay_league/stage1_screening
+  stage2_verification_a: outputs/experiments/lss_successor_finetune_replay_league/stage2_verification_a
+  stage2_verification_b: outputs/experiments/lss_successor_finetune_replay_league/stage2_verification_b
+  stage2_fairness: outputs/experiments/lss_successor_finetune_replay_league/stage3_fairness
+  stage3_holdout: outputs/experiments/lss_successor_finetune_replay_league/stage4_holdout
+  stage4_antiregression: outputs/experiments/lss_successor_finetune_replay_league/stage5_antiregression
+  stage7_pack: outputs/experiments/lss_successor_finetune_replay_league/stage7_pack
+
+reuse_roots:
+  stage1_sare:
+    - outputs/experiments/lss_successor_finetune_bridge_league/stage1_screening
+    - outputs/experiments/lss_successor_finetune_conf_league/stage1_screening
+    - outputs/experiments/lss_successor_finetune_mixed_league/stage1_screening
+    - outputs/experiments/lss_successor_finetune_temp_league/stage1_screening
+    - outputs/experiments/lss_successor_finetune_league/stage1_screening
+    - outputs/experiments/lss_successor_stress/stage1_screening
+    - outputs/experiments/lss_successor_stress_followup/stage1_screening
+    - outputs/experiments/lss_successor_stress_extended/stage1_screening
+    - outputs/experiments/lss_successor_tiebreak/stage1_screening
+    - outputs/experiments/lss_successor_mega_league/stage1_screening
+    - outputs/experiments/lss_expansion_mega_program/stage1_screening
+  stage3_controls:
+    - outputs/experiments/lss_successor_stress/stage2_controls
+    - outputs/experiments/lss_successor_stress_followup/stage2_controls
+    - outputs/experiments/lss_successor_stress_extended/stage2_controls
+    - outputs/experiments/lss_successor_tiebreak/stage2_controls
+    - outputs/experiments/lss_successor_mega_league/stage3_fairness
+    - outputs/experiments/lss_expansion_mega_program/stage3_fairness
+
+historical_reports:
+  - outputs/reports/successor_validation_decision_memo.md
+  - outputs/reports/successor_challenge_decision_memo.md
+  - outputs/reports/successor_stress_decision_memo.md
+  - outputs/reports/successor_stress_followup_decision_memo.md
+  - outputs/reports/successor_stress_extended_decision_memo.md
+  - outputs/reports/successor_tiebreak_decision_memo.md
+  - outputs/reports/successor_migration_decision_memo.md
+  - outputs/reports/successor_mega_league_decision_memo.md
+  - outputs/reports/expansion_mega_program_decision_memo.md
+  - outputs/reports/successor_finetune_stage3_fairness.md
+  - outputs/reports/successor_finetune_temp_stage3_fairness.md
+  - outputs/reports/successor_finetune_mixed_stage1_screening.md
+  - outputs/reports/successor_finetune_conf_stage1_screening.md
+  - outputs/reports/successor_finetune_bridge_registration.md
+
+reports:
+  state_reconciliation: outputs/reports/successor_finetune_replay_state_reconciliation.md
+  registration: outputs/reports/successor_finetune_replay_registration.md
+  baseline_sync: outputs/reports/successor_finetune_replay_baseline_sync.md
+  baseline_sync_csv: outputs/reports/successor_finetune_replay_baseline_sync.csv
+  baseline_sync_json: outputs/reports/successor_finetune_replay_baseline_sync.json
+  stage1_report: outputs/reports/successor_finetune_replay_stage1_screening.md
+  stage1_csv: outputs/reports/successor_finetune_replay_stage1_screening.csv
+  stage1_raw_json: outputs/reports/successor_finetune_replay_stage1_screening_raw.json
+  stage1_json: outputs/reports/successor_finetune_replay_stage1_screening.json
+  stage2_verification_report: outputs/reports/successor_finetune_replay_stage2_verification.md
+  stage2_verification_csv: outputs/reports/successor_finetune_replay_stage2_verification.csv
+  stage2_verification_json: outputs/reports/successor_finetune_replay_stage2_verification.json
+  stage2_report: outputs/reports/successor_finetune_replay_stage3_fairness.md
+  stage2_csv: outputs/reports/successor_finetune_replay_stage3_fairness.csv
+  stage2_json: outputs/reports/successor_finetune_replay_stage3_fairness.json
+  stage3_report: outputs/reports/successor_finetune_replay_stage4_holdout.md
+  stage3_csv: outputs/reports/successor_finetune_replay_stage4_holdout.csv
+  stage3_json: outputs/reports/successor_finetune_replay_stage4_holdout.json
+  stage4_report: outputs/reports/successor_finetune_replay_stage5_antiregression.md
+  stage4_csv: outputs/reports/successor_finetune_replay_stage5_antiregression.csv
+  stage4_json: outputs/reports/successor_finetune_replay_stage5_antiregression.json
+  route_raw_dir: outputs/reports/successor_finetune_replay_stage6_route_raw
+  stage5_report: outputs/reports/successor_finetune_replay_stage6_route_validation.md
+  stage5_csv: outputs/reports/successor_finetune_replay_stage6_route_validation.csv
+  stage5_json: outputs/reports/successor_finetune_replay_stage6_route_validation.json
+  stage6_report: outputs/reports/successor_finetune_replay_stage7_stability.md
+  stage6_csv: outputs/reports/successor_finetune_replay_stage7_stability.csv
+  stage6_json: outputs/reports/successor_finetune_replay_stage7_stability.json
+  candidate_pack: outputs/reports/successor_finetune_replay_candidate_pack.json
+  gate_report: outputs/reports/successor_finetune_replay_gate_report.md
+  decision_memo: outputs/reports/successor_finetune_replay_decision_memo.md

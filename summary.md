@@ -16,6 +16,14 @@
   - migration stability: `pass`
   - migration gate verdict: `PASS: thaw consideration allowed`
   - final status: `round6 canonized as active DoorKey benchmark`
+- The benchmark-expansion mega program then confirmed `round6` under a broader DoorKey family:
+  - thirty challenger runs across fifteen bounded mechanism directions advanced only four verified late-round ties, and none survived matched fairness
+  - holdout DoorKey KL learner-state `SARE`: `0.9154` vs matched `token_dense` `0.9167` and matched `single_expert` `0.9167`
+  - healthy-family KL learner-state `SARE`: `1.0000` vs matched `token_dense` `0.8854` and matched `single_expert` `0.8889`
+  - route validation: `pass`
+  - stability: `stable_plateau`, with one holdout probe that stayed a flat-zero plateau
+  - exploratory KeyCorridor track: `clearly negative`
+  - final status: `round6 confirmed as active DoorKey benchmark and internal DoorKey envelope strengthened`
 - Allowed current scope:
   - teacher-guided KL learner-state DoorKey `SARE` result
   - external `64`-episode evaluation only
@@ -82,7 +90,7 @@
   - route randomization is catastrophic on most recovered seeds, but seed `29` is now a genuine narrow exception rather than a weak-probe artifact
   - see [lss_seed29_route_randomization_forensics.md](outputs/reports/lss_seed29_route_randomization_forensics.md) and [lss_broader_route_dependence_report.md](outputs/reports/lss_broader_route_dependence_report.md)
 - The exact same method shows no bounded KeyCorridor transfer. See [lss_keycorridor_transfer_report.md](outputs/reports/lss_keycorridor_transfer_report.md).
-- The current repo recommendation is that `round6` is the active canonical DoorKey benchmark, now explicitly confirmed and sealed after the mega challenger league, while future candidates still have to go through the automated gate and candidate-pack discipline against that active benchmark and the archived frozen pack. See [successor_mega_league_decision_memo.md](outputs/reports/successor_mega_league_decision_memo.md), [successor_mega_league_candidate_pack.json](outputs/reports/successor_mega_league_candidate_pack.json), and [freeze_hardening_operational_memo.md](outputs/reports/freeze_hardening_operational_memo.md).
+- The current repo recommendation is that `round6` is the active canonical DoorKey benchmark, now explicitly re-confirmed after the expansion mega-program, while future candidates still have to go through the automated gate and candidate-pack discipline against that active benchmark and the archived frozen pack. See [expansion_mega_program_decision_memo.md](outputs/reports/expansion_mega_program_decision_memo.md), [expansion_mega_program_candidate_pack.json](outputs/reports/expansion_mega_program_candidate_pack.json), and [freeze_hardening_operational_memo.md](outputs/reports/freeze_hardening_operational_memo.md).
 
 ## Claim Gate
 
