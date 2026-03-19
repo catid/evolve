@@ -1,0 +1,71 @@
+{
+  "reserve_priors": [
+    "round10",
+    "round5"
+  ],
+  "restart_default": [
+    "round7"
+  ],
+  "retired_priors": [
+    "door3_post5",
+    "post_unlock_x5"
+  ],
+  "rows": [
+    {
+      "candidate": "round6",
+      "dossier_bucket": "n/a",
+      "guardrail_277": 1.0,
+      "policy_bucket": "active_incumbent",
+      "support_233": 1.0,
+      "triage_bucket": "not_better_than_incumbent",
+      "weakness_269": 0.984375
+    },
+    {
+      "candidate": "round7",
+      "dossier_bucket": "recommended_conservative_default",
+      "guardrail_277": 1.0,
+      "policy_bucket": "restart_default",
+      "support_233": 1.0,
+      "triage_bucket": "conservative_clean_prior",
+      "weakness_269": 1.0
+    },
+    {
+      "candidate": "round10",
+      "dossier_bucket": "higher_cost_same_signal",
+      "guardrail_277": 1.0,
+      "policy_bucket": "reserve_same_signal_higher_cost",
+      "support_233": 1.0,
+      "triage_bucket": "conservative_clean_prior",
+      "weakness_269": 1.0
+    },
+    {
+      "candidate": "round5",
+      "dossier_bucket": "cheapest_but_below_incumbent",
+      "guardrail_277": 1.0,
+      "policy_bucket": "reserve_below_incumbent",
+      "support_233": 1.0,
+      "triage_bucket": "conservative_clean_prior",
+      "weakness_269": 1.0
+    },
+    {
+      "candidate": "door3_post5",
+      "dossier_bucket": "n/a",
+      "guardrail_277": 1.0,
+      "policy_bucket": "retire_structural_regression",
+      "support_233": 0.453125,
+      "triage_bucket": "support_unmeasured_structural",
+      "weakness_269": 1.0
+    },
+    {
+      "candidate": "post_unlock_x5",
+      "dossier_bucket": "n/a",
+      "guardrail_277": 0.890625,
+      "policy_bucket": "retire_local_only_fix",
+      "support_233": null,
+      "triage_bucket": "local_only_fix",
+      "weakness_269": 1.0
+    }
+  ],
+  "support_status": "measured_support_regression",
+  "surviving_candidates": []
+}
