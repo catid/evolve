@@ -1,0 +1,103 @@
+schema_version: 1
+name: lss_portfolio_structural_probe
+frozen_pack: outputs/reports/frozen_benchmark_pack.json
+legacy_frozen_pack: outputs/reports/frozen_benchmark_pack.json
+current_canonical_pack: outputs/reports/expansion_mega_program_candidate_pack.json
+current_canonical_name: round6
+previous_candidate_pack: outputs/reports/post_pass_candidate_pack.json
+base_candidate_template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+
+evaluation:
+  episodes: 64
+  task: DoorKey
+  path_key: external_policy_diagnostics
+
+base_configs:
+  flat_dense: configs/experiments/minigrid_doorkey_flat_dense_ent1e3.yaml
+  token_dense: configs/experiments/minigrid_doorkey_token_dense_ent1e3.yaml
+  single_expert: configs/experiments/minigrid_doorkey_single_expert_ent1e3.yaml
+  sare: configs/experiments/minigrid_doorkey_sare_ent1e3.yaml
+
+students:
+  sare:
+    config_name: sare_ent1e3.yaml
+    run_name: sare_ent1e3
+    output_label: kl_lss_sare
+  token_dense:
+    config_name: token_dense_ent1e3.yaml
+    run_name: token_dense_ent1e3
+    output_label: kl_lss_token_dense
+  single_expert:
+    config_name: single_expert_ent1e3.yaml
+    run_name: single_expert_ent1e3
+    output_label: kl_lss_single_expert
+
+blocks:
+  dev:
+    - lane: prospective_c
+      seeds: [193]
+    - lane: prospective_f
+      seeds: [233]
+  holdout: []
+  healthy: []
+  frozen_combined: []
+
+lane_roots:
+  prospective_c:
+    teacher_root: outputs/experiments/lss_successor_stress/stage0_blocks/prospective_c
+    sare_student_root: outputs/experiments/lss_successor_stress/stage0_blocks/prospective_c
+    token_student_root: outputs/experiments/lss_successor_stress/stage0_blocks/prospective_c
+    single_expert_root: outputs/experiments/lss_successor_stress/stage0_blocks/prospective_c
+  prospective_f:
+    teacher_root: outputs/experiments/lss_successor_stress_followup/stage0_blocks/prospective_f
+    sare_student_root: outputs/experiments/lss_successor_stress_followup/stage0_blocks/prospective_f
+    token_student_root: outputs/experiments/lss_successor_stress_followup/stage0_blocks/prospective_f
+    single_expert_root: outputs/experiments/lss_successor_stress_followup/stage0_blocks/prospective_f
+
+current_round6_sare_roots:
+  prospective_c: outputs/experiments/lss_successor_stress/stage1_screening/round6/prospective_c
+  prospective_f: outputs/experiments/lss_successor_stress_followup/stage1_screening/round6/prospective_f
+
+current_round6_control_roots:
+  prospective_c: outputs/experiments/lss_successor_stress/stage2_controls/round6/prospective_c
+  prospective_f: outputs/experiments/lss_successor_stress_followup/stage2_controls/round6/prospective_f
+
+candidates:
+  round7:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    direction: cleanup_round_extension
+    description: one-more-round cleanup challenger
+    overrides:
+      loop:
+        rounds: 7
+  door3_post5:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    direction: locked_door_bridge_weighting
+    description: stronger locked-door bridge weighting
+    overrides:
+      student:
+        phase_weights:
+          at_locked_door: 3.0
+          post_unlock: 5.0
+
+selection:
+  stage1_top_k: 2
+  stage2_top_k: 1
+  min_dev_gain: 0.0
+  min_holdout_gain: 0.0
+  control_eps: 0.02
+  margin_eps: 0.01
+  anti_regression_tolerance: 0.02
+  route_drop_min: 0.50
+  route_randomization_drop_min: 0.25
+  pack_gate_required_verdict: "PASS: thaw consideration allowed"
+
+stage_roots:
+  stage1_screening: outputs/experiments/lss_portfolio_structural_probe/stage1_screening
+
+reports:
+  stage1_report: outputs/reports/portfolio_structural_probe_stage1.md
+  stage1_csv: outputs/reports/portfolio_structural_probe_stage1.csv
+  stage1_json: outputs/reports/portfolio_structural_probe_stage1.json
+  probe_report: outputs/reports/portfolio_structural_probe.md
+  probe_json: outputs/reports/portfolio_structural_probe.json

@@ -1,0 +1,23 @@
+{
+  "detail_rows": [
+    {
+      "door3_post5": 0.0,
+      "lane": "prospective_c",
+      "round6": 0.0,
+      "round7": 0.0,
+      "seed": 193,
+      "single_expert": 0.0,
+      "token_dense": 0.0
+    },
+    {
+      "door3_post5": 0.453125,
+      "lane": "prospective_f",
+      "round6": 1.0,
+      "round7": 1.0,
+      "seed": 233,
+      "single_expert": 1.0,
+      "token_dense": 0.625
+    }
+  ],
+  "support_status": "measured_support_regression"
+}
