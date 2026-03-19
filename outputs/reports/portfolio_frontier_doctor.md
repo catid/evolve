@@ -1,6 +1,6 @@
 # Portfolio Frontier Doctor
 
-- git commit: `b119c83f0179c37b0ff36b4c6041775d6684af19`
+- git commit: `583cb52866d4c9d1bb22417483bb216845a7f699`
 - git dirty: `True`
 - overall: `pass`
 

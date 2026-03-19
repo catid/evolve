@@ -35,6 +35,7 @@
   - default bounded restart prior: `round7`
   - replay-validated alternate: `round10`
   - local guard entrypoint: `scripts/run_portfolio_frontier_guard.sh`
+  - consolidated guard report: [portfolio_frontier_guard_report.md](outputs/reports/portfolio_frontier_guard_report.md)
   - contract artifact: [portfolio_frontier_contract.json](outputs/reports/portfolio_frontier_contract.json)
 - Allowed current scope:
   - teacher-guided KL learner-state DoorKey `SARE` result
