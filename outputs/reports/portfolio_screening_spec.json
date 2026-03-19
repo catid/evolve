@@ -1,0 +1,80 @@
+{
+  "candidate_rows": [
+    {
+      "candidate": "round7",
+      "guardrail_277": 1.0,
+      "policy_bucket": "restart_default",
+      "screen_rule": "advance_for_broader_dev",
+      "support_233": 1.0,
+      "weakness_269": 1.0
+    },
+    {
+      "candidate": "round10",
+      "guardrail_277": 1.0,
+      "policy_bucket": "reserve_same_signal_higher_cost",
+      "screen_rule": "advance_for_broader_dev",
+      "support_233": 1.0,
+      "weakness_269": 1.0
+    },
+    {
+      "candidate": "round5",
+      "guardrail_277": 1.0,
+      "policy_bucket": "reserve_below_incumbent",
+      "screen_rule": "advance_for_broader_dev",
+      "support_233": 1.0,
+      "weakness_269": 1.0
+    },
+    {
+      "candidate": "door3_post5",
+      "guardrail_277": 1.0,
+      "policy_bucket": "retire_structural_regression",
+      "screen_rule": "prune_support_regression",
+      "support_233": 0.453125,
+      "weakness_269": 1.0
+    },
+    {
+      "candidate": "post_unlock_x5",
+      "guardrail_277": 0.890625,
+      "policy_bucket": "retire_local_only_fix",
+      "screen_rule": "prune_guardrail_regression",
+      "support_233": null,
+      "weakness_269": 1.0
+    }
+  ],
+  "differentiator": [
+    "prospective_f:233"
+  ],
+  "global_hard": [
+    "prospective_c:193"
+  ],
+  "incumbent_269": 0.984375,
+  "reserve_priors": [
+    "round10",
+    "round5"
+  ],
+  "restart_default": [
+    "round7"
+  ],
+  "retired_priors": [
+    "door3_post5",
+    "post_unlock_x5"
+  ],
+  "seed_roles": {
+    "guardrail": {
+      "lane": "prospective_h",
+      "seed": 277
+    },
+    "ranking_support": {
+      "lane": "prospective_f",
+      "seed": 233
+    },
+    "ranking_weakness": {
+      "lane": "prospective_h",
+      "seed": 269
+    },
+    "sentinel": {
+      "lane": "prospective_c",
+      "seed": 193
+    }
+  }
+}
