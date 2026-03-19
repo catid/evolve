@@ -245,6 +245,8 @@ The current measured DoorKey restart frontier is also frozen as an operational b
 - frontier guard report: `outputs/reports/portfolio_frontier_guard_report.md`
 - frontier schedule: `outputs/reports/portfolio_frontier_schedule.md`
 - frontier kit: `outputs/reports/portfolio_frontier_kit.json`
+- frontier seed pack: `outputs/reports/portfolio_seed_pack.json`
+- frontier seed-pack doctor: `outputs/reports/portfolio_seed_pack_doctor.md`
 - default bounded restart prior: `round7`
 - replay-validated alternate: `round10`
 
@@ -263,10 +265,21 @@ python -m psmn_rl.analysis.portfolio_frontier_doctor \
   --fail-on-drift
 ```
 
+Run the seed-pack doctor directly:
+
+```bash
+python -m psmn_rl.analysis.portfolio_seed_pack_doctor \
+  --output outputs/reports/portfolio_seed_pack_doctor.md \
+  --json outputs/reports/portfolio_seed_pack_doctor.json \
+  --fail-on-drift
+```
+
 The consolidated guard status is written to:
 
 - `outputs/reports/portfolio_frontier_guard_report.md`
 - `outputs/reports/portfolio_frontier_guard_report.json`
+- `outputs/reports/portfolio_seed_pack_doctor.md`
+- `outputs/reports/portfolio_seed_pack_doctor.json`
 
 Run the pack-based gate against a candidate pack:
 

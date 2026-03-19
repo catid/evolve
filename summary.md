@@ -37,6 +37,8 @@
   - local guard entrypoint: `scripts/run_portfolio_frontier_guard.sh`
   - consolidated guard report: [portfolio_frontier_guard_report.md](outputs/reports/portfolio_frontier_guard_report.md)
   - contract artifact: [portfolio_frontier_contract.json](outputs/reports/portfolio_frontier_contract.json)
+  - seed pack artifact: [portfolio_seed_pack.json](outputs/reports/portfolio_seed_pack.json)
+  - seed-pack doctor: [portfolio_seed_pack_doctor.md](outputs/reports/portfolio_seed_pack_doctor.md)
 - Allowed current scope:
   - teacher-guided KL learner-state DoorKey `SARE` result
   - external `64`-episode evaluation only

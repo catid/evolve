@@ -14,6 +14,8 @@ CURRENT_GATE_REPORT = "outputs/reports/portfolio_gate_report.md"
 FRONTIER_CONTRACT_REPORT = "outputs/reports/portfolio_frontier_contract.json"
 FRONTIER_GUARD_REPORT = "outputs/reports/portfolio_frontier_guard_report.md"
 FRONTIER_GUARD_SCRIPT = "scripts/run_portfolio_frontier_guard.sh"
+SEED_PACK_REPORT = "outputs/reports/portfolio_seed_pack.json"
+SEED_PACK_DOCTOR_REPORT = "outputs/reports/portfolio_seed_pack_doctor.md"
 CLAIM_LEDGER_PORTFOLIO_ROW = "50/50 portfolio campaign"
 
 
@@ -38,6 +40,8 @@ def build_expectations(contract: FrontierContract) -> tuple[FileExpectation, ...
                 CURRENT_GATE_REPORT,
                 FRONTIER_CONTRACT_REPORT,
                 FRONTIER_GUARD_REPORT,
+                SEED_PACK_REPORT,
+                SEED_PACK_DOCTOR_REPORT,
                 FRONTIER_GUARD_SCRIPT,
                 round7,
                 round10,
@@ -51,6 +55,8 @@ def build_expectations(contract: FrontierContract) -> tuple[FileExpectation, ...
                 CURRENT_DECISION_REPORT,
                 FRONTIER_CONTRACT_REPORT,
                 FRONTIER_GUARD_REPORT,
+                SEED_PACK_REPORT,
+                SEED_PACK_DOCTOR_REPORT,
                 FRONTIER_GUARD_SCRIPT,
                 round7,
                 round10,
@@ -64,6 +70,8 @@ def build_expectations(contract: FrontierContract) -> tuple[FileExpectation, ...
                 CURRENT_DECISION_REPORT,
                 CURRENT_GATE_REPORT,
                 FRONTIER_GUARD_REPORT,
+                "portfolio_seed_pack.md",
+                SEED_PACK_DOCTOR_REPORT,
                 round7,
                 round10,
             ),
