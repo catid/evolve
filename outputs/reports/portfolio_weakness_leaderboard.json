@@ -1,0 +1,275 @@
+{
+  "active_bounded_weakness": {
+    "classification": "control_advantaged",
+    "lane": "prospective_h",
+    "round6": 0.984375,
+    "seed": 269,
+    "single_expert": 1.0,
+    "token_dense": 1.0
+  },
+  "entries": [
+    {
+      "campaign_note": "the broader campaign still failed to produce a migration-quality challenger",
+      "candidate": "door3_post5",
+      "lane_mean": 1.0,
+      "seed_269": 1.0,
+      "seed_271": 1.0,
+      "seed_277": 1.0,
+      "source": "migration"
+    },
+    {
+      "campaign_note": "the broader campaign did not yield a meaningful post-control replacement",
+      "candidate": "round10",
+      "lane_mean": 1.0,
+      "seed_269": 1.0,
+      "seed_271": 1.0,
+      "seed_277": 1.0,
+      "source": "stress_extended"
+    },
+    {
+      "campaign_note": "the broader campaign still failed to produce a migration-quality challenger",
+      "candidate": "round5",
+      "lane_mean": 1.0,
+      "seed_269": 1.0,
+      "seed_271": 1.0,
+      "seed_277": 1.0,
+      "source": "migration"
+    },
+    {
+      "campaign_note": "the broader campaign did not yield a meaningful post-control replacement",
+      "candidate": "round5",
+      "lane_mean": 1.0,
+      "seed_269": 1.0,
+      "seed_271": 1.0,
+      "seed_277": 1.0,
+      "source": "stress_extended"
+    },
+    {
+      "campaign_note": "the broader campaign still failed to produce a migration-quality challenger",
+      "candidate": "round7",
+      "lane_mean": 1.0,
+      "seed_269": 1.0,
+      "seed_271": 1.0,
+      "seed_277": 1.0,
+      "source": "migration"
+    },
+    {
+      "campaign_note": "the broader campaign did not yield a meaningful post-control replacement",
+      "candidate": "round7",
+      "lane_mean": 1.0,
+      "seed_269": 1.0,
+      "seed_271": 1.0,
+      "seed_277": 1.0,
+      "source": "stress_extended"
+    },
+    {
+      "campaign_note": "the broader campaign still failed to produce a migration-quality challenger",
+      "candidate": "post_unlock_x5",
+      "lane_mean": 0.9635416666666666,
+      "seed_269": 1.0,
+      "seed_271": 1.0,
+      "seed_277": 0.890625,
+      "source": "migration"
+    },
+    {
+      "campaign_note": "the broader campaign still failed to produce a migration-quality challenger",
+      "candidate": "door2_post4",
+      "lane_mean": 0.8697916666666666,
+      "seed_269": 1.0,
+      "seed_271": 1.0,
+      "seed_277": 0.609375,
+      "source": "migration"
+    },
+    {
+      "campaign_note": "the broader campaign did not yield a meaningful post-control replacement",
+      "candidate": "post_unlock_weighted",
+      "lane_mean": 0.8697916666666666,
+      "seed_269": 1.0,
+      "seed_271": 1.0,
+      "seed_277": 0.609375,
+      "source": "stress_extended"
+    },
+    {
+      "campaign_note": "the broader campaign still failed to produce a migration-quality challenger",
+      "candidate": "carry2_post4",
+      "lane_mean": 0.8333333333333334,
+      "seed_269": 1.0,
+      "seed_271": 1.0,
+      "seed_277": 0.5,
+      "source": "migration"
+    },
+    {
+      "campaign_note": "the broader campaign still failed to produce a migration-quality challenger",
+      "candidate": "disagree100",
+      "lane_mean": 0.6666666666666666,
+      "seed_269": 1.0,
+      "seed_271": 1.0,
+      "seed_277": 0.0,
+      "source": "migration"
+    },
+    {
+      "campaign_note": "the broader campaign did not yield a meaningful post-control replacement",
+      "candidate": "round12",
+      "lane_mean": 0.9947916666666666,
+      "seed_269": 0.984375,
+      "seed_271": 1.0,
+      "seed_277": 1.0,
+      "source": "stress_extended"
+    },
+    {
+      "campaign_note": "the broader campaign did not yield a meaningful post-control replacement",
+      "candidate": "round6",
+      "lane_mean": 0.9947916666666666,
+      "seed_269": 0.984375,
+      "seed_271": 1.0,
+      "seed_277": 1.0,
+      "source": "stress_extended"
+    },
+    {
+      "campaign_note": "the broader campaign still failed to produce a migration-quality challenger",
+      "candidate": "post_unlock_x6",
+      "lane_mean": 0.7447916666666666,
+      "seed_269": 0.625,
+      "seed_271": 1.0,
+      "seed_277": 0.609375,
+      "source": "migration"
+    },
+    {
+      "campaign_note": "the broader campaign still failed to produce a migration-quality challenger",
+      "candidate": "disagree050",
+      "lane_mean": 0.5416666666666666,
+      "seed_269": 0.625,
+      "seed_271": 1.0,
+      "seed_277": 0.0,
+      "source": "migration"
+    },
+    {
+      "campaign_note": "the broader campaign still failed to produce a migration-quality challenger",
+      "candidate": "carry3_post5",
+      "lane_mean": 0.6666666666666666,
+      "seed_269": 0.0,
+      "seed_271": 1.0,
+      "seed_277": 1.0,
+      "source": "migration"
+    },
+    {
+      "campaign_note": "the broader campaign still failed to produce a migration-quality challenger",
+      "candidate": "round5_phase_balanced_dis050",
+      "lane_mean": 0.0,
+      "seed_269": 0.0,
+      "seed_271": 0.0,
+      "seed_277": 0.0,
+      "source": "migration"
+    },
+    {
+      "campaign_note": "the broader campaign still failed to produce a migration-quality challenger",
+      "candidate": "round5_phase_balanced_dis100",
+      "lane_mean": 0.0,
+      "seed_269": 0.0,
+      "seed_271": 0.0,
+      "seed_277": 0.0,
+      "source": "migration"
+    }
+  ],
+  "full_solvers": [
+    {
+      "campaign_note": "the broader campaign still failed to produce a migration-quality challenger",
+      "candidate": "door3_post5",
+      "lane_mean": 1.0,
+      "seed_269": 1.0,
+      "seed_271": 1.0,
+      "seed_277": 1.0,
+      "source": "migration"
+    },
+    {
+      "campaign_note": "the broader campaign did not yield a meaningful post-control replacement",
+      "candidate": "round10",
+      "lane_mean": 1.0,
+      "seed_269": 1.0,
+      "seed_271": 1.0,
+      "seed_277": 1.0,
+      "source": "stress_extended"
+    },
+    {
+      "campaign_note": "the broader campaign still failed to produce a migration-quality challenger",
+      "candidate": "round5",
+      "lane_mean": 1.0,
+      "seed_269": 1.0,
+      "seed_271": 1.0,
+      "seed_277": 1.0,
+      "source": "migration"
+    },
+    {
+      "campaign_note": "the broader campaign did not yield a meaningful post-control replacement",
+      "candidate": "round5",
+      "lane_mean": 1.0,
+      "seed_269": 1.0,
+      "seed_271": 1.0,
+      "seed_277": 1.0,
+      "source": "stress_extended"
+    },
+    {
+      "campaign_note": "the broader campaign still failed to produce a migration-quality challenger",
+      "candidate": "round7",
+      "lane_mean": 1.0,
+      "seed_269": 1.0,
+      "seed_271": 1.0,
+      "seed_277": 1.0,
+      "source": "migration"
+    },
+    {
+      "campaign_note": "the broader campaign did not yield a meaningful post-control replacement",
+      "candidate": "round7",
+      "lane_mean": 1.0,
+      "seed_269": 1.0,
+      "seed_271": 1.0,
+      "seed_277": 1.0,
+      "source": "stress_extended"
+    },
+    {
+      "campaign_note": "the broader campaign still failed to produce a migration-quality challenger",
+      "candidate": "post_unlock_x5",
+      "lane_mean": 0.9635416666666666,
+      "seed_269": 1.0,
+      "seed_271": 1.0,
+      "seed_277": 0.890625,
+      "source": "migration"
+    },
+    {
+      "campaign_note": "the broader campaign still failed to produce a migration-quality challenger",
+      "candidate": "door2_post4",
+      "lane_mean": 0.8697916666666666,
+      "seed_269": 1.0,
+      "seed_271": 1.0,
+      "seed_277": 0.609375,
+      "source": "migration"
+    },
+    {
+      "campaign_note": "the broader campaign did not yield a meaningful post-control replacement",
+      "candidate": "post_unlock_weighted",
+      "lane_mean": 0.8697916666666666,
+      "seed_269": 1.0,
+      "seed_271": 1.0,
+      "seed_277": 0.609375,
+      "source": "stress_extended"
+    },
+    {
+      "campaign_note": "the broader campaign still failed to produce a migration-quality challenger",
+      "candidate": "carry2_post4",
+      "lane_mean": 0.8333333333333334,
+      "seed_269": 1.0,
+      "seed_271": 1.0,
+      "seed_277": 0.5,
+      "source": "migration"
+    },
+    {
+      "campaign_note": "the broader campaign still failed to produce a migration-quality challenger",
+      "candidate": "disagree100",
+      "lane_mean": 0.6666666666666666,
+      "seed_269": 1.0,
+      "seed_271": 1.0,
+      "seed_277": 0.0,
+      "source": "migration"
+    }
+  ]
+}
