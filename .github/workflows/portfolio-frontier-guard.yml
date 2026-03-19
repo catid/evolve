@@ -84,6 +84,8 @@ jobs:
             outputs/reports/portfolio_frontier_doctor.json
             outputs/reports/portfolio_frontier_guard_report.md
             outputs/reports/portfolio_frontier_guard_report.json
+            outputs/reports/portfolio_frontier_guard_workflow_contract.md
+            outputs/reports/portfolio_frontier_guard_workflow_contract.json
             outputs/reports/portfolio_active_state_doctor.md
             outputs/reports/portfolio_active_state_doctor.json
             outputs/reports/portfolio_operational_state.md

@@ -4,6 +4,11 @@ from pathlib import Path
 
 import yaml
 
+from psmn_rl.analysis.portfolio_frontier_guard_workflow_contract import (
+    REQUIRED_UPLOAD_ARTIFACTS,
+    UPLOAD_ARTIFACT_NAME,
+)
+
 
 WORKFLOW_PATH = Path(".github/workflows/portfolio-frontier-guard.yml")
 
@@ -75,25 +80,11 @@ def test_guard_job_uploads_frontier_artifacts() -> None:
     assert upload_steps
     upload = upload_steps[-1]
     with_block = upload["with"]
-    assert with_block["name"] == "portfolio-frontier-guard-reports"
+    assert with_block["name"] == UPLOAD_ARTIFACT_NAME
     assert with_block["if-no-files-found"] == "error"
     artifact_paths = {
         line.strip()
         for line in with_block["path"].splitlines()
         if line.strip()
     }
-    required_paths = {
-        "outputs/reports/portfolio_frontier_docs_audit.md",
-        "outputs/reports/portfolio_frontier_docs_audit.json",
-        "outputs/reports/portfolio_frontier_doctor.md",
-        "outputs/reports/portfolio_frontier_doctor.json",
-        "outputs/reports/portfolio_frontier_guard_report.md",
-        "outputs/reports/portfolio_frontier_guard_report.json",
-        "outputs/reports/portfolio_active_state_doctor.md",
-        "outputs/reports/portfolio_active_state_doctor.json",
-        "outputs/reports/portfolio_operational_state.md",
-        "outputs/reports/portfolio_operational_state.json",
-        "outputs/reports/portfolio_seed_pack_doctor.md",
-        "outputs/reports/portfolio_seed_pack_doctor.json",
-    }
-    assert required_paths.issubset(artifact_paths)
+    assert set(REQUIRED_UPLOAD_ARTIFACTS).issubset(artifact_paths)

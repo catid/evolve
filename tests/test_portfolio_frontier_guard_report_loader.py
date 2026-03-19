@@ -12,6 +12,7 @@ def test_load_frontier_guard_report_snapshot() -> None:
     assert tuple(check.label for check in report.checks) == (
         "consistency_pass",
         "docs_audit_pass",
+        "workflow_contract_pass",
         "doctor_pass",
         "seed_pack_doctor_pass",
         "active_state_doctor_pass",

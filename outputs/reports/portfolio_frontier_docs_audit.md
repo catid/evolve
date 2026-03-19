@@ -1,6 +1,6 @@
 # Portfolio Frontier Docs Audit
 
-- git commit: `794e24dcc12f897963c10fc0e35dd470726bd43f`
+- git commit: `41dd61405ab1917beec9cdb0bcfcb94382646abc`
 - git dirty: `True`
 - overall: `pass`
 - active candidate: `round6`

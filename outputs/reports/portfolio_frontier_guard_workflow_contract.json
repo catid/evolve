@@ -1,0 +1,104 @@
+{
+  "checks": [
+    {
+      "detail": "workflow_name=portfolio-frontier-guard",
+      "label": "workflow_name_matches",
+      "status": "pass"
+    },
+    {
+      "detail": "workflow_dispatch_enabled=True",
+      "label": "workflow_dispatch_enabled",
+      "status": "pass"
+    },
+    {
+      "detail": "required_command=bash -n scripts/run_portfolio_frontier_guard.sh",
+      "label": "syntax_check_present",
+      "status": "pass"
+    },
+    {
+      "detail": "required_command=bash ./scripts/run_portfolio_frontier_guard.sh",
+      "label": "guard_run_present",
+      "status": "pass"
+    },
+    {
+      "detail": "uses=actions/upload-artifact@v4",
+      "label": "upload_step_present",
+      "status": "pass"
+    },
+    {
+      "detail": "upload_artifact_name=portfolio-frontier-guard-reports",
+      "label": "upload_artifact_name_matches",
+      "status": "pass"
+    },
+    {
+      "detail": "required_upload_count=14",
+      "label": "upload_paths_cover_required",
+      "status": "pass"
+    }
+  ],
+  "guard_run_command": "bash ./scripts/run_portfolio_frontier_guard.sh",
+  "guard_script": "scripts/run_portfolio_frontier_guard.sh",
+  "overall": "pass",
+  "pull_request_paths": [
+    ".github/**",
+    "README.md",
+    "summary.md",
+    "report.md",
+    "scripts/run_portfolio_frontier_guard.sh",
+    "src/psmn_rl/analysis/portfolio_frontier_*.py",
+    "src/psmn_rl/analysis/portfolio_candidate_pack_loader.py",
+    "src/psmn_rl/analysis/portfolio_active_state_doctor.py",
+    "src/psmn_rl/analysis/portfolio_active_state_doctor_loader.py",
+    "src/psmn_rl/analysis/portfolio_operational_state.py",
+    "src/psmn_rl/analysis/portfolio_operational_state_loader.py",
+    "src/psmn_rl/analysis/portfolio_gate_report_loader.py",
+    "src/psmn_rl/analysis/portfolio_seed_pack_doctor.py",
+    "src/psmn_rl/analysis/portfolio_seed_pack_doctor_loader.py",
+    "src/psmn_rl/analysis/portfolio_seed_pack_loader.py",
+    "src/psmn_rl/analysis/portfolio_seed_pack_scorer_loader.py",
+    "src/psmn_rl/analysis/portfolio_seed_pack_validation_loader.py",
+    "src/psmn_rl/analysis/lss_portfolio_frontier_*.py",
+    "tests/test_portfolio_frontier_*.py",
+    "tests/test_portfolio_candidate_pack_loader.py",
+    "tests/test_portfolio_active_state_doctor.py",
+    "tests/test_portfolio_active_state_doctor_loader.py",
+    "tests/test_portfolio_operational_state.py",
+    "tests/test_portfolio_operational_state_loader.py",
+    "tests/test_portfolio_gate_report_loader.py",
+    "tests/test_portfolio_seed_pack_doctor.py",
+    "tests/test_portfolio_seed_pack_doctor_loader.py",
+    "tests/test_portfolio_seed_pack_loader.py",
+    "tests/test_portfolio_seed_pack_scorer_loader.py",
+    "tests/test_portfolio_seed_pack_validation_loader.py",
+    "outputs/reports/claim_ledger.md",
+    "outputs/reports/portfolio_candidate_pack.json",
+    "outputs/reports/portfolio_active_state_doctor*",
+    "outputs/reports/portfolio_operational_state*",
+    "outputs/reports/portfolio_seed_pack*",
+    "outputs/reports/portfolio_seed_pack.json",
+    "outputs/reports/portfolio_gate_report.md",
+    "outputs/reports/portfolio_decision_memo.md",
+    "outputs/reports/portfolio_frontier_*"
+  ],
+  "status_type": "portfolio_frontier_guard_workflow_contract",
+  "syntax_check_command": "bash -n scripts/run_portfolio_frontier_guard.sh",
+  "upload_artifact_name": "portfolio-frontier-guard-reports",
+  "upload_artifact_paths": [
+    "outputs/reports/portfolio_frontier_docs_audit.md",
+    "outputs/reports/portfolio_frontier_docs_audit.json",
+    "outputs/reports/portfolio_frontier_doctor.md",
+    "outputs/reports/portfolio_frontier_doctor.json",
+    "outputs/reports/portfolio_frontier_guard_report.md",
+    "outputs/reports/portfolio_frontier_guard_report.json",
+    "outputs/reports/portfolio_frontier_guard_workflow_contract.md",
+    "outputs/reports/portfolio_frontier_guard_workflow_contract.json",
+    "outputs/reports/portfolio_active_state_doctor.md",
+    "outputs/reports/portfolio_active_state_doctor.json",
+    "outputs/reports/portfolio_operational_state.md",
+    "outputs/reports/portfolio_operational_state.json",
+    "outputs/reports/portfolio_seed_pack_doctor.md",
+    "outputs/reports/portfolio_seed_pack_doctor.json"
+  ],
+  "workflow_dispatch_enabled": true,
+  "workflow_name": "portfolio-frontier-guard"
+}

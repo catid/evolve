@@ -1,6 +1,6 @@
 # Portfolio Operational State
 
-- git commit: `794e24dcc12f897963c10fc0e35dd470726bd43f`
+- git commit: `41dd61405ab1917beec9cdb0bcfcb94382646abc`
 - git dirty: `True`
 - active candidate: `round6`
 - active candidate pack: `outputs/reports/portfolio_candidate_pack.json`

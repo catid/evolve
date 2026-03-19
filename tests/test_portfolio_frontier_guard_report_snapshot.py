@@ -22,6 +22,7 @@ def test_guard_report_snapshot() -> None:
     assert [check["label"] for check in report["checks"]] == [
         "consistency_pass",
         "docs_audit_pass",
+        "workflow_contract_pass",
         "doctor_pass",
         "seed_pack_doctor_pass",
         "active_state_doctor_pass",

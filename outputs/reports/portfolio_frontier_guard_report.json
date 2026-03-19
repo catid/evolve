@@ -14,6 +14,11 @@
       "status": "pass"
     },
     {
+      "detail": "workflow_contract_overall=pass",
+      "label": "workflow_contract_pass",
+      "status": "pass"
+    },
+    {
       "detail": "doctor_overall=pass",
       "label": "doctor_pass",
       "status": "pass"

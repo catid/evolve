@@ -10,6 +10,9 @@ from psmn_rl.analysis.portfolio_frontier_consistency_loader import load_frontier
 from psmn_rl.analysis.portfolio_frontier_contract_loader import load_frontier_contract
 from psmn_rl.analysis.portfolio_frontier_docs_audit_loader import load_frontier_docs_audit_report
 from psmn_rl.analysis.portfolio_frontier_doctor_loader import load_frontier_doctor_report
+from psmn_rl.analysis.portfolio_frontier_guard_workflow_contract_loader import (
+    load_frontier_guard_workflow_contract,
+)
 from psmn_rl.analysis.portfolio_seed_pack_doctor_loader import load_seed_pack_doctor_report
 from psmn_rl.utils.io import get_git_commit, get_git_dirty
 
@@ -17,6 +20,7 @@ from psmn_rl.utils.io import get_git_commit, get_git_dirty
 def evaluate_guard_stack(
     consistency_overall: str,
     docs_audit_overall: str,
+    workflow_contract_overall: str,
     doctor_overall: str,
     seed_pack_doctor_overall: str,
     active_state_doctor_overall: str,
@@ -31,6 +35,11 @@ def evaluate_guard_stack(
             "label": "docs_audit_pass",
             "status": "pass" if docs_audit_overall == "pass" else "fail",
             "detail": f"docs_audit_overall={docs_audit_overall}",
+        },
+        {
+            "label": "workflow_contract_pass",
+            "status": "pass" if workflow_contract_overall == "pass" else "fail",
+            "detail": f"workflow_contract_overall={workflow_contract_overall}",
         },
         {
             "label": "doctor_pass",
@@ -56,12 +65,14 @@ def render_guard_report(output: Path | None, json_output: Path | None) -> dict[s
     contract = load_frontier_contract()
     consistency = load_frontier_consistency_report()
     docs_audit = load_frontier_docs_audit_report()
+    workflow_contract = load_frontier_guard_workflow_contract()
     doctor = load_frontier_doctor_report()
     seed_pack_doctor = load_seed_pack_doctor_report()
     active_state_doctor = load_active_state_doctor_report()
     result = evaluate_guard_stack(
         consistency_overall=consistency.overall,
         docs_audit_overall=docs_audit.overall,
+        workflow_contract_overall=workflow_contract.overall,
         doctor_overall=doctor.overall,
         seed_pack_doctor_overall=seed_pack_doctor.overall,
         active_state_doctor_overall=active_state_doctor.overall,
