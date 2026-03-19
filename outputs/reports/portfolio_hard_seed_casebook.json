@@ -1,0 +1,465 @@
+{
+  "classifications": {
+    "prospective_c:181": "shared_control_parity",
+    "prospective_c:191": "shared_control_parity",
+    "prospective_c:193": "global_hard_failure",
+    "prospective_f:233": "route_control_differentiator"
+  },
+  "control_curves_193": {
+    "single_expert": [
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 1.0,
+        "path_entropy": 0.0,
+        "post_unlock_frac": 0.0,
+        "round": 1.0,
+        "route_entropy": 0.0
+      },
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.358625,
+        "path_entropy": 0.0,
+        "post_unlock_frac": 0.0,
+        "round": 2.0,
+        "route_entropy": 0.0
+      },
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.0626875,
+        "path_entropy": 0.0,
+        "post_unlock_frac": 0.0,
+        "round": 3.0,
+        "route_entropy": 0.0
+      },
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.01575,
+        "path_entropy": 0.0,
+        "post_unlock_frac": 0.0,
+        "round": 4.0,
+        "route_entropy": 0.0
+      },
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.0,
+        "path_entropy": 0.0,
+        "post_unlock_frac": 0.0,
+        "round": 5.0,
+        "route_entropy": 0.0
+      },
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.046875,
+        "path_entropy": 0.0,
+        "post_unlock_frac": 0.0,
+        "round": 6.0,
+        "route_entropy": 0.0
+      }
+    ],
+    "token_dense": [
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.44862155388471175,
+        "path_entropy": 0.0,
+        "post_unlock_frac": 0.36716791979949875,
+        "round": 1.0,
+        "route_entropy": 0.0
+      },
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.0338125,
+        "path_entropy": 0.0,
+        "post_unlock_frac": 0.0,
+        "round": 2.0,
+        "route_entropy": 0.0
+      },
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.188125,
+        "path_entropy": 0.0,
+        "post_unlock_frac": 0.0,
+        "round": 3.0,
+        "route_entropy": 0.0
+      },
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.01575,
+        "path_entropy": 0.0,
+        "post_unlock_frac": 0.0,
+        "round": 4.0,
+        "route_entropy": 0.0
+      },
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.046875,
+        "path_entropy": 0.0,
+        "post_unlock_frac": 0.0,
+        "round": 5.0,
+        "route_entropy": 0.0
+      },
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.0,
+        "path_entropy": 0.0,
+        "post_unlock_frac": 0.0,
+        "round": 6.0,
+        "route_entropy": 0.0
+      }
+    ]
+  },
+  "representative_candidate": "round10",
+  "round6_curves": {
+    "prospective_c:191": [
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.9946875,
+        "path_entropy": 0.9543900850713253,
+        "post_unlock_frac": 0.0,
+        "round": 1.0,
+        "route_entropy": 1.3831411490440368
+      },
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.9948125,
+        "path_entropy": 1.3636344013214112,
+        "post_unlock_frac": 0.0,
+        "round": 2.0,
+        "route_entropy": 1.382378254711628
+      },
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.4905,
+        "path_entropy": 1.2891115370988846,
+        "post_unlock_frac": 0.0,
+        "round": 3.0,
+        "route_entropy": 1.3817286133766173
+      },
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.3861875,
+        "path_entropy": 1.3187476759552956,
+        "post_unlock_frac": 0.7506875,
+        "round": 4.0,
+        "route_entropy": 1.3779599484205245
+      },
+      {
+        "after_greedy_success": 1.0,
+        "disagreement_rate": 0.96825,
+        "path_entropy": 1.3317060289978981,
+        "post_unlock_frac": 0.9760625,
+        "round": 5.0,
+        "route_entropy": 1.3765827839970588
+      },
+      {
+        "after_greedy_success": 1.0,
+        "disagreement_rate": 0.0,
+        "path_entropy": 1.3183406765541335,
+        "post_unlock_frac": 0.4287856071964018,
+        "round": 6.0,
+        "route_entropy": 1.3763631890329082
+      }
+    ],
+    "prospective_c:193": [
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.6070625,
+        "path_entropy": 0.7760737639367581,
+        "post_unlock_frac": 0.0,
+        "round": 1.0,
+        "route_entropy": 1.3852070698738097
+      },
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.4060625,
+        "path_entropy": 0.47261342729628086,
+        "post_unlock_frac": 0.0,
+        "round": 2.0,
+        "route_entropy": 1.3827490488290786
+      },
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.0001875,
+        "path_entropy": 0.6179702225625515,
+        "post_unlock_frac": 0.0,
+        "round": 3.0,
+        "route_entropy": 1.3825031358599662
+      },
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.0003125,
+        "path_entropy": 0.6295861265361309,
+        "post_unlock_frac": 0.0,
+        "round": 4.0,
+        "route_entropy": 1.3824785418510437
+      },
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.0001875,
+        "path_entropy": 0.6743050774037838,
+        "post_unlock_frac": 0.0,
+        "round": 5.0,
+        "route_entropy": 1.3825306414961815
+      },
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.0001875,
+        "path_entropy": 0.6668098094463348,
+        "post_unlock_frac": 0.0,
+        "round": 6.0,
+        "route_entropy": 1.3825325741767884
+      }
+    ],
+    "prospective_f:233": [
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.9995,
+        "path_entropy": 0.5384593023657799,
+        "post_unlock_frac": 0.0,
+        "round": 1.0,
+        "route_entropy": 1.3855471603274345
+      },
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.994125,
+        "path_entropy": 0.8960208402872085,
+        "post_unlock_frac": 0.0,
+        "round": 2.0,
+        "route_entropy": 1.3783243232369422
+      },
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.492375,
+        "path_entropy": 0.9705673840641975,
+        "post_unlock_frac": 0.0,
+        "round": 3.0,
+        "route_entropy": 1.3775103891491889
+      },
+      {
+        "after_greedy_success": 0.0,
+        "disagreement_rate": 0.4150625,
+        "path_entropy": 0.9819228390157223,
+        "post_unlock_frac": 0.766625,
+        "round": 4.0,
+        "route_entropy": 1.3752440406680106
+      },
+      {
+        "after_greedy_success": 1.0,
+        "disagreement_rate": 0.2236875,
+        "path_entropy": 0.9873968277573586,
+        "post_unlock_frac": 0.978625,
+        "round": 5.0,
+        "route_entropy": 1.3747692164182663
+      },
+      {
+        "after_greedy_success": 1.0,
+        "disagreement_rate": 0.0,
+        "path_entropy": 1.0054604738223842,
+        "post_unlock_frac": 0.45151033386327505,
+        "round": 6.0,
+        "route_entropy": 1.3767614829831007
+      }
+    ]
+  },
+  "seed_rows": [
+    {
+      "candidate": "round10",
+      "lane": "prospective_c",
+      "sare": 1.0,
+      "seed": 181,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "candidate": "round10_post_unlock_x4_dis025",
+      "lane": "prospective_c",
+      "sare": 1.0,
+      "seed": 181,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "candidate": "round10_post_unlock_x5",
+      "lane": "prospective_c",
+      "sare": 1.0,
+      "seed": 181,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "candidate": "round10_carry2_post4",
+      "lane": "prospective_c",
+      "sare": 1.0,
+      "seed": 181,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "candidate": "round10_conf_post4",
+      "lane": "prospective_c",
+      "sare": 1.0,
+      "seed": 181,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "candidate": "round10_door2_post4",
+      "lane": "prospective_c",
+      "sare": 1.0,
+      "seed": 181,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "candidate": "round10",
+      "lane": "prospective_c",
+      "sare": 1.0,
+      "seed": 191,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "candidate": "round10_post_unlock_x4_dis025",
+      "lane": "prospective_c",
+      "sare": 1.0,
+      "seed": 191,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "candidate": "round10_post_unlock_x5",
+      "lane": "prospective_c",
+      "sare": 1.0,
+      "seed": 191,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "candidate": "round10_carry2_post4",
+      "lane": "prospective_c",
+      "sare": 1.0,
+      "seed": 191,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "candidate": "round10_conf_post4",
+      "lane": "prospective_c",
+      "sare": 1.0,
+      "seed": 191,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "candidate": "round10_door2_post4",
+      "lane": "prospective_c",
+      "sare": 1.0,
+      "seed": 191,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "candidate": "round10",
+      "lane": "prospective_c",
+      "sare": 0.0,
+      "seed": 193,
+      "single_expert": 0.0,
+      "token_dense": 0.0
+    },
+    {
+      "candidate": "round10_post_unlock_x4_dis025",
+      "lane": "prospective_c",
+      "sare": 0.0,
+      "seed": 193,
+      "single_expert": 0.0,
+      "token_dense": 0.0
+    },
+    {
+      "candidate": "round10_post_unlock_x5",
+      "lane": "prospective_c",
+      "sare": 0.0,
+      "seed": 193,
+      "single_expert": 0.0,
+      "token_dense": 0.0
+    },
+    {
+      "candidate": "round10_carry2_post4",
+      "lane": "prospective_c",
+      "sare": 0.0,
+      "seed": 193,
+      "single_expert": 0.0,
+      "token_dense": 0.0
+    },
+    {
+      "candidate": "round10_conf_post4",
+      "lane": "prospective_c",
+      "sare": 0.0,
+      "seed": 193,
+      "single_expert": 0.0,
+      "token_dense": 0.0
+    },
+    {
+      "candidate": "round10_door2_post4",
+      "lane": "prospective_c",
+      "sare": 0.0,
+      "seed": 193,
+      "single_expert": 0.0,
+      "token_dense": 0.0
+    },
+    {
+      "candidate": "round10",
+      "lane": "prospective_f",
+      "sare": 1.0,
+      "seed": 233,
+      "single_expert": 1.0,
+      "token_dense": 0.625
+    },
+    {
+      "candidate": "round10_post_unlock_x4_dis025",
+      "lane": "prospective_f",
+      "sare": 1.0,
+      "seed": 233,
+      "single_expert": 1.0,
+      "token_dense": 0.625
+    },
+    {
+      "candidate": "round10_post_unlock_x5",
+      "lane": "prospective_f",
+      "sare": 1.0,
+      "seed": 233,
+      "single_expert": 1.0,
+      "token_dense": 0.625
+    },
+    {
+      "candidate": "round10_carry2_post4",
+      "lane": "prospective_f",
+      "sare": 1.0,
+      "seed": 233,
+      "single_expert": 1.0,
+      "token_dense": 0.625
+    },
+    {
+      "candidate": "round10_conf_post4",
+      "lane": "prospective_f",
+      "sare": 1.0,
+      "seed": 233,
+      "single_expert": 1.0,
+      "token_dense": 0.625
+    },
+    {
+      "candidate": "round10_door2_post4",
+      "lane": "prospective_f",
+      "sare": 1.0,
+      "seed": 233,
+      "single_expert": 1.0,
+      "token_dense": 0.625
+    }
+  ],
+  "verified_candidates": [
+    "round10",
+    "round10_post_unlock_x4_dis025",
+    "round10_post_unlock_x5",
+    "round10_carry2_post4",
+    "round10_conf_post4",
+    "round10_door2_post4"
+  ]
+}
