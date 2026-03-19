@@ -1,0 +1,91 @@
+{
+  "needs_review": [],
+  "rows": [
+    {
+      "candidate": "round7",
+      "dev_delta_vs_round6": 0.0,
+      "dev_mean": 0.8888888888888888,
+      "family": "near_neighbor_rounds",
+      "guardrail_277": 1.0,
+      "policy_bucket": "restart_default",
+      "screen_rule": "advance_for_broader_dev",
+      "stage1_reason": "stop: outside fruitful top-3",
+      "support_233": 1.0,
+      "tier": "restart_default",
+      "track": "fruitful",
+      "validation_bucket": "validated_restart_default",
+      "weakness_269": 1.0
+    },
+    {
+      "candidate": "round10",
+      "dev_delta_vs_round6": 0.0,
+      "dev_mean": 0.8888888888888888,
+      "family": "near_neighbor_rounds",
+      "guardrail_277": 1.0,
+      "policy_bucket": "reserve_same_signal_higher_cost",
+      "screen_rule": "advance_for_broader_dev",
+      "stage1_reason": "advance",
+      "support_233": 1.0,
+      "tier": "reserve",
+      "track": "fruitful",
+      "validation_bucket": "validated_reserve",
+      "weakness_269": 1.0
+    },
+    {
+      "candidate": "round5",
+      "dev_delta_vs_round6": -0.05208333333333326,
+      "dev_mean": 0.8368055555555556,
+      "family": "near_neighbor_rounds",
+      "guardrail_277": 1.0,
+      "policy_bucket": "reserve_below_incumbent",
+      "screen_rule": "advance_for_broader_dev",
+      "stage1_reason": "stop: below incumbent dev mean",
+      "support_233": 1.0,
+      "tier": "reserve",
+      "track": "fruitful",
+      "validation_bucket": "validated_reserve",
+      "weakness_269": 1.0
+    },
+    {
+      "candidate": "door3_post5",
+      "dev_delta_vs_round6": null,
+      "dev_mean": null,
+      "family": "pack_only",
+      "guardrail_277": 1.0,
+      "policy_bucket": "retire_structural_regression",
+      "screen_rule": "prune_support_regression",
+      "stage1_reason": "pack_only",
+      "support_233": 0.453125,
+      "tier": "retired",
+      "track": "pack_only",
+      "validation_bucket": "validated_retired",
+      "weakness_269": 1.0
+    },
+    {
+      "candidate": "post_unlock_x5",
+      "dev_delta_vs_round6": null,
+      "dev_mean": null,
+      "family": "pack_only",
+      "guardrail_277": 0.890625,
+      "policy_bucket": "retire_local_only_fix",
+      "screen_rule": "prune_guardrail_regression",
+      "stage1_reason": "pack_only",
+      "support_233": null,
+      "tier": "retired",
+      "track": "pack_only",
+      "validation_bucket": "validated_retired",
+      "weakness_269": 1.0
+    }
+  ],
+  "validated_reserve": [
+    "round10",
+    "round5"
+  ],
+  "validated_restart_default": [
+    "round7"
+  ],
+  "validated_retired": [
+    "door3_post5",
+    "post_unlock_x5"
+  ]
+}
