@@ -1,0 +1,66 @@
+{
+  "cheaper_below": [
+    "round5"
+  ],
+  "higher_cost": [
+    "round10"
+  ],
+  "recommended": [
+    "round7"
+  ],
+  "round6_summary": {
+    "sare_failures": 1.0,
+    "sare_mean": 0.8888888888888888,
+    "sare_minus_single": 0.0,
+    "sare_minus_token": 0.04166666666666663,
+    "single_mean": 0.8888888888888888,
+    "token_mean": 0.8472222222222222
+  },
+  "rows": [
+    {
+      "bucket": "cheapest_but_below_incumbent",
+      "candidate": "round5",
+      "delta_vs_round6": -0.05208333333333326,
+      "delta_vs_single": -0.05208333333333326,
+      "delta_vs_token": -0.01041666666666663,
+      "mean_aggregate_steps": 74232.77777777778,
+      "mean_fine_tune_steps": 2320.8888888888887,
+      "portfolio_dev_mean": 0.8368055555555556,
+      "prospective_c_193": 0.0,
+      "prospective_f_233": 1.0,
+      "prospective_h_269": 1.0,
+      "prospective_h_277": 1.0,
+      "stage1_reason": "stop: below incumbent dev mean"
+    },
+    {
+      "bucket": "recommended_conservative_default",
+      "candidate": "round7",
+      "delta_vs_round6": 0.0,
+      "delta_vs_single": 0.0,
+      "delta_vs_token": 0.04166666666666663,
+      "mean_aggregate_steps": 79841.88888888889,
+      "mean_fine_tune_steps": 2496.4444444444443,
+      "portfolio_dev_mean": 0.8888888888888888,
+      "prospective_c_193": 0.0,
+      "prospective_f_233": 1.0,
+      "prospective_h_269": 1.0,
+      "prospective_h_277": 1.0,
+      "stage1_reason": "stop: outside fruitful top-3"
+    },
+    {
+      "bucket": "higher_cost_same_signal",
+      "candidate": "round10",
+      "delta_vs_round6": 0.0,
+      "delta_vs_single": 0.0,
+      "delta_vs_token": 0.04166666666666663,
+      "mean_aggregate_steps": 86907.22222222222,
+      "mean_fine_tune_steps": 2717.777777777778,
+      "portfolio_dev_mean": 0.8888888888888888,
+      "prospective_c_193": 0.0,
+      "prospective_f_233": 1.0,
+      "prospective_h_269": 1.0,
+      "prospective_h_277": 1.0,
+      "stage1_reason": "advance"
+    }
+  ]
+}
