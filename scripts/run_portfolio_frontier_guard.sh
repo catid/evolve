@@ -18,6 +18,7 @@ set -euo pipefail
   tests/test_portfolio_frontier_kit_loader.py \
   tests/test_portfolio_frontier_replay_loader.py \
   tests/test_portfolio_candidate_pack_loader.py \
+  tests/test_portfolio_gate_report_loader.py \
   tests/test_portfolio_seed_pack_loader.py \
   tests/test_portfolio_seed_pack_validation_loader.py \
   tests/test_portfolio_seed_pack_scorer_loader.py \
