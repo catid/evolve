@@ -4,10 +4,17 @@ on:
   pull_request:
     paths:
       - ".github/**"
+      - "README.md"
+      - "summary.md"
+      - "report.md"
       - "scripts/run_portfolio_frontier_guard.sh"
       - "src/psmn_rl/analysis/portfolio_frontier_*.py"
       - "src/psmn_rl/analysis/lss_portfolio_frontier_*.py"
       - "tests/test_portfolio_frontier_*.py"
+      - "outputs/reports/claim_ledger.md"
+      - "outputs/reports/portfolio_candidate_pack.json"
+      - "outputs/reports/portfolio_gate_report.md"
+      - "outputs/reports/portfolio_decision_memo.md"
       - "outputs/reports/portfolio_frontier_*"
   workflow_dispatch:
 
