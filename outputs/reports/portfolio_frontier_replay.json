@@ -1,0 +1,72 @@
+{
+  "alias_map": {
+    "round10": "round10",
+    "round10_carry2_post4": "carry2_post4",
+    "round10_door2_post4": "door2_post4",
+    "round10_post_unlock_x5": "post_unlock_x5"
+  },
+  "grouped": {
+    "advance_for_broader_dev": [
+      "round10"
+    ],
+    "prune_guardrail_regression": [
+      "round10_carry2_post4",
+      "round10_door2_post4",
+      "round10_post_unlock_x5"
+    ]
+  },
+  "rows": [
+    {
+      "case_candidate": "round10",
+      "dev_delta_vs_round6": 0.0,
+      "dev_mean": 0.8888888888888888,
+      "family": "near_neighbor_rounds",
+      "guardrail_277": 1.0,
+      "sentinel_193": 0.0,
+      "support_233": 1.0,
+      "track": "fruitful",
+      "verdict": "advance_for_broader_dev",
+      "weakness_269": 1.0,
+      "weakness_alias": "round10"
+    },
+    {
+      "case_candidate": "round10_carry2_post4",
+      "dev_delta_vs_round6": 0.0,
+      "dev_mean": 0.8888888888888888,
+      "family": "bridge_weighting",
+      "guardrail_277": 0.5,
+      "sentinel_193": 0.0,
+      "support_233": 1.0,
+      "track": "exploratory",
+      "verdict": "prune_guardrail_regression",
+      "weakness_269": 1.0,
+      "weakness_alias": "carry2_post4"
+    },
+    {
+      "case_candidate": "round10_door2_post4",
+      "dev_delta_vs_round6": 0.0,
+      "dev_mean": 0.8888888888888888,
+      "family": "bridge_weighting",
+      "guardrail_277": 0.609375,
+      "sentinel_193": 0.0,
+      "support_233": 1.0,
+      "track": "exploratory",
+      "verdict": "prune_guardrail_regression",
+      "weakness_269": 1.0,
+      "weakness_alias": "door2_post4"
+    },
+    {
+      "case_candidate": "round10_post_unlock_x5",
+      "dev_delta_vs_round6": 0.0,
+      "dev_mean": 0.8888888888888888,
+      "family": "hard_postunlock_weighting",
+      "guardrail_277": 0.890625,
+      "sentinel_193": 0.0,
+      "support_233": 1.0,
+      "track": "fruitful",
+      "verdict": "prune_guardrail_regression",
+      "weakness_269": 1.0,
+      "weakness_alias": "post_unlock_x5"
+    }
+  ]
+}
