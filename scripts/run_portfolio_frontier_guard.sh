@@ -19,7 +19,8 @@ set -euo pipefail
   tests/test_portfolio_frontier_replay_loader.py \
   tests/test_portfolio_candidate_pack_loader.py \
   tests/test_portfolio_seed_pack_loader.py \
-  tests/test_portfolio_seed_pack_doctor.py
+  tests/test_portfolio_seed_pack_doctor.py \
+  tests/test_portfolio_seed_pack_doctor_loader.py
 
 ./.venv/bin/python -m psmn_rl.analysis.portfolio_frontier_doctor \
   --output outputs/reports/portfolio_frontier_doctor.md \
