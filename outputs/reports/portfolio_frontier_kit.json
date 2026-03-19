@@ -1,0 +1,94 @@
+{
+  "benchmark": {
+    "active_candidate": "round6",
+    "active_candidate_pack": "outputs/reports/portfolio_candidate_pack.json",
+    "archived_frozen_pack": "outputs/reports/frozen_benchmark_pack.json"
+  },
+  "campaign_name": "lss_portfolio_campaign",
+  "frontier_roles": {
+    "default_restart_prior": "round7",
+    "hold_only_priors": [
+      "round5"
+    ],
+    "replay_validated_alternate": "round10",
+    "retired_priors": [
+      "door3_post5",
+      "post_unlock_x5"
+    ]
+  },
+  "kit_type": "portfolio_frontier_kit",
+  "next_restart": {
+    "primary": "round7",
+    "secondary": "round10"
+  },
+  "ordered_queue": [
+    {
+      "action": "run_first",
+      "bucket": "default_restart",
+      "candidate": "round7",
+      "priority": 1,
+      "reason": "lowest-friction measured restart prior"
+    },
+    {
+      "action": "run_second_if_needed",
+      "bucket": "validated_alternate",
+      "candidate": "round10",
+      "priority": 2,
+      "reason": "only replay-validated alternate on the historically stitched surface"
+    },
+    {
+      "action": "defer_until_restart_and_alternate_fail",
+      "bucket": "hold_only",
+      "candidate": "round5",
+      "priority": 3,
+      "reason": "seed-clean but below incumbent on broader dev mean"
+    },
+    {
+      "action": "do_not_restart",
+      "bucket": "retired",
+      "candidate": "door3_post5",
+      "priority": 4,
+      "reason": "measured support or guardrail regression"
+    },
+    {
+      "action": "do_not_restart",
+      "bucket": "retired",
+      "candidate": "post_unlock_x5",
+      "priority": 4,
+      "reason": "measured support or guardrail regression"
+    }
+  ],
+  "promotion_rules": {
+    "broader_dev_only_after_seed_clear": true,
+    "hold_on_weakness_tie": true,
+    "prune_on_guardrail_regression": true,
+    "prune_on_support_regression": true
+  },
+  "provenance": {
+    "git_commit": "50c348e307a3d9baa27f3fcccebbb9feeb75c3a1",
+    "git_dirty": true
+  },
+  "schema_version": 1,
+  "seed_contract": {
+    "guardrail": {
+      "lane": "prospective_h",
+      "required_min_success": 1.0,
+      "seed": 277
+    },
+    "ranking_support": {
+      "lane": "prospective_f",
+      "required_min_success": 1.0,
+      "seed": 233
+    },
+    "ranking_weakness": {
+      "lane": "prospective_h",
+      "required_strictly_above": 0.984375001,
+      "seed": 269
+    },
+    "sentinel": {
+      "lane": "prospective_c",
+      "mode": "track_only",
+      "seed": 193
+    }
+  }
+}
