@@ -36,6 +36,7 @@
   - replay-validated alternate: `round10`
   - local guard entrypoint: `scripts/run_portfolio_frontier_guard.sh`
   - consolidated guard report: [portfolio_frontier_guard_report.md](outputs/reports/portfolio_frontier_guard_report.md)
+  - active-state doctor: [portfolio_active_state_doctor.md](outputs/reports/portfolio_active_state_doctor.md)
   - contract artifact: [portfolio_frontier_contract.json](outputs/reports/portfolio_frontier_contract.json)
   - seed pack artifact: [portfolio_seed_pack.json](outputs/reports/portfolio_seed_pack.json)
   - seed-pack doctor: [portfolio_seed_pack_doctor.md](outputs/reports/portfolio_seed_pack_doctor.md)
