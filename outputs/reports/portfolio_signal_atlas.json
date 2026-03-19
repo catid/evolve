@@ -1,0 +1,413 @@
+{
+  "counts": {
+    "benchmark_support": 4,
+    "control_advantaged": 1,
+    "global_hard_failure": 3,
+    "shared_control_parity": 22
+  },
+  "group_counts": {
+    "dev": {
+      "benchmark_support": 1,
+      "global_hard_failure": 1,
+      "shared_control_parity": 7
+    },
+    "healthy": {
+      "benchmark_support": 3,
+      "shared_control_parity": 6
+    },
+    "holdout": {
+      "control_advantaged": 1,
+      "global_hard_failure": 2,
+      "shared_control_parity": 9
+    }
+  },
+  "informative_rows": [
+    {
+      "classification": "benchmark_support",
+      "group": "dev",
+      "lane": "prospective_f",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.375,
+      "seed": 233,
+      "single_expert": 1.0,
+      "token_dense": 0.625
+    },
+    {
+      "classification": "control_advantaged",
+      "group": "holdout",
+      "lane": "prospective_h",
+      "sare": 0.984375,
+      "sare_minus_single": -0.015625,
+      "sare_minus_token": -0.015625,
+      "seed": 269,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "benchmark_support",
+      "group": "healthy",
+      "lane": "fresh",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.5,
+      "seed": 23,
+      "single_expert": 1.0,
+      "token_dense": 0.5
+    },
+    {
+      "classification": "benchmark_support",
+      "group": "healthy",
+      "lane": "fresh",
+      "sare": 1.0,
+      "sare_minus_single": 1.0,
+      "sare_minus_token": 0.0,
+      "seed": 29,
+      "single_expert": 0.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "benchmark_support",
+      "group": "healthy",
+      "lane": "fresh_extra",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.53125,
+      "seed": 43,
+      "single_expert": 1.0,
+      "token_dense": 0.46875
+    }
+  ],
+  "rows": [
+    {
+      "classification": "shared_control_parity",
+      "group": "dev",
+      "lane": "prospective_c",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 181,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "shared_control_parity",
+      "group": "dev",
+      "lane": "prospective_c",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 191,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "global_hard_failure",
+      "group": "dev",
+      "lane": "prospective_c",
+      "sare": 0.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 193,
+      "single_expert": 0.0,
+      "token_dense": 0.0
+    },
+    {
+      "classification": "shared_control_parity",
+      "group": "dev",
+      "lane": "prospective_d",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 197,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "shared_control_parity",
+      "group": "dev",
+      "lane": "prospective_d",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 199,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "shared_control_parity",
+      "group": "dev",
+      "lane": "prospective_d",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 211,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "benchmark_support",
+      "group": "dev",
+      "lane": "prospective_f",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.375,
+      "seed": 233,
+      "single_expert": 1.0,
+      "token_dense": 0.625
+    },
+    {
+      "classification": "shared_control_parity",
+      "group": "dev",
+      "lane": "prospective_f",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 239,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "shared_control_parity",
+      "group": "dev",
+      "lane": "prospective_f",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 241,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "global_hard_failure",
+      "group": "holdout",
+      "lane": "prospective_g",
+      "sare": 0.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 251,
+      "single_expert": 0.0,
+      "token_dense": 0.0
+    },
+    {
+      "classification": "shared_control_parity",
+      "group": "holdout",
+      "lane": "prospective_g",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 257,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "shared_control_parity",
+      "group": "holdout",
+      "lane": "prospective_g",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 263,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "control_advantaged",
+      "group": "holdout",
+      "lane": "prospective_h",
+      "sare": 0.984375,
+      "sare_minus_single": -0.015625,
+      "sare_minus_token": -0.015625,
+      "seed": 269,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "shared_control_parity",
+      "group": "holdout",
+      "lane": "prospective_h",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 271,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "shared_control_parity",
+      "group": "holdout",
+      "lane": "prospective_h",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 277,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "shared_control_parity",
+      "group": "holdout",
+      "lane": "prospective_i",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 281,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "global_hard_failure",
+      "group": "holdout",
+      "lane": "prospective_i",
+      "sare": 0.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 283,
+      "single_expert": 0.0,
+      "token_dense": 0.0
+    },
+    {
+      "classification": "shared_control_parity",
+      "group": "holdout",
+      "lane": "prospective_i",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 293,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "shared_control_parity",
+      "group": "holdout",
+      "lane": "prospective_j",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 307,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "shared_control_parity",
+      "group": "holdout",
+      "lane": "prospective_j",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 311,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "shared_control_parity",
+      "group": "holdout",
+      "lane": "prospective_j",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 313,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "shared_control_parity",
+      "group": "healthy",
+      "lane": "original",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 7,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "shared_control_parity",
+      "group": "healthy",
+      "lane": "original",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 11,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "shared_control_parity",
+      "group": "healthy",
+      "lane": "original",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 19,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "benchmark_support",
+      "group": "healthy",
+      "lane": "fresh",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.5,
+      "seed": 23,
+      "single_expert": 1.0,
+      "token_dense": 0.5
+    },
+    {
+      "classification": "benchmark_support",
+      "group": "healthy",
+      "lane": "fresh",
+      "sare": 1.0,
+      "sare_minus_single": 1.0,
+      "sare_minus_token": 0.0,
+      "seed": 29,
+      "single_expert": 0.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "shared_control_parity",
+      "group": "healthy",
+      "lane": "fresh",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 31,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "shared_control_parity",
+      "group": "healthy",
+      "lane": "fresh_extra",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 37,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "shared_control_parity",
+      "group": "healthy",
+      "lane": "fresh_extra",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.0,
+      "seed": 41,
+      "single_expert": 1.0,
+      "token_dense": 1.0
+    },
+    {
+      "classification": "benchmark_support",
+      "group": "healthy",
+      "lane": "fresh_extra",
+      "sare": 1.0,
+      "sare_minus_single": 0.0,
+      "sare_minus_token": 0.53125,
+      "seed": 43,
+      "single_expert": 1.0,
+      "token_dense": 0.46875
+    }
+  ]
+}
