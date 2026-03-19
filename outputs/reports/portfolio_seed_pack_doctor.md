@@ -1,6 +1,6 @@
 # Portfolio Seed-Pack Doctor
 
-- git commit: `cb84853ddcb31a425257f6cfd673430cc2d181df`
+- git commit: `692a0a58541be2a5a169aa03b43d0b8e26859d7a`
 - git dirty: `True`
 - overall: `pass`
 
@@ -18,4 +18,4 @@
 | `generated_from_active_pack_current` | `pass` | generated_from.active_candidate_pack=outputs/reports/portfolio_candidate_pack.json |
 | `seed_roles_match_contract_thresholds` | `pass` | support=SeedRole(lane='prospective_f', seed=233, required_min_success=1.0, required_behavior=None), weakness=SeedRole(lane='prospective_h', seed=269, required_min_success=0.984375001, required_behavior=None), guardrail=SeedRole(lane='prospective_h', seed=277, required_min_success=1.0, required_behavior=None), sentinel=SeedRole(lane='prospective_c', seed=193, required_min_success=None, required_behavior='track_only') |
 | `validation_buckets_match_frontier_roles` | `pass` | validated_restart_default=['round7'], validated_reserve=['round10', 'round5'], validated_retired=['door3_post5', 'post_unlock_x5'], needs_review=[] |
-| `scorer_verdicts_match_frontier_roles` | `pass` | scorer_grouped={'advance_for_broader_dev': ['round7', 'round10'], 'hold_seed_clean_but_below_incumbent': ['round5'], 'prune_guardrail_regression': ['post_unlock_x5'], 'prune_support_regression': ['door3_post5']} |
+| `scorer_verdicts_match_frontier_roles` | `pass` | scorer_grouped={'advance_for_broader_dev': ('round7', 'round10'), 'hold_seed_clean_but_below_incumbent': ('round5',), 'prune_guardrail_regression': ('post_unlock_x5',), 'prune_support_regression': ('door3_post5',)} |

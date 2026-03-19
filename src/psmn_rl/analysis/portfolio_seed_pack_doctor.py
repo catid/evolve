@@ -1,12 +1,18 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
-from psmn_rl.analysis.lss_post_pass_campaign import _read_json, _write_json
+from psmn_rl.analysis.lss_post_pass_campaign import _write_json
 from psmn_rl.analysis.portfolio_frontier_contract_loader import load_frontier_contract
 from psmn_rl.analysis.portfolio_seed_pack_loader import load_portfolio_seed_pack
+from psmn_rl.analysis.portfolio_seed_pack_scorer_loader import SeedPackScorerReport, load_seed_pack_scorer_report
+from psmn_rl.analysis.portfolio_seed_pack_validation_loader import (
+    SeedPackValidationReport,
+    load_seed_pack_validation_report,
+)
 from psmn_rl.utils.io import get_git_commit, get_git_dirty
 
 
@@ -16,25 +22,24 @@ SEED_PACK_SCORER_PATH = Path("outputs/reports/portfolio_seed_pack_scorer.json")
 EXPECTED_ACTIVE_PACK = "outputs/reports/portfolio_candidate_pack.json"
 EXPECTED_ARCHIVED_PACK = "outputs/reports/frozen_benchmark_pack.json"
 
-
-def _candidate_set(values: list[str]) -> set[str]:
-    return {str(value) for value in values}
+def _candidate_set(values: tuple[str, ...]) -> set[str]:
+    return set(values)
 
 
 def evaluate_seed_pack_state(
-    validation: dict[str, Any],
-    scorer: dict[str, Any],
+    validation: SeedPackValidationReport,
+    scorer: SeedPackScorerReport,
 ) -> dict[str, Any]:
     seed_pack = load_portfolio_seed_pack(SEED_PACK_PATH)
     contract = load_frontier_contract()
 
-    validation_restart_default = _candidate_set(validation["validated_restart_default"])
-    validation_reserve = _candidate_set(validation["validated_reserve"])
-    validation_retired = _candidate_set(validation["validated_retired"])
+    validation_restart_default = _candidate_set(validation.validated_restart_default)
+    validation_reserve = _candidate_set(validation.validated_reserve)
+    validation_retired = _candidate_set(validation.validated_retired)
     validation_bucket_by_candidate = {
-        str(row["candidate"]): str(row["validation_bucket"]) for row in validation["rows"]
+        row.candidate: row.validation_bucket for row in validation.rows
     }
-    scorer_verdict_by_candidate = {str(row["candidate"]): str(row["verdict"]) for row in scorer["rows"]}
+    scorer_verdict_by_candidate = {row.candidate: row.verdict for row in scorer.rows}
 
     expected_reserve = {contract.frontier_roles.replay_validated_alternate, *contract.frontier_roles.hold_only_priors}
     seed_roles_match = (
@@ -151,14 +156,14 @@ def evaluate_seed_pack_state(
                 and validation_bucket_by_candidate.get("round5") == "validated_reserve"
                 and validation_bucket_by_candidate.get("door3_post5") == "validated_retired"
                 and validation_bucket_by_candidate.get("post_unlock_x5") == "validated_retired"
-                and not validation["needs_review"]
+                and not validation.needs_review
                 else "fail"
             ),
             "detail": (
                 f"validated_restart_default={sorted(validation_restart_default)}, "
                 f"validated_reserve={sorted(validation_reserve)}, "
                 f"validated_retired={sorted(validation_retired)}, "
-                f"needs_review={validation['needs_review']}"
+                f"needs_review={list(validation.needs_review)}"
             ),
         },
         {
@@ -170,10 +175,10 @@ def evaluate_seed_pack_state(
                 and scorer_verdict_by_candidate.get("round5") == "hold_seed_clean_but_below_incumbent"
                 and scorer_verdict_by_candidate.get("door3_post5") == "prune_support_regression"
                 and scorer_verdict_by_candidate.get("post_unlock_x5") == "prune_guardrail_regression"
-                and scorer["incumbent_269"] == contract.weakness_min_success_exclusive - 1e-9
+                and scorer.incumbent_269 == contract.weakness_min_success_exclusive - 1e-9
                 else "fail"
             ),
-            "detail": f"scorer_grouped={scorer['grouped']}",
+            "detail": f"scorer_grouped={scorer.grouped}",
         },
     ]
     overall = "pass" if all(check["status"] == "pass" for check in checks) else "fail"
@@ -181,8 +186,8 @@ def evaluate_seed_pack_state(
 
 
 def render_seed_pack_doctor(output: Path | None, json_output: Path | None) -> dict[str, Any]:
-    validation = _read_json(SEED_PACK_VALIDATION_PATH)
-    scorer = _read_json(SEED_PACK_SCORER_PATH)
+    validation = load_seed_pack_validation_report(SEED_PACK_VALIDATION_PATH)
+    scorer = load_seed_pack_scorer_report(SEED_PACK_SCORER_PATH)
     result = evaluate_seed_pack_state(validation=validation, scorer=scorer)
 
     if output is not None:

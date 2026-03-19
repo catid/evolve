@@ -51,7 +51,7 @@
       "status": "pass"
     },
     {
-      "detail": "scorer_grouped={'advance_for_broader_dev': ['round7', 'round10'], 'hold_seed_clean_but_below_incumbent': ['round5'], 'prune_guardrail_regression': ['post_unlock_x5'], 'prune_support_regression': ['door3_post5']}",
+      "detail": "scorer_grouped={'advance_for_broader_dev': ('round7', 'round10'), 'hold_seed_clean_but_below_incumbent': ('round5',), 'prune_guardrail_regression': ('post_unlock_x5',), 'prune_support_regression': ('door3_post5',)}",
       "label": "scorer_verdicts_match_frontier_roles",
       "status": "pass"
     }
