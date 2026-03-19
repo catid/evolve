@@ -1,0 +1,40 @@
+name: portfolio-frontier-guard
+
+on:
+  pull_request:
+    paths:
+      - ".github/**"
+      - "scripts/run_portfolio_frontier_guard.sh"
+      - "src/psmn_rl/analysis/portfolio_frontier_*.py"
+      - "src/psmn_rl/analysis/lss_portfolio_frontier_*.py"
+      - "tests/test_portfolio_frontier_*.py"
+      - "outputs/reports/portfolio_frontier_*"
+  workflow_dispatch:
+
+jobs:
+  portfolio-frontier-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Install dependencies
+        run: |
+          uv venv .venv
+          source .venv/bin/activate
+          uv pip install --pre torch --index-url https://download.pytorch.org/whl/nightly/cpu
+          uv pip install -e '.[dev]'
+
+      - name: Syntax check guard script
+        run: |
+          bash -n scripts/run_portfolio_frontier_guard.sh
+
+      - name: Run frontier guard
+        run: |
+          source .venv/bin/activate
+          bash ./scripts/run_portfolio_frontier_guard.sh
