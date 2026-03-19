@@ -1,0 +1,57 @@
+{
+  "active": [
+    "round6"
+  ],
+  "default_restart": [
+    "round7"
+  ],
+  "hold_only": [
+    "round5"
+  ],
+  "replay_validated_alternates": [
+    "round10"
+  ],
+  "retired": [
+    "door3_post5",
+    "post_unlock_x5"
+  ],
+  "rows": [
+    {
+      "candidate": "round6",
+      "manifest_bucket": "active_benchmark",
+      "replay_verdict": null,
+      "scorer_verdict": null
+    },
+    {
+      "candidate": "round7",
+      "manifest_bucket": "default_restart_prior",
+      "replay_verdict": null,
+      "scorer_verdict": "advance_for_broader_dev"
+    },
+    {
+      "candidate": "round10",
+      "manifest_bucket": "replay_validated_alternate",
+      "replay_verdict": "advance_for_broader_dev",
+      "scorer_verdict": "advance_for_broader_dev"
+    },
+    {
+      "candidate": "round5",
+      "manifest_bucket": "hold_only_prior",
+      "replay_verdict": null,
+      "scorer_verdict": "hold_seed_clean_but_below_incumbent"
+    },
+    {
+      "candidate": "door3_post5",
+      "manifest_bucket": "retired_prior",
+      "replay_verdict": null,
+      "scorer_verdict": "prune_support_regression"
+    },
+    {
+      "candidate": "post_unlock_x5",
+      "manifest_bucket": "retired_prior",
+      "replay_verdict": null,
+      "scorer_verdict": "prune_guardrail_regression"
+    }
+  ],
+  "seed_clean_unconfirmed": []
+}
