@@ -24,6 +24,12 @@
   - stability: `stable_plateau`, with one holdout probe that stayed a flat-zero plateau
   - exploratory KeyCorridor track: `clearly negative`
   - final status: `round6 confirmed as active DoorKey benchmark and internal DoorKey envelope strengthened`
+- The active benchmark now also has a frozen operational frontier:
+  - active benchmark: `round6`
+  - default bounded restart prior: `round7`
+  - replay-validated alternate: `round10`
+  - local guard entrypoint: `scripts/run_portfolio_frontier_guard.sh`
+  - contract artifact: [portfolio_frontier_contract.json](outputs/reports/portfolio_frontier_contract.json)
 - Allowed current scope:
   - teacher-guided KL learner-state DoorKey `SARE` result
   - external `64`-episode evaluation only

@@ -237,6 +237,31 @@ The active canonical DoorKey benchmark is now the `round6` teacher-guided KL lea
 - current gate report: `outputs/reports/expansion_mega_program_gate_report.md`
 - archived frozen pack: `outputs/reports/frozen_benchmark_pack.json`
 
+### Frozen Frontier Operations
+
+The current measured DoorKey restart frontier is also frozen as an operational bundle.
+
+- frontier contract: `outputs/reports/portfolio_frontier_contract.json`
+- frontier schedule: `outputs/reports/portfolio_frontier_schedule.md`
+- frontier kit: `outputs/reports/portfolio_frontier_kit.json`
+- default bounded restart prior: `round7`
+- replay-validated alternate: `round10`
+
+Run the local frontier guard:
+
+```bash
+bash ./scripts/run_portfolio_frontier_guard.sh
+```
+
+Run the doctor directly:
+
+```bash
+python -m psmn_rl.analysis.portfolio_frontier_doctor \
+  --output outputs/reports/portfolio_frontier_doctor.md \
+  --json outputs/reports/portfolio_frontier_doctor.json \
+  --fail-on-drift
+```
+
 Run the pack-based gate against a candidate pack:
 
 ```bash

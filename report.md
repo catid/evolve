@@ -196,6 +196,7 @@ The right current wording is now:
 - `post_unlock_weighted` remains the earlier thaw-qualified predecessor that opened the lane, not the final canonical successor itself
 - the hard-block canonization campaign and the earlier hard-family dev/holdout program remain negative waypoints inside that longer lineage, not the final status
 - the frozen benchmark pack remains archived as the legacy baseline and provenance anchor, not the active benchmark
+- the frozen operational frontier now starts from `round7`, keeps `round10` as the replay-validated alternate, and is guarded by [portfolio_frontier_contract.md](outputs/reports/portfolio_frontier_contract.md), [portfolio_frontier_schedule.md](outputs/reports/portfolio_frontier_schedule.md), [portfolio_frontier_kit.md](outputs/reports/portfolio_frontier_kit.md), and [portfolio_frontier_doctor.md](outputs/reports/portfolio_frontier_doctor.md)
 - still teacher-guided only
 - still KL learner-state only
 - still external `64`-episode evaluation only
