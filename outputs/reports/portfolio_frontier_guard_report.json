@@ -1,0 +1,25 @@
+{
+  "active_candidate": "round6",
+  "active_candidate_pack": "outputs/reports/portfolio_candidate_pack.json",
+  "archived_frozen_pack": "outputs/reports/frozen_benchmark_pack.json",
+  "checks": [
+    {
+      "detail": "consistency_overall=pass",
+      "label": "consistency_pass",
+      "status": "pass"
+    },
+    {
+      "detail": "docs_audit_overall=pass",
+      "label": "docs_audit_pass",
+      "status": "pass"
+    },
+    {
+      "detail": "doctor_overall=pass",
+      "label": "doctor_pass",
+      "status": "pass"
+    }
+  ],
+  "default_restart_prior": "round7",
+  "overall": "pass",
+  "replay_validated_alternate": "round10"
+}
