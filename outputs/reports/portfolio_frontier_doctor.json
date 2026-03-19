@@ -1,0 +1,25 @@
+{
+  "checks": [
+    {
+      "detail": "active_candidate=round6",
+      "label": "active_candidate_round6",
+      "status": "pass"
+    },
+    {
+      "detail": "default_restart_prior=round7",
+      "label": "default_restart_round7",
+      "status": "pass"
+    },
+    {
+      "detail": "replay_validated_alternate=round10",
+      "label": "replay_alternate_round10",
+      "status": "pass"
+    },
+    {
+      "detail": "consistency_overall=pass",
+      "label": "consistency_pass",
+      "status": "pass"
+    }
+  ],
+  "overall": "pass"
+}
