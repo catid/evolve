@@ -14,12 +14,13 @@ def test_load_frontier_guard_report_snapshot() -> None:
         "docs_audit_pass",
         "doctor_pass",
         "seed_pack_doctor_pass",
+        "active_state_doctor_pass",
     )
     assert all(check.status == "pass" for check in report.checks)
 
 
 def test_check_by_label() -> None:
     report = load_frontier_guard_report()
-    check = report.check_by_label("seed_pack_doctor_pass")
+    check = report.check_by_label("active_state_doctor_pass")
     assert check.status == "pass"
-    assert check.detail == "seed_pack_doctor_overall=pass"
+    assert check.detail == "active_state_doctor_overall=pass"

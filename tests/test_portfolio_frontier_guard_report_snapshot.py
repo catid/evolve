@@ -24,5 +24,6 @@ def test_guard_report_snapshot() -> None:
         "docs_audit_pass",
         "doctor_pass",
         "seed_pack_doctor_pass",
+        "active_state_doctor_pass",
     ]
     assert all(check["status"] == "pass" for check in report["checks"])

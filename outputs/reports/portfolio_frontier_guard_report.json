@@ -22,6 +22,11 @@
       "detail": "seed_pack_doctor_overall=pass",
       "label": "seed_pack_doctor_pass",
       "status": "pass"
+    },
+    {
+      "detail": "active_state_doctor_overall=pass",
+      "label": "active_state_doctor_pass",
+      "status": "pass"
     }
   ],
   "default_restart_prior": "round7",

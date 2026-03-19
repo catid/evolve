@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from psmn_rl.analysis.lss_post_pass_campaign import _write_json
+from psmn_rl.analysis.portfolio_active_state_doctor_loader import load_active_state_doctor_report
 from psmn_rl.analysis.portfolio_frontier_consistency_loader import load_frontier_consistency_report
 from psmn_rl.analysis.portfolio_frontier_contract_loader import load_frontier_contract
 from psmn_rl.analysis.portfolio_frontier_docs_audit_loader import load_frontier_docs_audit_report
@@ -18,6 +19,7 @@ def evaluate_guard_stack(
     docs_audit_overall: str,
     doctor_overall: str,
     seed_pack_doctor_overall: str,
+    active_state_doctor_overall: str,
 ) -> dict[str, Any]:
     checks = [
         {
@@ -40,6 +42,11 @@ def evaluate_guard_stack(
             "status": "pass" if seed_pack_doctor_overall == "pass" else "fail",
             "detail": f"seed_pack_doctor_overall={seed_pack_doctor_overall}",
         },
+        {
+            "label": "active_state_doctor_pass",
+            "status": "pass" if active_state_doctor_overall == "pass" else "fail",
+            "detail": f"active_state_doctor_overall={active_state_doctor_overall}",
+        },
     ]
     overall = "pass" if all(check["status"] == "pass" for check in checks) else "fail"
     return {"overall": overall, "checks": checks}
@@ -51,11 +58,13 @@ def render_guard_report(output: Path | None, json_output: Path | None) -> dict[s
     docs_audit = load_frontier_docs_audit_report()
     doctor = load_frontier_doctor_report()
     seed_pack_doctor = load_seed_pack_doctor_report()
+    active_state_doctor = load_active_state_doctor_report()
     result = evaluate_guard_stack(
         consistency_overall=consistency.overall,
         docs_audit_overall=docs_audit.overall,
         doctor_overall=doctor.overall,
         seed_pack_doctor_overall=seed_pack_doctor.overall,
+        active_state_doctor_overall=active_state_doctor.overall,
     )
     result["active_candidate"] = contract.benchmark.active_candidate
     result["active_candidate_pack"] = contract.benchmark.active_candidate_pack

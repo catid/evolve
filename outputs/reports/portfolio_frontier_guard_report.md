@@ -1,6 +1,6 @@
 # Portfolio Frontier Guard Report
 
-- git commit: `d5a4513ed8d8e256b4ae6e7fbb0f906b7c498283`
+- git commit: `9bb35f0bda056ed5e24b3a3b0aa16c706700633e`
 - git dirty: `True`
 - overall: `pass`
 - active candidate: `round6`
@@ -17,3 +17,4 @@
 | `docs_audit_pass` | `pass` | docs_audit_overall=pass |
 | `doctor_pass` | `pass` | doctor_overall=pass |
 | `seed_pack_doctor_pass` | `pass` | seed_pack_doctor_overall=pass |
+| `active_state_doctor_pass` | `pass` | active_state_doctor_overall=pass |
