@@ -43,6 +43,8 @@ class StudentConfig:
     phase_weights: dict[str, float] | None = None
     default_phase_weight: float = 1.0
     disagreement_bonus: float = 0.0
+    temporal_credit_mode: str = "uniform"
+    temporal_penultimate_keep_prob: float = 0.5
     learning_rate: float = 1e-4
     batch_size: int = 128
     epochs: int = 8
@@ -84,6 +86,7 @@ class DistillationBatch:
     teacher_confidence: torch.Tensor | None = None
     phase_ids: torch.Tensor | None = None
     disagreement: torch.Tensor | None = None
+    steps_from_end: torch.Tensor | None = None
 
 
 def _load_yaml(path: str | Path) -> dict[str, Any]:

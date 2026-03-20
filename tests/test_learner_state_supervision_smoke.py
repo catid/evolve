@@ -58,12 +58,14 @@ def test_learner_state_supervision_run_and_report_smoke(tmp_path: Path) -> None:
                     "target": "policy_head",
                     "loss": "ce",
                     "weighting": "uniform",
+                    "temporal_credit_mode": "last_two_steps",
                     "learning_rate": 1e-4,
                     "batch_size": 8,
                     "epochs": 1,
                 },
                 "loop": {
-                    "rounds": 1,
+                    "rounds": 2,
+                    "warmup_rounds": 1,
                     "episodes_per_round": 2,
                     "max_episodes_per_round": 2,
                 },
@@ -95,6 +97,10 @@ def test_learner_state_supervision_run_and_report_smoke(tmp_path: Path) -> None:
     assert summary["best_round_greedy_success"] >= 0.0
     assert summary["aggregation"] == "append_all"
     assert summary["loss"] == "ce"
+    assert summary["temporal_credit_mode"] == "last_two_steps"
+    assert summary["warmup_rounds"] == 1
+    assert summary["rounds"][0]["fine_tune/warmup_only_round"] == 1.0
+    assert summary["rounds"][1]["fine_tune/warmup_only_round"] == 0.0
     assert (run_dir / "latest.pt").exists()
     dataset = torch.load(run_dir / "round_01_dataset.pt", map_location="cpu", weights_only=False)
     assert "round_diagnostics" in dataset
@@ -103,6 +109,7 @@ def test_learner_state_supervision_run_and_report_smoke(tmp_path: Path) -> None:
     assert "teacher_confidence" in dataset
     assert "phase_ids" in dataset
     assert "disagreement" in dataset
+    assert "steps_from_end" in dataset
 
     report_path = tmp_path / "learner_state_report.md"
     csv_path = tmp_path / "learner_state_report.csv"

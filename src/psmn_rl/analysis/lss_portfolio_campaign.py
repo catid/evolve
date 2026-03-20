@@ -44,6 +44,41 @@ def _read_text(path: str | Path) -> str:
     return Path(path).read_text(encoding="utf-8")
 
 
+def _optional_text(path: str | Path | None) -> str:
+    if path is None:
+        return ""
+    target = Path(path)
+    if not target.exists():
+        return ""
+    return target.read_text(encoding="utf-8")
+
+
+def _optional_json(path: str | Path | None) -> dict[str, Any]:
+    if path is None:
+        return {}
+    target = Path(path)
+    if not target.exists():
+        return {}
+    return _read_json(target)
+
+
+def _decision_strings(campaign: dict[str, Any]) -> dict[str, str]:
+    if bool(campaign.get("generic_decision_language")):
+        return {
+            "replace": "challenger replaces the active benchmark",
+            "confirm": "active benchmark confirmed and internal DoorKey frontier strengthened",
+            "narrow": "active benchmark remains and envelope stays narrow",
+            "narrow_state": "benchmark/frontier state needs narrowing",
+        }
+    active_name = str(campaign["current_canonical_name"])
+    return {
+        "replace": f"challenger replaces {active_name} as active DoorKey benchmark",
+        "confirm": f"{active_name} confirmed as active DoorKey benchmark and internal DoorKey benchmark state strengthened",
+        "narrow": f"{active_name} remains active benchmark and envelope stays narrow",
+        "narrow_state": "benchmark state needs narrowing",
+    }
+
+
 def _candidate_meta(campaign: dict[str, Any], candidate: str) -> dict[str, Any]:
     meta = dict(campaign["candidates"][candidate])
     meta["track"] = str(meta.get("track", "fruitful"))
@@ -103,28 +138,37 @@ def _render_state_reconciliation(campaign: dict[str, Any], output: Path) -> None
     report_md = _read_text("report.md")
     summary_md = _read_text("summary.md")
     ledger_md = _read_text("outputs/reports/claim_ledger.md")
-    migration_memo = _read_text("outputs/reports/successor_migration_decision_memo.md")
-    mega_memo = _read_text("outputs/reports/successor_mega_league_decision_memo.md")
-    expansion_memo = _read_text("outputs/reports/expansion_mega_program_decision_memo.md")
+    migration_memo = _optional_text("outputs/reports/successor_migration_decision_memo.md")
+    mega_memo = _optional_text("outputs/reports/successor_mega_league_decision_memo.md")
+    expansion_memo = _optional_text("outputs/reports/expansion_mega_program_decision_memo.md")
+    current_decision_memo = _optional_text(campaign.get("current_decision_memo"))
+    frontier_manifest = _optional_text(campaign.get("current_frontier_manifest"))
+    operational_state = _optional_text(campaign.get("current_operational_state"))
+    claim_conformance = _optional_text(campaign.get("claim_gate_conformance_report"))
     active_pack = _read_json(Path(campaign["current_canonical_pack"]))
-    active_gate = _read_json(Path("outputs/reports/expansion_mega_program_gate_report.json"))
+    active_gate = _optional_json(campaign.get("current_canonical_gate_report"))
+    active_name = str(campaign["current_canonical_name"])
     checks = {
         "docs_round6_active": all(
             needle in text
             for needle, text in (
-                ("round6", readme),
+                (active_name, readme),
                 ("active DoorKey benchmark", report_md),
                 ("active benchmark", summary_md),
             )
         ),
         "ledger_active_row": "active canonical benchmark" in ledger_md or "active DoorKey benchmark" in ledger_md,
-        "pack_active_round6": str(active_pack.get("candidate_name")) == str(campaign["current_canonical_name"]),
+        "pack_active_round6": str(active_pack.get("candidate_name")) == active_name,
         "pack_archives_frozen": "archived_legacy_frozen_pack" in active_pack.get("migration", {})
         or "archived_legacy_frozen_pack" in active_pack.get("expansion_program", {}),
         "migration_memo_active": "round6 canonized as active DoorKey benchmark" in migration_memo,
         "mega_memo_active": "round6 confirmed and sealed as active canonical DoorKey benchmark" in mega_memo,
         "expansion_memo_active": "round6 confirmed as active DoorKey benchmark" in expansion_memo,
-        "active_gate_pass": str(active_gate.get("verdict")) == "PASS: thaw consideration allowed",
+        "current_decision_active": active_name in current_decision_memo and ("active benchmark" in current_decision_memo or "active DoorKey benchmark" in current_decision_memo),
+        "frontier_manifest_active": active_name in frontier_manifest and ("active benchmark" in frontier_manifest or "active DoorKey benchmark" in frontier_manifest),
+        "operational_state_active": active_name in operational_state and str(campaign["current_canonical_pack"]) in operational_state,
+        "claim_gate_conformance_pass": "PASS" in claim_conformance,
+        "active_gate_pass": str(active_gate.get("verdict")) == "PASS: thaw consideration allowed" if active_gate else False,
     }
     status = "reconciled" if all(checks.values()) else "inconsistent"
     lines = [
@@ -139,24 +183,28 @@ def _render_state_reconciliation(campaign: dict[str, Any], output: Path) -> None
         "",
         "## Authoritative Current State",
         "",
-        "- `round6` is the active DoorKey benchmark before the portfolio program starts.",
+        f"- `{active_name}` is the active DoorKey benchmark before the portfolio program starts.",
         "- `outputs/reports/frozen_benchmark_pack.json` remains the archived legacy baseline and provenance anchor.",
         "- The allowed public claim envelope remains teacher-guided only, KL learner-state only, DoorKey only, and external 64-episode evaluation only.",
         "",
         "## Reconciliation Checks",
         "",
-        f"- docs present round6 as active benchmark: `{checks['docs_round6_active']}`",
+        f"- docs present {active_name} as active benchmark: `{checks['docs_round6_active']}`",
         f"- claim ledger records the active benchmark state: `{checks['ledger_active_row']}`",
-        f"- active benchmark pack names round6: `{checks['pack_active_round6']}`",
+        f"- active benchmark pack names {active_name}: `{checks['pack_active_round6']}`",
         f"- active benchmark pack archives frozen legacy baseline: `{checks['pack_archives_frozen']}`",
         f"- migration memo records active benchmark status: `{checks['migration_memo_active']}`",
         f"- mega-league memo records confirmed active benchmark status: `{checks['mega_memo_active']}`",
         f"- expansion-program memo records confirmed active benchmark status: `{checks['expansion_memo_active']}`",
+        f"- current decision memo records active benchmark status: `{checks['current_decision_active']}`",
+        f"- current frontier manifest records active role ordering: `{checks['frontier_manifest_active']}`",
+        f"- current operational state records active pack and benchmark: `{checks['operational_state_active']}`",
+        f"- claim-gate conformance report still passes: `{checks['claim_gate_conformance_pass']}`",
         f"- active benchmark gate verdict stays PASS: `{checks['active_gate_pass']}`",
         "",
         "## Reconciled Interpretation",
         "",
-        "- This program starts from one coherent accepted state: `round6` is the active DoorKey benchmark, the frozen pack remains archived, and both stay comparable through the pack/gate lane.",
+        f"- This program starts from one coherent accepted state: `{active_name}` is the active DoorKey benchmark, the frozen pack remains archived, and both stay comparable through the pack/gate lane.",
         "- The portfolio campaign therefore begins from confirmation-plus-challenger evaluation rather than from a pending migration state.",
     ]
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -676,17 +724,18 @@ def _decision_status(
     exploratory: dict[str, Any],
     gate_payload: dict[str, Any],
 ) -> str:
+    labels = _decision_strings(campaign)
     winner = _winner(campaign, holdout, anti_regression, route, stability)
     gate_verdict = str(gate_payload.get("verdict", gate_payload.get("status", "not_run")))
     required = str(campaign["selection"]["pack_gate_required_verdict"])
     round6_ready = bool(route.get("round6_pass")) and bool(stability.get("round6_pass")) and gate_verdict == required
     if winner["challenger_viable"] and gate_verdict == required:
-        return "challenger replaces round6 as active DoorKey benchmark"
+        return labels["replace"]
     if winner["winner"] == str(campaign["current_canonical_name"]) and round6_ready and _door_key_strengthened(campaign, holdout, anti_regression):
-        return "round6 confirmed as active DoorKey benchmark and internal DoorKey benchmark state strengthened"
+        return labels["confirm"]
     if winner["winner"] == str(campaign["current_canonical_name"]) and round6_ready:
-        return "round6 remains active benchmark and envelope stays narrow"
-    return "benchmark state needs narrowing"
+        return labels["narrow"]
+    return labels["narrow_state"]
 
 
 def _refresh_pack(campaign: dict[str, Any], output: Path) -> None:
@@ -747,6 +796,7 @@ def _render_decision_memo(campaign: dict[str, Any], output: Path) -> None:
     stage8 = _read_json(Path(campaign["reports"]["stage8_json"])) if Path(campaign["reports"]["stage8_json"]).exists() else {}
     gate_payload = _read_json(Path(campaign["reports"]["gate_report_json"])) if Path(campaign["reports"]["gate_report_json"]).exists() else {"status": "not_run"}
     final_status = _decision_status(campaign, stage4, stage5, stage6, stage7, stage8, gate_payload)
+    labels = _decision_strings(campaign)
     winner = _winner(campaign, stage4, stage5, stage6, stage7)
     lines = [
         "# Portfolio Campaign Decision Memo",
@@ -772,11 +822,11 @@ def _render_decision_memo(campaign: dict[str, Any], output: Path) -> None:
         "## Decision",
         "",
     ]
-    if final_status == "challenger replaces round6 as active DoorKey benchmark":
+    if final_status == labels["replace"]:
         lines.append("- A within-family challenger survived the balanced portfolio, stayed meaningful after verification and matched controls, generalized to holdout, preserved the healthy blocks, stayed routed and stable, and cleared the final pack/gate lane strongly enough to replace `round6`.")
-    elif final_status == "round6 confirmed as active DoorKey benchmark and internal DoorKey benchmark state strengthened":
+    elif final_status == labels["confirm"]:
         lines.append("- No challenger displaced `round6` cleanly enough after the broader 50/50 portfolio. `round6` remained control-competitive across the broader DoorKey families, preserved the healthy-block picture, stayed routed and stable, and the exploratory adjacent-task lane still stops short of claim widening, so the internal DoorKey benchmark role is strengthened while the public envelope remains narrow.")
-    elif final_status == "round6 remains active benchmark and envelope stays narrow":
+    elif final_status == labels["narrow"]:
         lines.append("- No challenger displaced `round6`, and the active benchmark still clears the route/stability/gate bar, but the broader program does not add enough internal strength or exploratory signal to justify stronger state language beyond keeping the public envelope narrow.")
     else:
         lines.append("- The broader program exposed enough weakness that the active benchmark state cannot be strengthened and should be narrowed back operationally.")

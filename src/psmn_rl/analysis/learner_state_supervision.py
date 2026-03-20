@@ -40,6 +40,7 @@ from psmn_rl.utils.seed import set_seed
 @dataclass(slots=True)
 class LoopConfig:
     rounds: int = 4
+    warmup_rounds: int = 0
     episodes_per_round: int = 64
     max_episodes_per_round: int = 96
     aggregation: str = "append_all"
@@ -113,6 +114,7 @@ def _concat_batches(left: DistillationBatch | None, right: DistillationBatch) ->
         teacher_confidence=_combine_optional_tensor(left.teacher_confidence, right.teacher_confidence),
         phase_ids=_combine_optional_tensor(left.phase_ids, right.phase_ids),
         disagreement=_combine_optional_tensor(left.disagreement, right.disagreement),
+        steps_from_end=_combine_optional_tensor(left.steps_from_end, right.steps_from_end),
         accepted_episodes=left.accepted_episodes + right.accepted_episodes,
         episodes_seen=left.episodes_seen + right.episodes_seen,
         steps=int(left.steps + right.steps),
@@ -135,6 +137,7 @@ def _slice_batch(batch: DistillationBatch, indices: torch.Tensor) -> Distillatio
         teacher_confidence=batch.teacher_confidence[indices] if batch.teacher_confidence is not None else None,
         phase_ids=batch.phase_ids[indices] if batch.phase_ids is not None else None,
         disagreement=batch.disagreement[indices] if batch.disagreement is not None else None,
+        steps_from_end=batch.steps_from_end[indices] if batch.steps_from_end is not None else None,
     )
 
 
@@ -308,7 +311,35 @@ def _apply_weight_adjustments(spec: StudentConfig, dataset: DistillationBatch, w
         if dataset.disagreement is None:
             raise ValueError("disagreement_bonus requested but dataset lacks disagreement")
         adjusted = adjusted * (1.0 + dataset.disagreement.to(device) * float(spec.disagreement_bonus))
+    temporal_credit_mode = str(spec.temporal_credit_mode)
+    if temporal_credit_mode != "uniform":
+        if dataset.steps_from_end is None:
+            raise ValueError("temporal_credit_mode requested but dataset lacks steps_from_end")
+        steps_from_end = dataset.steps_from_end.to(device)
+        if temporal_credit_mode == "last_step":
+            temporal_multiplier = (steps_from_end == 0).to(adjusted.dtype)
+        elif temporal_credit_mode in {"last_two_steps", "final_plus_penultimate"}:
+            temporal_multiplier = (steps_from_end <= 1).to(adjusted.dtype)
+        elif temporal_credit_mode == "stochastic_last_two":
+            keep_prob = float(spec.temporal_penultimate_keep_prob)
+            if keep_prob < 0.0 or keep_prob > 1.0:
+                raise ValueError("temporal_penultimate_keep_prob must be in [0, 1]")
+            temporal_multiplier = (steps_from_end == 0).to(adjusted.dtype)
+            if keep_prob > 0.0:
+                penultimate_mask = steps_from_end == 1
+                if keep_prob >= 1.0:
+                    temporal_multiplier = temporal_multiplier + penultimate_mask.to(adjusted.dtype)
+                else:
+                    sampled = (torch.rand_like(adjusted) < keep_prob) & penultimate_mask
+                    temporal_multiplier = temporal_multiplier + sampled.to(adjusted.dtype)
+        else:
+            raise ValueError(f"unsupported temporal_credit_mode: {temporal_credit_mode}")
+        adjusted = adjusted * temporal_multiplier
     return adjusted
+
+
+def _warmup_only_round(spec: LearnerStateSpec, round_index: int) -> bool:
+    return round_index <= max(int(spec.loop.warmup_rounds), 0)
 
 
 def _hash_raw_obs(obs_sample: dict[str, np.ndarray]) -> str:
@@ -386,6 +417,7 @@ def _collect_teacher_labels_for_student_states(
     collected_success_flags: list[float] = []
     success_episode_disagreement: list[float] = []
     failure_episode_disagreement: list[float] = []
+    collected_steps_from_end: list[int] = []
     accepted_episodes = 0
     episodes_seen = 0
     route_metrics = MetricAggregator()
@@ -455,6 +487,7 @@ def _collect_teacher_labels_for_student_states(
                 collected_student_entropy.extend(episode_student_entropy[index])
                 collected_disagreements.extend(episode_disagreement[index])
                 collected_phase_ids.extend(episode_phase_ids[index])
+                collected_steps_from_end.extend(reversed(range(len(episode_actions[index]))))
                 mean_disagreement = float(np.mean(episode_disagreement[index])) if episode_disagreement[index] else 0.0
                 if step_success[index] > 0.0:
                     success_episode_disagreement.append(mean_disagreement)
@@ -502,6 +535,7 @@ def _collect_teacher_labels_for_student_states(
         teacher_confidence=torch.as_tensor(collected_teacher_confidence, dtype=torch.float32),
         phase_ids=torch.as_tensor(collected_phase_ids, dtype=torch.long),
         disagreement=torch.as_tensor(collected_disagreements, dtype=torch.float32),
+        steps_from_end=torch.as_tensor(collected_steps_from_end, dtype=torch.long),
         accepted_episodes=accepted_episodes,
         episodes_seen=episodes_seen,
         steps=len(collected_actions),
@@ -526,6 +560,9 @@ def _collect_teacher_labels_for_student_states(
         "collection/disagreement_rate": float(np.mean(collected_disagreements)) if collected_disagreements else 0.0,
         "collection/success_episode_disagreement": float(np.mean(success_episode_disagreement)) if success_episode_disagreement else None,
         "collection/failure_episode_disagreement": float(np.mean(failure_episode_disagreement)) if failure_episode_disagreement else None,
+        "collection/steps_from_end_mean": float(np.mean(collected_steps_from_end)) if collected_steps_from_end else 0.0,
+        "collection/last_step_frac": float(np.mean(np.asarray(collected_steps_from_end, dtype=np.int64) == 0)) if collected_steps_from_end else 0.0,
+        "collection/last_two_step_frac": float(np.mean(np.asarray(collected_steps_from_end, dtype=np.int64) <= 1)) if collected_steps_from_end else 0.0,
         "collection/action_entropy": action_entropy,
     }
     for action_index, count in enumerate(action_hist):
@@ -616,7 +653,10 @@ def _write_single_run_summary(
         "phase_weights": spec.student.phase_weights,
         "default_phase_weight": spec.student.default_phase_weight,
         "disagreement_bonus": spec.student.disagreement_bonus,
+        "temporal_credit_mode": spec.student.temporal_credit_mode,
+        "temporal_penultimate_keep_prob": spec.student.temporal_penultimate_keep_prob,
         "aggregation": spec.loop.aggregation,
+        "warmup_rounds": spec.loop.warmup_rounds,
         "max_dataset_steps": spec.loop.max_dataset_steps,
         "phase_quota_weights": spec.loop.phase_quota_weights,
         "before_greedy_success": float(before["greedy"].get("eval_success_rate", 0.0)),
@@ -640,6 +680,8 @@ def _write_single_run_summary(
         f"- loss: `{spec.student.loss}`",
         f"- aggregation: `{spec.loop.aggregation}`",
         f"- weighting: `{spec.student.weighting}`",
+        f"- temporal_credit_mode: `{spec.student.temporal_credit_mode}`",
+        f"- warmup_rounds: `{int(spec.loop.warmup_rounds)}`",
         f"- before_greedy_success: `{summary['before_greedy_success']:.3f}`",
         f"- best_round_greedy_success: `{summary['best_round_greedy_success']:.3f}`",
         f"- final_greedy_success: `{summary['final_greedy_success']:.3f}`",
@@ -735,12 +777,22 @@ def run_once(args: argparse.Namespace) -> None:
         )
         round_batch = round_collection.batch
         aggregate = _apply_aggregation_policy(spec, _concat_batches(aggregate, round_batch))
-        fine_tune_metrics = _fine_tune_student(
-            spec=spec,
-            student=student,
-            dataset=aggregate,
-            device=detect_device(args.device),
-        )
+        if _warmup_only_round(spec, round_index):
+            fine_tune_metrics = {
+                "fine_tune/steps": 0.0,
+                "fine_tune/loss_final": 0.0,
+                "fine_tune/loss_mean": 0.0,
+                "fine_tune/trainable_params": 0.0,
+                "fine_tune/warmup_only_round": 1.0,
+            }
+        else:
+            fine_tune_metrics = _fine_tune_student(
+                spec=spec,
+                student=student,
+                dataset=aggregate,
+                device=detect_device(args.device),
+            )
+            fine_tune_metrics["fine_tune/warmup_only_round"] = 0.0
         after = evaluate_modes(spec.student.config, student, args.device, spec.evaluation.episodes)
         after_best_mode, after_best_sampled = _best_sampled_mode(after)
         round_row = {
@@ -769,6 +821,7 @@ def run_once(args: argparse.Namespace) -> None:
                 "teacher_confidence": aggregate.teacher_confidence,
                 "phase_ids": aggregate.phase_ids,
                 "disagreement": aggregate.disagreement,
+                "steps_from_end": aggregate.steps_from_end,
                 "accepted_episodes": aggregate.accepted_episodes,
                 "episodes_seen": aggregate.episodes_seen,
                 "steps": aggregate.steps,
@@ -786,9 +839,12 @@ def run_once(args: argparse.Namespace) -> None:
             "loss": spec.student.loss,
             "aggregation": spec.loop.aggregation,
             "weighting": spec.student.weighting,
+            "temporal_credit_mode": spec.student.temporal_credit_mode,
+            "temporal_penultimate_keep_prob": spec.student.temporal_penultimate_keep_prob,
             "phase_weights": spec.student.phase_weights,
             "default_phase_weight": spec.student.default_phase_weight,
             "disagreement_bonus": spec.student.disagreement_bonus,
+            "warmup_rounds": spec.loop.warmup_rounds,
             "phase_quota_weights": spec.loop.phase_quota_weights,
             **fine_tune_metrics,
             **round_collection.diagnostics,
