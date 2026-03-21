@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from psmn_rl.analysis.benchmark_pack import sha256_path
+from psmn_rl.analysis.campaign_config import load_campaign_config
 from psmn_rl.analysis.lss_post_pass_campaign import (
     DISPLAY_NAMES,
     _float,
@@ -648,7 +649,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main() -> None:
     args = build_parser().parse_args()
-    campaign = _load_yaml(Path(args.campaign_config))
+    campaign = load_campaign_config(Path(args.campaign_config))
 
     if args.command == "state-reconciliation":
         _render_state_reconciliation(campaign, Path(args.output))

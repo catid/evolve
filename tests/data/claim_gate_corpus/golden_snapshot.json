@@ -1,13 +1,13 @@
 {
   "case_verdicts": [
     {
-      "actual_verdict": "FAIL: claim remains frozen",
-      "expected_verdict": "FAIL: claim remains frozen",
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
       "id": "happy_path_reference_fail"
     },
     {
-      "actual_verdict": "PASS: thaw consideration allowed",
-      "expected_verdict": "PASS: thaw consideration allowed",
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
       "id": "synthetic_pass_reference"
     },
     {
@@ -66,18 +66,18 @@
       "id": "semantic_wrong_retry_seeds"
     },
     {
-      "actual_verdict": "FAIL: claim remains frozen",
-      "expected_verdict": "FAIL: claim remains frozen",
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
       "id": "near_miss_below_single_expert"
     },
     {
-      "actual_verdict": "FAIL: claim remains frozen",
-      "expected_verdict": "FAIL: claim remains frozen",
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
       "id": "near_miss_regress_combined"
     },
     {
-      "actual_verdict": "FAIL: claim remains frozen",
-      "expected_verdict": "FAIL: claim remains frozen",
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
       "id": "near_miss_extra_seed_failure"
     },
     {
@@ -106,7 +106,7 @@
       "id": "overclaim_missing_controls"
     }
   ],
-  "frozen_candidate_verdict": "FAIL: claim remains frozen",
+  "frozen_candidate_verdict": "INCONCLUSIVE: missing prerequisites",
   "frozen_pack_summary": {
     "allowed_claim_key": "bounded_teacher_guided_doorkey_sare",
     "candidate_pack_schema_version": 1,

@@ -11,9 +11,9 @@ readarray -t cfg < <(
 import json
 import sys
 from pathlib import Path
-import yaml
+from psmn_rl.analysis.campaign_config import load_campaign_config
 
-campaign = yaml.safe_load(Path(sys.argv[1]).read_text()) or {}
+campaign = load_campaign_config(Path(sys.argv[1]))
 holdout = json.loads(Path(campaign["reports"]["stage3_json"]).read_text())
 anti_regression = json.loads(Path(campaign["reports"]["stage4_json"]).read_text())
 raw_dir = Path(campaign["reports"]["route_raw_dir"])
@@ -28,10 +28,16 @@ print(best or "")
 print(campaign["stage_roots"]["stage1_screening"])
 print(campaign["stage_roots"]["stage3_holdout"])
 print(campaign["stage_roots"]["stage4_antiregression"])
-for case_name in ("dev", "holdout", "healthy"):
-    case = campaign["route_cases"][case_name]
+for case_name, case in (campaign.get("route_cases") or {}).items():
+    stage_key = str(case.get("stage_key") or {
+        "dev": "stage1_screening",
+        "holdout": "stage3_holdout",
+        "healthy": "stage4_antiregression",
+        "hard": "stage1_screening",
+    }.get(case_name, "stage1_screening"))
     round6_root = campaign["current_round6_sare_roots"][case["lane"]]
-    print(f"case:{case_name}:{case['lane']}:{case['seed']}:{round6_root}")
+    challenger_root = campaign["stage_roots"][stage_key]
+    print(f"case:{case_name}:{case['lane']}:{case['seed']}:{round6_root}:{challenger_root}")
 PY
 )
 
@@ -67,19 +73,12 @@ for row in "${ROWS[@]}"; do
   lane="${rest%%:*}"
   rest="${rest#${lane}:}"
   seed="${rest%%:*}"
-  round6_root="${rest#${seed}:}"
+  rest="${rest#${seed}:}"
+  round6_root="${rest%%:*}"
+  challenger_root="${rest#${round6_root}:}"
+  challenger_root="${challenger_root#:}"
   round6_dir="${round6_root}/seed_${seed}/kl_lss_sare"
-  case "$case_name" in
-    dev)
-      challenger_dir="${STAGE1_ROOT}/${BEST_CANDIDATE}/${lane}/seed_${seed}/kl_lss_sare"
-      ;;
-    holdout)
-      challenger_dir="${STAGE4_HOLDOUT_ROOT}/${BEST_CANDIDATE}/${lane}/seed_${seed}/kl_lss_sare"
-      ;;
-    healthy)
-      challenger_dir="${STAGE5_ANTI_ROOT}/${BEST_CANDIDATE}/${lane}/seed_${seed}/kl_lss_sare"
-      ;;
-  esac
+  challenger_dir="${challenger_root}/${BEST_CANDIDATE}/${lane}/seed_${seed}/kl_lss_sare"
 
   run_route_case "$lane" "$seed" "$round6_dir" \
     "${RAW_DIR}/${ROUND6}_${case_name}.md" \

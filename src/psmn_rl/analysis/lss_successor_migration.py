@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from psmn_rl.analysis.benchmark_pack import sha256_path
+from psmn_rl.analysis.campaign_config import load_campaign_config
 from psmn_rl.analysis.lss_hard_family_saturation import (
     _candidate_metric_row,
     _dedupe_metric_rows,
@@ -391,7 +392,12 @@ def _stage1_pass(campaign: dict[str, Any], summary: dict[str, Any], incumbent_fa
 def _render_stage1(campaign: dict[str, Any], output: Path, csv_output: Path | None, json_output: Path | None) -> None:
     dev_lanes = _block_lanes(campaign, "dev")
     round6_rows = [row for row in _current_round6_rows(campaign, dev_lanes) if str(row["label"]) in CURRENT_LABELS]
-    challenger_rows = [_candidate_row(record) for record in _discover_runs(Path(campaign["stage_roots"]["stage1_screening"])) if str(record.label) == "kl_lss_sare"]
+    allowed_candidates = {str(name) for name in campaign.get("candidates", {})}
+    challenger_rows = [
+        _candidate_row(record)
+        for record in _discover_runs(Path(campaign["stage_roots"]["stage1_screening"]))
+        if str(record.label) == "kl_lss_sare" and (not allowed_candidates or str(record.candidate) in allowed_candidates)
+    ]
     round6_family = _control_family(round6_rows, str(campaign["current_canonical_name"]), dev_lanes)
     screening_rows: list[dict[str, Any]] = []
     by_candidate: dict[str, list[dict[str, Any]]] = {}
@@ -718,13 +724,35 @@ def _route_md_path(raw_dir: Path, line_name: str, case_name: str) -> Path:
     return raw_dir / f"{line_name}_{case_name}.md"
 
 
-def _route_case_names() -> tuple[str, ...]:
-    return ("dev", "holdout", "healthy")
+def _case_names(campaign: dict[str, Any], key: str, default: tuple[str, ...]) -> tuple[str, ...]:
+    cases = campaign.get(key, {})
+    if isinstance(cases, dict) and cases:
+        return tuple(str(name) for name in cases.keys())
+    return default
+
+
+def _route_case_names(campaign: dict[str, Any]) -> tuple[str, ...]:
+    return _case_names(campaign, "route_cases", ("dev", "holdout", "healthy"))
+
+
+def _stability_case_names(campaign: dict[str, Any]) -> tuple[str, ...]:
+    return _case_names(campaign, "stability_cases", ("dev", "holdout", "healthy"))
+
+
+def _candidate_case_stage_key(case_name: str, case_payload: dict[str, Any]) -> str:
+    if "stage_key" in case_payload:
+        return str(case_payload["stage_key"])
+    return {
+        "dev": "stage1_screening",
+        "holdout": "stage3_holdout",
+        "healthy": "stage4_antiregression",
+        "hard": "stage1_screening",
+    }.get(case_name, "stage1_screening")
 
 
 def _load_route_set(campaign: dict[str, Any], raw_dir: Path, line_name: str) -> list[dict[str, Any]]:
     result: list[dict[str, Any]] = []
-    for case_name in _route_case_names():
+    for case_name in _route_case_names(campaign):
         csv_path = _route_csv_path(raw_dir, line_name, case_name)
         if csv_path.exists():
             summary = _route_summary(_read_csv_rows(csv_path))
@@ -780,18 +808,14 @@ def _render_stage6(campaign: dict[str, Any], output: Path, csv_output: Path | No
     best_candidate = stage3.get("best_candidate") if stage4.get("challenger_pass") else None
     case_map = campaign["stability_cases"]
     summaries: list[dict[str, Any]] = []
-    for case_name in _route_case_names():
+    for case_name in _stability_case_names(campaign):
         lane = str(case_map[case_name]["lane"])
         seed = _int(case_map[case_name]["seed"])
         round6_summary = _stability_summary(_round6_run_dir(campaign, lane, seed))
         summaries.append({"line": str(campaign["current_canonical_name"]), "case": case_name, "lane": lane, "seed": seed, **round6_summary})
         if best_candidate:
-            if case_name == "dev":
-                run_dir = _candidate_run_dir(campaign, "stage1_screening", str(best_candidate), lane, seed)
-            elif case_name == "holdout":
-                run_dir = _candidate_run_dir(campaign, "stage3_holdout", str(best_candidate), lane, seed)
-            else:
-                run_dir = _candidate_run_dir(campaign, "stage4_antiregression", str(best_candidate), lane, seed)
+            stage_key = _candidate_case_stage_key(case_name, dict(case_map[case_name]))
+            run_dir = _candidate_run_dir(campaign, stage_key, str(best_candidate), lane, seed)
             summaries.append({"line": str(best_candidate), "case": case_name, "lane": lane, "seed": seed, **_stability_summary(run_dir)})
     round6_pass = all(row["stability_class"] != "narrow_spike" for row in summaries if row["line"] == str(campaign["current_canonical_name"]))
     challenger_pass = bool(best_candidate) and all(row["stability_class"] != "narrow_spike" for row in summaries if row["line"] == str(best_candidate))
@@ -1105,7 +1129,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main() -> None:
     args = build_parser().parse_args()
-    campaign = _load_yaml(Path(args.campaign_config))
+    campaign = load_campaign_config(Path(args.campaign_config))
 
     if args.command == "registration":
         _render_registration(campaign, Path(args.output))

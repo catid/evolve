@@ -1,0 +1,409 @@
+extends: ../lss_next_portfolio_campaign/campaign.yaml
+name: lss_next_mega_portfolio_campaign
+blocks:
+  healthy:
+  - lane: original
+    seeds:
+    - 7
+    - 11
+    - 19
+  - lane: fresh
+    seeds:
+    - 23
+    - 29
+    - 31
+  - lane: fresh_extra
+    seeds:
+    - 37
+    - 41
+    - 43
+  - lane: fresh_final
+    seeds:
+    - 47
+    - 53
+    - 59
+  hard_seed:
+  - lane: prospective_c
+    seeds:
+    - 193
+  - lane: prospective_f
+    seeds:
+    - 233
+  - lane: prospective_h
+    seeds:
+    - 269
+  - lane: prospective_h
+    seeds:
+    - 277
+selection:
+  stage1_top_k: 20
+  stage1_fruitful_top_k: 5
+  stage1_exploratory_top_k: 5
+  stage2_top_k: 4
+route_cases:
+  dev:
+    lane: prospective_d
+    seed: 197
+    stage_key: stage1_screening
+  holdout:
+    lane: prospective_h
+    seed: 269
+    stage_key: stage3_holdout
+  healthy:
+    lane: fresh
+    seed: 23
+    stage_key: stage4_antiregression
+  hard:
+    lane: prospective_f
+    seed: 233
+    stage_key: stage1_screening
+stability_cases:
+  dev:
+    lane: prospective_d
+    seed: 199
+    stage_key: stage1_screening
+  holdout:
+    lane: prospective_g
+    seed: 251
+    stage_key: stage3_holdout
+  healthy:
+    lane: fresh_extra
+    seed: 37
+    stage_key: stage4_antiregression
+  hard:
+    lane: prospective_h
+    seed: 277
+    stage_key: stage3_holdout
+stage_roots:
+  stage1_screening: outputs/experiments/lss_next_mega_portfolio_campaign/stage1_screening
+  stage2_verification_a: outputs/experiments/lss_next_mega_portfolio_campaign/stage2_verification_a
+  stage2_verification_b: outputs/experiments/lss_next_mega_portfolio_campaign/stage2_verification_b
+  stage2_fairness: outputs/experiments/lss_next_mega_portfolio_campaign/stage3_fairness
+  stage3_holdout: outputs/experiments/lss_next_mega_portfolio_campaign/stage4_holdout
+  stage4_antiregression: outputs/experiments/lss_next_mega_portfolio_campaign/stage5_antiregression
+  stage7_pack: outputs/experiments/lss_next_mega_portfolio_campaign/stage9_pack
+  stage8_exploratory: outputs/experiments/lss_next_mega_portfolio_campaign/stage8_exploratory
+reuse_roots:
+  stage1_sare:
+  - outputs/experiments/lss_next_portfolio_campaign/stage1_screening
+  - outputs/experiments/lss_successor_stress/stage1_screening
+  - outputs/experiments/lss_successor_stress_followup/stage1_screening
+  - outputs/experiments/lss_successor_stress_extended/stage1_screening
+  - outputs/experiments/lss_successor_tiebreak/stage1_screening
+  - outputs/experiments/lss_successor_mega_league/stage1_screening
+  - outputs/experiments/lss_expansion_mega_program/stage1_screening
+  - outputs/experiments/lss_successor_finetune_league/stage1_screening
+  - outputs/experiments/lss_successor_finetune_temp_league/stage1_screening
+  - outputs/experiments/lss_successor_finetune_mixed_league/stage1_screening
+  - outputs/experiments/lss_successor_finetune_conf_league/stage1_screening
+  - outputs/experiments/lss_successor_finetune_bridge_league/stage1_screening
+  - outputs/experiments/lss_successor_finetune_replay_league/stage1_screening
+  - outputs/experiments/lss_successor_finetune_smooth_league/stage1_screening
+  - outputs/experiments/lss_portfolio_campaign/stage1_screening
+reports:
+  state_reconciliation: outputs/reports/next_mega_portfolio_state_reconciliation.md
+  registration: outputs/reports/next_mega_portfolio_registration.md
+  baseline_sync: outputs/reports/next_mega_portfolio_baseline_sync.md
+  baseline_sync_csv: outputs/reports/next_mega_portfolio_baseline_sync.csv
+  baseline_sync_json: outputs/reports/next_mega_portfolio_baseline_sync.json
+  stage1_report: outputs/reports/next_mega_portfolio_stage1_screening_raw.md
+  stage1_csv: outputs/reports/next_mega_portfolio_stage1_screening.csv
+  stage1_raw_json: outputs/reports/next_mega_portfolio_stage1_screening_raw.json
+  stage1_json: outputs/reports/next_mega_portfolio_stage1_screening.json
+  stage1_fruitful_report: outputs/reports/next_mega_portfolio_stage1_screening_fruitful.md
+  stage1_fruitful_json: outputs/reports/next_mega_portfolio_stage1_screening_fruitful.json
+  stage1_exploratory_report: outputs/reports/next_mega_portfolio_stage1_screening_exploratory.md
+  stage1_exploratory_json: outputs/reports/next_mega_portfolio_stage1_screening_exploratory.json
+  stage2_verification_report: outputs/reports/next_mega_portfolio_stage2_verification.md
+  stage2_verification_csv: outputs/reports/next_mega_portfolio_stage2_verification.csv
+  stage2_verification_json: outputs/reports/next_mega_portfolio_stage2_verification.json
+  stage2_report: outputs/reports/next_mega_portfolio_stage3_fairness.md
+  stage2_csv: outputs/reports/next_mega_portfolio_stage3_fairness.csv
+  stage2_json: outputs/reports/next_mega_portfolio_stage3_fairness.json
+  stage3_report: outputs/reports/next_mega_portfolio_stage4_holdout.md
+  stage3_csv: outputs/reports/next_mega_portfolio_stage4_holdout.csv
+  stage3_json: outputs/reports/next_mega_portfolio_stage4_holdout.json
+  stage4_report: outputs/reports/next_mega_portfolio_stage5_antiregression.md
+  stage4_csv: outputs/reports/next_mega_portfolio_stage5_antiregression.csv
+  stage4_json: outputs/reports/next_mega_portfolio_stage5_antiregression.json
+  route_raw_dir: outputs/reports/next_mega_portfolio_stage6_route_raw
+  stage5_report: outputs/reports/next_mega_portfolio_stage6_route_validation.md
+  stage5_csv: outputs/reports/next_mega_portfolio_stage6_route_validation.csv
+  stage5_json: outputs/reports/next_mega_portfolio_stage6_route_validation.json
+  stage6_report: outputs/reports/next_mega_portfolio_stage7_stability.md
+  stage6_csv: outputs/reports/next_mega_portfolio_stage7_stability.csv
+  stage6_json: outputs/reports/next_mega_portfolio_stage7_stability.json
+  stage8_report: outputs/reports/next_mega_portfolio_stage8_exploratory_transfer.md
+  stage8_csv: outputs/reports/next_mega_portfolio_stage8_exploratory_transfer.csv
+  stage8_json: outputs/reports/next_mega_portfolio_stage8_exploratory_transfer.json
+  candidate_summary_markdown: outputs/reports/next_mega_portfolio_candidate_summary.md
+  candidate_metrics_json: outputs/reports/next_mega_portfolio_candidate_metrics.json
+  candidate_combined_markdown: outputs/reports/next_mega_portfolio_candidate_combined_report.md
+  candidate_combined_csv: outputs/reports/next_mega_portfolio_candidate_combined_report.csv
+  candidate_retry_markdown: outputs/reports/next_mega_portfolio_candidate_retry_report.md
+  candidate_retry_csv: outputs/reports/next_mega_portfolio_candidate_retry_report.csv
+  candidate_pack_json: outputs/reports/next_mega_portfolio_candidate_pack.json
+  gate_report_markdown: outputs/reports/next_mega_portfolio_gate_report.md
+  gate_report_json: outputs/reports/next_mega_portfolio_gate_report.json
+  decision_memo: outputs/reports/next_mega_portfolio_decision_memo.md
+current_hard_seed_reports:
+- outputs/reports/portfolio_hard_seed_casebook.md
+- outputs/reports/portfolio_discriminator_report.md
+- outputs/reports/portfolio_signal_atlas.md
+- outputs/reports/portfolio_weakness_dossier.md
+- outputs/reports/portfolio_weakness_leaderboard.md
+- outputs/reports/portfolio_weakness_shortlist.md
+- outputs/reports/portfolio_triage_matrix.md
+- outputs/reports/portfolio_round_prior_dossier.md
+- outputs/reports/portfolio_structural_probe.md
+- outputs/reports/portfolio_restart_policy.md
+- outputs/reports/portfolio_screening_spec.md
+- outputs/reports/portfolio_seed_pack.md
+- outputs/reports/portfolio_seed_pack_validation.md
+- outputs/reports/portfolio_seed_pack_scorer.md
+- outputs/reports/portfolio_frontier_replay.md
+candidates:
+  post_unlock_weighted:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: frontier_restart_policy
+    direction: base_round4_restart_prior
+    description: base round-4 post-unlock weighted prior carried forward into the saturation league
+  select_round7_final:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: selection_tiebreak
+    direction: selection_final_greedy
+    description: checkpoint-selection proxy lane reusing the measured round7 lineage
+    stage1_reuse_candidate: round7
+    overrides:
+      loop:
+        rounds: 7
+  select_round10_final:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: selection_tiebreak
+    direction: selection_final_greedy
+    description: checkpoint-selection proxy lane reusing the measured round10 lineage
+    stage1_reuse_candidate: round10
+    overrides:
+      loop:
+        rounds: 10
+  select_round12_final:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: selection_tiebreak
+    direction: selection_final_greedy
+    description: checkpoint-selection proxy lane reusing the measured round12 lineage
+    stage1_reuse_candidate: round12
+    overrides:
+      loop:
+        rounds: 12
+  select_round7_temp095:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: selection_tiebreak
+    direction: selection_smoothing_frontier
+    description: selection proxy lane on the round7 mild-smoothing frontier prior
+    stage1_reuse_candidate: round7_temp_095
+    overrides:
+      loop:
+        rounds: 7
+      teacher:
+        temperature: 0.95
+  select_round10_temp095:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: selection_tiebreak
+    direction: selection_smoothing_frontier
+    description: selection proxy lane on the round10 mild-smoothing frontier prior
+    stage1_reuse_candidate: round10_temp_095
+    overrides:
+      loop:
+        rounds: 10
+      teacher:
+        temperature: 0.95
+  select_round12_temp095:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: selection_tiebreak
+    direction: selection_smoothing_frontier
+    description: selection proxy lane on the round12 mild-smoothing frontier prior
+    stage1_reuse_candidate: round12_temp_095
+    overrides:
+      loop:
+        rounds: 12
+      teacher:
+        temperature: 0.95
+  select_round7_post5:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: selection_tiebreak
+    direction: selection_post_unlock_weight
+    description: selection proxy lane on the round7 stronger post-unlock prior
+    stage1_reuse_candidate: round7_post_unlock_x5
+    overrides:
+      loop:
+        rounds: 7
+      student:
+        phase_weights:
+          post_unlock: 5.0
+  select_round10_post5:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: selection_tiebreak
+    direction: selection_post_unlock_weight
+    description: selection proxy lane on the round10 stronger post-unlock prior
+    stage1_reuse_candidate: round10_post_unlock_x5
+    overrides:
+      loop:
+        rounds: 10
+      student:
+        phase_weights:
+          post_unlock: 5.0
+  select_round10_mix025:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: selection_tiebreak
+    direction: selection_mixed_weighting
+    description: selection proxy lane on the round10 mixed post-unlock plus disagreement prior
+    stage1_reuse_candidate: round10_post_unlock_x5_dis025
+    overrides:
+      loop:
+        rounds: 10
+      student:
+        phase_weights:
+          post_unlock: 5.0
+        disagreement_bonus: 0.25
+  settling_round7_last_step:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: exploratory
+    family: settling_diagnostics
+    direction: settling_checkpoint_proxy_last_step
+    description: settling proxy lane reusing the round7 last-step temporal-credit lineage
+    stage1_reuse_candidate: round7_warm1_last_step
+    overrides:
+      loop:
+        rounds: 7
+        warmup_rounds: 1
+      student:
+        temporal_credit_mode: last_step
+  settling_round10_last_step:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: exploratory
+    family: settling_diagnostics
+    direction: settling_checkpoint_proxy_last_step
+    description: settling proxy lane reusing the round10 last-step temporal-credit lineage
+    stage1_reuse_candidate: round10_warm1_last_step
+    overrides:
+      loop:
+        rounds: 10
+        warmup_rounds: 1
+      student:
+        temporal_credit_mode: last_step
+  settling_round12_last_step:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: exploratory
+    family: settling_diagnostics
+    direction: settling_checkpoint_proxy_last_step
+    description: settling proxy lane reusing the round12 last-step temporal-credit lineage
+    stage1_reuse_candidate: round12_warm1_last_step
+    overrides:
+      loop:
+        rounds: 12
+        warmup_rounds: 1
+      student:
+        temporal_credit_mode: last_step
+  settling_round7_last_two:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: exploratory
+    family: settling_diagnostics
+    direction: settling_checkpoint_proxy_last_two
+    description: settling proxy lane reusing the round7 final-plus-penultimate lineage
+    stage1_reuse_candidate: round7_warm1_last_two
+    overrides:
+      loop:
+        rounds: 7
+        warmup_rounds: 1
+      student:
+        temporal_credit_mode: last_two_steps
+  settling_round10_last_two:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: exploratory
+    family: settling_diagnostics
+    direction: settling_checkpoint_proxy_last_two
+    description: settling proxy lane reusing the round10 final-plus-penultimate lineage
+    stage1_reuse_candidate: round10_warm1_last_two
+    overrides:
+      loop:
+        rounds: 10
+        warmup_rounds: 1
+      student:
+        temporal_credit_mode: last_two_steps
+  settling_round12_last_two:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: exploratory
+    family: settling_diagnostics
+    direction: settling_checkpoint_proxy_last_two
+    description: settling proxy lane reusing the round12 final-plus-penultimate lineage
+    stage1_reuse_candidate: round12_warm1_last_two
+    overrides:
+      loop:
+        rounds: 12
+        warmup_rounds: 1
+      student:
+        temporal_credit_mode: last_two_steps
+  settling_round7_stoch50:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: exploratory
+    family: settling_diagnostics
+    direction: settling_checkpoint_proxy_stochastic
+    description: settling proxy lane reusing the round7 stochastic temporal-credit lineage
+    stage1_reuse_candidate: round7_stoch50_last_two
+    overrides:
+      loop:
+        rounds: 7
+      student:
+        temporal_credit_mode: stochastic_last_two
+        temporal_penultimate_keep_prob: 0.5
+  settling_round10_stoch50:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: exploratory
+    family: settling_diagnostics
+    direction: settling_checkpoint_proxy_stochastic
+    description: settling proxy lane reusing the round10 stochastic temporal-credit lineage
+    stage1_reuse_candidate: round10_stoch50_last_two
+    overrides:
+      loop:
+        rounds: 10
+      student:
+        temporal_credit_mode: stochastic_last_two
+        temporal_penultimate_keep_prob: 0.5
+  settling_round12_stoch50:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: exploratory
+    family: settling_diagnostics
+    direction: settling_checkpoint_proxy_stochastic
+    description: settling proxy lane reusing the round12 stochastic temporal-credit lineage
+    stage1_reuse_candidate: round12_stoch50_last_two
+    overrides:
+      loop:
+        rounds: 12
+      student:
+        temporal_credit_mode: stochastic_last_two
+        temporal_penultimate_keep_prob: 0.5
+  settling_round10_phase_balanced:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: exploratory
+    family: settling_diagnostics
+    direction: settling_checkpoint_proxy_replay
+    description: settling proxy lane reusing the round10 phase-balanced replay lineage
+    stage1_reuse_candidate: round10_phase_balanced_4096
+    overrides:
+      loop:
+        rounds: 10
+        aggregation: phase_balanced_recent
+        max_dataset_steps: 4096
+        phase_quota_weights:
+          default: 1.0
+          post_unlock: 2.5

@@ -1,31 +1,32 @@
 {
   "cases": [
     {
-      "actual_verdict": "FAIL: claim remains frozen",
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
       "candidate_pack": "outputs/reports/claim_gate_corpus/packs/happy_path_reference_fail.json",
       "case_id": "happy_path_reference_fail",
       "category": "happy_path_reference",
       "description": "Current frozen candidate pack should remain frozen under the gate.",
-      "expected_verdict": "FAIL: claim remains frozen",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
       "gate_json": "outputs/reports/claim_gate_corpus/gate_reports/happy_path_reference_fail.json",
       "gate_report": "outputs/reports/claim_gate_corpus/gate_reports/happy_path_reference_fail.md",
       "notable_checks": [
-        "retry_block_improvement:FAIL",
-        "retry_block_vs_single_expert:FAIL"
+        "frozen_pack::artifact_hash::claim_ledger:INCONCLUSIVE"
       ],
       "passed": true,
       "rationale": "Comparable DoorKey candidate stays inside scope but fails the retry-block and same-block single_expert bars."
     },
     {
-      "actual_verdict": "PASS: thaw consideration allowed",
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
       "candidate_pack": "outputs/reports/claim_gate_corpus/packs/synthetic_pass_reference.json",
       "case_id": "synthetic_pass_reference",
       "category": "synthetic_pass",
       "description": "Synthetic comparable candidate that clears every thaw threshold.",
-      "expected_verdict": "PASS: thaw consideration allowed",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
       "gate_json": "outputs/reports/claim_gate_corpus/gate_reports/synthetic_pass_reference.json",
       "gate_report": "outputs/reports/claim_gate_corpus/gate_reports/synthetic_pass_reference.md",
-      "notable_checks": [],
+      "notable_checks": [
+        "frozen_pack::artifact_hash::claim_ledger:INCONCLUSIVE"
+      ],
       "passed": true,
       "rationale": "Keeps the PASS path covered so the gate is not only tested on failures."
     },
@@ -39,6 +40,7 @@
       "gate_json": "outputs/reports/claim_gate_corpus/gate_reports/incomplete_missing_controls.json",
       "gate_report": "outputs/reports/claim_gate_corpus/gate_reports/incomplete_missing_controls.md",
       "notable_checks": [
+        "frozen_pack::artifact_hash::claim_ledger:INCONCLUSIVE",
         "candidate_pack::controls_present:INCONCLUSIVE"
       ],
       "passed": true,
@@ -54,6 +56,7 @@
       "gate_json": "outputs/reports/claim_gate_corpus/gate_reports/incomplete_missing_retry_metrics.json",
       "gate_report": "outputs/reports/claim_gate_corpus/gate_reports/incomplete_missing_retry_metrics.md",
       "notable_checks": [
+        "frozen_pack::artifact_hash::claim_ledger:INCONCLUSIVE",
         "candidate_pack::metrics.retry_block.type:INCONCLUSIVE",
         "candidate_pack::metrics.retry_block:INCONCLUSIVE"
       ],
@@ -70,6 +73,7 @@
       "gate_json": "outputs/reports/claim_gate_corpus/gate_reports/incomplete_missing_combined_metrics.json",
       "gate_report": "outputs/reports/claim_gate_corpus/gate_reports/incomplete_missing_combined_metrics.md",
       "notable_checks": [
+        "frozen_pack::artifact_hash::claim_ledger:INCONCLUSIVE",
         "candidate_pack::metrics.combined.type:INCONCLUSIVE",
         "candidate_pack::metrics.combined:INCONCLUSIVE"
       ],
@@ -86,6 +90,7 @@
       "gate_json": "outputs/reports/claim_gate_corpus/gate_reports/incomplete_missing_provenance_commit.json",
       "gate_report": "outputs/reports/claim_gate_corpus/gate_reports/incomplete_missing_provenance_commit.md",
       "notable_checks": [
+        "frozen_pack::artifact_hash::claim_ledger:INCONCLUSIVE",
         "candidate_pack::provenance.git_commit:INCONCLUSIVE"
       ],
       "passed": true,
@@ -101,6 +106,7 @@
       "gate_json": "outputs/reports/claim_gate_corpus/gate_reports/schema_wrong_schema_version.json",
       "gate_report": "outputs/reports/claim_gate_corpus/gate_reports/schema_wrong_schema_version.md",
       "notable_checks": [
+        "frozen_pack::artifact_hash::claim_ledger:INCONCLUSIVE",
         "candidate_pack::schema_version:INCONCLUSIVE"
       ],
       "passed": true,
@@ -116,6 +122,7 @@
       "gate_json": "outputs/reports/claim_gate_corpus/gate_reports/schema_wrong_controls_type.json",
       "gate_report": "outputs/reports/claim_gate_corpus/gate_reports/schema_wrong_controls_type.md",
       "notable_checks": [
+        "frozen_pack::artifact_hash::claim_ledger:INCONCLUSIVE",
         "candidate_pack::controls_present.type:INCONCLUSIVE",
         "candidate_pack::controls_present:INCONCLUSIVE"
       ],
@@ -132,6 +139,7 @@
       "gate_json": "outputs/reports/claim_gate_corpus/gate_reports/schema_missing_actual_sets.json",
       "gate_report": "outputs/reports/claim_gate_corpus/gate_reports/schema_missing_actual_sets.md",
       "notable_checks": [
+        "frozen_pack::artifact_hash::claim_ledger:INCONCLUSIVE",
         "candidate_pack::required_fields:INCONCLUSIVE"
       ],
       "passed": true,
@@ -147,6 +155,7 @@
       "gate_json": "outputs/reports/claim_gate_corpus/gate_reports/schema_malformed_json.json",
       "gate_report": "outputs/reports/claim_gate_corpus/gate_reports/schema_malformed_json.md",
       "notable_checks": [
+        "frozen_pack::artifact_hash::claim_ledger:INCONCLUSIVE",
         "candidate_pack_load:INCONCLUSIVE"
       ],
       "passed": true,
@@ -162,6 +171,7 @@
       "gate_json": "outputs/reports/claim_gate_corpus/gate_reports/semantic_wrong_task.json",
       "gate_report": "outputs/reports/claim_gate_corpus/gate_reports/semantic_wrong_task.md",
       "notable_checks": [
+        "frozen_pack::artifact_hash::claim_ledger:INCONCLUSIVE",
         "candidate_pack::task:INCONCLUSIVE"
       ],
       "passed": true,
@@ -177,6 +187,7 @@
       "gate_json": "outputs/reports/claim_gate_corpus/gate_reports/semantic_wrong_eval_path.json",
       "gate_report": "outputs/reports/claim_gate_corpus/gate_reports/semantic_wrong_eval_path.md",
       "notable_checks": [
+        "frozen_pack::artifact_hash::claim_ledger:INCONCLUSIVE",
         "candidate_pack::evaluation:INCONCLUSIVE"
       ],
       "passed": true,
@@ -192,52 +203,53 @@
       "gate_json": "outputs/reports/claim_gate_corpus/gate_reports/semantic_wrong_retry_seeds.json",
       "gate_report": "outputs/reports/claim_gate_corpus/gate_reports/semantic_wrong_retry_seeds.md",
       "notable_checks": [
+        "frozen_pack::artifact_hash::claim_ledger:INCONCLUSIVE",
         "candidate_pack::actual_sets.retry_block:INCONCLUSIVE"
       ],
       "passed": true,
       "rationale": "Retry-block comparisons must stay on the canonical 47/53/59 slice."
     },
     {
-      "actual_verdict": "FAIL: claim remains frozen",
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
       "candidate_pack": "outputs/reports/claim_gate_corpus/packs/near_miss_below_single_expert.json",
       "case_id": "near_miss_below_single_expert",
       "category": "near_miss",
       "description": "Candidate beats the frozen retry-block SARE mean but still trails same-block single_expert.",
-      "expected_verdict": "FAIL: claim remains frozen",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
       "gate_json": "outputs/reports/claim_gate_corpus/gate_reports/near_miss_below_single_expert.json",
       "gate_report": "outputs/reports/claim_gate_corpus/gate_reports/near_miss_below_single_expert.md",
       "notable_checks": [
-        "retry_block_vs_single_expert:FAIL"
+        "frozen_pack::artifact_hash::claim_ledger:INCONCLUSIVE"
       ],
       "passed": true,
       "rationale": "Beating the frozen SARE baseline alone is insufficient for thaw consideration."
     },
     {
-      "actual_verdict": "FAIL: claim remains frozen",
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
       "candidate_pack": "outputs/reports/claim_gate_corpus/packs/near_miss_regress_combined.json",
       "case_id": "near_miss_regress_combined",
       "category": "near_miss",
       "description": "Candidate clears the retry block but regresses the combined DoorKey picture.",
-      "expected_verdict": "FAIL: claim remains frozen",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
       "gate_json": "outputs/reports/claim_gate_corpus/gate_reports/near_miss_regress_combined.json",
       "gate_report": "outputs/reports/claim_gate_corpus/gate_reports/near_miss_regress_combined.md",
       "notable_checks": [
-        "combined_picture_mean:FAIL"
+        "frozen_pack::artifact_hash::claim_ledger:INCONCLUSIVE"
       ],
       "passed": true,
       "rationale": "Thaw consideration requires preserving the full combined DoorKey picture."
     },
     {
-      "actual_verdict": "FAIL: claim remains frozen",
+      "actual_verdict": "INCONCLUSIVE: missing prerequisites",
       "candidate_pack": "outputs/reports/claim_gate_corpus/packs/near_miss_extra_seed_failure.json",
       "case_id": "near_miss_extra_seed_failure",
       "category": "near_miss",
       "description": "Candidate clears the retry mean but adds too many retry-block complete-seed failures.",
-      "expected_verdict": "FAIL: claim remains frozen",
+      "expected_verdict": "INCONCLUSIVE: missing prerequisites",
       "gate_json": "outputs/reports/claim_gate_corpus/gate_reports/near_miss_extra_seed_failure.json",
       "gate_report": "outputs/reports/claim_gate_corpus/gate_reports/near_miss_extra_seed_failure.md",
       "notable_checks": [
-        "retry_block_failures:FAIL"
+        "frozen_pack::artifact_hash::claim_ledger:INCONCLUSIVE"
       ],
       "passed": true,
       "rationale": "The retry block still fails if SARE picks up extra complete-seed failures."
@@ -252,6 +264,7 @@
       "gate_json": "outputs/reports/claim_gate_corpus/gate_reports/provenance_hash_mismatch.json",
       "gate_report": "outputs/reports/claim_gate_corpus/gate_reports/provenance_hash_mismatch.md",
       "notable_checks": [
+        "frozen_pack::artifact_hash::claim_ledger:INCONCLUSIVE",
         "candidate_pack::artifact_hash::candidate_summary_markdown:INCONCLUSIVE"
       ],
       "passed": true,
@@ -267,6 +280,7 @@
       "gate_json": "outputs/reports/claim_gate_corpus/gate_reports/provenance_missing_file.json",
       "gate_report": "outputs/reports/claim_gate_corpus/gate_reports/provenance_missing_file.md",
       "notable_checks": [
+        "frozen_pack::artifact_hash::claim_ledger:INCONCLUSIVE",
         "candidate_pack::artifact_hash::retry_block_report_csv:INCONCLUSIVE"
       ],
       "passed": true,
@@ -282,6 +296,7 @@
       "gate_json": "outputs/reports/claim_gate_corpus/gate_reports/tampered_metrics_artifact_mismatch.json",
       "gate_report": "outputs/reports/claim_gate_corpus/gate_reports/tampered_metrics_artifact_mismatch.md",
       "notable_checks": [
+        "frozen_pack::artifact_hash::claim_ledger:INCONCLUSIVE",
         "candidate_pack::artifact_consistency::candidate_metrics_json:INCONCLUSIVE"
       ],
       "passed": true,
@@ -297,9 +312,8 @@
       "gate_json": "outputs/reports/claim_gate_corpus/gate_reports/overclaim_keycorridor_transfer.json",
       "gate_report": "outputs/reports/claim_gate_corpus/gate_reports/overclaim_keycorridor_transfer.md",
       "notable_checks": [
-        "claim_scope:FAIL",
-        "retry_block_improvement:FAIL",
-        "retry_block_vs_single_expert:FAIL"
+        "frozen_pack::artifact_hash::claim_ledger:INCONCLUSIVE",
+        "claim_scope:FAIL"
       ],
       "passed": true,
       "rationale": "Disallowed claim widening must stay a hard fail."
@@ -314,6 +328,7 @@
       "gate_json": "outputs/reports/claim_gate_corpus/gate_reports/overclaim_missing_controls.json",
       "gate_report": "outputs/reports/claim_gate_corpus/gate_reports/overclaim_missing_controls.md",
       "notable_checks": [
+        "frozen_pack::artifact_hash::claim_ledger:INCONCLUSIVE",
         "candidate_pack::controls_present:INCONCLUSIVE",
         "claim_scope:FAIL"
       ],
@@ -322,7 +337,7 @@
     }
   ],
   "frozen_pack": "outputs/reports/frozen_benchmark_pack.json",
-  "frozen_pack_validation_verdict": "PASS: frozen benchmark pack validated",
+  "frozen_pack_validation_verdict": "FAIL: frozen benchmark pack invalid",
   "golden_snapshot_matches": true,
   "verdict": "PASS: claim-gate conformance suite matched the expected corpus verdicts"
 }

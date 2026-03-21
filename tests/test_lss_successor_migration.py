@@ -1,4 +1,11 @@
-from psmn_rl.analysis.lss_successor_migration import _stage2_pass, _stage4_pass, _winner
+from psmn_rl.analysis.lss_successor_migration import (
+    _candidate_case_stage_key,
+    _route_case_names,
+    _stability_case_names,
+    _stage2_pass,
+    _stage4_pass,
+    _winner,
+)
 
 
 def test_stage2_pass_requires_control_competition_and_meaningful_gain() -> None:
@@ -50,3 +57,24 @@ def test_winner_keeps_round6_when_challenger_fails_validation() -> None:
     outcome = _winner(campaign, stage3, stage4, stage5, stage6)
     assert outcome["winner"] == "round7"
     assert outcome["challenger_viable"]
+
+
+def test_dynamic_case_names_support_hard_seed_cases() -> None:
+    campaign = {
+        "route_cases": {
+            "dev": {"lane": "prospective_d", "seed": 197},
+            "holdout": {"lane": "prospective_h", "seed": 269},
+            "healthy": {"lane": "fresh", "seed": 23},
+            "hard": {"lane": "prospective_f", "seed": 233, "stage_key": "stage1_screening"},
+        },
+        "stability_cases": {
+            "dev": {"lane": "prospective_d", "seed": 199},
+            "holdout": {"lane": "prospective_g", "seed": 251},
+            "healthy": {"lane": "fresh_extra", "seed": 37},
+            "hard": {"lane": "prospective_h", "seed": 277, "stage_key": "stage3_holdout"},
+        },
+    }
+    assert _route_case_names(campaign) == ("dev", "holdout", "healthy", "hard")
+    assert _stability_case_names(campaign) == ("dev", "holdout", "healthy", "hard")
+    assert _candidate_case_stage_key("hard", campaign["route_cases"]["hard"]) == "stage1_screening"
+    assert _candidate_case_stage_key("hard", campaign["stability_cases"]["hard"]) == "stage3_holdout"

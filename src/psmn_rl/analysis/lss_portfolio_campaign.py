@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from psmn_rl.analysis.benchmark_pack import sha256_path
+from psmn_rl.analysis.campaign_config import load_campaign_config
 from psmn_rl.analysis.lss_expansion_mega_program import (
     _door_key_strengthened,
     _exploratory_summary,
@@ -215,6 +216,7 @@ def _render_registration(campaign: dict[str, Any], output: Path) -> None:
     track_counts = {track: 0 for track in TRACKS}
     family_counts: dict[str, int] = {}
     directions = sorted({str(meta["direction"]) for meta in campaign["candidates"].values()})
+    hard_seed_blocks = list(campaign["blocks"].get("hard_seed", []))
     for candidate in campaign["candidates"]:
         meta = _candidate_meta(campaign, str(candidate))
         track_counts[str(meta["track"])] += 1
@@ -239,6 +241,7 @@ def _render_registration(campaign: dict[str, Any], output: Path) -> None:
         f"- development families: `{campaign['blocks']['dev']}`",
         f"- holdout families: `{campaign['blocks']['holdout']}`",
         f"- healthy anti-regression families: `{campaign['blocks']['healthy']}`",
+        f"- hard-seed / hard-pattern families: `{hard_seed_blocks}`",
         f"- exploratory adjacent-task track: `{campaign['blocks']['exploratory']}`",
         f"- family counts: `{family_counts}`",
         "",
@@ -249,6 +252,8 @@ def _render_registration(campaign: dict[str, Any], output: Path) -> None:
         f"- Stage 1 fruitful top-k: `{_int(campaign['selection']['stage1_fruitful_top_k'])}`",
         f"- Stage 1 exploratory top-k: `{_int(campaign['selection']['stage1_exploratory_top_k'])}`",
         f"- verification reruns per survivor: `2`",
+        f"- route-validation cases: `{campaign.get('route_cases', {})}`",
+        f"- stability cases: `{campaign.get('stability_cases', {})}`",
         "",
         "## Fair-Shot Rule",
         "",
@@ -298,9 +303,18 @@ def _render_baseline_sync(
         f"- holdout-family round6 SARE/token/single: `{holdout['sare_mean']:.4f}` / `{holdout['token_mean']:.4f}` / `{holdout['single_mean']:.4f}`",
         f"- healthy-family round6 SARE/token/single: `{healthy['sare_mean']:.4f}` / `{healthy['token_mean']:.4f}` / `{healthy['single_mean']:.4f}`",
         "",
-        "## Historical Challenger Context",
+        "## Current Hard-Seed / Weakness Context",
         "",
     ]
+    for path in campaign.get("current_hard_seed_reports", []):
+        lines.append(f"- `{path}`")
+    lines.extend(
+        [
+            "",
+        "## Historical Challenger Context",
+        "",
+        ]
+    )
     for path in _historical_refs(campaign):
         lines.append(f"- `{path}`")
     lines.extend(["", "| Block | Seed | Variant | Greedy Success |", "| --- | --- | --- | ---: |"])
@@ -861,7 +875,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main() -> None:
     args = build_parser().parse_args()
-    campaign = _load_yaml(Path(args.campaign_config))
+    campaign = load_campaign_config(Path(args.campaign_config))
 
     if args.command == "state-reconciliation":
         _render_state_reconciliation(campaign, Path(args.output))

@@ -77,6 +77,8 @@ import sys
 from pathlib import Path
 import yaml
 
+from psmn_rl.analysis.campaign_config import load_campaign_config
+
 def deep_merge(base, override):
     for key, value in (override or {}).items():
         if isinstance(value, dict) and isinstance(base.get(key), dict):
@@ -85,7 +87,7 @@ def deep_merge(base, override):
             base[key] = copy.deepcopy(value)
 
 campaign_path, line_name, variant, lane, seed, target_path, output_dir = sys.argv[1:]
-campaign = yaml.safe_load(Path(campaign_path).read_text()) or {}
+campaign = load_campaign_config(Path(campaign_path))
 if line_name == str(campaign["current_canonical_name"]):
     meta = campaign["incumbent_candidate"]
 else:
@@ -121,9 +123,10 @@ readarray -t cfg < <(
 import json
 import sys
 from pathlib import Path
-import yaml
 
-campaign = yaml.safe_load(Path(sys.argv[1]).read_text()) or {}
+from psmn_rl.analysis.campaign_config import load_campaign_config
+
+campaign = load_campaign_config(Path(sys.argv[1]))
 holdout = json.loads(Path(campaign["reports"]["stage3_json"]).read_text())
 anti = json.loads(Path(campaign["reports"]["stage4_json"]).read_text())
 route = json.loads(Path(campaign["reports"]["stage5_json"]).read_text())
@@ -196,8 +199,10 @@ for line_name in "${lines[@]}"; do
         output_label=$(source .venv/bin/activate && python - "$CAMPAIGN_CONFIG" "$variant" <<'PY'
 import sys
 from pathlib import Path
-import yaml
-campaign = yaml.safe_load(Path(sys.argv[1]).read_text()) or {}
+
+from psmn_rl.analysis.campaign_config import load_campaign_config
+
+campaign = load_campaign_config(Path(sys.argv[1]))
 print(campaign["students"][sys.argv[2]]["output_label"])
 PY
 )

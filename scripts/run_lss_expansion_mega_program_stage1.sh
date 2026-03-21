@@ -75,6 +75,7 @@ import copy
 import sys
 from pathlib import Path
 import yaml
+from psmn_rl.analysis.campaign_config import load_campaign_config
 
 def deep_merge(base, override):
     for key, value in (override or {}).items():
@@ -84,7 +85,7 @@ def deep_merge(base, override):
             base[key] = copy.deepcopy(value)
 
 campaign_path, candidate, lane, seed, target_path, output_dir = sys.argv[1:]
-campaign = yaml.safe_load(Path(campaign_path).read_text()) or {}
+campaign = load_campaign_config(Path(campaign_path))
 meta = campaign["candidates"][candidate]
 student = campaign["students"]["sare"]
 raw = yaml.safe_load(Path(meta["template"]).read_text()) or {}
@@ -111,9 +112,9 @@ readarray -t cfg < <(
   python - "$CAMPAIGN_CONFIG" <<'PY'
 import sys
 from pathlib import Path
-import yaml
+from psmn_rl.analysis.campaign_config import load_campaign_config
 
-campaign = yaml.safe_load(Path(sys.argv[1]).read_text()) or {}
+campaign = load_campaign_config(Path(sys.argv[1]))
 print(campaign["stage_roots"]["stage1_screening"])
 print(campaign["reports"]["stage1_report"])
 print(campaign["reports"]["stage1_csv"])
@@ -121,8 +122,8 @@ print(campaign["reports"]["stage1_raw_json"])
 print(campaign["reports"]["stage1_json"])
 for block in campaign["blocks"]["dev"]:
     print(f"block:{block['lane']}:{','.join(str(seed) for seed in block['seeds'])}")
-for candidate in campaign["candidates"]:
-    print(f"candidate:{candidate}")
+for candidate, meta in campaign["candidates"].items():
+    print(f"candidate:{candidate}:{meta.get('stage1_reuse_candidate', '')}")
 for root in campaign.get("reuse_roots", {}).get("stage1_sare", []):
     print(f"reuse:{root}")
 PY
@@ -139,6 +140,7 @@ mkdir -p "$STAGE1_ROOT"
 declare -A BLOCK_SEEDS=()
 declare -a CANDIDATES=()
 declare -a REUSE_ROOTS=()
+declare -A REUSE_CANDIDATES=()
 for row in "${ROWS[@]}"; do
   if [[ "$row" == block:* ]]; then
     lane="${row#block:}"
@@ -147,7 +149,13 @@ for row in "${ROWS[@]}"; do
   elif [[ "$row" == reuse:* ]]; then
     REUSE_ROOTS+=("${row#reuse:}")
   else
-    CANDIDATES+=("${row#candidate:}")
+    candidate_payload="${row#candidate:}"
+    candidate="${candidate_payload%%:*}"
+    alias_candidate="${candidate_payload#${candidate}:}"
+    CANDIDATES+=("$candidate")
+    if [[ "$alias_candidate" != "$candidate_payload" && -n "$alias_candidate" ]]; then
+      REUSE_CANDIDATES["$candidate"]="$alias_candidate"
+    fi
   fi
 done
 
@@ -159,9 +167,25 @@ for candidate in "${CANDIDATES[@]}"; do
       spec_path="${STAGE1_ROOT}/${candidate}/${lane}/seed_${seed}/configs/kl_lss_sare.yaml"
       output_dir="${STAGE1_ROOT}/${candidate}/${lane}/seed_${seed}/kl_lss_sare"
       render_spec "$CAMPAIGN_CONFIG" "$candidate" "$lane" "$seed" "$spec_path" "$output_dir"
+      alias_candidate="${REUSE_CANDIDATES[$candidate]:-}"
+      if [[ ! -e "${output_dir}" && -n "$alias_candidate" ]]; then
+        alias_dir="${STAGE1_ROOT}/${alias_candidate}/${lane}/seed_${seed}/kl_lss_sare"
+        if [[ -f "${alias_dir}/summary.json" ]]; then
+          cp -al "${alias_dir}" "${output_dir}"
+        fi
+      fi
       if [[ ! -e "${output_dir}" ]]; then
         for reuse_root in "${REUSE_ROOTS[@]}"; do
           reuse_dir="${reuse_root}/${candidate}/${lane}/seed_${seed}/kl_lss_sare"
+          if [[ -f "${reuse_dir}/summary.json" ]]; then
+            cp -al "${reuse_dir}" "${output_dir}"
+            break
+          fi
+        done
+      fi
+      if [[ ! -e "${output_dir}" && -n "$alias_candidate" ]]; then
+        for reuse_root in "${REUSE_ROOTS[@]}"; do
+          reuse_dir="${reuse_root}/${alias_candidate}/${lane}/seed_${seed}/kl_lss_sare"
           if [[ -f "${reuse_dir}/summary.json" ]]; then
             cp -al "${reuse_dir}" "${output_dir}"
             break

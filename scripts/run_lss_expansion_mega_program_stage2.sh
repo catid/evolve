@@ -75,6 +75,7 @@ import copy
 import sys
 from pathlib import Path
 import yaml
+from psmn_rl.analysis.campaign_config import load_campaign_config
 
 def deep_merge(base, override):
     for key, value in (override or {}).items():
@@ -84,7 +85,7 @@ def deep_merge(base, override):
             base[key] = copy.deepcopy(value)
 
 campaign_path, candidate, lane, seed, target_path, output_dir = sys.argv[1:]
-campaign = yaml.safe_load(Path(campaign_path).read_text()) or {}
+campaign = load_campaign_config(Path(campaign_path))
 meta = campaign["candidates"][candidate]
 student = campaign["students"]["sare"]
 raw = yaml.safe_load(Path(meta["template"]).read_text()) or {}
@@ -112,9 +113,9 @@ readarray -t cfg < <(
 import json
 import sys
 from pathlib import Path
-import yaml
+from psmn_rl.analysis.campaign_config import load_campaign_config
 
-campaign = yaml.safe_load(Path(sys.argv[1]).read_text()) or {}
+campaign = load_campaign_config(Path(sys.argv[1]))
 stage1 = json.loads(Path(campaign["reports"]["stage1_raw_json"]).read_text())
 print(campaign["stage_roots"]["stage2_verification_a"])
 print(campaign["stage_roots"]["stage2_verification_b"])
