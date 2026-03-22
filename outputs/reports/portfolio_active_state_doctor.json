@@ -11,8 +11,13 @@
       "status": "pass"
     },
     {
-      "detail": "archived_legacy_pack=outputs/reports/frozen_benchmark_pack.json, frozen_pack_reference=outputs/reports/frozen_benchmark_pack.json",
+      "detail": "archived_legacy_pack=outputs/reports/frozen_benchmark_pack.json",
       "label": "candidate_archived_pack_frozen",
+      "status": "pass"
+    },
+    {
+      "detail": "gate_reference_pack=outputs/reports/round6_current_benchmark_pack.json, frozen_pack_reference=outputs/reports/round6_current_benchmark_pack.json",
+      "label": "candidate_gate_reference_current",
       "status": "pass"
     },
     {
@@ -21,7 +26,7 @@
       "status": "pass"
     },
     {
-      "detail": "candidate_pack=outputs/reports/portfolio_candidate_pack.json, frozen_pack=outputs/reports/frozen_benchmark_pack.json",
+      "detail": "candidate_pack=outputs/reports/portfolio_candidate_pack.json, frozen_pack=outputs/reports/round6_current_benchmark_pack.json",
       "label": "gate_targets_current_active_pack",
       "status": "pass"
     },

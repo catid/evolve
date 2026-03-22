@@ -1,6 +1,6 @@
 {
   "active_benchmark_state": {
-    "active_pack_role": "confirmed_active_round6",
+    "active_pack_role": "narrowed_active_round6",
     "anti_regression_summary": {
       "best_candidate": null,
       "challenger_pass": false,
@@ -21,8 +21,8 @@
     },
     "challenger_viable_pre_gate": false,
     "current_active_pack": {
-      "path": "outputs/reports/successor_mega_league_candidate_pack.json",
-      "sha256": "ac5d57224835b36f459b3dd8138080c2c3651c5d56f820d3df0932ea66c65b41"
+      "path": "outputs/reports/next_mega_portfolio_candidate_pack.json",
+      "sha256": "a0a7c92a641491fc5cf94c1815e0b48001f8422de26cab162604e35fda8244e6"
     },
     "future_comparison_policy": {
       "active_canonical_pack": "outputs/reports/successor_mega_league_candidate_pack.json",
@@ -451,9 +451,9 @@
     "winner": "round6"
   },
   "frozen_pack_reference": {
-    "claim_id": "doorkey_frozen_claim",
-    "path": "outputs/reports/frozen_benchmark_pack.json",
-    "sha256": "8e36f4623ad584549f0b3a4be7bef9fbec62053704cef6672b6bb28a2608f205"
+    "claim_id": "doorkey_round6_current_claim",
+    "path": "outputs/reports/round6_current_benchmark_pack.json",
+    "sha256": "bddb622d60ac14600327acfe56480a3f0e22e73acd24da049cd278e98d9514c7"
   },
   "metrics": {
     "combined": {
@@ -538,21 +538,22 @@
       "sha256": "8e36f4623ad584549f0b3a4be7bef9fbec62053704cef6672b6bb28a2608f205"
     },
     "current_source_pack": {
-      "path": "outputs/reports/expansion_mega_program_candidate_pack.json",
-      "sha256": "01e8ec66443e835b66b14e03a3eba29ec145fd7937a555b4756d6363d5c01c1f"
+      "path": "outputs/reports/portfolio_candidate_pack.json",
+      "sha256": "bf56541bc66ac0ec2950af116dc00c88d451130a805ec1a6d9dd96affbea23e8"
     },
     "decision": "round6 canonized as active DoorKey benchmark",
     "future_comparison_policy": {
       "active_canonical_pack": "outputs/reports/portfolio_candidate_pack.json",
-      "archived_legacy_pack": "outputs/reports/frozen_benchmark_pack.json"
+      "archived_legacy_pack": "outputs/reports/frozen_benchmark_pack.json",
+      "gate_reference_pack": "outputs/reports/round6_current_benchmark_pack.json"
     },
     "healthy_summary": {
       "sare_failures": 0.0,
       "sare_mean": 1.0,
-      "sare_minus_single": 0.11111111111111116,
-      "sare_minus_token": 0.11458333333333337,
-      "single_mean": 0.8888888888888888,
-      "token_mean": 0.8854166666666666
+      "sare_minus_single": 0.08333333333333337,
+      "sare_minus_token": 0.0859375,
+      "single_mean": 0.9166666666666666,
+      "token_mean": 0.9140625
     },
     "holdout_summary": {
       "sare_failures": 2.0,
@@ -570,16 +571,16 @@
       "round6_routes": [
         {
           "baseline_active_compute": 0.5,
-          "baseline_path_entropy": 0.9775502654327743,
-          "baseline_route_entropy": 1.3758657732229123,
+          "baseline_path_entropy": 0.7727307166372027,
+          "baseline_route_entropy": 1.3755062463737668,
           "baseline_success": 1.0,
           "case": "dev",
           "fixed_router_drop": 1.0,
-          "lane": "prospective_f",
+          "lane": "prospective_d",
           "route_randomization_drop": 1.0,
-          "seed": 233,
+          "seed": 197,
           "worst_ablation_drop": 1.0,
-          "worst_ablation_expert": "0"
+          "worst_ablation_expert": "1"
         },
         {
           "baseline_active_compute": 0.5,
@@ -606,6 +607,19 @@
           "seed": 23,
           "worst_ablation_drop": 1.0,
           "worst_ablation_expert": "0"
+        },
+        {
+          "baseline_active_compute": 0.5,
+          "baseline_path_entropy": 0.9775502654327743,
+          "baseline_route_entropy": 1.3758657732229123,
+          "baseline_success": 1.0,
+          "case": "hard",
+          "fixed_router_drop": 1.0,
+          "lane": "prospective_f",
+          "route_randomization_drop": 1.0,
+          "seed": 233,
+          "worst_ablation_drop": 1.0,
+          "worst_ablation_expert": "0"
         }
       ]
     },
@@ -622,15 +636,15 @@
             0.0,
             0.0,
             0.0,
-            0.0,
+            0.484375,
             1.0,
             1.0
           ],
           "final_greedy_success": 1.0,
-          "lane": "prospective_f",
+          "lane": "prospective_d",
           "line": "round6",
-          "run_dir": "outputs/experiments/lss_successor_stress_followup/stage1_screening/round6/prospective_f/seed_239/kl_lss_sare",
-          "seed": 239,
+          "run_dir": "outputs/experiments/lss_successor_stress/stage1_screening/round6/prospective_d/seed_199/kl_lss_sare",
+          "seed": 199,
           "stability_class": "stable_plateau"
         },
         {
@@ -670,6 +684,25 @@
           "run_dir": "outputs/experiments/lss_hard_family_saturation/stage4_antiregression/round6/fresh_extra/seed_37/kl_lss_sare",
           "seed": 37,
           "stability_class": "stable_plateau"
+        },
+        {
+          "best_round_greedy_success": 1.0,
+          "best_round_index": 5,
+          "case": "hard",
+          "curve": [
+            0.0,
+            0.0,
+            0.0,
+            0.609375,
+            1.0,
+            1.0
+          ],
+          "final_greedy_success": 1.0,
+          "lane": "prospective_h",
+          "line": "round6",
+          "run_dir": "outputs/experiments/lss_successor_stress_extended/stage1_screening/round6/prospective_h/seed_277/kl_lss_sare",
+          "seed": 277,
+          "stability_class": "stable_plateau"
         }
       ]
     }
@@ -677,8 +710,8 @@
   "pack_type": "candidate_result_pack",
   "portfolio_campaign": {
     "active_pack_before_program": {
-      "path": "outputs/reports/expansion_mega_program_candidate_pack.json",
-      "sha256": "01e8ec66443e835b66b14e03a3eba29ec145fd7937a555b4756d6363d5c01c1f"
+      "path": "outputs/reports/next_mega_portfolio_candidate_pack.json",
+      "sha256": "a0a7c92a641491fc5cf94c1815e0b48001f8422de26cab162604e35fda8244e6"
     },
     "anti_regression_summary": {
       "best_candidate": null,
@@ -688,10 +721,10 @@
       "round6_summary": {
         "sare_failures": 0.0,
         "sare_mean": 1.0,
-        "sare_minus_single": 0.11111111111111116,
-        "sare_minus_token": 0.11458333333333337,
-        "single_mean": 0.8888888888888888,
-        "token_mean": 0.8854166666666666
+        "sare_minus_single": 0.08333333333333337,
+        "sare_minus_token": 0.0859375,
+        "single_mean": 0.9166666666666666,
+        "token_mean": 0.9140625
       }
     },
     "archived_legacy_frozen_pack": {
@@ -723,7 +756,7 @@
     "future_comparison_policy": {
       "active_canonical_pack": "outputs/reports/portfolio_candidate_pack.json",
       "archived_legacy_pack": "outputs/reports/frozen_benchmark_pack.json",
-      "gate_reference_pack": "outputs/reports/frozen_benchmark_pack.json"
+      "gate_reference_pack": "outputs/reports/round6_current_benchmark_pack.json"
     },
     "holdout_summary": {
       "best_candidate": null,
@@ -747,16 +780,16 @@
       "round6_routes": [
         {
           "baseline_active_compute": 0.5,
-          "baseline_path_entropy": 0.9775502654327743,
-          "baseline_route_entropy": 1.3758657732229123,
+          "baseline_path_entropy": 0.7727307166372027,
+          "baseline_route_entropy": 1.3755062463737668,
           "baseline_success": 1.0,
           "case": "dev",
           "fixed_router_drop": 1.0,
-          "lane": "prospective_f",
+          "lane": "prospective_d",
           "route_randomization_drop": 1.0,
-          "seed": 233,
+          "seed": 197,
           "worst_ablation_drop": 1.0,
-          "worst_ablation_expert": "0"
+          "worst_ablation_expert": "1"
         },
         {
           "baseline_active_compute": 0.5,
@@ -783,6 +816,19 @@
           "seed": 23,
           "worst_ablation_drop": 1.0,
           "worst_ablation_expert": "0"
+        },
+        {
+          "baseline_active_compute": 0.5,
+          "baseline_path_entropy": 0.9775502654327743,
+          "baseline_route_entropy": 1.3758657732229123,
+          "baseline_success": 1.0,
+          "case": "hard",
+          "fixed_router_drop": 1.0,
+          "lane": "prospective_f",
+          "route_randomization_drop": 1.0,
+          "seed": 233,
+          "worst_ablation_drop": 1.0,
+          "worst_ablation_expert": "0"
         }
       ]
     },
@@ -799,15 +845,15 @@
             0.0,
             0.0,
             0.0,
-            0.0,
+            0.484375,
             1.0,
             1.0
           ],
           "final_greedy_success": 1.0,
-          "lane": "prospective_f",
+          "lane": "prospective_d",
           "line": "round6",
-          "run_dir": "outputs/experiments/lss_successor_stress_followup/stage1_screening/round6/prospective_f/seed_239/kl_lss_sare",
-          "seed": 239,
+          "run_dir": "outputs/experiments/lss_successor_stress/stage1_screening/round6/prospective_d/seed_199/kl_lss_sare",
+          "seed": 199,
           "stability_class": "stable_plateau"
         },
         {
@@ -847,6 +893,25 @@
           "run_dir": "outputs/experiments/lss_hard_family_saturation/stage4_antiregression/round6/fresh_extra/seed_37/kl_lss_sare",
           "seed": 37,
           "stability_class": "stable_plateau"
+        },
+        {
+          "best_round_greedy_success": 1.0,
+          "best_round_index": 5,
+          "case": "hard",
+          "curve": [
+            0.0,
+            0.0,
+            0.0,
+            0.609375,
+            1.0,
+            1.0
+          ],
+          "final_greedy_success": 1.0,
+          "lane": "prospective_h",
+          "line": "round6",
+          "run_dir": "outputs/experiments/lss_successor_stress_extended/stage1_screening/round6/prospective_h/seed_277/kl_lss_sare",
+          "seed": 277,
+          "stability_class": "stable_plateau"
         }
       ]
     },
@@ -854,12 +919,13 @@
   },
   "provenance": {
     "expansion_program_notes": "benchmark expansion + mega challenger + exploratory transfer refresh",
-    "git_commit": "85e2aaadae7c741e625431dbf494372007eb001c",
+    "git_commit": "251c92bc33d7b9ec5aa313dcbdd1a9c245bfa7fe",
     "git_dirty": true,
     "mega_league_notes": "post-reconciliation mega challenger league refresh",
     "migration_notes": "round6 promoted to active DoorKey benchmark draft while frozen pack remains archived",
     "notes": "hard-family successor candidate `round6`",
-    "portfolio_campaign_notes": "50/50 fruitful vs exploratory benchmark campaign refresh"
+    "portfolio_campaign_notes": "50/50 fruitful vs exploratory benchmark campaign refresh",
+    "state_repair_notes": "reconciled narrowed round6 active state after the next-mega portfolio campaign"
   },
   "qualification": {
     "hard_family_dev_sare_mean": 1.0,

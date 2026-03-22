@@ -1,0 +1,14 @@
+{
+  "best_candidate": null,
+  "challenger_summaries": [],
+  "detail_rows": [],
+  "round6_summary": {
+    "sare_failures": 2.0,
+    "sare_mean": 0.83203125,
+    "sare_minus_single": -0.0013020833333333703,
+    "sare_minus_token": -0.0013020833333333703,
+    "single_mean": 0.8333333333333334,
+    "token_mean": 0.8333333333333334
+  },
+  "surviving_candidates": []
+}

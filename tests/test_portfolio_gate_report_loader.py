@@ -4,7 +4,7 @@ from psmn_rl.analysis.portfolio_gate_report_loader import load_portfolio_gate_re
 def test_load_portfolio_gate_report_snapshot() -> None:
     report = load_portfolio_gate_report()
     assert report.candidate_pack == "outputs/reports/portfolio_candidate_pack.json"
-    assert report.frozen_pack == "outputs/reports/frozen_benchmark_pack.json"
+    assert report.frozen_pack == "outputs/reports/round6_current_benchmark_pack.json"
     assert report.mode == "pack"
     assert report.verdict == "PASS: thaw consideration allowed"
     assert report.candidate_pack_validation[0].name == "pack_type"

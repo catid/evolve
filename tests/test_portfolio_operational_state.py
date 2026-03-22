@@ -17,3 +17,4 @@ def test_build_operational_state_snapshot() -> None:
     assert state["frontier_guard_overall"] == "pass"
     assert state["active_state_doctor_overall"] == "pass"
     assert state["ready_for_bounded_restart"] is True
+    assert state["decision_reference"] == "outputs/reports/next_mega_portfolio_decision_memo.md"

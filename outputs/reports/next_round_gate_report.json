@@ -1,0 +1,352 @@
+{
+  "candidate_pack": "outputs/reports/next_round_candidate_pack.json",
+  "candidate_pack_validation": [
+    {
+      "detail": "pack type is `candidate_result_pack`",
+      "name": "pack_type",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate schema version `1` is recognized",
+      "name": "schema_version",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate name is `round6`",
+      "name": "candidate_name",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate references `outputs/reports/round6_current_benchmark_pack.json`",
+      "name": "frozen_pack_reference.path",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate references frozen-pack hash `bddb622d60ac14600327acfe56480a3f0e22e73acd24da049cd278e98d9514c7`",
+      "name": "frozen_pack_reference.sha256",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate claim id matches `doorkey_round6_current_claim`",
+      "name": "frozen_pack_reference.claim_id",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate task matches `DoorKey`",
+      "name": "task",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate uses the required DoorKey external-64 evaluation path",
+      "name": "evaluation",
+      "status": "PASS"
+    },
+    {
+      "detail": "requested claim keys are well formed",
+      "name": "requested_claims",
+      "status": "PASS"
+    },
+    {
+      "detail": "controls_present is a list of strings",
+      "name": "controls_present.type",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate includes all required fairness controls",
+      "name": "controls_present",
+      "status": "PASS"
+    },
+    {
+      "detail": "combined metrics are a mapping",
+      "name": "metrics.combined.type",
+      "status": "PASS"
+    },
+    {
+      "detail": "retry-block metrics are a mapping",
+      "name": "metrics.retry_block.type",
+      "status": "PASS"
+    },
+    {
+      "detail": "combined metrics expose every required variant field",
+      "name": "metrics.combined",
+      "status": "PASS"
+    },
+    {
+      "detail": "retry-block metrics expose every required variant field",
+      "name": "metrics.retry_block",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate combined lane/seed set matches the frozen benchmark",
+      "name": "actual_sets.combined",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate retry-block lane/seed set matches the frozen benchmark",
+      "name": "actual_sets.retry_block",
+      "status": "PASS"
+    },
+    {
+      "detail": "artifact roles are unique",
+      "name": "artifacts.duplicates",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate pack exposes all required artifact roles",
+      "name": "artifacts",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate artifact `outputs/reports/hard_family_saturation_candidate_metrics.json` hash matches `3ae5f73f05fc570d149c0ab6545703283510c6ecdeb7507fd3b02356861856b8`",
+      "name": "artifact_hash::candidate_metrics_json",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate artifact `outputs/reports/hard_family_saturation_candidate_summary.md` hash matches `98eede059cabe12591c4bb9b61918fe7c339f378da158d6397b322ecfc95e405`",
+      "name": "artifact_hash::candidate_summary_markdown",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate artifact `outputs/reports/hard_family_saturation_candidate_combined_report.csv` hash matches `1e676f86903ad8b10901d01c1963bb2572966dc425c057e7194af639ff1e1481`",
+      "name": "artifact_hash::combined_report_csv",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate artifact `outputs/reports/hard_family_saturation_candidate_combined_report.md` hash matches `d4ee90580be5c466626674124862c8d5b0d858c11450dafdb3def68c649d2cee`",
+      "name": "artifact_hash::combined_report_markdown",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate artifact `outputs/reports/hard_family_saturation_candidate_retry_block_report.csv` hash matches `e63732861aeb3158e6ecec7824457f79aefa97015ab798a3da49f779399515ed`",
+      "name": "artifact_hash::retry_block_report_csv",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate artifact `outputs/reports/hard_family_saturation_candidate_retry_block_report.md` hash matches `a758621f40f4b4700fd506b33da7ae28caf5916851ddb15c72d102a72d8e2867`",
+      "name": "artifact_hash::retry_block_report_markdown",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate pack matches the candidate_metrics_json artifact on task, evaluation, controls, metrics, and actual sets",
+      "name": "artifact_consistency::candidate_metrics_json",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate provenance git_commit `251c92bc33d7b9ec5aa313dcbdd1a9c245bfa7fe` is well formed",
+      "name": "provenance.git_commit",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate provenance git_dirty is `True`",
+      "name": "provenance.git_dirty",
+      "status": "PASS"
+    }
+  ],
+  "checks": [
+    {
+      "detail": "candidate evaluation is a mapping",
+      "name": "evaluation_shape",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate task matches `DoorKey`",
+      "name": "task",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate uses `external_policy_diagnostics` with `64` episodes",
+      "name": "evaluation_path",
+      "status": "PASS"
+    },
+    {
+      "detail": "controls_present is a list of strings",
+      "name": "fairness_controls_shape",
+      "status": "PASS"
+    },
+    {
+      "detail": "all required structured controls are present",
+      "name": "fairness_controls",
+      "status": "PASS"
+    },
+    {
+      "detail": "requested_claims is a list of strings",
+      "name": "claim_scope_shape",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate stays inside the frozen claim envelope",
+      "name": "claim_scope",
+      "status": "PASS"
+    },
+    {
+      "detail": "metrics is a mapping",
+      "name": "candidate_metrics_shape",
+      "status": "PASS"
+    },
+    {
+      "detail": "metrics.combined is a mapping",
+      "name": "candidate_metrics_combined_shape",
+      "status": "PASS"
+    },
+    {
+      "detail": "metrics.retry_block is a mapping",
+      "name": "candidate_metrics_retry_block_shape",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate exposes retry-block and combined metrics for required variants",
+      "name": "candidate_metrics",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate retry-block SARE mean `1.0000` exceeds frozen baseline `0.3125`",
+      "name": "retry_block_improvement",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate retry-block SARE mean `1.0000` matches or beats same-block single_expert `1.0000`",
+      "name": "retry_block_vs_single_expert",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate retry-block SARE complete-seed failures `0` stay within gate `1`",
+      "name": "retry_block_failures",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate combined SARE mean `1.0000` preserves or improves frozen baseline `0.7122`",
+      "name": "combined_picture_mean",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate combined SARE complete-seed failures `0` stay within gate `1`",
+      "name": "combined_picture_failures",
+      "status": "PASS"
+    }
+  ],
+  "frozen_pack": "outputs/reports/round6_current_benchmark_pack.json",
+  "frozen_pack_validation": [
+    {
+      "detail": "pack type is `frozen_benchmark_pack`",
+      "name": "pack_type",
+      "status": "PASS"
+    },
+    {
+      "detail": "sealed source commit `251c92bc33d7b9ec5aa313dcbdd1a9c245bfa7fe` is well formed",
+      "name": "provenance.sealed_source_commit",
+      "status": "PASS"
+    },
+    {
+      "detail": "sealed source dirty flag is `True`",
+      "name": "provenance.sealed_source_dirty",
+      "status": "PASS"
+    },
+    {
+      "detail": "manifest hash matches `e9a141dd6d655b122a63b3504484ae4d67af9519405da134c45e3bfb3302d2c6`",
+      "name": "manifest_hash",
+      "status": "PASS"
+    },
+    {
+      "detail": "pack schema version `1` is recognized",
+      "name": "schema_version",
+      "status": "PASS"
+    },
+    {
+      "detail": "sealed `claim` matches the manifest",
+      "name": "claim",
+      "status": "PASS"
+    },
+    {
+      "detail": "sealed `canonical_method` matches the manifest",
+      "name": "canonical_method",
+      "status": "PASS"
+    },
+    {
+      "detail": "sealed `evaluation` matches the manifest",
+      "name": "evaluation",
+      "status": "PASS"
+    },
+    {
+      "detail": "sealed `seed_groups` matches the manifest",
+      "name": "seed_groups",
+      "status": "PASS"
+    },
+    {
+      "detail": "sealed `variants` matches the manifest",
+      "name": "variants",
+      "status": "PASS"
+    },
+    {
+      "detail": "sealed `thresholds` matches the manifest",
+      "name": "thresholds",
+      "status": "PASS"
+    },
+    {
+      "detail": "sealed `thaw_gate` matches the manifest",
+      "name": "thaw_gate",
+      "status": "PASS"
+    },
+    {
+      "detail": "all required artifact keys are present",
+      "name": "authoritative_artifacts",
+      "status": "PASS"
+    },
+    {
+      "detail": "artifact `outputs/reports/next_round_baseline_sync.md` hash matches `8ebcf0635bcb86185bc00c6daeca5183642d6a9e7e7c2963cbb1ebcf72371bd7`",
+      "name": "artifact_hash::baseline_sync",
+      "status": "PASS"
+    },
+    {
+      "detail": "artifact `outputs/reports/claim_ledger_round6_current.md` hash matches `ee26c73a78b1ca070a13df98bc508e3e6480dc17b9bae3ce0ab026ce76a8100d`",
+      "name": "artifact_hash::claim_ledger_snapshot",
+      "status": "PASS"
+    },
+    {
+      "detail": "artifact `outputs/reports/next_mega_portfolio_stage5_antiregression.md` hash matches `46fa6a07dcef3bc20383b03e45357c71c2ba532491d78e013f2a737a529f1982`",
+      "name": "artifact_hash::next_mega_antiregression",
+      "status": "PASS"
+    },
+    {
+      "detail": "artifact `outputs/reports/next_mega_portfolio_decision_memo.md` hash matches `4a9c3d76e31a6906531ca0a75963a64383dfd9b8eb1b9eab23228e9409731597`",
+      "name": "artifact_hash::next_mega_decision_memo",
+      "status": "PASS"
+    },
+    {
+      "detail": "artifact `outputs/reports/next_mega_portfolio_gate_report.md` hash matches `d107e363f89d91be59ba5ad378e51b42d1a337badfdc9b0a103549fe26db862d`",
+      "name": "artifact_hash::next_mega_gate_report",
+      "status": "PASS"
+    },
+    {
+      "detail": "artifact `outputs/reports/next_mega_portfolio_stage4_holdout.md` hash matches `a30ef1d2a2ea9d6ad445c9548c52f9d640b9f355b796a87a8faefe8405e42f64`",
+      "name": "artifact_hash::next_mega_holdout",
+      "status": "PASS"
+    },
+    {
+      "detail": "artifact `outputs/reports/next_mega_portfolio_stage6_route_validation.md` hash matches `c662b19e17d1c3effc23058b77efb0c4765878ee6a5648e03b96ad7455371d92`",
+      "name": "artifact_hash::next_mega_route_validation",
+      "status": "PASS"
+    },
+    {
+      "detail": "artifact `outputs/reports/next_mega_portfolio_stage7_stability.md` hash matches `615d6461dfc978a4d8d8a3e438f59079e30276f7a5044cc7dd7d75ab852efd2f`",
+      "name": "artifact_hash::next_mega_stability",
+      "status": "PASS"
+    },
+    {
+      "detail": "artifact `outputs/reports/next_mega_portfolio_stage1_screening_exploratory.md` hash matches `970654a48f3d5aa20ad7c1d2cad713a0e5d7760cd769b32060fcf2a1963efecc`",
+      "name": "artifact_hash::next_mega_stage1_exploratory",
+      "status": "PASS"
+    },
+    {
+      "detail": "artifact `outputs/reports/next_mega_portfolio_stage1_screening_fruitful.md` hash matches `64e7cbe3ac8283bb8ecb88644eaac0d5bb48e763c264096af6057aeffba03914`",
+      "name": "artifact_hash::next_mega_stage1_fruitful",
+      "status": "PASS"
+    },
+    {
+      "detail": "artifact `outputs/reports/next_round_state_reconciliation.md` hash matches `bb5148f3b98a24f5784f3d426b7fb2c3bbb3a81f4c1bcc0bcbe546a51fb6c388`",
+      "name": "artifact_hash::state_reconciliation",
+      "status": "PASS"
+    }
+  ],
+  "mode": "pack",
+  "verdict": "PASS: thaw consideration allowed"
+}

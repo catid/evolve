@@ -12,7 +12,7 @@ from psmn_rl.analysis.portfolio_gate_report_loader import load_portfolio_gate_re
 from psmn_rl.utils.io import get_git_commit, get_git_dirty
 
 
-DECISION_MEMO_PATH = "outputs/reports/portfolio_decision_memo.md"
+DECISION_MEMO_PATH = "outputs/reports/next_mega_portfolio_decision_memo.md"
 GATE_REPORT_PATH = "outputs/reports/portfolio_gate_report.md"
 
 

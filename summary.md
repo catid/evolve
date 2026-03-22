@@ -24,13 +24,19 @@
   - stability: `stable_plateau`, with one holdout probe that stayed a flat-zero plateau
   - exploratory KeyCorridor track: `clearly negative`
   - final status: `round6 confirmed as active DoorKey benchmark and internal DoorKey envelope strengthened`
-- The later 50/50 portfolio campaign then re-confirmed `round6` after a broader fruitful/exploratory challenger split:
-  - forty substantive challenger runs split `20/20` fruitful vs exploratory advanced only verified `0.8889` ties
-  - no challenger survived matched fairness
-  - holdout, healthy anti-regression, route validation, and stability all stayed favorable for `round6`
+- The later 80-run next-mega portfolio saturation campaign then narrowed the current operational interpretation:
+  - eighty substantive challenger runs split `40/40` fruitful vs exploratory advanced no Stage 1 challenger
+  - holdout did not strengthen `round6` over the matched controls
+  - healthy anti-regression, route validation, and stability still passed for `round6`
   - exploratory KeyCorridor remained `clearly negative`
-  - final status: `round6 confirmed as active DoorKey benchmark and internal DoorKey benchmark state strengthened`
-- The active benchmark now also has a frozen operational frontier:
+  - final status: `benchmark/frontier state needs narrowing`
+- The accepted current state is now repaired around that narrower result:
+  - active benchmark: `round6`
+  - archived provenance anchor: `outputs/reports/frozen_benchmark_pack.json`
+  - current operational gate reference pack: `outputs/reports/round6_current_benchmark_pack.json`
+  - current gate-repair memo: [next_round_gate_repair.md](outputs/reports/next_round_gate_repair.md)
+  - current decision reference: [next_mega_portfolio_decision_memo.md](outputs/reports/next_mega_portfolio_decision_memo.md)
+- The active benchmark now also has a narrowed operational frontier:
   - active benchmark: `round6`
   - default bounded restart prior: `round7`
   - replay-validated alternate: `round10`
@@ -54,7 +60,7 @@
   - retry-block KL learner-state `SARE` mean must beat `0.3125` on `47/53/59`
   - retry-block KL learner-state `SARE` must at least match same-block KL learner-state `single_expert`
   - combined DoorKey KL learner-state `SARE` mean must stay at or above `0.7122`
-- Baseline and gate artifacts: [frozen_claim_envelope.md](outputs/reports/frozen_claim_envelope.md), [frozen_benchmark_pack.md](outputs/reports/frozen_benchmark_pack.md), [frozen_benchmark_pack_validation.md](outputs/reports/frozen_benchmark_pack_validation.md), [claim_gate_pack_dry_run.md](outputs/reports/claim_gate_pack_dry_run.md), and [freeze_hardening_operational_memo.md](outputs/reports/freeze_hardening_operational_memo.md).
+- Baseline and gate artifacts: [frozen_claim_envelope.md](outputs/reports/frozen_claim_envelope.md), [frozen_benchmark_pack.md](outputs/reports/frozen_benchmark_pack.md), [frozen_benchmark_pack_validation.md](outputs/reports/frozen_benchmark_pack_validation.md), [round6_current_benchmark_pack.md](outputs/reports/round6_current_benchmark_pack.md), [round6_current_benchmark_pack_validation.md](outputs/reports/round6_current_benchmark_pack_validation.md), [next_round_gate_repair.md](outputs/reports/next_round_gate_repair.md), and [freeze_hardening_operational_memo.md](outputs/reports/freeze_hardening_operational_memo.md).
 - Gate-cleared candidate artifacts: [long_campaign_candidate_pack.json](outputs/reports/long_campaign_candidate_pack.json), [long_campaign_gate_report.md](outputs/reports/long_campaign_gate_report.md), and [long_campaign_decision_memo.md](outputs/reports/long_campaign_decision_memo.md).
 - Post-pass qualification artifacts: [post_pass_stage1_fresh_blocks.md](outputs/reports/post_pass_stage1_fresh_blocks.md), [post_pass_stage2_full_fairness.md](outputs/reports/post_pass_stage2_full_fairness.md), [post_pass_stage3_route_validation.md](outputs/reports/post_pass_stage3_route_validation.md), [post_pass_stage4_longitudinal_stability.md](outputs/reports/post_pass_stage4_longitudinal_stability.md), [post_pass_successor_pack_draft.md](outputs/reports/post_pass_successor_pack_draft.md), [post_pass_gate_report.md](outputs/reports/post_pass_gate_report.md), and [post_pass_canonization_decision_memo.md](outputs/reports/post_pass_canonization_decision_memo.md).
 - Hard-block canonization artifacts: [canonization_campaign_registration.md](outputs/reports/canonization_campaign_registration.md), [canonization_stage2_hard_block_screening.md](outputs/reports/canonization_stage2_hard_block_screening.md), [canonization_stage3_hard_block_fairness.md](outputs/reports/canonization_stage3_hard_block_fairness.md), [canonization_gate_report.md](outputs/reports/canonization_gate_report.md), and [canonization_decision_memo.md](outputs/reports/canonization_decision_memo.md).

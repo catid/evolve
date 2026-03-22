@@ -1,0 +1,298 @@
+extends: ../lss_next_mega_portfolio_campaign/campaign.yaml
+name: lss_next_round_campaign
+
+current_decision_memo: outputs/reports/next_mega_portfolio_decision_memo.md
+frozen_pack: outputs/reports/round6_current_benchmark_pack.json
+current_claim_manifest: configs/claims/doorkey_round6_current_claim.yaml
+current_gate_reference_pack: outputs/reports/round6_current_benchmark_pack.json
+current_gate_reference_pack_markdown: outputs/reports/round6_current_benchmark_pack.md
+current_gate_reference_validation: outputs/reports/round6_current_benchmark_pack_validation.md
+current_gate_reference_validation_json: outputs/reports/round6_current_benchmark_pack_validation.json
+current_claim_ledger_snapshot: outputs/reports/claim_ledger_round6_current.md
+
+selection:
+  stage1_top_k: 16
+  stage1_fruitful_top_k: 4
+  stage1_exploratory_top_k: 4
+  stage2_top_k: 4
+
+stage_roots:
+  stage1_screening: outputs/experiments/lss_next_round_campaign/stage2_screening
+  stage2_verification_a: outputs/experiments/lss_next_round_campaign/stage3_verification_a
+  stage2_verification_b: outputs/experiments/lss_next_round_campaign/stage3_verification_b
+  stage2_fairness: outputs/experiments/lss_next_round_campaign/stage4_fairness
+  stage3_holdout: outputs/experiments/lss_next_round_campaign/stage5_holdout
+  stage4_antiregression: outputs/experiments/lss_next_round_campaign/stage6_antiregression
+  stage7_pack: outputs/experiments/lss_next_round_campaign/stage10_pack
+  stage8_exploratory: outputs/experiments/lss_next_round_campaign/stage9_exploratory
+
+reports:
+  state_reconciliation: outputs/reports/next_round_state_reconciliation.md
+  registration: outputs/reports/next_round_campaign_registration.md
+  baseline_sync: outputs/reports/next_round_baseline_sync.md
+  baseline_sync_csv: outputs/reports/next_round_baseline_sync.csv
+  baseline_sync_json: outputs/reports/next_round_baseline_sync.json
+  stage1_report: outputs/reports/next_round_stage2_screening_raw.md
+  stage1_csv: outputs/reports/next_round_stage2_screening.csv
+  stage1_raw_json: outputs/reports/next_round_stage2_screening_raw.json
+  stage1_json: outputs/reports/next_round_stage2_screening.json
+  stage1_fruitful_report: outputs/reports/next_round_stage2_screening_exploit.md
+  stage1_fruitful_json: outputs/reports/next_round_stage2_screening_exploit.json
+  stage1_exploratory_report: outputs/reports/next_round_stage2_screening_explore.md
+  stage1_exploratory_json: outputs/reports/next_round_stage2_screening_explore.json
+  stage2_verification_report: outputs/reports/next_round_stage3_verification.md
+  stage2_verification_csv: outputs/reports/next_round_stage3_verification.csv
+  stage2_verification_json: outputs/reports/next_round_stage3_verification.json
+  stage2_report: outputs/reports/next_round_stage4_fairness.md
+  stage2_csv: outputs/reports/next_round_stage4_fairness.csv
+  stage2_json: outputs/reports/next_round_stage4_fairness.json
+  stage3_report: outputs/reports/next_round_stage5_holdout.md
+  stage3_csv: outputs/reports/next_round_stage5_holdout.csv
+  stage3_json: outputs/reports/next_round_stage5_holdout.json
+  stage4_report: outputs/reports/next_round_stage6_antiregression.md
+  stage4_csv: outputs/reports/next_round_stage6_antiregression.csv
+  stage4_json: outputs/reports/next_round_stage6_antiregression.json
+  route_raw_dir: outputs/reports/next_round_stage7_route_raw
+  stage5_report: outputs/reports/next_round_stage7_route_validation.md
+  stage5_csv: outputs/reports/next_round_stage7_route_validation.csv
+  stage5_json: outputs/reports/next_round_stage7_route_validation.json
+  stage6_report: outputs/reports/next_round_stage8_stability.md
+  stage6_csv: outputs/reports/next_round_stage8_stability.csv
+  stage6_json: outputs/reports/next_round_stage8_stability.json
+  stage8_report: outputs/reports/next_round_stage9_exploratory_transfer.md
+  stage8_csv: outputs/reports/next_round_stage9_exploratory_transfer.csv
+  stage8_json: outputs/reports/next_round_stage9_exploratory_transfer.json
+  candidate_summary_markdown: outputs/reports/next_round_candidate_summary.md
+  candidate_metrics_json: outputs/reports/next_round_candidate_metrics.json
+  candidate_combined_markdown: outputs/reports/next_round_candidate_combined_report.md
+  candidate_combined_csv: outputs/reports/next_round_candidate_combined_report.csv
+  candidate_retry_markdown: outputs/reports/next_round_candidate_retry_report.md
+  candidate_retry_csv: outputs/reports/next_round_candidate_retry_report.csv
+  candidate_pack_json: outputs/reports/next_round_candidate_pack.json
+  gate_report_markdown: outputs/reports/next_round_gate_report.md
+  gate_report_json: outputs/reports/next_round_gate_report.json
+  decision_memo: outputs/reports/next_round_decision_memo.md
+
+registration_groups:
+  exploit:
+    - label: frontier_prior_challengers
+      note: closest measured near-neighbors around round count and mild smoothing, targeted at the repeated 0.9000 parity bucket
+      candidates:
+        - round7
+        - round8
+        - round9
+        - round10
+        - round11
+        - round12
+        - round7_temp_095
+        - round10_temp_095
+    - label: hard_block_parity_breakers
+      note: post-unlock and mixed-weight variants aimed directly at the late-collapse blocker family
+      candidates:
+        - round7_post_unlock_x5
+        - round10_post_unlock_x5
+        - round12_post_unlock_x5
+        - round10_post_unlock_x4_dis025
+        - round12_post_unlock_x4_dis025
+        - round10_post_unlock_x5_dis025
+        - round12_post_unlock_x5_dis025
+        - round10_temp095_post5
+    - label: restart_policy_exploitation
+      note: explicit re-check of the live restart schedule against the hold-only and legacy base-restart priors
+      candidates:
+        - round5
+        - post_unlock_weighted
+    - label: candidate_selection_exploit_lane
+      note: selection rules that could turn repeated raw ties into a reproducible post-control edge without changing the underlying family
+      candidates:
+        - select_round7_final
+        - select_round10_final
+        - select_round7_temp095
+        - select_round10_temp095
+        - select_round7_post5
+        - select_round10_mix025
+  explore:
+    - label: detached_warmup_terminal_supervision
+      note: bounded warm-up and terminal-credit variants testing whether a more depth-agnostic operator helps
+      candidates:
+        - round7_warm1_last_step
+        - round10_warm1_last_step
+        - round12_warm1_last_step
+        - round10_warm2_last_step
+        - round12_warm2_last_step
+    - label: stochastic_credit_horizon
+      note: explicit last-step versus last-two-step mixtures to test recursive credit assignment bottlenecks
+      candidates:
+        - round7_stoch50_last_two
+        - round10_stoch50_last_two
+        - round12_stoch50_last_two
+        - round10_stoch25_last_two
+        - round10_stoch75_last_two
+    - label: settling_diagnostics
+      note: settling-aware selection proxies on the most plausible warm-up and stochastic lineages
+      candidates:
+        - settling_round7_last_step
+        - settling_round10_last_step
+        - settling_round10_last_two
+        - settling_round10_stoch50
+    - label: confidence_disagreement_shaping
+      note: confidence-weighted KL with and without mild smoothing, targeted at the remaining parity cluster
+      candidates:
+        - round7_conf_post4
+        - round10_conf_post4
+        - round12_conf_post4
+        - round10_conf_temp095_post4
+        - round12_conf_temp095_post4
+    - label: replay_cap_bridge_revisit
+      note: fair-shot revisit of previously weak replay and bridge ideas under tighter candidate selection
+      candidates:
+        - round7_phase_balanced_4096
+        - round10_phase_balanced_4096
+        - round10_cap_balanced_4096
+        - round10_carry3_post5
+        - round10_door3_post5
+
+seed_block_rationale:
+  dev:
+    prospective_c/prospective_d/prospective_e/prospective_f cover the known parity bucket, the late-collapse blocker, and one broader stress lane used for selection.
+  holdout:
+    prospective_g/prospective_h/prospective_i/prospective_j stay out of Stage 2 selection and test whether any candidate generalizes beyond the dev blocker surface.
+  healthy:
+    original/fresh/fresh_extra/fresh_final preserve the known healthy DoorKey behavior that `round6` must not break to look better.
+  hard_block:
+    prospective_c/193, prospective_f/233, prospective_h/269, and prospective_h/277 are the measured blocker quartet carried forward from the weakness dossier and triage stack.
+  route_and_stability:
+    dev, holdout, healthy, and hard-block seeds are all retained in route/stability so any surviving story has to stay routed and non-brittle across the full narrowed state.
+
+unsupported_directions:
+  - The current learner-state supervision and evaluation surface does not expose an independent test-time recursion-depth override, so the train-shallow/test-deep idea is approximated here with settling-aware and late-round proxy lanes rather than a fake unsupported knob.
+
+candidate_subset:
+  - round7
+  - round8
+  - round9
+  - round10
+  - round11
+  - round12
+  - round7_temp_095
+  - round10_temp_095
+  - round7_post_unlock_x5
+  - round10_post_unlock_x5
+  - round12_post_unlock_x5
+  - round10_post_unlock_x4_dis025
+  - round12_post_unlock_x4_dis025
+  - round10_post_unlock_x5_dis025
+  - round12_post_unlock_x5_dis025
+  - round10_temp095_post5
+  - round5
+  - post_unlock_weighted
+  - select_round7_final
+  - select_round10_final
+  - select_round7_temp095
+  - select_round10_temp095
+  - select_round7_post5
+  - select_round10_mix025
+  - round7_warm1_last_step
+  - round10_warm1_last_step
+  - round12_warm1_last_step
+  - round10_warm2_last_step
+  - round12_warm2_last_step
+  - round7_stoch50_last_two
+  - round10_stoch50_last_two
+  - round12_stoch50_last_two
+  - round10_stoch25_last_two
+  - round10_stoch75_last_two
+  - settling_round7_last_step
+  - settling_round10_last_step
+  - settling_round10_last_two
+  - settling_round10_stoch50
+  - round7_conf_post4
+  - round10_conf_post4
+  - round12_conf_post4
+  - round10_conf_temp095_post4
+  - round12_conf_temp095_post4
+  - round7_phase_balanced_4096
+  - round10_phase_balanced_4096
+  - round10_cap_balanced_4096
+  - round10_carry3_post5
+  - round10_door3_post5
+
+candidates:
+  round10_warm2_last_step:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: exploratory
+    family: rsm_detached_warmup_final_step
+    direction: warmup_two_final_step_only
+    description: two warm-up rounds before terminal-only KL on the round10 lineage
+    overrides:
+      loop:
+        rounds: 10
+        warmup_rounds: 2
+      student:
+        temporal_credit_mode: last_step
+  round12_warm2_last_step:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: exploratory
+    family: rsm_detached_warmup_final_step
+    direction: warmup_two_final_step_only
+    description: two warm-up rounds before terminal-only KL on the round12 lineage
+    overrides:
+      loop:
+        rounds: 12
+        warmup_rounds: 2
+      student:
+        temporal_credit_mode: last_step
+  round10_stoch25_last_two:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: exploratory
+    family: rsm_stochastic_credit_horizon
+    direction: stochastic_last_step_last_two_mix_025
+    description: stochastic credit horizon with a light penultimate-step keep probability on the round10 lineage
+    overrides:
+      loop:
+        rounds: 10
+      student:
+        temporal_credit_mode: stochastic_last_two
+        temporal_penultimate_keep_prob: 0.25
+  round10_stoch75_last_two:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: exploratory
+    family: rsm_stochastic_credit_horizon
+    direction: stochastic_last_step_last_two_mix_075
+    description: stochastic credit horizon with a heavy penultimate-step keep probability on the round10 lineage
+    overrides:
+      loop:
+        rounds: 10
+      student:
+        temporal_credit_mode: stochastic_last_two
+        temporal_penultimate_keep_prob: 0.75
+  round10_conf_temp095_post4:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: exploratory
+    family: confidence_weighting
+    direction: confidence_weighting_plus_smoothing
+    description: mild teacher smoothing plus confidence-weighted KL on the round10 post-unlock lane
+    overrides:
+      loop:
+        rounds: 10
+      teacher:
+        temperature: 0.95
+      student:
+        weighting: teacher_confidence
+        phase_weights:
+          post_unlock: 4.0
+  round12_conf_temp095_post4:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: exploratory
+    family: confidence_weighting
+    direction: confidence_weighting_plus_smoothing
+    description: mild teacher smoothing plus confidence-weighted KL on the round12 post-unlock lane
+    overrides:
+      loop:
+        rounds: 12
+      teacher:
+        temperature: 0.95
+      student:
+        weighting: teacher_confidence
+        phase_weights:
+          post_unlock: 4.0

@@ -9,8 +9,9 @@ from psmn_rl.analysis.lss_post_pass_campaign import _write_json
 from psmn_rl.analysis.portfolio_frontier_contract_loader import FrontierContract, load_frontier_contract
 from psmn_rl.utils.io import get_git_commit, get_git_dirty
 
-CURRENT_DECISION_REPORT = "outputs/reports/portfolio_decision_memo.md"
+CURRENT_DECISION_REPORT = "outputs/reports/next_mega_portfolio_decision_memo.md"
 CURRENT_GATE_REPORT = "outputs/reports/portfolio_gate_report.md"
+CURRENT_GATE_REPAIR_REPORT = "outputs/reports/next_round_gate_repair.md"
 FRONTIER_CONTRACT_REPORT = "outputs/reports/portfolio_frontier_contract.json"
 FRONTIER_GUARD_REPORT = "outputs/reports/portfolio_frontier_guard_report.md"
 FRONTIER_GUARD_WORKFLOW_CONTRACT_REPORT = "outputs/reports/portfolio_frontier_guard_workflow_contract.md"
@@ -19,7 +20,7 @@ ACTIVE_STATE_DOCTOR_REPORT = "outputs/reports/portfolio_active_state_doctor.md"
 OPERATIONAL_STATE_REPORT = "outputs/reports/portfolio_operational_state.md"
 SEED_PACK_REPORT = "outputs/reports/portfolio_seed_pack.json"
 SEED_PACK_DOCTOR_REPORT = "outputs/reports/portfolio_seed_pack_doctor.md"
-CLAIM_LEDGER_PORTFOLIO_ROW = "50/50 portfolio campaign"
+CLAIM_LEDGER_PORTFOLIO_ROW = "80-run next-mega portfolio campaign"
 
 
 @dataclass(frozen=True)
@@ -41,6 +42,7 @@ def build_expectations(contract: FrontierContract) -> tuple[FileExpectation, ...
                 active_pack,
                 CURRENT_DECISION_REPORT,
                 CURRENT_GATE_REPORT,
+                CURRENT_GATE_REPAIR_REPORT,
                 FRONTIER_CONTRACT_REPORT,
                 FRONTIER_GUARD_REPORT,
                 FRONTIER_GUARD_WORKFLOW_CONTRACT_REPORT,
@@ -59,6 +61,7 @@ def build_expectations(contract: FrontierContract) -> tuple[FileExpectation, ...
                 round6,
                 active_pack,
                 CURRENT_DECISION_REPORT,
+                CURRENT_GATE_REPAIR_REPORT,
                 FRONTIER_CONTRACT_REPORT,
                 FRONTIER_GUARD_REPORT,
                 FRONTIER_GUARD_WORKFLOW_CONTRACT_REPORT,
@@ -78,6 +81,7 @@ def build_expectations(contract: FrontierContract) -> tuple[FileExpectation, ...
                 active_pack,
                 CURRENT_DECISION_REPORT,
                 CURRENT_GATE_REPORT,
+                CURRENT_GATE_REPAIR_REPORT,
                 FRONTIER_GUARD_REPORT,
                 FRONTIER_GUARD_WORKFLOW_CONTRACT_REPORT,
                 ACTIVE_STATE_DOCTOR_REPORT,
@@ -94,6 +98,7 @@ def build_expectations(contract: FrontierContract) -> tuple[FileExpectation, ...
                 CLAIM_LEDGER_PORTFOLIO_ROW,
                 CURRENT_DECISION_REPORT,
                 CURRENT_GATE_REPORT,
+                CURRENT_GATE_REPAIR_REPORT,
                 "active canonical benchmark",
             ),
         ),

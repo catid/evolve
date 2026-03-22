@@ -12,6 +12,7 @@ def test_evaluate_active_state_has_expected_labels() -> None:
         "candidate_round6",
         "candidate_pack_current",
         "candidate_archived_pack_frozen",
+        "candidate_gate_reference_current",
         "candidate_eval_doorkey_external64",
         "gate_targets_current_active_pack",
         "gate_pack_mode_pass",

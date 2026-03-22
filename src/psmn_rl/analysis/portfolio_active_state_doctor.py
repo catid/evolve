@@ -14,6 +14,7 @@ from psmn_rl.utils.io import get_git_commit, get_git_dirty
 
 EXPECTED_ACTIVE_PACK = "outputs/reports/portfolio_candidate_pack.json"
 EXPECTED_ARCHIVED_PACK = "outputs/reports/frozen_benchmark_pack.json"
+EXPECTED_GATE_REFERENCE_PACK = "outputs/reports/round6_current_benchmark_pack.json"
 EXPECTED_GATE_VERDICT = "PASS: thaw consideration allowed"
 
 
@@ -39,12 +40,24 @@ def evaluate_active_state() -> dict[str, Any]:
             "status": (
                 "pass"
                 if candidate_pack.portfolio_campaign.archived_legacy_pack == EXPECTED_ARCHIVED_PACK
-                and candidate_pack.frozen_pack_reference.path == EXPECTED_ARCHIVED_PACK
                 else "fail"
             ),
             "detail": (
                 "archived_legacy_pack="
-                f"{candidate_pack.portfolio_campaign.archived_legacy_pack}, frozen_pack_reference={candidate_pack.frozen_pack_reference.path}"
+                f"{candidate_pack.portfolio_campaign.archived_legacy_pack}"
+            ),
+        },
+        {
+            "label": "candidate_gate_reference_current",
+            "status": (
+                "pass"
+                if candidate_pack.portfolio_campaign.gate_reference_pack == EXPECTED_GATE_REFERENCE_PACK
+                and candidate_pack.frozen_pack_reference.path == EXPECTED_GATE_REFERENCE_PACK
+                else "fail"
+            ),
+            "detail": (
+                "gate_reference_pack="
+                f"{candidate_pack.portfolio_campaign.gate_reference_pack}, frozen_pack_reference={candidate_pack.frozen_pack_reference.path}"
             ),
         },
         {
@@ -66,7 +79,8 @@ def evaluate_active_state() -> dict[str, Any]:
             "label": "gate_targets_current_active_pack",
             "status": (
                 "pass"
-                if gate_report.candidate_pack == EXPECTED_ACTIVE_PACK and gate_report.frozen_pack == EXPECTED_ARCHIVED_PACK
+                if gate_report.candidate_pack == EXPECTED_ACTIVE_PACK
+                and gate_report.frozen_pack == EXPECTED_GATE_REFERENCE_PACK
                 else "fail"
             ),
             "detail": f"candidate_pack={gate_report.candidate_pack}, frozen_pack={gate_report.frozen_pack}",

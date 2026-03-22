@@ -1,6 +1,6 @@
 # Portfolio Active-State Doctor
 
-- git commit: `d13fcbe063e28580d662a08c0301d6be1aae799d`
+- git commit: `251c92bc33d7b9ec5aa313dcbdd1a9c245bfa7fe`
 - git dirty: `True`
 - overall: `pass`
 
@@ -10,9 +10,10 @@
 | --- | --- | --- |
 | `candidate_round6` | `pass` | candidate_name=round6 |
 | `candidate_pack_current` | `pass` | active_canonical_pack=outputs/reports/portfolio_candidate_pack.json |
-| `candidate_archived_pack_frozen` | `pass` | archived_legacy_pack=outputs/reports/frozen_benchmark_pack.json, frozen_pack_reference=outputs/reports/frozen_benchmark_pack.json |
+| `candidate_archived_pack_frozen` | `pass` | archived_legacy_pack=outputs/reports/frozen_benchmark_pack.json |
+| `candidate_gate_reference_current` | `pass` | gate_reference_pack=outputs/reports/round6_current_benchmark_pack.json, frozen_pack_reference=outputs/reports/round6_current_benchmark_pack.json |
 | `candidate_eval_doorkey_external64` | `pass` | task=DoorKey, evaluation.task=DoorKey, path_key=external_policy_diagnostics, episodes=64 |
-| `gate_targets_current_active_pack` | `pass` | candidate_pack=outputs/reports/portfolio_candidate_pack.json, frozen_pack=outputs/reports/frozen_benchmark_pack.json |
+| `gate_targets_current_active_pack` | `pass` | candidate_pack=outputs/reports/portfolio_candidate_pack.json, frozen_pack=outputs/reports/round6_current_benchmark_pack.json |
 | `gate_pack_mode_pass` | `pass` | mode=pack, verdict=PASS: thaw consideration allowed |
 | `gate_combined_picture_pass` | `pass` | combined_picture_mean=PASS, combined_picture_failures=PASS |
 | `contract_matches_active_roles` | `pass` | active_candidate=round6, default_restart_prior=round7, replay_validated_alternate=round10 |

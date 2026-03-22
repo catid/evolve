@@ -1,0 +1,306 @@
+{
+  "authoritative_artifacts": [
+    {
+      "exists": true,
+      "key": "state_reconciliation",
+      "path": "outputs/reports/next_round_state_reconciliation.md",
+      "sha256": "bb5148f3b98a24f5784f3d426b7fb2c3bbb3a81f4c1bcc0bcbe546a51fb6c388",
+      "size_bytes": 1714
+    },
+    {
+      "exists": true,
+      "key": "baseline_sync",
+      "path": "outputs/reports/next_round_baseline_sync.md",
+      "sha256": "8ebcf0635bcb86185bc00c6daeca5183642d6a9e7e7c2963cbb1ebcf72371bd7",
+      "size_bytes": 1219
+    },
+    {
+      "exists": true,
+      "key": "claim_ledger_snapshot",
+      "path": "outputs/reports/claim_ledger_round6_current.md",
+      "sha256": "ee26c73a78b1ca070a13df98bc508e3e6480dc17b9bae3ce0ab026ce76a8100d",
+      "size_bytes": 13115
+    },
+    {
+      "exists": true,
+      "key": "next_mega_decision_memo",
+      "path": "outputs/reports/next_mega_portfolio_decision_memo.md",
+      "sha256": "4a9c3d76e31a6906531ca0a75963a64383dfd9b8eb1b9eab23228e9409731597",
+      "size_bytes": 827
+    },
+    {
+      "exists": true,
+      "key": "next_mega_gate_report",
+      "path": "outputs/reports/next_mega_portfolio_gate_report.md",
+      "sha256": "d107e363f89d91be59ba5ad378e51b42d1a337badfdc9b0a103549fe26db862d",
+      "size_bytes": 18143
+    },
+    {
+      "exists": true,
+      "key": "next_mega_stage1_fruitful",
+      "path": "outputs/reports/next_mega_portfolio_stage1_screening_fruitful.md",
+      "sha256": "64e7cbe3ac8283bb8ecb88644eaac0d5bb48e763c264096af6057aeffba03914",
+      "size_bytes": 53166
+    },
+    {
+      "exists": true,
+      "key": "next_mega_stage1_exploratory",
+      "path": "outputs/reports/next_mega_portfolio_stage1_screening_exploratory.md",
+      "sha256": "970654a48f3d5aa20ad7c1d2cad713a0e5d7760cd769b32060fcf2a1963efecc",
+      "size_bytes": 55243
+    },
+    {
+      "exists": true,
+      "key": "next_mega_holdout",
+      "path": "outputs/reports/next_mega_portfolio_stage4_holdout.md",
+      "sha256": "a30ef1d2a2ea9d6ad445c9548c52f9d640b9f355b796a87a8faefe8405e42f64",
+      "size_bytes": 3226
+    },
+    {
+      "exists": true,
+      "key": "next_mega_antiregression",
+      "path": "outputs/reports/next_mega_portfolio_stage5_antiregression.md",
+      "sha256": "46fa6a07dcef3bc20383b03e45357c71c2ba532491d78e013f2a737a529f1982",
+      "size_bytes": 3081
+    },
+    {
+      "exists": true,
+      "key": "next_mega_route_validation",
+      "path": "outputs/reports/next_mega_portfolio_stage6_route_validation.md",
+      "sha256": "c662b19e17d1c3effc23058b77efb0c4765878ee6a5648e03b96ad7455371d92",
+      "size_bytes": 661
+    },
+    {
+      "exists": true,
+      "key": "next_mega_stability",
+      "path": "outputs/reports/next_mega_portfolio_stage7_stability.md",
+      "sha256": "615d6461dfc978a4d8d8a3e438f59079e30276f7a5044cc7dd7d75ab852efd2f",
+      "size_bytes": 518
+    }
+  ],
+  "candidate_pack": {
+    "required_artifact_roles": [
+      "candidate_summary_markdown",
+      "candidate_metrics_json",
+      "combined_report_markdown",
+      "combined_report_csv",
+      "retry_block_report_markdown",
+      "retry_block_report_csv"
+    ],
+    "schema_version": 1
+  },
+  "canonical_method": {
+    "learner_state_collection": "append_all",
+    "student": "sare",
+    "supervision": "teacher_logit_kl",
+    "teacher": "flat_dense"
+  },
+  "claim": {
+    "allowed_claim_key": "bounded_teacher_guided_doorkey_sare",
+    "allowed_claim_text": "bounded teacher-guided DoorKey SARE result",
+    "disallowed_claim_keys": [
+      "ppo_only_routed_win",
+      "specifically_multi_expert_routed_advantage",
+      "cross_task_routed_advantage",
+      "keycorridor_transfer_claim"
+    ],
+    "id": "doorkey_round6_current_claim",
+    "status": "current_active_benchmark",
+    "task": "DoorKey"
+  },
+  "evaluation": {
+    "episodes": 64,
+    "path_key": "external_policy_diagnostics",
+    "path_text": "external 64-episode policy_diagnostics path",
+    "task": "DoorKey"
+  },
+  "manifest_reference": {
+    "path": "configs/claims/doorkey_round6_current_claim.yaml",
+    "required_artifact_keys": [
+      "state_reconciliation",
+      "baseline_sync",
+      "claim_ledger_snapshot",
+      "next_mega_decision_memo",
+      "next_mega_gate_report",
+      "next_mega_stage1_fruitful",
+      "next_mega_stage1_exploratory",
+      "next_mega_holdout",
+      "next_mega_antiregression",
+      "next_mega_route_validation",
+      "next_mega_stability"
+    ],
+    "sha256": "e9a141dd6d655b122a63b3504484ae4d67af9519405da134c45e3bfb3302d2c6"
+  },
+  "pack_type": "frozen_benchmark_pack",
+  "provenance": {
+    "pack_builder": "psmn_rl.analysis.benchmark_pack",
+    "sealed_source_commit": "251c92bc33d7b9ec5aa313dcbdd1a9c245bfa7fe",
+    "sealed_source_dirty": true
+  },
+  "schema_version": 1,
+  "seed_groups": {
+    "combined": {
+      "blocks": [
+        {
+          "lane": "original",
+          "seeds": [
+            7,
+            11,
+            19
+          ]
+        },
+        {
+          "lane": "fresh",
+          "seeds": [
+            23,
+            29,
+            31
+          ]
+        },
+        {
+          "lane": "fresh_extra",
+          "seeds": [
+            37,
+            41,
+            43
+          ]
+        },
+        {
+          "lane": "fresh_final",
+          "seeds": [
+            47,
+            53,
+            59
+          ]
+        }
+      ]
+    },
+    "original": {
+      "lane": "original",
+      "seeds": [
+        7,
+        11,
+        19
+      ]
+    },
+    "retry_block": {
+      "lane": "fresh_final",
+      "seeds": [
+        47,
+        53,
+        59
+      ]
+    },
+    "structured_slice": {
+      "lanes": [
+        "original",
+        "fresh",
+        "fresh_extra"
+      ],
+      "seeds": [
+        7,
+        11,
+        19,
+        23,
+        29,
+        31,
+        37,
+        41,
+        43
+      ]
+    }
+  },
+  "thaw_gate": {
+    "combined_picture": {
+      "candidate_sare_complete_seed_failures_must_be_lte": 1,
+      "candidate_sare_mean_must_be_gte": 0.7122
+    },
+    "current_expected_gate_status": "PASS: thaw consideration allowed",
+    "disallowed_claim_keys": [
+      "ppo_only_routed_win",
+      "specifically_multi_expert_routed_advantage",
+      "cross_task_routed_advantage",
+      "keycorridor_transfer_claim"
+    ],
+    "required_controls": [
+      "recovered_token_dense",
+      "kl_lss_token_dense",
+      "kl_lss_single_expert",
+      "baseline_sare"
+    ],
+    "required_evaluation": {
+      "episodes": 64,
+      "path_key": "external_policy_diagnostics",
+      "task": "DoorKey"
+    },
+    "retry_block": {
+      "candidate_sare_complete_seed_failures_must_be_lte": 1,
+      "candidate_sare_mean_must_exceed": 0.3125,
+      "candidate_sare_must_match_or_beat_same_block_single_expert": true,
+      "lane": "fresh_final",
+      "seeds": [
+        47,
+        53,
+        59
+      ]
+    }
+  },
+  "thresholds": {
+    "combined_complete_seed_failures": {
+      "baseline_sare": 12,
+      "kl_lss_sare": 1,
+      "kl_lss_single_expert": 1,
+      "kl_lss_token_dense": 4,
+      "recovered_token_dense": 5
+    },
+    "combined_means": {
+      "baseline_sare": 0.0,
+      "kl_lss_sare": 0.7122,
+      "kl_lss_single_expert": 0.6862,
+      "kl_lss_token_dense": 0.6354,
+      "recovered_token_dense": 0.5586
+    },
+    "keycorridor_transfer_means": {
+      "baseline_sare": 0.0,
+      "kl_lss_sare": 0.0,
+      "recovered_token_dense": 0.0
+    },
+    "keycorridor_transfer_status": "no_claim_transfer",
+    "retry_block_complete_seed_failures": {
+      "baseline_sare": 3,
+      "kl_lss_sare": 1,
+      "kl_lss_single_expert": 0,
+      "kl_lss_token_dense": 0,
+      "recovered_token_dense": 0
+    },
+    "retry_block_means": {
+      "baseline_sare": 0.0,
+      "kl_lss_sare": 0.3125,
+      "kl_lss_single_expert": 0.4635,
+      "kl_lss_token_dense": 1.0,
+      "recovered_token_dense": 1.0
+    }
+  },
+  "variants": {
+    "baseline_sare": {
+      "display": "baseline PPO SARE",
+      "family": "baseline"
+    },
+    "kl_lss_sare": {
+      "display": "KL learner-state SARE",
+      "family": "teacher_guided_routed"
+    },
+    "kl_lss_single_expert": {
+      "display": "KL learner-state single_expert",
+      "family": "teacher_guided_structured_control"
+    },
+    "kl_lss_token_dense": {
+      "display": "KL learner-state token_dense",
+      "family": "teacher_guided_structured_control"
+    },
+    "recovered_token_dense": {
+      "display": "recovered token_dense",
+      "family": "baseline"
+    }
+  }
+}

@@ -261,9 +261,54 @@ def _render_registration(campaign: dict[str, Any], output: Path) -> None:
         "- A family may be pruned early only if it is catastrophically below `round6` on multiple development families and the rerun confirms the failure.",
         "- No family is promoted on one lucky family group or one lucky seed.",
         "",
+    ]
+    registration_groups = campaign.get("registration_groups", {})
+    if registration_groups:
+        lines.extend(
+            [
+                "## Exact Candidate Families",
+                "",
+            ]
+        )
+        for title, groups in registration_groups.items():
+            lines.append(f"### {title}")
+            lines.append("")
+            for group in groups:
+                label = str(group.get("label", "unlabeled"))
+                note = str(group.get("note", ""))
+                candidates = [f"`{str(name)}`" for name in group.get("candidates", [])]
+                lines.append(f"- `{label}`: {', '.join(candidates)}")
+                if note:
+                    lines.append(f"  rationale: {note}")
+            lines.append("")
+    seed_block_rationale = campaign.get("seed_block_rationale", {})
+    if seed_block_rationale:
+        lines.extend(
+            [
+                "## Seed-Block Rationale",
+                "",
+            ]
+        )
+        for label, note in seed_block_rationale.items():
+            lines.append(f"- `{label}`: {note}")
+        lines.append("")
+    unsupported_directions = list(campaign.get("unsupported_directions", []))
+    if unsupported_directions:
+        lines.extend(
+            [
+                "## Explicit Omissions",
+                "",
+            ]
+        )
+        for item in unsupported_directions:
+            lines.append(f"- {item}")
+        lines.append("")
+    lines.extend(
+        [
         "## Historical Context",
         "",
-    ]
+        ]
+    )
     for path in _historical_refs(campaign):
         lines.append(f"- `{path}`")
     output.parent.mkdir(parents=True, exist_ok=True)

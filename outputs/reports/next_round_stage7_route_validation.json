@@ -1,0 +1,60 @@
+{
+  "best_candidate": null,
+  "challenger_pass": false,
+  "challenger_routes": [],
+  "round6_pass": true,
+  "round6_routes": [
+    {
+      "baseline_active_compute": 0.5,
+      "baseline_path_entropy": 0.7727307166372027,
+      "baseline_route_entropy": 1.3755062463737668,
+      "baseline_success": 1.0,
+      "case": "dev",
+      "fixed_router_drop": 1.0,
+      "lane": "prospective_d",
+      "route_randomization_drop": 1.0,
+      "seed": 197,
+      "worst_ablation_drop": 1.0,
+      "worst_ablation_expert": "1"
+    },
+    {
+      "baseline_active_compute": 0.5,
+      "baseline_path_entropy": 0.8369385775279354,
+      "baseline_route_entropy": 1.3623905314787015,
+      "baseline_success": 0.984375,
+      "case": "holdout",
+      "fixed_router_drop": 0.984375,
+      "lane": "prospective_h",
+      "route_randomization_drop": 0.984375,
+      "seed": 269,
+      "worst_ablation_drop": 0.984375,
+      "worst_ablation_expert": "0"
+    },
+    {
+      "baseline_active_compute": 0.5,
+      "baseline_path_entropy": 0.8836897036858967,
+      "baseline_route_entropy": 1.3805377710433233,
+      "baseline_success": 1.0,
+      "case": "healthy",
+      "fixed_router_drop": 1.0,
+      "lane": "fresh",
+      "route_randomization_drop": 1.0,
+      "seed": 23,
+      "worst_ablation_drop": 1.0,
+      "worst_ablation_expert": "0"
+    },
+    {
+      "baseline_active_compute": 0.5,
+      "baseline_path_entropy": 0.9775502654327743,
+      "baseline_route_entropy": 1.3758657732229123,
+      "baseline_success": 1.0,
+      "case": "hard",
+      "fixed_router_drop": 1.0,
+      "lane": "prospective_f",
+      "route_randomization_drop": 1.0,
+      "seed": 233,
+      "worst_ablation_drop": 1.0,
+      "worst_ablation_expert": "0"
+    }
+  ]
+}

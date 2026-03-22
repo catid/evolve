@@ -396,6 +396,17 @@ The current repo conclusion is still control-first, and the frozen benchmark pac
   - holdout, healthy anti-regression, route validation, and stability all stayed favorable for `round6`
   - exploratory KeyCorridor remained `clearly negative`
   - decision: `round6 confirmed as active DoorKey benchmark and internal DoorKey benchmark state strengthened`
+- The later 80-run next-mega saturation campaign then forced the narrower current reading:
+  - eighty substantive challenger runs split `40/40` fruitful vs exploratory advanced no Stage 1 challenger
+  - holdout did not strengthen `round6` over matched controls
+  - healthy anti-regression, route validation, and stability still passed
+  - exploratory KeyCorridor remained `clearly negative`
+  - decision: `benchmark/frontier state needs narrowing`
+- The accepted live repo state is now repaired around that narrower outcome:
+  - current decision reference: `outputs/reports/next_mega_portfolio_decision_memo.md`
+  - current gate report: `outputs/reports/portfolio_gate_report.md`
+  - current gate-repair memo: `outputs/reports/next_round_gate_repair.md`
+  - current gate reference pack: `outputs/reports/round6_current_benchmark_pack.json`
 - That result is still an extraction-method result, not a PPO-alone routed win.
 - The allowed current interpretation is still narrow:
   - active canonical DoorKey benchmark within the existing teacher-guided KL learner-state envelope
@@ -411,6 +422,12 @@ Canonical reports for the current phase:
 - `outputs/reports/frozen_baseline_validation.md`
 - `outputs/reports/claim_gate_dry_run.md`
 - `outputs/reports/claim_ledger.md`
+- `outputs/reports/next_round_state_reconciliation.md`
+- `outputs/reports/next_round_baseline_sync.md`
+- `outputs/reports/next_round_gate_repair.md`
+- `outputs/reports/round6_current_benchmark_pack.md`
+- `outputs/reports/round6_current_benchmark_pack.json`
+- `outputs/reports/round6_current_benchmark_pack_validation.md`
 - `outputs/reports/future_retry_template.md`
 - `outputs/reports/freeze_hardening_decision_memo.md`
 - `outputs/reports/claim_gate_conformance_report.md`

@@ -23,10 +23,20 @@ def load_campaign_config(path: str | Path) -> dict[str, Any]:
     target = Path(path)
     raw = yaml.safe_load(target.read_text(encoding="utf-8")) or {}
     extends = raw.get("extends")
-    if not extends:
-        return raw
-    base_path = Path(extends)
-    if not base_path.is_absolute():
-        base_path = target.parent / base_path
-    base = load_campaign_config(base_path)
-    return _deep_merge(base, raw)
+    if extends:
+        base_path = Path(extends)
+        if not base_path.is_absolute():
+            base_path = target.parent / base_path
+        raw = _deep_merge(load_campaign_config(base_path), raw)
+
+    candidate_subset = raw.get("candidate_subset")
+    if candidate_subset is not None:
+        candidates = raw.get("candidates", {})
+        ordered_candidates: dict[str, Any] = {}
+        missing = [str(name) for name in candidate_subset if str(name) not in candidates]
+        if missing:
+            raise KeyError(f"campaign candidate_subset references unknown candidates: {missing}")
+        for name in candidate_subset:
+            ordered_candidates[str(name)] = copy.deepcopy(candidates[str(name)])
+        raw["candidates"] = ordered_candidates
+    return raw
