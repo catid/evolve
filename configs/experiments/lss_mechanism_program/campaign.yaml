@@ -1,0 +1,192 @@
+extends: ../lss_next_round_campaign/campaign.yaml
+name: lss_mechanism_program
+
+current_decision_memo: outputs/reports/next_round_decision_memo.md
+
+decision_strings:
+  replace: challenger replaces the active benchmark
+  confirm: active benchmark confirmed and frontier clarified
+  narrow: active benchmark remains and envelope stays narrow
+  narrow_state: benchmark/frontier state needs narrowing
+
+selection:
+  stage1_top_k: 8
+  stage1_fruitful_top_k: 2
+  stage1_exploratory_top_k: 2
+  stage2_top_k: 2
+
+stage_roots:
+  stage1_screening: outputs/experiments/lss_mechanism_program/stageB1_screening
+  stage2_verification_a: outputs/experiments/lss_mechanism_program/stageB2_verification_a
+  stage2_verification_b: outputs/experiments/lss_mechanism_program/stageB2_verification_b
+  stage2_fairness: outputs/experiments/lss_mechanism_program/stageB3_fairness
+  stage3_holdout: outputs/experiments/lss_mechanism_program/stageB4_holdout
+  stage4_antiregression: outputs/experiments/lss_mechanism_program/stageB5_antiregression
+  stage7_pack: outputs/experiments/lss_mechanism_program/stageC1_pack
+  stage8_exploratory: outputs/experiments/lss_mechanism_program/unused_exploratory
+
+reuse_roots:
+  stage1_sare:
+    - outputs/experiments/lss_next_round_campaign/stage2_screening
+    - outputs/experiments/lss_next_mega_portfolio_campaign/stage1_screening
+    - outputs/experiments/lss_next_portfolio_campaign/stage1_screening
+    - outputs/experiments/lss_successor_stress/stage1_screening
+    - outputs/experiments/lss_successor_stress_followup/stage1_screening
+    - outputs/experiments/lss_successor_stress_extended/stage1_screening
+    - outputs/experiments/lss_successor_tiebreak/stage1_screening
+
+reports:
+  state_reconciliation: outputs/reports/mechanism_program_state_reconciliation.md
+  registration: outputs/reports/mechanism_program_registration.md
+  baseline_sync: outputs/reports/mechanism_program_baseline_sync.md
+  baseline_sync_csv: outputs/reports/mechanism_program_baseline_sync.csv
+  baseline_sync_json: outputs/reports/mechanism_program_baseline_sync.json
+  stageA1_report: outputs/reports/mechanism_stage1_round_differential.md
+  stageA1_json: outputs/reports/mechanism_stage1_round_differential.json
+  stageA2_report: outputs/reports/mechanism_stage2_phase_local.md
+  stageA2_csv: outputs/reports/mechanism_stage2_phase_local.csv
+  stageA2_json: outputs/reports/mechanism_stage2_phase_local.json
+  stageA3_report: outputs/reports/mechanism_stage3_selection_sensitivity.md
+  stageA3_json: outputs/reports/mechanism_stage3_selection_sensitivity.json
+  stageA4_report: outputs/reports/mechanism_stage4_restart_sensitivity.md
+  stageA4_json: outputs/reports/mechanism_stage4_restart_sensitivity.json
+  stageA5_report: outputs/reports/mechanism_stage5_shortlist.md
+  stageA5_json: outputs/reports/mechanism_stage5_shortlist.json
+  stage1_report: outputs/reports/mechanism_stageB1_screening_raw.md
+  stage1_csv: outputs/reports/mechanism_stageB1_screening.csv
+  stage1_raw_json: outputs/reports/mechanism_stageB1_screening_raw.json
+  stage1_json: outputs/reports/mechanism_stageB1_screening.json
+  stage1_fruitful_report: outputs/reports/mechanism_stageB1_screening_exploit.md
+  stage1_fruitful_json: outputs/reports/mechanism_stageB1_screening_exploit.json
+  stage1_exploratory_report: outputs/reports/mechanism_stageB1_screening_explore.md
+  stage1_exploratory_json: outputs/reports/mechanism_stageB1_screening_explore.json
+  stage2_verification_report: outputs/reports/mechanism_stageB2_verification.md
+  stage2_verification_csv: outputs/reports/mechanism_stageB2_verification.csv
+  stage2_verification_json: outputs/reports/mechanism_stageB2_verification.json
+  stage2_report: outputs/reports/mechanism_stageB3_fairness.md
+  stage2_csv: outputs/reports/mechanism_stageB3_fairness.csv
+  stage2_json: outputs/reports/mechanism_stageB3_fairness.json
+  stage3_report: outputs/reports/mechanism_stageB4_holdout.md
+  stage3_csv: outputs/reports/mechanism_stageB4_holdout.csv
+  stage3_json: outputs/reports/mechanism_stageB4_holdout.json
+  stage4_report: outputs/reports/mechanism_stageB5_antiregression.md
+  stage4_csv: outputs/reports/mechanism_stageB5_antiregression.csv
+  stage4_json: outputs/reports/mechanism_stageB5_antiregression.json
+  route_raw_dir: outputs/reports/mechanism_stageB6_route_raw
+  stage5_report: outputs/reports/mechanism_stageB6_route_validation.md
+  stage5_csv: outputs/reports/mechanism_stageB6_route_validation.csv
+  stage5_json: outputs/reports/mechanism_stageB6_route_validation.json
+  stage6_report: outputs/reports/mechanism_stageB6_stability.md
+  stage6_csv: outputs/reports/mechanism_stageB6_stability.csv
+  stage6_json: outputs/reports/mechanism_stageB6_stability.json
+  stage8_report: outputs/reports/mechanism_unused_exploratory_transfer.md
+  stage8_csv: outputs/reports/mechanism_unused_exploratory_transfer.csv
+  stage8_json: outputs/reports/mechanism_unused_exploratory_transfer.json
+  candidate_summary_markdown: outputs/reports/mechanism_next_candidate_summary.md
+  candidate_metrics_json: outputs/reports/mechanism_next_candidate_metrics.json
+  candidate_combined_markdown: outputs/reports/mechanism_next_candidate_combined_report.md
+  candidate_combined_csv: outputs/reports/mechanism_next_candidate_combined_report.csv
+  candidate_retry_markdown: outputs/reports/mechanism_next_candidate_retry_report.md
+  candidate_retry_csv: outputs/reports/mechanism_next_candidate_retry_report.csv
+  candidate_pack_json: outputs/reports/mechanism_next_candidate_pack.json
+  gate_report_markdown: outputs/reports/mechanism_next_gate_report.md
+  gate_report_json: outputs/reports/mechanism_next_gate_report.json
+  decision_memo: outputs/reports/mechanism_next_decision_memo.md
+
+analysis:
+  source_stage1_root: outputs/experiments/lss_next_round_campaign/stage2_screening
+  source_stage1_exploit_json: outputs/reports/next_round_stage2_screening_exploit.json
+  source_stage1_explore_json: outputs/reports/next_round_stage2_screening_explore.json
+  differential_candidates:
+    - round10
+    - round10_conf_post4
+    - round12_warm1_last_step
+  phase_candidate: round10_conf_post4
+  phase_trace_episodes: 16
+  phase_max_steps: 256
+  phase_cases:
+    - lane: prospective_c
+      seed: 193
+      note: teacher_locked_prekey_deadlock
+    - lane: prospective_f
+      seed: 241
+      note: routed_success_vs_control_failure
+  restart_candidates:
+    - round5
+    - round7
+    - round10
+    - round11
+    - round12
+  shortlist_max_directions: 6
+
+registration_groups:
+  exploit:
+    - label: frontier_prior_rechecks
+      note: cheapest and strongest near-neighbor priors that already reach the parity bucket, re-screened after the mechanism analysis narrows the real question to convergence, breadth, and runbook ordering
+      candidates:
+        - round7
+        - round10
+        - round11
+        - round12
+    - label: postunlock_weighting_and_smoothing
+      note: direct exploitation of the measured post-unlock sensitivity without adding a new architecture or extraction family
+      candidates:
+        - round10_post_unlock_x5
+        - round12_post_unlock_x5
+        - round10_post_unlock_x4_dis025
+        - round12_post_unlock_x4_dis025
+        - round10_post_unlock_x5_dis025
+        - round10_temp095_post5
+    - label: selection_tiebreak_lane
+      note: explicit test of whether robust checkpoint selection can turn repeated raw ties into a reproducible benchmark edge
+      candidates:
+        - select_round10_final
+        - select_round10_mix025
+  explore:
+    - label: confidence_weighted_followons
+      note: mechanism-driven follow-on to the teacher-lock finding on the hard block, using bounded confidence shaping rather than more of the broad search
+      candidates:
+        - round7_conf_post4
+        - round10_conf_post4
+        - round12_conf_post4
+        - round10_conf_temp095_post4
+        - round12_conf_temp095_post4
+    - label: warmup_and_settling_bracket
+      note: narrower recursive-operator probes retained only because they hit parity once; the question now is whether one-step warm-up or settle-aware selection can keep the tie without the heavy convergence tax
+      candidates:
+        - round10_warm1_last_step
+        - round12_warm1_last_step
+        - round12_warm2_last_step
+        - settling_round10_last_step
+        - settling_round10_last_two
+    - label: bridge_revisit
+      note: small replay/bridge revisit retained only for the two non-catastrophic lines that re-entered the parity bucket
+      candidates:
+        - round10_carry3_post5
+        - round10_door3_post5
+
+candidate_subset:
+  - round7
+  - round10
+  - round11
+  - round12
+  - round10_post_unlock_x5
+  - round12_post_unlock_x5
+  - round10_post_unlock_x4_dis025
+  - round12_post_unlock_x4_dis025
+  - round10_post_unlock_x5_dis025
+  - round10_temp095_post5
+  - select_round10_final
+  - select_round10_mix025
+  - round7_conf_post4
+  - round10_conf_post4
+  - round12_conf_post4
+  - round10_conf_temp095_post4
+  - round12_conf_temp095_post4
+  - round10_warm1_last_step
+  - round12_warm1_last_step
+  - round12_warm2_last_step
+  - settling_round10_last_step
+  - settling_round10_last_two
+  - round10_carry3_post5
+  - round10_door3_post5

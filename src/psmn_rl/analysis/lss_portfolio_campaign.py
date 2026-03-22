@@ -64,6 +64,11 @@ def _optional_json(path: str | Path | None) -> dict[str, Any]:
 
 
 def _decision_strings(campaign: dict[str, Any]) -> dict[str, str]:
+    overrides = campaign.get("decision_strings")
+    if isinstance(overrides, dict):
+        required = {"replace", "confirm", "narrow", "narrow_state"}
+        if required.issubset(overrides):
+            return {key: str(overrides[key]) for key in required}
     if bool(campaign.get("generic_decision_language")):
         return {
             "replace": "challenger replaces the active benchmark",

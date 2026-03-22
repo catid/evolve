@@ -175,6 +175,38 @@ def test_decision_status_supports_generic_next_portfolio_language() -> None:
     )
 
 
+def test_decision_status_supports_explicit_label_overrides() -> None:
+    campaign = {
+        "current_canonical_name": "round6",
+        "decision_strings": {
+            "replace": "challenger replaces the active benchmark",
+            "confirm": "active benchmark confirmed and frontier clarified",
+            "narrow": "active benchmark remains and envelope stays narrow",
+            "narrow_state": "benchmark/frontier state needs narrowing",
+        },
+        "selection": {
+            "pack_gate_required_verdict": "PASS: thaw consideration allowed",
+            "control_eps": 0.02,
+        },
+    }
+    holdout = {
+        "best_candidate": None,
+        "round6_summary": {"sare_mean": 0.90, "token_mean": 0.89, "single_mean": 0.89},
+    }
+    anti_regression = {
+        "challenger_pass": False,
+        "round6_summary": {"sare_mean": 1.00, "token_mean": 0.89, "single_mean": 0.89},
+    }
+    route = {"round6_pass": True, "challenger_pass": False}
+    stability = {"round6_pass": True, "challenger_pass": False}
+    exploratory = {"overall_boundary": "clearly negative"}
+    gate_payload = {"verdict": "PASS: thaw consideration allowed"}
+    assert (
+        _decision_status(campaign, holdout, anti_regression, route, stability, exploratory, gate_payload)
+        == "active benchmark confirmed and frontier clarified"
+    )
+
+
 def test_synthetic_control_rows_reconstruct_token_and_single_scores() -> None:
     sare_rows = [
         {
