@@ -103,6 +103,16 @@ def _stage1_sort_key(row: dict[str, Any]) -> tuple[float, float, float, float]:
     )
 
 
+def _stage1_candidate_pass(campaign: dict[str, Any], round6: dict[str, Any], row: dict[str, Any]) -> bool:
+    if bool(row.get("incomplete")):
+        return False
+    if _float(row["candidate_failures"]) > _float(round6.get("sare_failures", 0.0)):
+        return False
+    return _float(row["candidate_mean"]) >= _float(round6.get("sare_mean", 0.0)) + _float(
+        campaign["selection"]["min_dev_gain"]
+    )
+
+
 def _stage1_reason(campaign: dict[str, Any], round6: dict[str, Any], row: dict[str, Any], selected: set[str]) -> str:
     if str(row["candidate"]) in selected:
         return "advance"
@@ -479,6 +489,7 @@ def _render_stage1_screening(campaign: dict[str, Any]) -> None:
         payload["observed_dev_specs"] = observed_specs.get(str(payload["candidate"]), 0)
         payload["expected_dev_specs"] = expected_dev_specs
         payload["incomplete"] = payload["observed_dev_specs"] < expected_dev_specs
+        payload["stage1_pass"] = _stage1_candidate_pass(campaign, round6, payload)
         selected_rows.append(payload)
     selected_by_track, selected = _selected_stage1_candidates(campaign, selected_rows)
     selected_set = set(selected)

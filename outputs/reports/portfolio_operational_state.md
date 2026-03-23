@@ -4,6 +4,7 @@
 - git dirty: `True`
 - active candidate: `round6`
 - active candidate pack: `outputs/reports/portfolio_candidate_pack.json`
+- live gate reference pack: `outputs/reports/round6_current_benchmark_pack.json`
 - archived frozen pack: `outputs/reports/frozen_benchmark_pack.json`
 - gate verdict: `PASS: thaw consideration allowed`
 - default restart prior: `round7`

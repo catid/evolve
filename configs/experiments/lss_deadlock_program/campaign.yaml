@@ -1,0 +1,406 @@
+extends: ../lss_next_round_campaign/campaign.yaml
+name: lss_deadlock_program
+
+current_decision_memo: outputs/reports/mechanism_next_decision_memo.md
+
+decision_strings:
+  replace: challenger replaces the active benchmark
+  confirm: active benchmark confirmed and deadlock frontier clarified
+  narrow: active benchmark remains and the frontier narrows further
+  narrow_state: benchmark state itself needs narrowing
+
+selection:
+  min_dev_gain: 0.01
+
+stage_roots:
+  stage1_screening: outputs/experiments/lss_deadlock_program/stageB1_screening
+  stage2_verification_a: outputs/experiments/lss_deadlock_program/stageB2_verification_a
+  stage2_verification_b: outputs/experiments/lss_deadlock_program/stageB2_verification_b
+  stage2_fairness: outputs/experiments/lss_deadlock_program/stageB3_fairness
+  stage3_holdout: outputs/experiments/lss_deadlock_program/stageB4_holdout
+  stage4_antiregression: outputs/experiments/lss_deadlock_program/stageB5_antiregression
+  stage7_pack: outputs/experiments/lss_deadlock_program/stageC1_pack
+  stage8_exploratory: outputs/experiments/lss_deadlock_program/unused_exploratory
+
+reuse_roots:
+  stage1_sare:
+    - outputs/experiments/lss_successor_migration/stage1_screening
+    - outputs/experiments/lss_successor_mega_league/stage1_screening
+    - outputs/experiments/lss_mechanism_program/stageB1_screening
+    - outputs/experiments/lss_next_round_campaign/stage2_screening
+    - outputs/experiments/lss_next_mega_portfolio_campaign/stage1_screening
+    - outputs/experiments/lss_next_portfolio_campaign/stage1_screening
+    - outputs/experiments/lss_successor_stress/stage1_screening
+    - outputs/experiments/lss_successor_stress_followup/stage1_screening
+    - outputs/experiments/lss_successor_stress_extended/stage1_screening
+    - outputs/experiments/lss_successor_tiebreak/stage1_screening
+
+blocks:
+  dev:
+    - lane: prospective_c
+      seeds: [181, 191, 193]
+    - lane: prospective_f
+      seeds: [233, 239, 241]
+  holdout:
+    - lane: prospective_g
+      seeds: [251, 257, 263]
+    - lane: prospective_i
+      seeds: [281, 283, 293]
+  healthy:
+    - lane: original
+      seeds: [7, 11, 19]
+    - lane: fresh
+      seeds: [23, 29, 31]
+  hard_seed:
+    - lane: prospective_c
+      seeds: [193]
+    - lane: prospective_g
+      seeds: [251]
+    - lane: prospective_i
+      seeds: [283]
+
+route_cases:
+  dev:
+    lane: prospective_f
+    seed: 241
+    stage_key: stage1_screening
+  holdout:
+    lane: prospective_g
+    seed: 257
+    stage_key: stage3_holdout
+  healthy:
+    lane: fresh
+    seed: 23
+    stage_key: stage4_antiregression
+
+stability_cases:
+  dev:
+    lane: prospective_c
+    seed: 193
+    stage_key: stage1_screening
+  holdout:
+    lane: prospective_i
+    seed: 283
+    stage_key: stage3_holdout
+  healthy:
+    lane: original
+    seed: 11
+    stage_key: stage4_antiregression
+
+reports:
+  state_reconciliation: outputs/reports/deadlock_program_state_reconciliation.md
+  baseline_sync: outputs/reports/deadlock_program_baseline_sync.md
+  baseline_sync_csv: outputs/reports/deadlock_program_baseline_sync.csv
+  baseline_sync_json: outputs/reports/deadlock_program_baseline_sync.json
+  family_definition: outputs/reports/deadlock_family_definition.md
+  casebook_report: outputs/reports/deadlock_casebook.md
+  casebook_csv: outputs/reports/deadlock_casebook.csv
+  casebook_json: outputs/reports/deadlock_casebook.json
+  shortlist_report: outputs/reports/deadlock_mechanism_shortlist.md
+  shortlist_json: outputs/reports/deadlock_mechanism_shortlist.json
+  stage1_report: outputs/reports/deadlock_stageB1_screening_raw.md
+  stage1_csv: outputs/reports/deadlock_stageB1_screening.csv
+  stage1_raw_json: outputs/reports/deadlock_stageB1_screening_raw.json
+  stage1_json: outputs/reports/deadlock_stageB1_screening.json
+  stage1_fruitful_report: outputs/reports/deadlock_stageB1_screening_exploit.md
+  stage1_fruitful_json: outputs/reports/deadlock_stageB1_screening_exploit.json
+  stage1_exploratory_report: outputs/reports/deadlock_stageB1_screening_explore.md
+  stage1_exploratory_json: outputs/reports/deadlock_stageB1_screening_explore.json
+  stage2_verification_report: outputs/reports/deadlock_stageB2_verification.md
+  stage2_verification_csv: outputs/reports/deadlock_stageB2_verification.csv
+  stage2_verification_json: outputs/reports/deadlock_stageB2_verification.json
+  stage2_report: outputs/reports/deadlock_stageB3_fairness.md
+  stage2_csv: outputs/reports/deadlock_stageB3_fairness.csv
+  stage2_json: outputs/reports/deadlock_stageB3_fairness.json
+  stage3_report: outputs/reports/deadlock_stageB4_holdout.md
+  stage3_csv: outputs/reports/deadlock_stageB4_holdout.csv
+  stage3_json: outputs/reports/deadlock_stageB4_holdout.json
+  stage4_report: outputs/reports/deadlock_stageB5_antiregression.md
+  stage4_csv: outputs/reports/deadlock_stageB5_antiregression.csv
+  stage4_json: outputs/reports/deadlock_stageB5_antiregression.json
+  route_raw_dir: outputs/reports/deadlock_stageB6_route_raw
+  stage5_report: outputs/reports/deadlock_stageB6_route_validation.md
+  stage5_csv: outputs/reports/deadlock_stageB6_route_validation.csv
+  stage5_json: outputs/reports/deadlock_stageB6_route_validation.json
+  stage6_report: outputs/reports/deadlock_stageB6_stability.md
+  stage6_csv: outputs/reports/deadlock_stageB6_stability.csv
+  stage6_json: outputs/reports/deadlock_stageB6_stability.json
+  stage8_report: outputs/reports/deadlock_unused_exploratory_transfer.md
+  stage8_csv: outputs/reports/deadlock_unused_exploratory_transfer.csv
+  stage8_json: outputs/reports/deadlock_unused_exploratory_transfer.json
+  candidate_summary_markdown: outputs/reports/deadlock_next_candidate_summary.md
+  candidate_metrics_json: outputs/reports/deadlock_next_candidate_metrics.json
+  candidate_combined_markdown: outputs/reports/deadlock_next_candidate_combined_report.md
+  candidate_combined_csv: outputs/reports/deadlock_next_candidate_combined_report.csv
+  candidate_retry_markdown: outputs/reports/deadlock_next_candidate_retry_report.md
+  candidate_retry_csv: outputs/reports/deadlock_next_candidate_retry_report.csv
+  candidate_pack_json: outputs/reports/deadlock_next_candidate_pack.json
+  gate_report_markdown: outputs/reports/deadlock_next_gate_report.md
+  gate_report_json: outputs/reports/deadlock_next_gate_report.json
+  decision_memo: outputs/reports/deadlock_next_decision_memo.md
+
+analysis:
+  source_stage1_root: outputs/experiments/lss_next_round_campaign/stage2_screening
+  parity_candidate: round7
+  shortlist_max_directions: 5
+  casebook_trace_episodes: 16
+  casebook_max_steps: 256
+  casebook_cases:
+    - lane: prospective_c
+      seed: 193
+      note: canonical_teacher_locked_prekey_deadlock
+    - lane: prospective_f
+      seed: 241
+      note: routed_early_phase_success_to_preserve
+    - lane: prospective_g
+      seed: 251
+      note: holdout_shared_prekey_deadlock
+    - lane: prospective_i
+      seed: 283
+      note: holdout_transient_token_escape_then_collapse
+  shortlist:
+    - label: frontier_and_selection_deadlock_probe
+      track: exploit
+      candidates:
+        - round5
+        - round7
+        - round10
+        - round11
+        - select_round10_final
+        - select_round10_mix025
+      hypothesis: strongest current priors and hard-seed-aware selection rules might recover deadlock-family breadth without changing the family contract
+      failure: ties below round6 or leaves prospective_c/193 and holdout deadlocks unchanged
+    - label: prekey_phase_weighting
+      track: exploit
+      candidates:
+        - round7_search_x4
+        - round10_search_x2
+        - round10_search_x4
+        - round10_search_x6
+        - round10_search_x4_atkey_x2
+        - round10_search_x4_temp095
+      hypothesis: explicitly upweighting search-key and at-key states can break the pre-key deadlock without sacrificing routed post-unlock competence
+      failure: either no deadlock lift or new complete-seed failures on solved routed cases
+    - label: deadlock_window_confidence_weighting
+      track: exploit
+      candidates:
+        - round7_conf_search_x4
+        - round10_conf_search_x2
+        - round10_conf_search_x4
+        - round10_conf_search_x6
+        - round10_conf_search_x4_atkey_x2
+        - round10_conf_temp095_search_x4
+      hypothesis: confidence weighting restricted to the deadlock window may encourage teacher divergence only when the routed line is over-committed to the blocking teacher policy
+      failure: remains teacher-locked on prospective_c/193 or collapses solved seeds through over-smoothing
+    - label: recursive_contract_deadlock_bracket
+      track: exploratory
+      candidates:
+        - round7_warm1_last_step
+        - round10_warm1_last_step
+        - round12_warm1_last_step
+        - round10_warm2_last_step
+        - round7_stoch50_last_two
+        - round10_stoch50_last_two
+        - round12_stoch50_last_two
+        - round10_stoch25_last_two
+      hypothesis: the deadlock may partly reflect a training-contract problem, where shorter-horizon or lightly detached credit helps learn a non-myopic transition operator in the pre-key phase
+      failure: re-enters the same parity bucket with extra convergence tax or introduces new catastrophic misses
+    - label: settling_boundary_probe
+      track: exploratory
+      candidates:
+        - round10_stoch75_last_two
+        - settling_round7_last_step
+        - settling_round10_last_step
+        - settling_round10_last_two
+      hypothesis: if deadlock escape is real but fragile, settle-aware variants should surface it as a stability/selection effect rather than as a raw-final mean change
+      failure: selection only reshuffles ties and does not produce a reproducible deadlock-family edge
+
+candidate_subset:
+  - round5
+  - round7
+  - round10
+  - round11
+  - select_round10_final
+  - select_round10_mix025
+  - round7_search_x4
+  - round10_search_x2
+  - round10_search_x4
+  - round10_search_x6
+  - round10_search_x4_atkey_x2
+  - round10_search_x4_temp095
+  - round7_conf_search_x4
+  - round10_conf_search_x2
+  - round10_conf_search_x4
+  - round10_conf_search_x6
+  - round10_conf_search_x4_atkey_x2
+  - round10_conf_temp095_search_x4
+  - round7_warm1_last_step
+  - round10_warm1_last_step
+  - round12_warm1_last_step
+  - round10_warm2_last_step
+  - round7_stoch50_last_two
+  - round10_stoch50_last_two
+  - round12_stoch50_last_two
+  - round10_stoch25_last_two
+  - round10_stoch75_last_two
+  - settling_round7_last_step
+  - settling_round10_last_step
+  - settling_round10_last_two
+
+candidates:
+  round7_search_x4:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: deadlock_phase_weighting
+    direction: prekey_search_weighting
+    description: round7 with search-key x4 on top of the round6-style post-unlock weighting
+    overrides:
+      loop:
+        rounds: 7
+      student:
+        phase_weights:
+          search_key: 4.0
+  round10_search_x2:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: deadlock_phase_weighting
+    direction: prekey_search_weighting
+    description: round10 with search-key x2
+    overrides:
+      loop:
+        rounds: 10
+      student:
+        phase_weights:
+          search_key: 2.0
+  round10_search_x4:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: deadlock_phase_weighting
+    direction: prekey_search_weighting
+    description: round10 with search-key x4
+    overrides:
+      loop:
+        rounds: 10
+      student:
+        phase_weights:
+          search_key: 4.0
+  round10_search_x6:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: deadlock_phase_weighting
+    direction: prekey_search_weighting
+    description: round10 with search-key x6
+    overrides:
+      loop:
+        rounds: 10
+      student:
+        phase_weights:
+          search_key: 6.0
+  round10_search_x4_atkey_x2:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: deadlock_phase_weighting
+    direction: prekey_search_weighting
+    description: round10 with search-key x4 and at-key x2
+    overrides:
+      loop:
+        rounds: 10
+      student:
+        phase_weights:
+          search_key: 4.0
+          at_key: 2.0
+  round10_search_x4_temp095:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: deadlock_phase_weighting
+    direction: prekey_search_weighting_plus_teacher_smoothing
+    description: round10 with search-key x4 and mild teacher smoothing
+    overrides:
+      loop:
+        rounds: 10
+      teacher:
+        temperature: 0.95
+      student:
+        phase_weights:
+          search_key: 4.0
+  round7_conf_search_x4:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: deadlock_confidence_weighting
+    direction: deadlock_window_confidence
+    description: round7 with teacher-confidence weighting and search-key x4
+    overrides:
+      loop:
+        rounds: 7
+      student:
+        weighting: teacher_confidence
+        phase_weights:
+          search_key: 4.0
+  round10_conf_search_x2:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: deadlock_confidence_weighting
+    direction: deadlock_window_confidence
+    description: round10 with teacher-confidence weighting and search-key x2
+    overrides:
+      loop:
+        rounds: 10
+      student:
+        weighting: teacher_confidence
+        phase_weights:
+          search_key: 2.0
+  round10_conf_search_x4:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: deadlock_confidence_weighting
+    direction: deadlock_window_confidence
+    description: round10 with teacher-confidence weighting and search-key x4
+    overrides:
+      loop:
+        rounds: 10
+      student:
+        weighting: teacher_confidence
+        phase_weights:
+          search_key: 4.0
+  round10_conf_search_x6:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: deadlock_confidence_weighting
+    direction: deadlock_window_confidence
+    description: round10 with teacher-confidence weighting and search-key x6
+    overrides:
+      loop:
+        rounds: 10
+      student:
+        weighting: teacher_confidence
+        phase_weights:
+          search_key: 6.0
+  round10_conf_search_x4_atkey_x2:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: deadlock_confidence_weighting
+    direction: deadlock_window_confidence
+    description: round10 with teacher-confidence weighting, search-key x4, and at-key x2
+    overrides:
+      loop:
+        rounds: 10
+      student:
+        weighting: teacher_confidence
+        phase_weights:
+          search_key: 4.0
+          at_key: 2.0
+  round10_conf_temp095_search_x4:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: deadlock_confidence_weighting
+    direction: deadlock_window_confidence_plus_teacher_smoothing
+    description: round10 with teacher-confidence weighting, search-key x4, and mild teacher smoothing
+    overrides:
+      loop:
+        rounds: 10
+      teacher:
+        temperature: 0.95
+      student:
+        weighting: teacher_confidence
+        phase_weights:
+          search_key: 4.0

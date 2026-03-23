@@ -53,3 +53,23 @@ def test_mechanism_program_campaign_reuses_next_round_and_narrows_to_targeted_su
     assert campaign["reports"]["decision_memo"] == "outputs/reports/mechanism_next_decision_memo.md"
     assert campaign["analysis"]["phase_candidate"] == "round10_conf_post4"
     assert "outputs/experiments/lss_next_round_campaign/stage2_screening" in campaign["reuse_roots"]["stage1_sare"]
+
+
+def test_deadlock_program_campaign_targets_deadlock_blocks_and_candidate_budget() -> None:
+    campaign = load_campaign_config("configs/experiments/lss_deadlock_program/campaign.yaml")
+    track_counts = Counter(str(meta["track"]) for meta in campaign["candidates"].values())
+
+    assert campaign["name"] == "lss_deadlock_program"
+    assert track_counts == {"fruitful": 18, "exploratory": 12}
+    assert len(campaign["candidates"]) == 30
+    assert campaign["current_decision_memo"] == "outputs/reports/mechanism_next_decision_memo.md"
+    assert campaign["decision_strings"]["confirm"] == "active benchmark confirmed and deadlock frontier clarified"
+    assert campaign["reports"]["family_definition"] == "outputs/reports/deadlock_family_definition.md"
+    assert campaign["reports"]["casebook_report"] == "outputs/reports/deadlock_casebook.md"
+    assert campaign["reports"]["shortlist_report"] == "outputs/reports/deadlock_mechanism_shortlist.md"
+    assert campaign["reports"]["decision_memo"] == "outputs/reports/deadlock_next_decision_memo.md"
+    assert campaign["blocks"]["dev"][0]["lane"] == "prospective_c"
+    assert campaign["blocks"]["holdout"][0]["lane"] == "prospective_g"
+    assert campaign["analysis"]["parity_candidate"] == "round7"
+    assert "round10_search_x4" in campaign["candidates"]
+    assert "round10_conf_search_x4" in campaign["candidates"]

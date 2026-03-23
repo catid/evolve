@@ -1,5 +1,6 @@
 from psmn_rl.analysis.lss_portfolio_campaign import (
     _decision_status,
+    _stage1_candidate_pass,
     _selected_stage1_candidates,
     _synthetic_control_rows,
 )
@@ -62,6 +63,32 @@ def test_selected_stage1_candidates_balances_tracks() -> None:
     selected_by_track, selected = _selected_stage1_candidates(campaign, candidate_summaries)
     assert selected_by_track == {"fruitful": ["round7", "round10"], "exploratory": ["conf_post4"]}
     assert selected == ["round7", "round10", "conf_post4"]
+
+
+def test_stage1_candidate_pass_respects_min_dev_gain_and_failure_bar() -> None:
+    campaign = {"selection": {"min_dev_gain": 0.01}}
+    round6 = {"sare_mean": 0.8333333333333334, "sare_failures": 1}
+
+    tied = {
+        "candidate_mean": 0.8333333333333334,
+        "candidate_failures": 1,
+        "incomplete": False,
+    }
+    assert _stage1_candidate_pass(campaign, round6, tied) is False
+
+    improved = {
+        "candidate_mean": 0.8433333333333334,
+        "candidate_failures": 1,
+        "incomplete": False,
+    }
+    assert _stage1_candidate_pass(campaign, round6, improved) is True
+
+    regressed_failures = {
+        "candidate_mean": 0.90,
+        "candidate_failures": 2,
+        "incomplete": False,
+    }
+    assert _stage1_candidate_pass(campaign, round6, regressed_failures) is False
 
 
 def test_decision_status_confirms_round6_when_program_strengthens_it() -> None:
