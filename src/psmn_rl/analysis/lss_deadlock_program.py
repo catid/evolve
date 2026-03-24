@@ -797,6 +797,7 @@ def render_family_definition(campaign: dict[str, Any], output: Path) -> None:
         *_family_table_rows(campaign, "healthy"),
     ]
     title = _analysis_label(campaign, "Deadlock")
+    transition_targets = [str(value) for value in campaign.get("analysis", {}).get("transition_state_targets", [])]
     lines = [
         f"# {title} Family Definition",
         "",
@@ -804,12 +805,14 @@ def render_family_definition(campaign: dict[str, Any], output: Path) -> None:
         f"- deadlock holdout groups: `{campaign['blocks']['holdout']}`",
         f"- healthy anti-regression groups: `{campaign['blocks']['healthy']}`",
         f"- canonical hard deadlocks: `{campaign['blocks']['hard_seed']}`",
+        f"- transition-state coverage targets: `{transition_targets}`",
         "",
         "## Why This Is A Family",
         "",
         "- `prospective_c` and `prospective_f` are the development deadlock family groups used for selection. `prospective_c/193` is the canonical teacher-locked deadlock, while `prospective_f/241` is the paired routed early-phase success that a fix must preserve.",
         "- `prospective_g` and `prospective_i` are holdout deadlock-family groups held back from selection. `prospective_g/251` is a shared pre-key deadlock and `prospective_i/283` is the unstable control-escape holdout.",
         "- The family is therefore not one memorable seed. It contains repeated pre-key deadlocks plus nearby solved routed cases that make it possible to distinguish a real fix from a generic weakening of the policy.",
+        "- The transition-state notion is explicit: a fix is expected to increase coverage of the first post-search carry-key and locked-door approach phases rather than only reshaping search-key or at-key loops.",
         "",
         "## Current Round6 Snapshot",
         "",
@@ -1304,6 +1307,7 @@ def render_decision_memo(campaign: dict[str, Any], output: Path) -> None:
         f"- deadlock shortlist directions: `{len(_optional_json(campaign['reports'].get('shortlist_json')).get('directions', []))}`",
         f"- Stage B1 exploit advancing challengers: `{stage1.get('fruitful_advancing_candidates', [])}`",
         f"- Stage B1 exploratory advancing challengers: `{stage1.get('exploratory_advancing_candidates', [])}`",
+        f"- Stage B1 architecture-adjacent advancing challengers: `{stage1.get('archpilot_advancing_candidates', [])}`",
         f"- Stage B2 verified challengers: `{stage2.get('verified_candidates', [])}`",
         f"- Stage B3 fairness survivors: `{stage3.get('surviving_candidates', [])}`",
         f"- Stage B4 holdout best challenger: `{stage4.get('best_candidate')}`",
@@ -1320,6 +1324,10 @@ def render_decision_memo(campaign: dict[str, Any], output: Path) -> None:
         lines.append("- A deadlock-targeted challenger survived the narrowed funnel, stayed meaningful after verification and controls, generalized to deadlock holdout, preserved healthy DoorKey behavior, stayed routed and stable, and cleared the final gate strongly enough to replace `round6`.")
     elif final_status == str(campaign["decision_strings"]["confirm"]):
         lines.append("- No deadlock-targeted challenger displaced `round6`. The program clarified that the blocker is a mixed deadlock/data-contract problem: the canonical dev deadlock is primarily teacher-locked, the holdout family includes a secondary ambiguous/unstable subgroup, and older replay/cap/bridge variants did not create the missing transition-state coverage before failing. `round6` still preserves the routed early-phase strengths on `prospective_f/241`, so it remains active and the deadlock/data-contract frontier is clearer than before.")
+        if stage1.get("archpilot_advancing_candidates"):
+            lines.append("- The quarantined architecture-adjacent pilot produced a candidate worth a follow-on branch, but it did not earn any change to the public benchmark state or claim envelope in this run.")
+        else:
+            lines.append("- The quarantined architecture-adjacent pilot did not earn promotion into the main benchmark lane; it remains exploratory only.")
     elif final_status == str(campaign["decision_strings"]["narrow"]):
         lines.append("- No deadlock-targeted challenger displaced `round6`, and the active benchmark still clears the route/stability/gate bar, but the deadlock/data-contract program does not yet justify a stronger internal state than a narrower frontier around the clarified blocker family.")
     else:

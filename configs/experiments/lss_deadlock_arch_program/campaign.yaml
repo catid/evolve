@@ -1,0 +1,450 @@
+extends: ../lss_deadlock_contract_program/campaign.yaml
+name: lss_deadlock_arch_program
+
+current_decision_memo: outputs/reports/deadlock_contract_decision_memo.md
+
+decision_strings:
+  replace: challenger replaces the active benchmark
+  confirm: active benchmark confirmed and deadlock/data-contract frontier clarified
+  narrow: active benchmark remains and the frontier narrows further
+  narrow_state: benchmark state itself needs narrowing
+
+selection:
+  stage1_fruitful_top_k: 3
+  stage1_exploratory_top_k: 2
+  stage1_archpilot_top_k: 1
+  stage2_top_k: 2
+  min_dev_gain: 0.01
+
+stage_roots:
+  stage1_screening: outputs/experiments/lss_deadlock_arch_program/stageB1_screening
+  stage2_verification_a: outputs/experiments/lss_deadlock_arch_program/stageB2_verification_a
+  stage2_verification_b: outputs/experiments/lss_deadlock_arch_program/stageB2_verification_b
+  stage2_fairness: outputs/experiments/lss_deadlock_arch_program/stageB3_fairness
+  stage3_holdout: outputs/experiments/lss_deadlock_arch_program/stageB4_holdout
+  stage4_antiregression: outputs/experiments/lss_deadlock_arch_program/stageB5_antiregression
+  stage7_pack: outputs/experiments/lss_deadlock_arch_program/stageC1_pack
+  stage8_exploratory: outputs/experiments/lss_deadlock_arch_program/unused_exploratory
+
+reuse_roots:
+  stage1_sare:
+    - outputs/experiments/lss_deadlock_contract_program/stageB1_screening
+    - outputs/experiments/lss_deadlock_program/stageB1_screening
+    - outputs/experiments/lss_mechanism_program/stageB1_screening
+    - outputs/experiments/lss_next_round_campaign/stage2_screening
+    - outputs/experiments/lss_next_portfolio_campaign/stage1_screening
+
+reports:
+  state_reconciliation: outputs/reports/deadlock_arch_program_state_reconciliation.md
+  baseline_sync: outputs/reports/deadlock_arch_program_baseline_sync.md
+  baseline_sync_csv: outputs/reports/deadlock_arch_program_baseline_sync.csv
+  baseline_sync_json: outputs/reports/deadlock_arch_program_baseline_sync.json
+  family_definition: outputs/reports/deadlock_arch_family_definition.md
+  teacher_audit_report: outputs/reports/deadlock_arch_teacher_audit.md
+  teacher_audit_json: outputs/reports/deadlock_arch_teacher_audit.json
+  distribution_audit_report: outputs/reports/deadlock_arch_distribution_audit.md
+  distribution_audit_json: outputs/reports/deadlock_arch_distribution_audit.json
+  shortlist_report: outputs/reports/deadlock_arch_mechanism_shortlist.md
+  shortlist_json: outputs/reports/deadlock_arch_mechanism_shortlist.json
+  stage1_report: outputs/reports/deadlock_arch_stageB1_screening_raw.md
+  stage1_csv: outputs/reports/deadlock_arch_stageB1_screening.csv
+  stage1_raw_json: outputs/reports/deadlock_arch_stageB1_screening_raw.json
+  stage1_json: outputs/reports/deadlock_arch_stageB1_screening.json
+  stage1_fruitful_report: outputs/reports/deadlock_arch_stageB1_screening_exploit.md
+  stage1_fruitful_json: outputs/reports/deadlock_arch_stageB1_screening_exploit.json
+  stage1_exploratory_report: outputs/reports/deadlock_arch_stageB1_screening_explore.md
+  stage1_exploratory_json: outputs/reports/deadlock_arch_stageB1_screening_explore.json
+  stage1_archpilot_report: outputs/reports/deadlock_arch_stageB1_screening_archpilot.md
+  stage1_archpilot_json: outputs/reports/deadlock_arch_stageB1_screening_archpilot.json
+  stage2_verification_report: outputs/reports/deadlock_arch_stageB2_verification.md
+  stage2_verification_csv: outputs/reports/deadlock_arch_stageB2_verification.csv
+  stage2_verification_json: outputs/reports/deadlock_arch_stageB2_verification.json
+  stage2_report: outputs/reports/deadlock_arch_stageB3_fairness.md
+  stage2_csv: outputs/reports/deadlock_arch_stageB3_fairness.csv
+  stage2_json: outputs/reports/deadlock_arch_stageB3_fairness.json
+  stage3_report: outputs/reports/deadlock_arch_stageB4_holdout.md
+  stage3_csv: outputs/reports/deadlock_arch_stageB4_holdout.csv
+  stage3_json: outputs/reports/deadlock_arch_stageB4_holdout.json
+  stage4_report: outputs/reports/deadlock_arch_stageB5_antiregression.md
+  stage4_csv: outputs/reports/deadlock_arch_stageB5_antiregression.csv
+  stage4_json: outputs/reports/deadlock_arch_stageB5_antiregression.json
+  route_raw_dir: outputs/reports/deadlock_arch_stageB6_route_raw
+  stage5_report: outputs/reports/deadlock_arch_stageB6_route_validation.md
+  stage5_csv: outputs/reports/deadlock_arch_stageB6_route_validation.csv
+  stage5_json: outputs/reports/deadlock_arch_stageB6_route_validation.json
+  stage6_report: outputs/reports/deadlock_arch_stageB6_stability.md
+  stage6_csv: outputs/reports/deadlock_arch_stageB6_stability.csv
+  stage6_json: outputs/reports/deadlock_arch_stageB6_stability.json
+  candidate_summary_markdown: outputs/reports/deadlock_arch_candidate_summary.md
+  candidate_metrics_json: outputs/reports/deadlock_arch_candidate_metrics.json
+  candidate_combined_markdown: outputs/reports/deadlock_arch_candidate_combined_report.md
+  candidate_combined_csv: outputs/reports/deadlock_arch_candidate_combined_report.csv
+  candidate_retry_markdown: outputs/reports/deadlock_arch_candidate_retry_report.md
+  candidate_retry_csv: outputs/reports/deadlock_arch_candidate_retry_report.csv
+  candidate_pack_json: outputs/reports/deadlock_arch_candidate_pack.json
+  gate_report_markdown: outputs/reports/deadlock_arch_gate_report.md
+  gate_report_json: outputs/reports/deadlock_arch_gate_report.json
+  decision_memo: outputs/reports/deadlock_arch_decision_memo.md
+
+analysis:
+  program_label: Deadlock/Data-Contract + Architecture-Adjacent Program
+  current_gate_report: outputs/reports/deadlock_contract_gate_report.md
+  current_gate_report_json: outputs/reports/deadlock_contract_gate_report.json
+  source_stage1_root: outputs/experiments/lss_deadlock_arch_program/stageB1_screening
+  parity_candidate: round7
+  shortlist_max_directions: 6
+  transition_state_targets:
+    - carry_key
+    - at_locked_door
+    - post_unlock
+  shortlist:
+    - label: actual_teacher_smoothing_repair
+      track: fruitful
+      candidates:
+        - round10_search_x4_temp105
+        - round10_search_x4_temp110
+        - round10_search_x6_temp105
+        - round10_conf_search_x4_temp105
+        - round10_conf_search_x4_temp110
+        - round10_conf_search_x6_temp105
+      hypothesis: the canonical deadlocks are still teacher-locked enough that true teacher smoothing and confidence-clipped smoothing remain the highest-probability in-family repair.
+      failure: the deadlock-dev mean only ties round6 again or the routed early-phase guardrail regresses.
+    - label: prekey_phase_weighting
+      track: fruitful
+      candidates:
+        - round7_search_x4
+        - round10_search_x2
+        - round10_search_x4
+        - round10_search_x6
+        - round10_search_x4_atkey_x2
+      hypothesis: stronger early-phase weighting may still matter on the route-fragile subgroup even if it does not solve the teacher-locked sentinel by itself.
+      failure: the candidates recreate the same 0.8333 deadlock-dev tie bucket and leave prospective_c/193 unresolved.
+    - label: transition_state_rebalance
+      track: fruitful
+      candidates:
+        - round10_prekey_phase_balanced_4096
+        - round10_prekey_phase_balanced_4096_temp105
+        - round10_prekey_phase_balanced_4096_conf
+        - round10_prekey_phase_balanced_4096_conf_temp105
+        - round10_prekey_phase_balanced_6144
+        - round10_transition_phase_balanced_4096
+        - round10_transition_phase_balanced_4096_temp105
+        - round10_transition_phase_balanced_4096_conf
+      hypothesis: the learner-state bottleneck is specifically missing carry-key and locked-door approach states, so transition-focused rebalancing should outperform earlier pre-key-only replay changes.
+      failure: phase mix and entropy move without raising carry-key or locked-door coverage enough to change the deadlock family outcome.
+    - label: hybrid_deadlock_targeting
+      track: fruitful
+      candidates:
+        - round10_search_x6_transition_temp105
+        - round10_conf_search_x4_transition_temp105
+      hypothesis: the teacher-locked sentinel may need both a softer target and better transition-state coverage; neither intervention alone may be strong enough.
+      failure: the hybrid still ties or adds new complete-seed failures, which would argue for a harder family ceiling.
+    - label: recursive_contract_probe
+      track: exploratory
+      candidates:
+        - round10_warm1_last_step
+        - round10_warm2_last_step
+        - round10_stoch25_last_two
+        - round10_stoch50_last_two
+        - round10_stoch75_last_two
+        - settling_round10_last_step
+        - settling_round10_last_two
+        - round10_warm1_last_two
+        - round10_warm2_last_two
+        - round10_rounds12_last_step
+      hypothesis: if the remaining barrier is partly a recursive training-contract problem, a narrower contract bracket should break it without opening a new benchmark family.
+      failure: the candidates either re-enter the tie bucket or collapse below it with extra instability.
+    - label: phase_memory_pilot
+      track: archpilot
+      candidates:
+        - round10_phase_memory_mix025_search_x4
+        - round10_phase_memory_mix050_search_x4
+        - round10_phase_memory_mix050_temp105_search_x4
+        - round10_phase_memory_mix050_conf_search_x4
+      hypothesis: a small routed fast/slow state split may help the model retain phase context across the pre-key transition without abandoning the routed family.
+      failure: the pilot cannot even rejoin the deadlock-dev tie bucket or it weakens route structure enough to make a follow-on branch unjustified.
+
+candidate_subset:
+  - round7_search_x4
+  - round10_search_x2
+  - round10_search_x4
+  - round10_search_x6
+  - round10_search_x4_atkey_x2
+  - round10_search_x4_temp105
+  - round10_search_x4_temp110
+  - round10_search_x6_temp105
+  - round10_conf_search_x4_temp105
+  - round10_conf_search_x4_temp110
+  - round10_conf_search_x6_temp105
+  - round10_prekey_phase_balanced_4096
+  - round10_prekey_phase_balanced_4096_temp105
+  - round10_prekey_phase_balanced_4096_conf
+  - round10_prekey_phase_balanced_4096_conf_temp105
+  - round10_prekey_phase_balanced_6144
+  - round10_prekey_cap_balanced_4096
+  - round10_transition_phase_balanced_4096
+  - round10_transition_phase_balanced_4096_temp105
+  - round10_transition_phase_balanced_4096_conf
+  - round10_search_x6_transition_temp105
+  - round10_conf_search_x4_transition_temp105
+  - round10_warm1_last_step
+  - round10_warm2_last_step
+  - round10_stoch25_last_two
+  - round10_stoch50_last_two
+  - round10_stoch75_last_two
+  - settling_round10_last_step
+  - settling_round10_last_two
+  - round10_warm1_last_two
+  - round10_warm2_last_two
+  - round10_rounds12_last_step
+  - round10_phase_memory_mix025_search_x4
+  - round10_phase_memory_mix050_search_x4
+  - round10_phase_memory_mix050_temp105_search_x4
+  - round10_phase_memory_mix050_conf_search_x4
+
+candidates:
+  round10_transition_phase_balanced_4096:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: transition_state_rebalance
+    direction: transition_phase_balanced_recent_4096
+    description: round10 with transition-state phase-balanced replay emphasizing carry-key and locked-door approach coverage
+    overrides:
+      loop:
+        rounds: 10
+        aggregation: phase_balanced_recent
+        max_dataset_steps: 4096
+        phase_quota_weights:
+          default: 1.0
+          search_key: 1.5
+          at_key: 1.5
+          carry_key: 4.0
+          at_locked_door: 4.0
+          post_unlock: 2.0
+      student:
+        phase_weights:
+          search_key: 2.0
+          at_key: 1.5
+          carry_key: 3.0
+          at_locked_door: 3.0
+          post_unlock: 2.0
+  round10_transition_phase_balanced_4096_temp105:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: transition_state_rebalance
+    direction: transition_phase_balanced_recent_4096_smoothed
+    description: round10 with transition-state rebalance plus true teacher smoothing
+    overrides:
+      loop:
+        rounds: 10
+        aggregation: phase_balanced_recent
+        max_dataset_steps: 4096
+        phase_quota_weights:
+          default: 1.0
+          search_key: 1.5
+          at_key: 1.5
+          carry_key: 4.0
+          at_locked_door: 4.0
+          post_unlock: 2.0
+      teacher:
+        temperature: 1.05
+      student:
+        phase_weights:
+          search_key: 2.0
+          at_key: 1.5
+          carry_key: 3.0
+          at_locked_door: 3.0
+          post_unlock: 2.0
+  round10_transition_phase_balanced_4096_conf:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: transition_state_rebalance
+    direction: transition_phase_balanced_recent_4096_conf
+    description: round10 with transition-state rebalance and teacher-confidence weighting
+    overrides:
+      loop:
+        rounds: 10
+        aggregation: phase_balanced_recent
+        max_dataset_steps: 4096
+        phase_quota_weights:
+          default: 1.0
+          search_key: 1.5
+          at_key: 1.5
+          carry_key: 4.0
+          at_locked_door: 4.0
+          post_unlock: 2.0
+      student:
+        weighting: teacher_confidence
+        phase_weights:
+          search_key: 2.0
+          at_key: 1.5
+          carry_key: 3.0
+          at_locked_door: 3.0
+          post_unlock: 2.0
+  round10_search_x6_transition_temp105:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: hybrid_deadlock_targeting
+    direction: search_x6_transition_smoothed
+    description: round10 with search-key x6, transition-state rebalance, and true teacher smoothing
+    overrides:
+      loop:
+        rounds: 10
+        aggregation: phase_balanced_recent
+        max_dataset_steps: 4096
+        phase_quota_weights:
+          default: 1.0
+          search_key: 1.5
+          at_key: 1.5
+          carry_key: 4.0
+          at_locked_door: 4.0
+          post_unlock: 2.0
+      teacher:
+        temperature: 1.05
+      student:
+        phase_weights:
+          search_key: 6.0
+          at_key: 2.0
+          carry_key: 3.0
+          at_locked_door: 3.0
+          post_unlock: 2.0
+  round10_conf_search_x4_transition_temp105:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: fruitful
+    family: hybrid_deadlock_targeting
+    direction: conf_search_x4_transition_smoothed
+    description: round10 with teacher-confidence weighting, search-key x4, transition-state rebalance, and true teacher smoothing
+    overrides:
+      loop:
+        rounds: 10
+        aggregation: phase_balanced_recent
+        max_dataset_steps: 4096
+        phase_quota_weights:
+          default: 1.0
+          search_key: 1.5
+          at_key: 1.5
+          carry_key: 4.0
+          at_locked_door: 4.0
+          post_unlock: 2.0
+      teacher:
+        temperature: 1.05
+      student:
+        weighting: teacher_confidence
+        phase_weights:
+          search_key: 4.0
+          at_key: 2.0
+          carry_key: 3.0
+          at_locked_door: 3.0
+          post_unlock: 2.0
+  round10_warm1_last_two:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: exploratory
+    family: recursive_contract_probe
+    direction: warm1_last_two
+    description: round10 with one detached warm-up round and last-two-step credit
+    overrides:
+      loop:
+        rounds: 10
+        warmup_rounds: 1
+      student:
+        temporal_credit_mode: last_two_steps
+        phase_weights:
+          search_key: 4.0
+  round10_warm2_last_two:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: exploratory
+    family: recursive_contract_probe
+    direction: warm2_last_two
+    description: round10 with two detached warm-up rounds and last-two-step credit
+    overrides:
+      loop:
+        rounds: 10
+        warmup_rounds: 2
+      student:
+        temporal_credit_mode: last_two_steps
+        phase_weights:
+          search_key: 4.0
+  round10_rounds12_last_step:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: exploratory
+    family: recursive_contract_probe
+    direction: deeper_rounds12_last_step
+    description: round10 with a slightly deeper recursive contract and final-step-only credit
+    overrides:
+      loop:
+        rounds: 12
+      student:
+        temporal_credit_mode: last_step
+        phase_weights:
+          search_key: 4.0
+  round10_phase_memory_mix025_search_x4:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: archpilot
+    family: phase_memory_pilot
+    direction: routed_phase_memory_mix025
+    description: quarantined routed phase-memory pilot with modest memory mixing and search-key x4
+    student_config_overrides:
+      model:
+        variant: sare_phase_memory
+        checkpoint_strict: false
+        memory_mix: 0.25
+    overrides:
+      loop:
+        rounds: 10
+      student:
+        phase_weights:
+          search_key: 4.0
+  round10_phase_memory_mix050_search_x4:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: archpilot
+    family: phase_memory_pilot
+    direction: routed_phase_memory_mix050
+    description: quarantined routed phase-memory pilot with balanced memory mixing and search-key x4
+    student_config_overrides:
+      model:
+        variant: sare_phase_memory
+        checkpoint_strict: false
+        memory_mix: 0.5
+    overrides:
+      loop:
+        rounds: 10
+      student:
+        phase_weights:
+          search_key: 4.0
+  round10_phase_memory_mix050_temp105_search_x4:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: archpilot
+    family: phase_memory_pilot
+    direction: routed_phase_memory_mix050_smoothed
+    description: quarantined routed phase-memory pilot with balanced memory mixing, search-key x4, and true teacher smoothing
+    student_config_overrides:
+      model:
+        variant: sare_phase_memory
+        checkpoint_strict: false
+        memory_mix: 0.5
+    overrides:
+      loop:
+        rounds: 10
+      teacher:
+        temperature: 1.05
+      student:
+        phase_weights:
+          search_key: 4.0
+  round10_phase_memory_mix050_conf_search_x4:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    track: archpilot
+    family: phase_memory_pilot
+    direction: routed_phase_memory_mix050_conf
+    description: quarantined routed phase-memory pilot with balanced memory mixing, teacher-confidence weighting, and search-key x4
+    student_config_overrides:
+      model:
+        variant: sare_phase_memory
+        checkpoint_strict: false
+        memory_mix: 0.5
+    overrides:
+      loop:
+        rounds: 10
+      student:
+        weighting: teacher_confidence
+        phase_weights:
+          search_key: 4.0

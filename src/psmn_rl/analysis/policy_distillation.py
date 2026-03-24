@@ -216,13 +216,23 @@ def _student_loss(
     raise ValueError(f"unsupported student loss: {student_cfg.loss}")
 
 
+def _load_checkpoint_into_model(
+    model: ActorCriticModel,
+    checkpoint_path: str | Path,
+    *,
+    device: torch.device | str,
+    strict: bool,
+) -> None:
+    checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)
+    model.load_state_dict(checkpoint["model"], strict=strict)
+
+
 def _load_model(config_path: str, checkpoint_path: str, device: torch.device) -> tuple[Any, ActorCriticModel]:
     config = load_config(config_path)
     envs = make_vector_env(config.env, seed=config.seed)
     model = build_model(config.model, envs.single_observation_space, envs.single_action_space)
     envs.close()
-    checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
-    model.load_state_dict(checkpoint["model"])
+    _load_checkpoint_into_model(model, checkpoint_path, device="cpu", strict=bool(config.model.checkpoint_strict))
     model.to(device)
     return config, model
 
@@ -585,7 +595,12 @@ def run_once(args: argparse.Namespace) -> None:
         before_model_env.single_action_space,
     )
     before_model_env.close()
-    before_model.load_state_dict(torch.load(spec.student.checkpoint, map_location="cpu", weights_only=False)["model"])
+    _load_checkpoint_into_model(
+        before_model,
+        spec.student.checkpoint,
+        device="cpu",
+        strict=bool(student_config.model.checkpoint_strict),
+    )
     before_model.to(detect_device(args.device))
     before = evaluate_modes(spec.student.config, before_model, args.device, spec.evaluation.episodes)
 

@@ -77,3 +77,62 @@ class RoutedExpertCore(nn.Module):
         pooled = masked_mean(tokens)
         metrics = {**_route_metrics(route_probs, topk_idx, self.expert_count), **token_representation_metrics(tokens, pooled)}
         return CoreOutput(pooled=pooled, tokens=tokens, metrics=metrics, next_state={})
+
+
+class RoutedExpertPhaseMemoryCore(RoutedExpertCore):
+    def __init__(
+        self,
+        observation_space,
+        token_dim: int,
+        patch_size: int,
+        hidden_size: int,
+        expert_count: int,
+        expert_hidden_size: int,
+        top_k: int,
+        temperature: float,
+        memory_mix: float,
+    ) -> None:
+        super().__init__(
+            observation_space=observation_space,
+            token_dim=token_dim,
+            patch_size=patch_size,
+            hidden_size=hidden_size,
+            expert_count=expert_count,
+            expert_hidden_size=expert_hidden_size,
+            top_k=top_k,
+            temperature=temperature,
+        )
+        self.hidden_size = hidden_size
+        self.memory_mix = float(memory_mix)
+        self.memory_cell = nn.GRUCell(hidden_size, hidden_size)
+
+    def initial_state(self, batch_size: int, device: torch.device) -> dict[str, torch.Tensor]:
+        return {"hidden": torch.zeros(batch_size, self.hidden_size, device=device)}
+
+    def forward(self, obs: dict[str, torch.Tensor], state: dict[str, torch.Tensor], done: torch.Tensor | None) -> CoreOutput:
+        tokens = self.input_proj(self.encoder(obs))
+        route_probs, topk_values, topk_idx = self.route(tokens)
+        mixed = self.apply_experts(tokens, topk_values, topk_idx)
+        tokens = self.output_norm(tokens + mixed)
+        pooled = masked_mean(tokens)
+
+        hidden = state.get("hidden")
+        if hidden is None:
+            hidden = torch.zeros(pooled.size(0), self.hidden_size, device=pooled.device, dtype=pooled.dtype)
+        if done is not None:
+            hidden = hidden * (~done).float().unsqueeze(-1)
+
+        next_hidden = self.memory_cell(pooled, hidden)
+        pooled = torch.lerp(pooled, next_hidden, self.memory_mix)
+        metrics = {
+            **_route_metrics(route_probs, topk_idx, self.expert_count),
+            **token_representation_metrics(tokens, pooled),
+            "memory/hidden_norm": float(next_hidden.norm(dim=-1).mean().item()),
+            "memory/mix": self.memory_mix,
+        }
+        return CoreOutput(
+            pooled=pooled,
+            tokens=tokens,
+            metrics=metrics,
+            next_state={"hidden": next_hidden.detach()},
+        )

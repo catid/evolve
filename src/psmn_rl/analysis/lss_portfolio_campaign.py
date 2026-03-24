@@ -38,7 +38,12 @@ from psmn_rl.analysis.lss_successor_migration import (
 )
 from psmn_rl.utils.io import get_git_commit, get_git_dirty
 
-TRACKS: tuple[str, str] = ("fruitful", "exploratory")
+TRACK_PRIORITY: tuple[str, ...] = ("fruitful", "exploratory", "archpilot")
+TRACK_TITLES: dict[str, str] = {
+    "fruitful": "Fruitful",
+    "exploratory": "Exploratory",
+    "archpilot": "Architecture-Adjacent",
+}
 
 
 def _read_text(path: str | Path) -> str:
@@ -94,6 +99,29 @@ def _candidate_meta(campaign: dict[str, Any], candidate: str) -> dict[str, Any]:
     return meta
 
 
+def _ordered_tracks(tracks: list[str]) -> tuple[str, ...]:
+    unique = []
+    for track in tracks:
+        if track not in unique:
+            unique.append(track)
+    priority = [track for track in TRACK_PRIORITY if track in unique]
+    extras = sorted(track for track in unique if track not in TRACK_PRIORITY)
+    return tuple([*priority, *extras])
+
+
+def _campaign_tracks(campaign: dict[str, Any]) -> tuple[str, ...]:
+    tracks = [str(meta.get("track", "fruitful")) for meta in campaign.get("candidates", {}).values()]
+    return _ordered_tracks(tracks)
+
+
+def _summary_tracks(candidate_summaries: list[dict[str, Any]]) -> tuple[str, ...]:
+    return _ordered_tracks([str(row.get("track", "fruitful")) for row in candidate_summaries])
+
+
+def _stage1_top_k(campaign: dict[str, Any], track: str) -> int:
+    return _int(campaign["selection"].get(f"stage1_{track}_top_k", 0))
+
+
 def _stage1_sort_key(row: dict[str, Any]) -> tuple[float, float, float, float]:
     return (
         _float(row["candidate_mean"]),
@@ -125,7 +153,7 @@ def _stage1_reason(campaign: dict[str, Any], round6: dict[str, Any], row: dict[s
             return "stop: below incumbent dev mean"
         return "stop: failed stage1 challenger bar"
     track = str(row["track"])
-    return f"stop: outside {track} top-{_int(campaign['selection'][f'stage1_{track}_top_k'])}"
+    return f"stop: outside {track} top-{_stage1_top_k(campaign, track)}"
 
 
 def _selected_stage1_candidates(
@@ -134,8 +162,8 @@ def _selected_stage1_candidates(
 ) -> tuple[dict[str, list[str]], list[str]]:
     selected_by_track: dict[str, list[str]] = {}
     selected: list[str] = []
-    for track in TRACKS:
-        top_k = _int(campaign["selection"][f"stage1_{track}_top_k"])
+    for track in _summary_tracks(candidate_summaries):
+        top_k = _stage1_top_k(campaign, track)
         chosen = [
             row["candidate"]
             for row in sorted(
@@ -228,7 +256,8 @@ def _render_state_reconciliation(campaign: dict[str, Any], output: Path) -> None
 
 
 def _render_registration(campaign: dict[str, Any], output: Path) -> None:
-    track_counts = {track: 0 for track in TRACKS}
+    tracks = _campaign_tracks(campaign)
+    track_counts = {track: 0 for track in tracks}
     family_counts: dict[str, int] = {}
     directions = sorted({str(meta["direction"]) for meta in campaign["candidates"].values()})
     hard_seed_blocks = list(campaign["blocks"].get("hard_seed", []))
@@ -245,14 +274,21 @@ def _render_registration(campaign: dict[str, Any], output: Path) -> None:
         f"- git commit: `{get_git_commit()}`",
         f"- git dirty: `{get_git_dirty()}`",
         "",
-        "## 50/50 Portfolio Split",
+        "## Track Split",
         "",
-        f"- fruitful-track challenger count: `{track_counts['fruitful']}`",
-        f"- exploratory-track challenger count: `{track_counts['exploratory']}`",
-        f"- total challenger count: `{len(campaign['candidates'])}`",
-        "",
-        "## Families",
-        "",
+    ]
+    for track in tracks:
+        lines.append(f"- {track} challenger count: `{track_counts[track]}`")
+    lines.extend(
+        [
+            f"- total challenger count: `{len(campaign['candidates'])}`",
+            "",
+            "## Families",
+            "",
+        ]
+    )
+    lines.extend(
+        [
         f"- development families: `{campaign['blocks']['dev']}`",
         f"- holdout families: `{campaign['blocks']['holdout']}`",
         f"- healthy anti-regression families: `{campaign['blocks']['healthy']}`",
@@ -264,8 +300,6 @@ def _render_registration(campaign: dict[str, Any], output: Path) -> None:
         "",
         f"- distinct mechanism directions: `{len(directions)}`",
         f"- mechanism direction names: `{directions}`",
-        f"- Stage 1 fruitful top-k: `{_int(campaign['selection']['stage1_fruitful_top_k'])}`",
-        f"- Stage 1 exploratory top-k: `{_int(campaign['selection']['stage1_exploratory_top_k'])}`",
         f"- verification reruns per survivor: `2`",
         f"- route-validation cases: `{campaign.get('route_cases', {})}`",
         f"- stability cases: `{campaign.get('stability_cases', {})}`",
@@ -276,7 +310,12 @@ def _render_registration(campaign: dict[str, Any], output: Path) -> None:
         "- A family may be pruned early only if it is catastrophically below `round6` on multiple development families and the rerun confirms the failure.",
         "- No family is promoted on one lucky family group or one lucky seed.",
         "",
-    ]
+        ]
+    )
+    for track in tracks:
+        lines.insert(lines.index("## Fair-Shot Rule"), f"- Stage 1 {track} top-k: `{_stage1_top_k(campaign, track)}`")
+    fair_shot_index = lines.index("## Fair-Shot Rule")
+    lines.insert(fair_shot_index, "")
     registration_groups = campaign.get("registration_groups", {})
     if registration_groups:
         lines.extend(
@@ -428,7 +467,7 @@ def _render_stage1_track_report(
         family = str(row["family"])
         family_counts[family] = family_counts.get(family, 0) + 1
     lines = [
-        f"# Portfolio Stage 1 {'Fruitful' if track == 'fruitful' else 'Exploratory'} Screening",
+        f"# Portfolio Stage 1 {TRACK_TITLES.get(track, track.replace('_', ' ').title())} Screening",
         "",
         f"- track budget: `{len(candidate_summaries)}` candidates",
         f"- advancing challengers from this track: `{selected}`",
@@ -498,15 +537,15 @@ def _render_stage1_screening(campaign: dict[str, Any]) -> None:
     stage1_payload["raw_advancing_candidates"] = list(stage1_payload.get("advancing_candidates", []))
     stage1_payload["candidate_summaries"] = selected_rows
     stage1_payload["rows"] = detail_rows
-    stage1_payload["fruitful_advancing_candidates"] = list(selected_by_track["fruitful"])
-    stage1_payload["exploratory_advancing_candidates"] = list(selected_by_track["exploratory"])
+    for track in _summary_tracks(selected_rows):
+        stage1_payload[f"{track}_advancing_candidates"] = list(selected_by_track.get(track, []))
     stage1_payload["advancing_candidates"] = selected
     stage1_payload["track_candidate_counts"] = {
-        track: sum(1 for row in selected_rows if str(row["track"]) == track) for track in TRACKS
+        track: sum(1 for row in selected_rows if str(row["track"]) == track) for track in _summary_tracks(selected_rows)
     }
     _write_json(raw_path, stage1_payload)
     _write_json(effective_path, stage1_payload)
-    for track in TRACKS:
+    for track in _summary_tracks(selected_rows):
         _render_stage1_track_report(campaign, stage1_payload, track)
 
 
@@ -883,8 +922,11 @@ def _render_decision_memo(campaign: dict[str, Any], output: Path) -> None:
         "",
         "## Portfolio Funnel",
         "",
-        f"- Stage 1 fruitful advancing challengers: `{stage1.get('fruitful_advancing_candidates', [])}`",
-        f"- Stage 1 exploratory advancing challengers: `{stage1.get('exploratory_advancing_candidates', [])}`",
+    ]
+    for track in _campaign_tracks(campaign):
+        lines.append(f"- Stage 1 {track} advancing challengers: `{stage1.get(f'{track}_advancing_candidates', [])}`")
+    lines.extend(
+        [
         f"- Stage 2 verified challengers: `{stage2.get('verified_candidates', [])}`",
         f"- Stage 3 fairness survivors: `{stage3.get('surviving_candidates', [])}`",
         f"- Stage 4 holdout best challenger: `{stage4.get('best_candidate')}`",
@@ -896,7 +938,8 @@ def _render_decision_memo(campaign: dict[str, Any], output: Path) -> None:
         "",
         "## Decision",
         "",
-    ]
+        ]
+    )
     if final_status == labels["replace"]:
         lines.append("- A within-family challenger survived the balanced portfolio, stayed meaningful after verification and matched controls, generalized to holdout, preserved the healthy blocks, stayed routed and stable, and cleared the final pack/gate lane strongly enough to replace `round6`.")
     elif final_status == labels["confirm"]:

@@ -67,6 +67,52 @@ def test_selected_stage1_candidates_balances_tracks() -> None:
     assert selected == ["round7", "round10", "conf_post4"]
 
 
+def test_selected_stage1_candidates_supports_archpilot_track() -> None:
+    campaign = {
+        "selection": {
+            "stage1_fruitful_top_k": 1,
+            "stage1_exploratory_top_k": 1,
+            "stage1_archpilot_top_k": 1,
+        }
+    }
+    candidate_summaries = [
+        {
+            "candidate": "round10",
+            "track": "fruitful",
+            "stage1_pass": True,
+            "candidate_mean": 0.91,
+            "delta_vs_round6": 0.02,
+            "candidate_minus_token": 0.01,
+            "candidate_minus_single": 0.01,
+        },
+        {
+            "candidate": "contract_probe",
+            "track": "exploratory",
+            "stage1_pass": True,
+            "candidate_mean": 0.89,
+            "delta_vs_round6": 0.01,
+            "candidate_minus_token": 0.00,
+            "candidate_minus_single": 0.00,
+        },
+        {
+            "candidate": "phase_memory",
+            "track": "archpilot",
+            "stage1_pass": True,
+            "candidate_mean": 0.90,
+            "delta_vs_round6": 0.015,
+            "candidate_minus_token": 0.005,
+            "candidate_minus_single": 0.005,
+        },
+    ]
+    selected_by_track, selected = _selected_stage1_candidates(campaign, candidate_summaries)
+    assert selected_by_track == {
+        "fruitful": ["round10"],
+        "exploratory": ["contract_probe"],
+        "archpilot": ["phase_memory"],
+    }
+    assert selected == ["round10", "contract_probe", "phase_memory"]
+
+
 def test_stage1_candidate_pass_respects_min_dev_gain_and_failure_bar() -> None:
     campaign = {"selection": {"min_dev_gain": 0.01}}
     round6 = {"sare_mean": 0.8333333333333334, "sare_failures": 1}

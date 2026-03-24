@@ -91,3 +91,22 @@ def test_deadlock_contract_program_campaign_targets_teacher_and_distribution_rep
     assert campaign["analysis"]["shortlist_max_directions"] == 4
     assert "round10_search_x4_temp105" in campaign["candidates"]
     assert "round10_prekey_phase_balanced_4096" in campaign["candidates"]
+
+
+def test_deadlock_arch_program_campaign_adds_archpilot_track_and_budget() -> None:
+    campaign = load_campaign_config("configs/experiments/lss_deadlock_arch_program/campaign.yaml")
+    track_counts = Counter(str(meta["track"]) for meta in campaign["candidates"].values())
+
+    assert campaign["name"] == "lss_deadlock_arch_program"
+    assert track_counts == {"fruitful": 22, "exploratory": 10, "archpilot": 4}
+    assert len(campaign["candidates"]) == 36
+    assert campaign["current_decision_memo"] == "outputs/reports/deadlock_contract_decision_memo.md"
+    assert campaign["selection"]["stage1_archpilot_top_k"] == 1
+    assert campaign["reports"]["family_definition"] == "outputs/reports/deadlock_arch_family_definition.md"
+    assert campaign["reports"]["stage1_archpilot_report"] == "outputs/reports/deadlock_arch_stageB1_screening_archpilot.md"
+    assert campaign["reports"]["decision_memo"] == "outputs/reports/deadlock_arch_decision_memo.md"
+    assert campaign["analysis"]["program_label"] == "Deadlock/Data-Contract + Architecture-Adjacent Program"
+    assert campaign["analysis"]["shortlist_max_directions"] == 6
+    assert campaign["analysis"]["transition_state_targets"] == ["carry_key", "at_locked_door", "post_unlock"]
+    assert "round10_phase_memory_mix050_search_x4" in campaign["candidates"]
+    assert "outputs/experiments/lss_deadlock_contract_program/stageB1_screening" in campaign["reuse_roots"]["stage1_sare"]

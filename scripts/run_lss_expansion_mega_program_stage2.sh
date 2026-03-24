@@ -99,7 +99,17 @@ raw["name"] = f"{candidate}_{lane}_seed_{seed}_{student['output_label']}"
 raw["output_dir"] = output_dir
 raw["teacher"]["config"] = str(teacher_seed_root / "configs" / "flat_dense_ent1e3.yaml")
 raw["teacher"]["checkpoint"] = str(teacher_seed_root / "flat_dense_ent1e3" / "latest.pt")
-raw["student"]["config"] = str(student_seed_root / "configs" / student["config_name"])
+student_config_path = student_seed_root / "configs" / student["config_name"]
+student_config_overrides = meta.get("student_config_overrides", {})
+if student_config_overrides:
+    student_config = yaml.safe_load(student_config_path.read_text()) or {}
+    deep_merge(student_config, student_config_overrides)
+    rendered_student_config = Path(target_path).parent / f"{student['output_label']}_student_config.yaml"
+    rendered_student_config.parent.mkdir(parents=True, exist_ok=True)
+    rendered_student_config.write_text(yaml.safe_dump(student_config, sort_keys=False), encoding="utf-8")
+    raw["student"]["config"] = str(rendered_student_config)
+else:
+    raw["student"]["config"] = str(student_config_path)
 raw["student"]["checkpoint"] = str(student_seed_root / student["run_name"] / "latest.pt")
 target = Path(target_path)
 target.parent.mkdir(parents=True, exist_ok=True)

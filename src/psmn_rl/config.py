@@ -57,6 +57,7 @@ class PPOConfig:
 @dataclass(slots=True)
 class ModelConfig:
     variant: str = "token_dense"
+    checkpoint_strict: bool = True
     hidden_size: int = 128
     token_dim: int = 128
     patch_size: int = 8
@@ -70,6 +71,7 @@ class ModelConfig:
     ponder_cost: float = 0.01
     relational_tokens: int = 4
     option_count: int = 4
+    memory_mix: float = 0.5
 
 
 @dataclass(slots=True)
