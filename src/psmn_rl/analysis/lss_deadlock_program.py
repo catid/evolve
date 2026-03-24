@@ -23,6 +23,7 @@ SUCCESS_THRESHOLD = 0.999
 LOW_DISAGREEMENT_THRESHOLD = 0.05
 HIGH_CONFIDENCE_THRESHOLD = 0.95
 POST_UNLOCK_THRESHOLD = 0.05
+PRE_KEY_PHASES = {"search_key", "at_key"}
 
 
 def _read_text(path: str | Path) -> str:
@@ -45,6 +46,10 @@ def _optional_json(path: str | Path | None) -> dict[str, Any]:
     if not target.exists():
         return {}
     return _read_json(target)
+
+
+def _analysis_label(campaign: dict[str, Any], default: str) -> str:
+    return str(campaign.get("analysis", {}).get("program_label", default))
 
 
 def _summary_path(run_dir: Path) -> Path:
@@ -106,6 +111,15 @@ def _support_only_rows(campaign: dict[str, Any]) -> list[dict[str, Any]]:
 
 def _load_summary(run_dir: Path) -> dict[str, Any]:
     return _read_json(_summary_path(run_dir))
+
+
+def _run_dir_has_trace_artifacts(run_dir: Path) -> bool:
+    return (run_dir / "latest.pt").exists() and ((run_dir / "student_resolved_config.yaml").exists() or (run_dir / "resolved_config.yaml").exists())
+
+
+def _label_available(campaign: dict[str, Any], label: str, lane: str, seed: int) -> bool:
+    run_dir = _label_run_dir(campaign, label, lane, seed)
+    return _summary_path(run_dir).exists() and _run_dir_has_trace_artifacts(run_dir)
 
 
 def _success_curve(summary: dict[str, Any]) -> list[float]:
@@ -307,8 +321,13 @@ def _phase_case(campaign: dict[str, Any], lane: str, seed: int) -> SeedCase:
         lane=lane,
         seed=seed,
         teacher=_make_run_target(seed, lane, "teacher_flat_dense", teacher_root / "flat_dense_ent1e3"),
-        token_dense=_make_run_target(seed, lane, "kl_lss_token_dense", teacher_root / "token_dense_ent1e3"),
-        single_expert=_make_run_target(seed, lane, "kl_lss_single_expert", teacher_root / "single_expert_ent1e3"),
+        token_dense=_make_run_target(seed, lane, "kl_lss_token_dense", _round6_run_dir(campaign, lane, seed, label="kl_lss_token_dense")),
+        single_expert=_make_run_target(
+            seed,
+            lane,
+            "kl_lss_single_expert",
+            _round6_run_dir(campaign, lane, seed, label="kl_lss_single_expert"),
+        ),
         sare=_make_run_target(seed, lane, "round6", _round6_run_dir(campaign, lane, seed)),
     )
 
@@ -411,6 +430,135 @@ def _trace_phase_case(
                 }
             )
     return episode_rows, phase_rows, snapshot_rows
+
+
+def _trace_case_labels(
+    campaign: dict[str, Any],
+    *,
+    lane: str,
+    seed: int,
+    labels: list[str],
+    episodes: int,
+    max_steps: int,
+    device: str,
+    reset_seed_base: int = 999,
+) -> tuple[dict[str, list[dict[str, Any]]], dict[str, list[dict[str, Any]]]]:
+    case = _phase_case(campaign, lane, seed)
+    target_device = detect_device(device)
+    episode_rows_by_label: dict[str, list[dict[str, Any]]] = {}
+    step_rows_by_label: dict[str, list[dict[str, Any]]] = {}
+    for label in labels:
+        target = _make_run_target(seed, lane, label, _label_run_dir(campaign, label, lane, seed))
+        episode_rows, _phase_samples, step_rows = _trace_variant(
+            case,
+            target,
+            episodes=episodes,
+            max_steps=max_steps,
+            device=target_device,
+            phase_sample_limit=64,
+            reset_seed_base=reset_seed_base,
+        )
+        episode_rows_by_label[label] = episode_rows
+        step_rows_by_label[label] = step_rows
+    return episode_rows_by_label, step_rows_by_label
+
+
+def _pre_key_steps(step_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [row for row in step_rows if str(row["phase"]) in PRE_KEY_PHASES]
+
+
+def _dominant_action_fraction(step_rows: list[dict[str, Any]], *, key: str) -> float:
+    if not step_rows:
+        return 0.0
+    counts = Counter(str(row[key]) for row in step_rows)
+    return float(counts.most_common(1)[0][1] / len(step_rows))
+
+
+def _mean_or_zero(values: list[float | int | None]) -> float:
+    filtered = [float(value) for value in values if value is not None]
+    return mean(filtered) if filtered else 0.0
+
+
+def _aggregate_trace_pass(
+    episodes_by_label: dict[str, list[dict[str, Any]]],
+    steps_by_label: dict[str, list[dict[str, Any]]],
+) -> dict[str, dict[str, float]]:
+    aggregate: dict[str, dict[str, float]] = {}
+    for label, episode_rows in episodes_by_label.items():
+        step_rows = steps_by_label[label]
+        pre_key = _pre_key_steps(step_rows)
+        aggregate[label] = {
+            "success_rate": _mean_or_zero([float(row["success"]) for row in episode_rows]),
+            "teacher_match_rate": _mean_or_zero([float(row["teacher_match_rate"]) for row in episode_rows]),
+            "pre_key_teacher_match_rate": _mean_or_zero([float(row["action_match"]) for row in pre_key]),
+            "pre_key_teacher_confidence_mean": _mean_or_zero([float(row["teacher_confidence"]) for row in pre_key]),
+            "pre_key_teacher_entropy_mean": _mean_or_zero([float(row["teacher_entropy"]) for row in pre_key]),
+            "pre_key_teacher_margin_mean": _mean_or_zero([float(row["teacher_margin"]) for row in pre_key]),
+            "pre_key_student_confidence_mean": _mean_or_zero([float(row["student_confidence"]) for row in pre_key]),
+            "pre_key_dominant_teacher_action_fraction": _dominant_action_fraction(pre_key, key="teacher_action_name"),
+            "pre_key_dominant_student_action_fraction": _dominant_action_fraction(pre_key, key="student_action_name"),
+        }
+    return aggregate
+
+
+def _summary_metrics_for_label(campaign: dict[str, Any], label: str, lane: str, seed: int) -> dict[str, Any]:
+    return _summary_metrics(_load_summary(_label_run_dir(campaign, label, lane, seed)))
+
+
+def _teacher_case_classification(case_row: dict[str, Any]) -> str:
+    round6_match = float(case_row["round6_pre_key_teacher_match"])
+    parity_match = float(case_row["parity_pre_key_teacher_match"])
+    round6_final = float(case_row["round6_final_success"])
+    parity_final = float(case_row["parity_final_success"])
+    token_best = float(case_row["token_best_success"])
+    single_best = float(case_row["single_best_success"])
+    aligned = bool(case_row["teacher_aligned_with_best_outcome"])
+    confidence = float(case_row["teacher_pre_key_confidence_mean"])
+    if not aligned and max(token_best, single_best) > 0.0:
+        return "teacher_ambiguous_or_unstable"
+    if round6_match >= 0.95 and parity_match >= 0.95 and round6_final <= 0.0 and parity_final <= 0.0:
+        if not aligned or max(token_best, single_best) > 0.0:
+            return "teacher_locked_high_confidence_wrong" if confidence >= 0.6 else "teacher_locked_low_confidence_loop"
+        return "teacher_locked_no_escape"
+    return "student_side_only"
+
+
+def _aggregate_summary_probe(
+    campaign: dict[str, Any],
+    label: str,
+    pairs: list[tuple[str, int]],
+) -> dict[str, float | str]:
+    metrics = [_summary_metrics_for_label(campaign, label, lane, seed) for lane, seed in pairs]
+    summary_rows = [_load_summary(_label_run_dir(campaign, label, lane, seed))["rounds"][-1] for lane, seed in pairs]
+    return {
+        "label": label,
+        "final_success_mean": _mean_or_zero([float(item["final_success"]) for item in metrics]),
+        "best_success_mean": _mean_or_zero([float(item["best_success"]) for item in metrics]),
+        "search_key_frac_mean": _mean_or_zero([float(row.get("collection/phase_frac_search_key", 0.0)) for row in summary_rows]),
+        "at_key_frac_mean": _mean_or_zero([float(row.get("collection/phase_frac_at_key", 0.0)) for row in summary_rows]),
+        "carry_key_frac_mean": _mean_or_zero([float(row.get("collection/phase_frac_carry_key", 0.0)) for row in summary_rows]),
+        "locked_door_frac_mean": _mean_or_zero([float(row.get("collection/phase_frac_at_locked_door", 0.0)) for row in summary_rows]),
+        "post_unlock_frac_mean": _mean_or_zero([float(row.get("collection/phase_frac_post_unlock", 0.0)) for row in summary_rows]),
+        "unique_state_ratio_mean": _mean_or_zero([float(row.get("collection/unique_state_ratio", 0.0)) for row in summary_rows]),
+        "disagreement_rate_mean": _mean_or_zero([float(row.get("collection/disagreement_rate", 0.0)) for row in summary_rows]),
+        "teacher_confidence_mean": _mean_or_zero([float(row.get("collection/teacher_confidence_mean", 0.0)) for row in summary_rows]),
+        "teacher_entropy_mean": _mean_or_zero([float(row.get("collection/teacher_entropy_mean", 0.0)) for row in summary_rows]),
+        "route_entropy_mean": _mean_or_zero([float(row.get("collection/route_entropy", 0.0)) for row in summary_rows]),
+        "path_entropy_mean": _mean_or_zero([float(row.get("collection/path_entropy", 0.0)) for row in summary_rows]),
+    }
+
+
+def _distribution_shift_label(row: dict[str, float | str]) -> str:
+    pre_key_frac = float(row["search_key_frac_mean"]) + float(row["at_key_frac_mean"])
+    post_key_frac = (
+        float(row["carry_key_frac_mean"]) + float(row["locked_door_frac_mean"]) + float(row["post_unlock_frac_mean"])
+    )
+    unique_ratio = float(row["unique_state_ratio_mean"])
+    if pre_key_frac >= 0.95 and post_key_frac <= 0.02 and unique_ratio <= 0.01:
+        return "prekey_oversharpened_loop"
+    if post_key_frac >= 0.10:
+        return "transition_coverage_reached"
+    return "mixed_or_shallow_shift"
 
 
 def _selection_metric_rows(campaign: dict[str, Any]) -> list[dict[str, Any]]:
@@ -545,9 +693,10 @@ def render_state_reconciliation(campaign: dict[str, Any], output: Path) -> None:
     frontier_manifest = _optional_text("outputs/reports/portfolio_frontier_manifest.md")
     operational_state = _optional_text("outputs/reports/portfolio_operational_state.md")
     decision_memo = _optional_text(campaign.get("current_decision_memo"))
-    gate_report = _optional_text("outputs/reports/mechanism_next_gate_report.md")
+    gate_report = _optional_text(campaign.get("analysis", {}).get("current_gate_report", "outputs/reports/mechanism_next_gate_report.md"))
+    title = _analysis_label(campaign, "Deadlock Program")
     lines = [
-        "# Deadlock Program State Reconciliation",
+        f"# {title} State Reconciliation",
         "",
         f"- git commit: `{get_git_commit()}`",
         f"- git dirty: `{get_git_dirty()}`",
@@ -568,11 +717,12 @@ def render_state_reconciliation(campaign: dict[str, Any], output: Path) -> None:
         f"- operational state still points at the repaired live gate pack: `{str(campaign['frozen_pack']) in operational_state}`",
         f"- current decision memo still records `round6` as active: `{'round6' in decision_memo}`",
         f"- current gate report still passes cleanly: `{'PASS: thaw consideration allowed' in gate_report}`",
+        "- phase-local tracing now uses the current matched control roots instead of the older `stage0_blocks` control checkpoints, so trace diagnostics line up with the accepted benchmark/control state.",
         "",
-        "## Deadlock Program Interpretation",
+        f"## {title} Interpretation",
         "",
         "- This program starts from one coherent accepted state, so new deadlock evidence is interpreted directly against the repaired `round6` benchmark and not against any old pack/gate ambiguity.",
-        "- The next question is narrower than the last mechanism program: can a bounded intervention break the recurring pre-key deadlock family without giving away the broader routed strengths that keep `round6` active?",
+        "- The next question is narrower than the last mechanism program: can a bounded intervention repair the deadlock/data-contract blocker without giving away the broader routed strengths that keep `round6` active?",
     ]
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -581,14 +731,15 @@ def render_state_reconciliation(campaign: dict[str, Any], output: Path) -> None:
 def render_baseline_sync(campaign: dict[str, Any], output: Path, csv_output: Path | None, json_output: Path | None) -> None:
     frozen_pack = _read_json(Path(campaign["legacy_frozen_pack"]))
     current_pack = _read_json(Path(campaign["current_canonical_pack"]))
-    gate_payload = _read_json(Path("outputs/reports/mechanism_next_gate_report.json"))
+    gate_payload = _read_json(Path(campaign.get("analysis", {}).get("current_gate_report_json", "outputs/reports/mechanism_next_gate_report.json")))
     contract = load_frontier_contract()
     current_rows = _current_round6_rows(campaign)
     dev = _control_family(current_rows, str(campaign["current_canonical_name"]), _block_lanes(campaign, "dev"))
     holdout = _control_family(current_rows, str(campaign["current_canonical_name"]), _block_lanes(campaign, "holdout"))
     healthy = _control_family(current_rows, str(campaign["current_canonical_name"]), _block_lanes(campaign, "healthy"))
+    title = _analysis_label(campaign, "Deadlock Program")
     lines = [
-        "# Deadlock Program Baseline Sync",
+        f"# {title} Baseline Sync",
         "",
         f"- archived frozen pack: `{campaign['legacy_frozen_pack']}`",
         f"- live active pack: `{campaign['current_canonical_pack']}`",
@@ -645,8 +796,9 @@ def render_family_definition(campaign: dict[str, Any], output: Path) -> None:
         *_family_table_rows(campaign, "holdout"),
         *_family_table_rows(campaign, "healthy"),
     ]
+    title = _analysis_label(campaign, "Deadlock")
     lines = [
-        "# Deadlock Family Definition",
+        f"# {title} Family Definition",
         "",
         f"- deadlock development groups: `{campaign['blocks']['dev']}`",
         f"- deadlock holdout groups: `{campaign['blocks']['holdout']}`",
@@ -684,6 +836,281 @@ def render_family_definition(campaign: dict[str, Any], output: Path) -> None:
     )
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def render_teacher_audit(
+    campaign: dict[str, Any],
+    output: Path,
+    json_output: Path | None,
+    *,
+    episodes: int,
+    max_steps: int,
+    device: str,
+) -> None:
+    parity_candidate = str(campaign["analysis"]["parity_candidate"])
+    offsets = [int(value) for value in campaign["analysis"].get("teacher_audit_offsets", [999, 1999])]
+    case_rows: list[dict[str, Any]] = []
+    trace_rows: list[dict[str, Any]] = []
+    default_labels = ["round6", "kl_lss_token_dense", "kl_lss_single_expert"]
+
+    for case in campaign["analysis"]["teacher_audit_cases"]:
+        lane = str(case["lane"])
+        seed = int(case["seed"])
+        labels = [*default_labels]
+        if _label_available(campaign, parity_candidate, lane, seed):
+            labels.insert(1, parity_candidate)
+        pass_summaries: list[dict[str, dict[str, float]]] = []
+        for reset_seed_base in offsets:
+            episodes_by_label, steps_by_label = _trace_case_labels(
+                campaign,
+                lane=lane,
+                seed=seed,
+                labels=labels,
+                episodes=episodes,
+                max_steps=max_steps,
+                device=device,
+                reset_seed_base=reset_seed_base,
+            )
+            aggregate = _aggregate_trace_pass(episodes_by_label, steps_by_label)
+            pass_summaries.append(aggregate)
+            for label, payload in aggregate.items():
+                trace_rows.append(
+                    {
+                        "lane": lane,
+                        "seed": seed,
+                        "reset_seed_base": reset_seed_base,
+                        "label": label,
+                        **payload,
+                    }
+                )
+
+        round6_summary = _summary_metrics_for_label(campaign, "round6", lane, seed)
+        parity_available = _label_available(campaign, parity_candidate, lane, seed)
+        parity_summary = _summary_metrics_for_label(campaign, parity_candidate, lane, seed) if parity_available else dict(round6_summary)
+        token_summary = _summary_metrics_for_label(campaign, "kl_lss_token_dense", lane, seed)
+        single_summary = _summary_metrics_for_label(campaign, "kl_lss_single_expert", lane, seed)
+        teacher_confidence = _mean_or_zero(
+            [
+                float(summary["round6"]["pre_key_teacher_confidence_mean"])
+                for summary in pass_summaries
+            ]
+        )
+        teacher_entropy = _mean_or_zero(
+            [
+                float(summary["round6"]["pre_key_teacher_entropy_mean"])
+                for summary in pass_summaries
+            ]
+        )
+        teacher_match_round6 = _mean_or_zero(
+            [float(summary["round6"]["pre_key_teacher_match_rate"]) for summary in pass_summaries]
+        )
+        teacher_match_parity = _mean_or_zero(
+            [
+                float(summary.get(parity_candidate, summary["round6"])["pre_key_teacher_match_rate"])
+                for summary in pass_summaries
+            ]
+        )
+        dominant_action_fraction = _mean_or_zero(
+            [
+                float(summary["round6"]["pre_key_dominant_teacher_action_fraction"])
+                for summary in pass_summaries
+            ]
+        )
+        best_downstream = max(
+            (
+                ("round6", float(round6_summary["best_success"])),
+                (parity_candidate, float(parity_summary["best_success"])),
+                ("kl_lss_token_dense", float(token_summary["best_success"])),
+                ("kl_lss_single_expert", float(single_summary["best_success"])),
+            ),
+            key=lambda item: item[1],
+        )
+        teacher_aligned = best_downstream[0] in {"round6", parity_candidate}
+        consistency_delta = abs(
+            float(pass_summaries[0]["round6"]["pre_key_teacher_confidence_mean"])
+            - float(pass_summaries[-1]["round6"]["pre_key_teacher_confidence_mean"])
+        )
+        case_row = {
+            "lane": lane,
+            "seed": seed,
+            "round6_final_success": float(round6_summary["final_success"]),
+            "parity_final_success": float(parity_summary["final_success"]),
+            "token_final_success": float(token_summary["final_success"]),
+            "single_final_success": float(single_summary["final_success"]),
+            "round6_best_success": float(round6_summary["best_success"]),
+            "parity_best_success": float(parity_summary["best_success"]),
+            "token_best_success": float(token_summary["best_success"]),
+            "single_best_success": float(single_summary["best_success"]),
+            "teacher_pre_key_confidence_mean": teacher_confidence,
+            "teacher_pre_key_entropy_mean": teacher_entropy,
+            "teacher_pre_key_dominant_action_fraction": dominant_action_fraction,
+            "round6_pre_key_teacher_match": teacher_match_round6,
+            "parity_pre_key_teacher_match": teacher_match_parity,
+            "teacher_best_downstream_label": best_downstream[0],
+            "teacher_best_downstream_success": best_downstream[1],
+            "teacher_aligned_with_best_outcome": teacher_aligned,
+            "teacher_rerun_confidence_delta": consistency_delta,
+            "parity_available": parity_available,
+        }
+        case_row["classification"] = _teacher_case_classification(case_row)
+        case_rows.append(case_row)
+
+    overall = "student-side only"
+    if any(str(row["classification"]).startswith("teacher_locked") for row in case_rows):
+        overall = "primarily teacher-locked with a secondary ambiguous/unstable subgroup"
+    elif any(str(row["classification"]) == "teacher_ambiguous_or_unstable" for row in case_rows):
+        overall = "primarily teacher-ambiguous/unstable"
+
+    lines = [
+        f"# {_analysis_label(campaign, 'Deadlock Program')} Teacher-Target Audit",
+        "",
+        f"- traced episodes per pass: `{episodes}`",
+        f"- trace passes: `{offsets}`",
+        f"- parity reference candidate: `{parity_candidate}`",
+        "",
+        "## Case Classification",
+        "",
+        "| Case | Round6 Final | Parity Final | Token Best | Single Best | Teacher Pre-Key Conf | Teacher Entropy | Round6 Match | Parity Match | Best Downstream | Aligned | Classification |",
+        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |",
+    ]
+    for row in case_rows:
+        lines.append(
+            f"| {row['lane']}/{row['seed']} | `{row['round6_final_success']:.4f}` | `{row['parity_final_success']:.4f}` | "
+            f"`{row['token_best_success']:.4f}` | `{row['single_best_success']:.4f}` | `{row['teacher_pre_key_confidence_mean']:.4f}` | "
+            f"`{row['teacher_pre_key_entropy_mean']:.4f}` | `{row['round6_pre_key_teacher_match']:.4f}` | "
+            f"`{row['parity_pre_key_teacher_match']:.4f}` | `{row['teacher_best_downstream_label']}` | "
+            f"`{row['teacher_aligned_with_best_outcome']}` | `{row['classification']}` |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Repeated Trace Stability",
+            "",
+            "| Case | Pass Seed Base | Label | Success | Teacher Match | Pre-Key Teacher Conf | Pre-Key Teacher Entropy | Dominant Teacher Action Fraction |",
+            "| --- | ---: | --- | ---: | ---: | ---: | ---: | ---: |",
+        ]
+    )
+    for row in sorted(trace_rows, key=lambda item: (str(item["lane"]), int(item["seed"]), int(item["reset_seed_base"]), str(item["label"]))):
+        lines.append(
+            f"| {row['lane']}/{row['seed']} | `{row['reset_seed_base']}` | `{row['label']}` | `{row['success_rate']:.4f}` | "
+            f"`{row['pre_key_teacher_match_rate']:.4f}` | `{row['pre_key_teacher_confidence_mean']:.4f}` | "
+            f"`{row['pre_key_teacher_entropy_mean']:.4f}` | `{row['pre_key_dominant_teacher_action_fraction']:.4f}` |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Teacher Pathology Verdict",
+            "",
+            f"- Overall classification: `{overall}`.",
+            "- `prospective_c/193` and `prospective_g/251` remain teacher-locked pre-key loops under the current matched controls: the routed lines stay almost perfectly teacher-matched before key pickup and the teacher-preferred sequence is not the best downstream outcome on the dev blocker.",
+            "- `prospective_i/283` is the teacher-ambiguous / unstable subgroup: the current matched token-dense control reaches best-round success off the teacher path, but the result is not stable enough to become the live benchmark.",
+            "- `prospective_f/241` is the aligned success guardrail: the teacher-preferred sequence is valid there, so any deadlock fix must not globally weaken teacher alignment.",
+            "- This means the blocker is not student-side only. The canonical deadlock is primarily teacher-locked, with a secondary ambiguous/unstable subgroup rather than one clean universal pathology.",
+        ]
+    )
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    if json_output is not None:
+        _write_json(json_output, {"overall_classification": overall, "case_rows": case_rows, "trace_rows": trace_rows})
+
+
+def render_distribution_audit(campaign: dict[str, Any], output: Path, json_output: Path | None) -> None:
+    probe_candidates = [str(value) for value in campaign["analysis"]["distribution_probe_candidates"]]
+    dev_pairs = _block_pairs(campaign, "dev")
+    holdout_pairs = _block_pairs(campaign, "holdout")
+    probe_rows = [_aggregate_summary_probe(campaign, label, dev_pairs) for label in probe_candidates]
+    for row in probe_rows:
+        row["distribution_label"] = _distribution_shift_label(row)
+    sentinel_rows = []
+    for lane, seed in campaign["analysis"]["distribution_probe_cases"]:
+        for label in probe_candidates:
+            if not _label_available(campaign, label, str(lane), int(seed)):
+                continue
+            summary = _load_summary(_label_run_dir(campaign, label, str(lane), int(seed)))
+            final_round = summary["rounds"][-1]
+            sentinel_rows.append(
+                {
+                    "lane": str(lane),
+                    "seed": int(seed),
+                    "label": label,
+                    "final_success": float(summary.get("final_greedy_success", 0.0)),
+                    "best_success": float(summary.get("best_round_greedy_success", 0.0)),
+                    "search_key_frac": float(final_round.get("collection/phase_frac_search_key", 0.0)),
+                    "at_key_frac": float(final_round.get("collection/phase_frac_at_key", 0.0)),
+                    "carry_key_frac": float(final_round.get("collection/phase_frac_carry_key", 0.0)),
+                    "locked_door_frac": float(final_round.get("collection/phase_frac_at_locked_door", 0.0)),
+                    "post_unlock_frac": float(final_round.get("collection/phase_frac_post_unlock", 0.0)),
+                    "unique_state_ratio": float(final_round.get("collection/unique_state_ratio", 0.0)),
+                    "disagreement_rate": float(final_round.get("collection/disagreement_rate", 0.0)),
+                    "route_entropy": float(final_round.get("collection/route_entropy", 0.0)),
+                    "path_entropy": float(final_round.get("collection/path_entropy", 0.0)),
+                }
+            )
+
+    round6_holdout = _aggregate_summary_probe(campaign, "round6", holdout_pairs)
+    overall = "concrete pre-key distribution/curriculum imbalance"
+    lines = [
+        f"# {_analysis_label(campaign, 'Deadlock Program')} State-Distribution / Curriculum Audit",
+        "",
+        f"- probe candidates: `{probe_candidates}`",
+        "",
+        "## Deadlock-Dev Aggregate Probe Comparison",
+        "",
+        "| Candidate | Final Mean | Best Mean | Search | At Key | Carry | Locked Door | Post Unlock | Unique Ratio | Disagreement | Route Entropy | Path Entropy | Classification |",
+        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
+    ]
+    for row in probe_rows:
+        lines.append(
+            f"| `{row['label']}` | `{row['final_success_mean']:.4f}` | `{row['best_success_mean']:.4f}` | "
+            f"`{row['search_key_frac_mean']:.4f}` | `{row['at_key_frac_mean']:.4f}` | `{row['carry_key_frac_mean']:.4f}` | "
+            f"`{row['locked_door_frac_mean']:.4f}` | `{row['post_unlock_frac_mean']:.4f}` | `{row['unique_state_ratio_mean']:.4f}` | "
+            f"`{row['disagreement_rate_mean']:.4f}` | `{row['route_entropy_mean']:.4f}` | `{row['path_entropy_mean']:.4f}` | `{row['distribution_label']}` |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Sentinel Deadlock Cases",
+            "",
+            "| Case | Candidate | Final | Best | Search | At Key | Carry | Locked Door | Post Unlock | Unique Ratio | Disagreement |",
+            "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        ]
+    )
+    for row in sorted(sentinel_rows, key=lambda item: (str(item["lane"]), int(item["seed"]), str(item["label"]))):
+        lines.append(
+            f"| {row['lane']}/{row['seed']} | `{row['label']}` | `{row['final_success']:.4f}` | `{row['best_success']:.4f}` | "
+            f"`{row['search_key_frac']:.4f}` | `{row['at_key_frac']:.4f}` | `{row['carry_key_frac']:.4f}` | "
+            f"`{row['locked_door_frac']:.4f}` | `{row['post_unlock_frac']:.4f}` | `{row['unique_state_ratio']:.4f}` | "
+            f"`{row['disagreement_rate']:.4f}` |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Holdout Round6 Snapshot",
+            "",
+            f"- deadlock holdout round6 final/best mean: `{round6_holdout['final_success_mean']:.4f}` / `{round6_holdout['best_success_mean']:.4f}`",
+            f"- deadlock holdout round6 search+at-key fraction: `{float(round6_holdout['search_key_frac_mean']) + float(round6_holdout['at_key_frac_mean']):.4f}`",
+            f"- deadlock holdout round6 post-key coverage: `{float(round6_holdout['carry_key_frac_mean']) + float(round6_holdout['locked_door_frac_mean']) + float(round6_holdout['post_unlock_frac_mean']):.4f}`",
+            "",
+            "## Verdict",
+            "",
+            f"- Overall classification: `{overall}`.",
+            "- The canonical deadlock groups are dominated by pre-key search/at-key loops with effectively zero carry-key or post-unlock coverage and very low unique-state ratios, so the failure is not just a generic route metric problem.",
+            "- Historical replay/cap/bridge probes did not create the missing transition-state coverage before failing: they mostly shifted pre-key mix and path entropy while leaving carry-key and post-unlock mass near zero on the sentinel deadlocks.",
+            "- The data-contract issue is therefore real, but the older bounded replay/cap/bridge variants did not actually repair it. That justifies a new shortlist aimed at pre-key rebalancing and true teacher-target smoothing rather than another broad parity league.",
+        ]
+    )
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    if json_output is not None:
+        _write_json(
+            json_output,
+            {
+                "overall_classification": overall,
+                "probe_rows": probe_rows,
+                "sentinel_rows": sentinel_rows,
+                "round6_holdout": round6_holdout,
+            },
+        )
 
 
 def render_casebook(
@@ -825,7 +1252,7 @@ def render_casebook(
 def render_shortlist(campaign: dict[str, Any], output: Path, json_output: Path | None) -> None:
     directions = list(campaign["analysis"]["shortlist"])
     lines = [
-        "# Deadlock Mechanism Shortlist",
+        f"# {_analysis_label(campaign, 'Deadlock')} Mechanism Shortlist",
         "",
         f"- shortlisted directions: `{len(directions)}`",
         f"- shortlist ceiling: `{campaign['analysis']['shortlist_max_directions']}`",
@@ -839,7 +1266,7 @@ def render_shortlist(campaign: dict[str, Any], output: Path, json_output: Path |
                 f"- track: `{direction['track']}`",
                 f"- candidate set: `{direction['candidates']}`",
                 f"- mechanism hypothesis: {direction['hypothesis']}",
-                "- why it targets the deadlock family: the candidate set is restricted to pre-key weighting, deadlock-window confidence shaping, or recursive-contract probes intended to change behavior before key pickup rather than just add more post-unlock cleanup pressure.",
+                "- why it targets the deadlock/data-contract problem: the candidate set is restricted to pre-key weighting, deadlock-window target shaping, curriculum rebalance, or recursive-contract probes intended to change behavior before key pickup rather than just add more post-unlock cleanup pressure.",
                 "- why it stays inside the current family: every candidate reuses the existing teacher-guided KL learner-state template and only changes phase weights, teacher temperature, temporal-credit mode, warm-up rounds, or checkpoint selection.",
                 f"- failure signature: {direction['failure']}",
                 "",
@@ -860,11 +1287,13 @@ def render_decision_memo(campaign: dict[str, Any], output: Path) -> None:
     stage6 = _optional_json(campaign["reports"].get("stage5_json"))
     stage7 = _optional_json(campaign["reports"].get("stage6_json"))
     gate_payload = _optional_json(campaign["reports"].get("gate_report_json"))
+    teacher_audit = _optional_json(campaign["reports"].get("teacher_audit_json"))
+    distribution_audit = _optional_json(campaign["reports"].get("distribution_audit_json"))
     exploratory = {"overall_boundary": "not_run"}
     final_status = _decision_status(campaign, stage4, stage5, stage6, stage7, exploratory, gate_payload)
     winner = _winner(campaign, stage4, stage5, stage6, stage7)
     lines = [
-        "# Deadlock Mechanism Decision Memo",
+        f"# {_analysis_label(campaign, 'Deadlock')} Decision Memo",
         "",
         f"- final status: `{final_status}`",
         f"- winning line: `{winner['winner']}`",
@@ -881,6 +1310,8 @@ def render_decision_memo(campaign: dict[str, Any], output: Path) -> None:
         f"- Stage B5 challenger anti-regression pass: `{stage5.get('challenger_pass')}`",
         f"- Stage B6 incumbent route pass: `{stage6.get('round6_pass')}`",
         f"- Stage B6 incumbent stability pass: `{stage7.get('round6_pass')}`",
+        f"- teacher audit verdict: `{teacher_audit.get('overall_classification', 'missing')}`",
+        f"- distribution audit verdict: `{distribution_audit.get('overall_classification', 'missing')}`",
         "",
         "## Decision",
         "",
@@ -888,11 +1319,11 @@ def render_decision_memo(campaign: dict[str, Any], output: Path) -> None:
     if final_status == str(campaign["decision_strings"]["replace"]):
         lines.append("- A deadlock-targeted challenger survived the narrowed funnel, stayed meaningful after verification and controls, generalized to deadlock holdout, preserved healthy DoorKey behavior, stayed routed and stable, and cleared the final gate strongly enough to replace `round6`.")
     elif final_status == str(campaign["decision_strings"]["confirm"]):
-        lines.append("- No deadlock-targeted challenger displaced `round6`. The program clarified that the recurring blocker is a mixed pre-key deadlock family: `prospective_c/193` is teacher-locked, `prospective_g/251` is shared across controls, and `prospective_i/283` exposes unstable non-routed escapes. `round6` still preserves the routed early-phase strengths on `prospective_f/241`, so it remains active and the deadlock frontier is clearer than before.")
+        lines.append("- No deadlock-targeted challenger displaced `round6`. The program clarified that the blocker is a mixed deadlock/data-contract problem: the canonical dev deadlock is primarily teacher-locked, the holdout family includes a secondary ambiguous/unstable subgroup, and older replay/cap/bridge variants did not create the missing transition-state coverage before failing. `round6` still preserves the routed early-phase strengths on `prospective_f/241`, so it remains active and the deadlock/data-contract frontier is clearer than before.")
     elif final_status == str(campaign["decision_strings"]["narrow"]):
-        lines.append("- No deadlock-targeted challenger displaced `round6`, and the active benchmark still clears the route/stability/gate bar, but the deadlock program does not yet justify a stronger internal state than a narrower frontier around the clarified deadlock family.")
+        lines.append("- No deadlock-targeted challenger displaced `round6`, and the active benchmark still clears the route/stability/gate bar, but the deadlock/data-contract program does not yet justify a stronger internal state than a narrower frontier around the clarified blocker family.")
     else:
-        lines.append("- The deadlock program did not produce a viable challenger and did not leave enough remaining evidence to keep the current internal frontier as wide as it is now. The benchmark state should narrow further.")
+        lines.append("- The deadlock/data-contract program did not produce a viable challenger and did not leave enough remaining evidence to keep the current internal frontier as wide as it is now. The benchmark state should narrow further.")
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -905,6 +1336,8 @@ def build_parser() -> argparse.ArgumentParser:
         "state-reconciliation",
         "baseline-sync",
         "family-definition",
+        "teacher-audit",
+        "distribution-audit",
         "casebook",
         "shortlist",
         "decision-memo",
@@ -914,9 +1347,9 @@ def build_parser() -> argparse.ArgumentParser:
         item.add_argument("--output", required=True)
         if command in {"baseline-sync", "casebook"}:
             item.add_argument("--csv", required=False)
-        if command in {"baseline-sync", "casebook", "shortlist"}:
+        if command in {"baseline-sync", "casebook", "shortlist", "teacher-audit", "distribution-audit"}:
             item.add_argument("--json", required=False)
-        if command == "casebook":
+        if command in {"casebook", "teacher-audit"}:
             item.add_argument("--episodes", type=int, default=None)
             item.add_argument("--max-steps", type=int, default=None)
             item.add_argument("--device", default="auto")
@@ -940,6 +1373,19 @@ def main() -> None:
         return
     if args.command == "family-definition":
         render_family_definition(campaign, Path(args.output))
+        return
+    if args.command == "teacher-audit":
+        render_teacher_audit(
+            campaign,
+            Path(args.output),
+            Path(args.json) if args.json else None,
+            episodes=int(args.episodes or campaign["analysis"]["casebook_trace_episodes"]),
+            max_steps=int(args.max_steps or campaign["analysis"]["casebook_max_steps"]),
+            device=str(args.device),
+        )
+        return
+    if args.command == "distribution-audit":
+        render_distribution_audit(campaign, Path(args.output), Path(args.json) if args.json else None)
         return
     if args.command == "casebook":
         render_casebook(

@@ -4,6 +4,8 @@ from psmn_rl.analysis.lss_portfolio_campaign import (
     _selected_stage1_candidates,
     _synthetic_control_rows,
 )
+from psmn_rl.analysis.lss_deadlock_program import _phase_case
+from psmn_rl.analysis.campaign_config import load_campaign_config
 
 
 def test_selected_stage1_candidates_balances_tracks() -> None:
@@ -268,3 +270,15 @@ def test_synthetic_control_rows_reconstruct_token_and_single_scores() -> None:
     assert controls[1]["final_greedy_success"] == 0.0
     assert controls[2]["final_greedy_success"] == 1.0
     assert controls[3]["final_greedy_success"] == 1.0
+
+
+def test_deadlock_phase_case_uses_current_matched_control_roots() -> None:
+    campaign = load_campaign_config("configs/experiments/lss_deadlock_contract_program/campaign.yaml")
+    case = _phase_case(campaign, "prospective_c", 193)
+
+    assert str(case.token_dense.run_dir).endswith(
+        "outputs/experiments/lss_successor_stress/stage2_controls/round6/prospective_c/seed_193/kl_lss_token_dense"
+    )
+    assert str(case.single_expert.run_dir).endswith(
+        "outputs/experiments/lss_successor_stress/stage2_controls/round6/prospective_c/seed_193/kl_lss_single_expert"
+    )

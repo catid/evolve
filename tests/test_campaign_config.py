@@ -73,3 +73,21 @@ def test_deadlock_program_campaign_targets_deadlock_blocks_and_candidate_budget(
     assert campaign["analysis"]["parity_candidate"] == "round7"
     assert "round10_search_x4" in campaign["candidates"]
     assert "round10_conf_search_x4" in campaign["candidates"]
+
+
+def test_deadlock_contract_program_campaign_targets_teacher_and_distribution_repairs() -> None:
+    campaign = load_campaign_config("configs/experiments/lss_deadlock_contract_program/campaign.yaml")
+    track_counts = Counter(str(meta["track"]) for meta in campaign["candidates"].values())
+
+    assert campaign["name"] == "lss_deadlock_contract_program"
+    assert track_counts == {"fruitful": 17, "exploratory": 7}
+    assert len(campaign["candidates"]) == 24
+    assert campaign["current_decision_memo"] == "outputs/reports/deadlock_next_decision_memo.md"
+    assert campaign["decision_strings"]["confirm"] == "active benchmark confirmed and deadlock/data-contract frontier clarified"
+    assert campaign["reports"]["teacher_audit_report"] == "outputs/reports/deadlock_contract_teacher_audit.md"
+    assert campaign["reports"]["distribution_audit_report"] == "outputs/reports/deadlock_contract_distribution_audit.md"
+    assert campaign["reports"]["decision_memo"] == "outputs/reports/deadlock_contract_decision_memo.md"
+    assert campaign["analysis"]["program_label"] == "Deadlock/Data-Contract Program"
+    assert campaign["analysis"]["shortlist_max_directions"] == 4
+    assert "round10_search_x4_temp105" in campaign["candidates"]
+    assert "round10_prekey_phase_balanced_4096" in campaign["candidates"]

@@ -416,6 +416,7 @@ def _trace_variant(
     max_steps: int,
     device: torch.device,
     phase_sample_limit: int,
+    reset_seed_base: int = 999,
 ) -> tuple[list[dict[str, Any]], dict[str, list[dict[str, Any]]], list[dict[str, Any]]]:
     teacher_config, teacher_model = _load_model(str(case.teacher.config_path), str(case.teacher.checkpoint_path), device)
     student_config, student_model = _load_model(str(student.config_path), str(student.checkpoint_path), device)
@@ -428,7 +429,7 @@ def _trace_variant(
     step_rows: list[dict[str, Any]] = []
     try:
         for episode_index in range(episodes):
-            reset_seed = int(student_config.seed + 999 + episode_index)
+            reset_seed = int(student_config.seed + reset_seed_base + episode_index)
             obs, _ = env.reset(seed=reset_seed)
             teacher_state = teacher_model.initial_state(1, device)
             student_state = student_model.initial_state(1, device)
@@ -479,9 +480,12 @@ def _trace_variant(
                     "teacher_action": int(teacher_action_summary["action"]),
                     "teacher_action_name": _action_name(env, int(teacher_action_summary["action"])),
                     "teacher_confidence": float(teacher_action_summary["confidence"]),
+                    "teacher_entropy": float(teacher_action_summary["entropy"]),
+                    "teacher_margin": float(teacher_action_summary["margin"]),
                     "student_action": action,
                     "student_action_name": action_name,
                     "student_confidence": float(student_action_summary["confidence"]),
+                    "student_entropy": float(student_action_summary["entropy"]),
                     "student_margin": float(student_action_summary["margin"]),
                     "action_match": float(teacher_action_summary["action"] == action),
                     "reward": float(reward),
