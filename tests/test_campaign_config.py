@@ -110,3 +110,22 @@ def test_deadlock_arch_program_campaign_adds_archpilot_track_and_budget() -> Non
     assert campaign["analysis"]["transition_state_targets"] == ["carry_key", "at_locked_door", "post_unlock"]
     assert "round10_phase_memory_mix050_search_x4" in campaign["candidates"]
     assert "outputs/experiments/lss_deadlock_contract_program/stageB1_screening" in campaign["reuse_roots"]["stage1_sare"]
+
+
+def test_deadlock_plus_program_campaign_scales_to_seventy_two_candidates() -> None:
+    campaign = load_campaign_config("configs/experiments/lss_deadlock_plus_program/campaign.yaml")
+    track_counts = Counter(str(meta["track"]) for meta in campaign["candidates"].values())
+
+    assert campaign["name"] == "lss_deadlock_plus_program"
+    assert track_counts == {"fruitful": 50, "exploratory": 14, "archpilot": 8}
+    assert len(campaign["candidates"]) == 72
+    assert campaign["current_decision_memo"] == "outputs/reports/deadlock_arch_decision_memo.md"
+    assert campaign["selection"]["stage1_fruitful_top_k"] == 5
+    assert campaign["selection"]["stage1_archpilot_top_k"] == 2
+    assert len(campaign["blocks"]["dev"]) == 3
+    assert len(campaign["blocks"]["holdout"]) == 3
+    assert len(campaign["blocks"]["healthy"]) == 3
+    assert campaign["reports"]["decision_memo"] == "outputs/reports/deadlock_plus_decision_memo.md"
+    assert campaign["analysis"]["shortlist_max_directions"] == 8
+    assert "round10_phase_memory_mix075_search_x4" in campaign["candidates"]
+    assert "outputs/experiments/lss_deadlock_arch_program/stageB1_screening" in campaign["reuse_roots"]["stage1_sare"]

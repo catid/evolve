@@ -791,6 +791,14 @@ def render_family_definition(campaign: dict[str, Any], output: Path) -> None:
     dev_summary = _control_family(_current_round6_rows(campaign), str(campaign["current_canonical_name"]), _block_lanes(campaign, "dev"))
     holdout_summary = _control_family(_current_round6_rows(campaign), str(campaign["current_canonical_name"]), _block_lanes(campaign, "holdout"))
     healthy_summary = _control_family(_current_round6_rows(campaign), str(campaign["current_canonical_name"]), _block_lanes(campaign, "healthy"))
+    dev_lanes = [str(block["lane"]) for block in campaign["blocks"]["dev"]]
+    holdout_lanes = [str(block["lane"]) for block in campaign["blocks"]["holdout"]]
+    healthy_lanes = [str(block["lane"]) for block in campaign["blocks"]["healthy"]]
+    family_notes = [
+        str(note)
+        for note in campaign.get("analysis", {}).get("family_definition_notes", [])
+        if str(note).strip()
+    ]
     rows = [
         *_family_table_rows(campaign, "dev"),
         *_family_table_rows(campaign, "holdout"),
@@ -798,6 +806,16 @@ def render_family_definition(campaign: dict[str, Any], output: Path) -> None:
     ]
     title = _analysis_label(campaign, "Deadlock")
     transition_targets = [str(value) for value in campaign.get("analysis", {}).get("transition_state_targets", [])]
+    why_lines = (
+        [f"- {note}" for note in family_notes]
+        if family_notes
+        else [
+            f"- The development deadlock family used for selection is `{dev_lanes}`.",
+            f"- The deadlock holdout family held back from selection is `{holdout_lanes}`.",
+            "- The family is therefore not one memorable seed. It combines repeated deadlock or transition-fragile cases with routed success guardrails so a fix can be separated from a generic weakening of the policy.",
+            "- The transition-state notion is explicit: a fix is expected to increase coverage of the first post-search carry-key and locked-door approach phases rather than only reshaping search-key or at-key loops.",
+        ]
+    )
     lines = [
         f"# {title} Family Definition",
         "",
@@ -809,10 +827,7 @@ def render_family_definition(campaign: dict[str, Any], output: Path) -> None:
         "",
         "## Why This Is A Family",
         "",
-        "- `prospective_c` and `prospective_f` are the development deadlock family groups used for selection. `prospective_c/193` is the canonical teacher-locked deadlock, while `prospective_f/241` is the paired routed early-phase success that a fix must preserve.",
-        "- `prospective_g` and `prospective_i` are holdout deadlock-family groups held back from selection. `prospective_g/251` is a shared pre-key deadlock and `prospective_i/283` is the unstable control-escape holdout.",
-        "- The family is therefore not one memorable seed. It contains repeated pre-key deadlocks plus nearby solved routed cases that make it possible to distinguish a real fix from a generic weakening of the policy.",
-        "- The transition-state notion is explicit: a fix is expected to increase coverage of the first post-search carry-key and locked-door approach phases rather than only reshaping search-key or at-key loops.",
+        *why_lines,
         "",
         "## Current Round6 Snapshot",
         "",
@@ -832,9 +847,9 @@ def render_family_definition(campaign: dict[str, Any], output: Path) -> None:
             "",
             "## Selection And Holdout Policy",
             "",
-            "- Candidate selection uses only the deadlock development groups: `prospective_c` and `prospective_f`.",
-            "- Deadlock holdout uses only `prospective_g` and `prospective_i`, so no candidate is promoted on the same lane family it was selected on.",
-            "- Healthy checks stay on `original` and `fresh` so a deadlock fix cannot win by breaking the already-healthy DoorKey behavior.",
+            f"- Candidate selection uses only the deadlock development groups: `{dev_lanes}`.",
+            f"- Deadlock holdout uses only `{holdout_lanes}`, so no candidate is promoted on the same lane family it was selected on.",
+            f"- Healthy checks stay on `{healthy_lanes}` so a deadlock fix cannot win by breaking the already-healthy DoorKey behavior.",
         ]
     )
     output.parent.mkdir(parents=True, exist_ok=True)
