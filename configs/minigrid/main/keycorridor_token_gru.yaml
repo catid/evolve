@@ -1,5 +1,5 @@
 seed: 7
-tags: ["diagnostic", "minigrid", "memory", "token_gru", "probe", "sequence_minibatches"]
+tags: ["minigrid", "main", "keycorridor", "token_gru"]
 system:
   device: auto
   precision: auto
@@ -8,7 +8,7 @@ system:
   checkpoint_interval: 20
 env:
   suite: minigrid
-  env_id: MiniGrid-MemoryS9-v0
+  env_id: MiniGrid-KeyCorridorS3R1-v0
   num_envs: 8
   num_eval_envs: 8
 ppo:
@@ -25,8 +25,8 @@ model:
   encoder_layers: 2
   num_heads: 4
 logging:
-  run_name: diagnostic_minigrid_memory_token_gru_probe
-  output_dir: outputs/diagnostics/memory_probe/minigrid_memory_token_gru
+  run_name: minigrid_main_keycorridor_token_gru
+  output_dir: outputs/minigrid/main/keycorridor_token_gru
 evaluation:
   episodes: 16
   greedy: true

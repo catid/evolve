@@ -202,6 +202,50 @@ def policy_evaluate_actions(
     }
 
 
+def _time_env_index(items: dict[str, torch.Tensor], time_index: int, env_index: torch.Tensor) -> dict[str, torch.Tensor]:
+    return {key: value[time_index, env_index] for key, value in items.items()}
+
+
+def _evaluate_sequence_minibatch(
+    model: nn.Module,
+    batch: Any,
+    env_index: torch.Tensor,
+) -> dict[str, torch.Tensor | dict[str, float]]:
+    state = {key: value[0, env_index] for key, value in batch.states.items()}
+    metrics = MetricAggregator()
+    log_probs: list[torch.Tensor] = []
+    entropies: list[torch.Tensor] = []
+    values: list[torch.Tensor] = []
+    aux_terms: list[torch.Tensor] = []
+
+    for time_index in range(batch.actions.size(0)):
+        step_obs = _time_env_index(batch.obs, time_index, env_index)
+        step_actions = batch.actions[time_index, env_index]
+        step_done = batch.done_inputs[time_index, env_index]
+        outputs = policy_evaluate_actions(
+            model,
+            step_obs,
+            step_actions,
+            state=state,
+            done=step_done,
+        )
+        log_probs.append(outputs["log_prob"])
+        entropies.append(outputs["entropy"])
+        values.append(outputs["value"])
+        metrics.update(outputs["metrics"])
+        if outputs["aux_losses"]:
+            aux_terms.append(sum(outputs["aux_losses"].values()))
+        state = outputs["next_state"]
+
+    return {
+        "log_prob": torch.stack(log_probs),
+        "entropy": torch.stack(entropies),
+        "value": torch.stack(values),
+        "aux_loss": torch.stack(aux_terms).mean() if aux_terms else torch.zeros((), device=batch.actions.device),
+        "metrics": metrics.compute(),
+    }
+
+
 def current_entropy_coefficient(config: ExperimentConfig, update: int, total_updates: int) -> float:
     start = float(config.ppo.ent_coef)
     final = float(config.ppo.ent_coef_final) if config.ppo.ent_coef_final is not None else start
@@ -546,7 +590,9 @@ def train(
             last_done=done_t,
             gamma=config.ppo.gamma,
             gae_lambda=config.ppo.gae_lambda,
-        ).flatten()
+        )
+        if not config.ppo.sequence_minibatches:
+            batch = batch.flatten()
         advantages = batch.advantages
         advantages = (advantages - advantages.mean()) / (advantages.std(unbiased=False) + 1e-8)
         batch.advantages = advantages
@@ -557,68 +603,121 @@ def train(
                 (1.0 - torch.var(batch.returns - batch.values, unbiased=False) / returns_var).item()
             )
 
-        batch_size = batch.actions.size(0)
-        minibatch_size = max(batch_size // config.ppo.minibatches, 1)
         train_metrics = MetricAggregator()
+        if config.ppo.sequence_minibatches:
+            batch_size = batch.actions.size(1)
+            minibatch_size = max(batch_size // config.ppo.minibatches, 1)
 
-        for _epoch in range(config.ppo.update_epochs):
-            indices = torch.randperm(batch_size, device=ctx.device)
-            for start in range(0, batch_size, minibatch_size):
-                batch_index = indices[start : start + minibatch_size]
-                obs_batch = _state_index(batch.obs, batch_index)
-                state_batch = _state_index(batch.states, batch_index)
-                done_batch = batch.done_inputs[batch_index]
-                action_batch = batch.actions[batch_index]
-                old_log_prob = batch.log_probs[batch_index]
-                old_value = batch.values[batch_index]
-                return_batch = batch.returns[batch_index]
-                adv_batch = batch.advantages[batch_index]
+            for _epoch in range(config.ppo.update_epochs):
+                indices = torch.randperm(batch_size, device=ctx.device)
+                for start in range(0, batch_size, minibatch_size):
+                    batch_index = indices[start : start + minibatch_size]
+                    old_log_prob = batch.log_probs[:, batch_index]
+                    old_value = batch.values[:, batch_index]
+                    return_batch = batch.returns[:, batch_index]
+                    adv_batch = batch.advantages[:, batch_index]
 
-                with _autocast_context(ctx):
-                    outputs = policy_evaluate_actions(
-                        model,
-                        obs_batch,
-                        action_batch,
-                        state=state_batch,
-                        done=done_batch,
+                    with _autocast_context(ctx):
+                        outputs = _evaluate_sequence_minibatch(model, batch, batch_index)
+                        log_ratio = outputs["log_prob"] - old_log_prob
+                        ratio = log_ratio.exp()
+                        unclipped = adv_batch * ratio
+                        clipped = adv_batch * torch.clamp(ratio, 1.0 - config.ppo.clip_coef, 1.0 + config.ppo.clip_coef)
+                        policy_loss = -torch.min(unclipped, clipped).mean()
+
+                        new_value = outputs["value"]
+                        value_clipped = old_value + torch.clamp(
+                            new_value - old_value,
+                            -config.ppo.value_clip_coef,
+                            config.ppo.value_clip_coef,
+                        )
+                        value_loss_unclipped = (new_value - return_batch).pow(2)
+                        value_loss_clipped = (value_clipped - return_batch).pow(2)
+                        value_loss = 0.5 * torch.max(value_loss_unclipped, value_loss_clipped).mean()
+                        entropy = outputs["entropy"].mean()
+                        aux_loss = outputs["aux_loss"]
+                        loss = policy_loss + config.ppo.vf_coef * value_loss - ent_coef_current * entropy + aux_loss
+
+                    optimizer.zero_grad(set_to_none=True)
+                    loss.backward()
+                    nn.utils.clip_grad_norm_(model.parameters(), config.ppo.max_grad_norm)
+                    optimizer.step()
+
+                    approx_kl = ((ratio - 1.0) - log_ratio).mean().abs()
+                    train_metrics.update(
+                        {
+                            "loss": loss.detach(),
+                            "policy_loss": policy_loss.detach(),
+                            "value_loss": value_loss.detach(),
+                            "entropy": entropy.detach(),
+                            "approx_kl": approx_kl.detach(),
+                            **scalarize_metrics(outputs["metrics"]),
+                        }
                     )
-                    log_ratio = outputs["log_prob"] - old_log_prob
-                    ratio = log_ratio.exp()
-                    unclipped = adv_batch * ratio
-                    clipped = adv_batch * torch.clamp(ratio, 1.0 - config.ppo.clip_coef, 1.0 + config.ppo.clip_coef)
-                    policy_loss = -torch.min(unclipped, clipped).mean()
+                    if config.ppo.target_kl is not None and approx_kl.item() > config.ppo.target_kl:
+                        break
+        else:
+            batch_size = batch.actions.size(0)
+            minibatch_size = max(batch_size // config.ppo.minibatches, 1)
 
-                    new_value = outputs["value"]
-                    value_clipped = old_value + torch.clamp(
-                        new_value - old_value,
-                        -config.ppo.value_clip_coef,
-                        config.ppo.value_clip_coef,
+            for _epoch in range(config.ppo.update_epochs):
+                indices = torch.randperm(batch_size, device=ctx.device)
+                for start in range(0, batch_size, minibatch_size):
+                    batch_index = indices[start : start + minibatch_size]
+                    obs_batch = _state_index(batch.obs, batch_index)
+                    state_batch = _state_index(batch.states, batch_index)
+                    done_batch = batch.done_inputs[batch_index]
+                    action_batch = batch.actions[batch_index]
+                    old_log_prob = batch.log_probs[batch_index]
+                    old_value = batch.values[batch_index]
+                    return_batch = batch.returns[batch_index]
+                    adv_batch = batch.advantages[batch_index]
+
+                    with _autocast_context(ctx):
+                        outputs = policy_evaluate_actions(
+                            model,
+                            obs_batch,
+                            action_batch,
+                            state=state_batch,
+                            done=done_batch,
+                        )
+                        log_ratio = outputs["log_prob"] - old_log_prob
+                        ratio = log_ratio.exp()
+                        unclipped = adv_batch * ratio
+                        clipped = adv_batch * torch.clamp(ratio, 1.0 - config.ppo.clip_coef, 1.0 + config.ppo.clip_coef)
+                        policy_loss = -torch.min(unclipped, clipped).mean()
+
+                        new_value = outputs["value"]
+                        value_clipped = old_value + torch.clamp(
+                            new_value - old_value,
+                            -config.ppo.value_clip_coef,
+                            config.ppo.value_clip_coef,
+                        )
+                        value_loss_unclipped = (new_value - return_batch).pow(2)
+                        value_loss_clipped = (value_clipped - return_batch).pow(2)
+                        value_loss = 0.5 * torch.max(value_loss_unclipped, value_loss_clipped).mean()
+                        entropy = outputs["entropy"].mean()
+                        aux_loss = sum(outputs["aux_losses"].values()) if outputs["aux_losses"] else torch.zeros((), device=ctx.device)
+                        loss = policy_loss + config.ppo.vf_coef * value_loss - ent_coef_current * entropy + aux_loss
+
+                    optimizer.zero_grad(set_to_none=True)
+                    loss.backward()
+                    nn.utils.clip_grad_norm_(model.parameters(), config.ppo.max_grad_norm)
+                    optimizer.step()
+
+                    approx_kl = ((ratio - 1.0) - log_ratio).mean().abs()
+                    train_metrics.update(
+                        {
+                            "loss": loss.detach(),
+                            "policy_loss": policy_loss.detach(),
+                            "value_loss": value_loss.detach(),
+                            "entropy": entropy.detach(),
+                            "approx_kl": approx_kl.detach(),
+                            **scalarize_metrics(outputs["metrics"]),
+                        }
                     )
-                    value_loss_unclipped = (new_value - return_batch).pow(2)
-                    value_loss_clipped = (value_clipped - return_batch).pow(2)
-                    value_loss = 0.5 * torch.max(value_loss_unclipped, value_loss_clipped).mean()
-                    entropy = outputs["entropy"].mean()
-                    aux_loss = sum(outputs["aux_losses"].values()) if outputs["aux_losses"] else torch.zeros((), device=ctx.device)
-                    loss = policy_loss + config.ppo.vf_coef * value_loss - ent_coef_current * entropy + aux_loss
-
-                optimizer.zero_grad(set_to_none=True)
-                loss.backward()
-                nn.utils.clip_grad_norm_(model.parameters(), config.ppo.max_grad_norm)
-                optimizer.step()
-
-                approx_kl = ((ratio - 1.0) - log_ratio).mean().abs()
-                train_metrics.update(
-                    {
-                        "loss": loss.detach(),
-                        "policy_loss": policy_loss.detach(),
-                        "value_loss": value_loss.detach(),
-                        "entropy": entropy.detach(),
-                        "approx_kl": approx_kl.detach(),
-                        **scalarize_metrics(outputs["metrics"]),
-                    }
-                )
-                if config.ppo.target_kl is not None and approx_kl.item() > config.ppo.target_kl:
-                    break
+                    if config.ppo.target_kl is not None and approx_kl.item() > config.ppo.target_kl:
+                        break
 
         elapsed = max(time.perf_counter() - start_time, 1e-6)
         aggregate_metrics = reduce_scalar_dict(

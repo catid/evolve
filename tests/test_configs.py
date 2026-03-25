@@ -40,6 +40,14 @@ def test_load_diagnostic_memory_probe_config() -> None:
     config = load_config(Path("configs/diagnostic/minigrid_memory_token_gru_probe.yaml"))
     assert config.env.env_id == "MiniGrid-MemoryS9-v0"
     assert config.model.variant == "token_gru"
+    assert config.ppo.sequence_minibatches is True
+
+
+def test_load_keycorridor_recurrent_control_config() -> None:
+    config = load_config(Path("configs/experiments/minigrid_keycorridor_token_gru.yaml"))
+    assert config.env.env_id == "MiniGrid-KeyCorridorS3R1-v0"
+    assert config.model.variant == "token_gru"
+    assert config.ppo.sequence_minibatches is True
 
 
 def test_load_experiment_config() -> None:

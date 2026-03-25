@@ -178,3 +178,18 @@ def test_deadlock_escape_program_campaign_registers_rescue_and_practicalization_
     assert len(campaign["analysis"]["teacher_locked_holdout_groups"]) == 2
     assert len(campaign["analysis"]["ambiguous_groups"]) == 2
     assert len(campaign["analysis"]["healthy_groups"]) == 2
+
+
+def test_next_wave_campaign_registers_cross_family_budget_and_reports() -> None:
+    campaign = load_campaign_config("configs/experiments/lss_next_wave_program/campaign.yaml")
+
+    assert campaign["name"] == "lss_next_wave_program"
+    assert campaign["current_canonical_name"] == "round6"
+    assert campaign["target_substantive_runs"] == 72
+    assert campaign["screening_seeds"] == [7, 11, 19]
+    assert campaign["route_memory_seeds"] == [7, 11]
+    assert campaign["recurrent_controls"]["tasks"]["memory"]["base_config"] == "configs/minigrid/main/memory_token_gru.yaml"
+    assert campaign["families"]["tregh"]["tasks"]["doorkey"]["base_config"] == "configs/treg_h/minigrid_doorkey.yaml"
+    assert campaign["families"]["por"]["variants"]["por_very_sticky"]["model"]["termination_bias"] == -2.0
+    assert campaign["families"]["srw"]["variants"]["srw_sparse"]["model"]["relational_tokens"] == 2
+    assert campaign["reports"]["decision_memo"] == "outputs/reports/next_wave_decision_memo.md"

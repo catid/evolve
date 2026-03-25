@@ -942,6 +942,8 @@ def build_model(model_config: ModelConfig, observation_space: gym.Space, action_
             expert_hidden_size=model_config.expert_hidden_size,
             temperature=model_config.temperature,
             ponder_cost=model_config.ponder_cost,
+            max_hops=model_config.max_hops,
+            halt_bias=model_config.halt_bias,
         )
     elif variant == "srw":
         core = SRWCore(
@@ -966,6 +968,7 @@ def build_model(model_config: ModelConfig, observation_space: gym.Space, action_
             num_layers=model_config.encoder_layers,
             dropout=model_config.dropout,
             option_count=model_config.option_count,
+            termination_bias=model_config.termination_bias,
         )
     else:
         raise ValueError(f"Unknown model variant: {variant}")

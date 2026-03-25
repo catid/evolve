@@ -1,0 +1,255 @@
+name: lss_next_wave_program
+
+current_canonical_name: round6
+current_canonical_pack: outputs/reports/portfolio_candidate_pack.json
+current_gate_reference_pack: outputs/reports/round6_current_benchmark_pack.json
+frozen_pack: outputs/reports/frozen_benchmark_pack.json
+current_decision_memo: outputs/reports/escape2x_decision_memo.md
+
+target_substantive_runs: 72
+screening_seeds: [7, 11, 19]
+route_memory_seeds: [7, 11]
+control_seeds: [7, 11, 19]
+
+defaults:
+  train_schedule:
+    system:
+      deterministic: true
+      log_interval: 5
+      checkpoint_interval: 8
+    env:
+      num_envs: 8
+      num_eval_envs: 8
+    ppo:
+      rollout_steps: 64
+      total_updates: 16
+      update_epochs: 4
+      minibatches: 4
+      learning_rate: 0.0003
+    evaluation:
+      episodes: 16
+      greedy: true
+  recurrent_schedule:
+    system:
+      deterministic: true
+      log_interval: 5
+      checkpoint_interval: 8
+    env:
+      num_envs: 8
+      num_eval_envs: 8
+    ppo:
+      rollout_steps: 64
+      total_updates: 24
+      update_epochs: 4
+      minibatches: 4
+      sequence_minibatches: true
+      learning_rate: 0.0003
+    evaluation:
+      episodes: 16
+      greedy: true
+
+stage_roots:
+  tregh_screening: outputs/experiments/lss_next_wave_program/tregh_stage1_screening
+  recurrent_controls: outputs/experiments/lss_next_wave_program/recurrent_fairness_controls
+  por_screening: outputs/experiments/lss_next_wave_program/por_stage2_screening
+  srw_screening: outputs/experiments/lss_next_wave_program/srw_stage1_screening
+  sare_persistence: outputs/experiments/lss_next_wave_program/compute_structure_sare_persistence
+
+reports:
+  state_reconciliation: outputs/reports/next_wave_state_reconciliation.md
+  registration: outputs/reports/next_wave_registration.md
+  baseline_sync: outputs/reports/next_wave_baseline_sync.md
+  recurrent_impl: outputs/reports/recurrent_fairness_stage0_impl.md
+  recurrent_controls: outputs/reports/recurrent_fairness_stage1_controls.md
+  recurrent_controls_json: outputs/reports/recurrent_fairness_stage1_controls.json
+  tregh_stage1: outputs/reports/tregh_stage1_screening.md
+  tregh_stage1_json: outputs/reports/tregh_stage1_screening.json
+  tregh_stage2: outputs/reports/tregh_stage2_verification.md
+  tregh_stage3: outputs/reports/tregh_stage3_fairness.md
+  tregh_stage4: outputs/reports/tregh_stage4_holdout.md
+  tregh_stage5: outputs/reports/tregh_stage5_route_stability.md
+  por_stage2: outputs/reports/por_stage2_screening.md
+  por_stage2_json: outputs/reports/por_stage2_screening.json
+  por_stage3: outputs/reports/por_stage3_verification.md
+  por_stage4: outputs/reports/por_stage4_fairness.md
+  por_stage5: outputs/reports/por_stage5_holdout.md
+  por_stage6: outputs/reports/por_stage6_stability.md
+  srw_stage1: outputs/reports/srw_stage1_screening.md
+  srw_stage1_json: outputs/reports/srw_stage1_screening.json
+  srw_stage2: outputs/reports/srw_stage2_verification.md
+  srw_stage3: outputs/reports/srw_stage3_fairness.md
+  srw_stage4: outputs/reports/srw_stage4_holdout.md
+  srw_stage5: outputs/reports/srw_stage5_stability.md
+  compute_structure_tregh: outputs/reports/compute_structure_stage1_tregh.md
+  compute_structure_srw: outputs/reports/compute_structure_stage2_srw.md
+  compute_structure_por: outputs/reports/compute_structure_stage3_por.md
+  compute_structure_sare_persistence: outputs/reports/compute_structure_stage4_sare_persistence.md
+  compute_structure_sare_persistence_json: outputs/reports/compute_structure_stage4_sare_persistence.json
+  frontier_report: outputs/reports/compute_frontier_report.md
+  frontier_json: outputs/reports/compute_frontier_report.json
+  frontier_csv: outputs/reports/compute_frontier_report.csv
+  candidate_pack_summary: outputs/reports/next_wave_candidate_pack_summary.json
+  gate_report: outputs/reports/next_wave_gate_report_no_promotion.md
+  decision_memo: outputs/reports/next_wave_decision_memo.md
+  manifest_json: outputs/reports/next_wave_run_manifest.json
+
+families:
+  tregh:
+    stage_root: tregh_screening
+    seeds_key: screening_seeds
+    schedule_key: train_schedule
+    tasks:
+      doorkey:
+        display_name: DoorKey
+        base_config: configs/treg_h/minigrid_doorkey.yaml
+      keycorridor:
+        display_name: KeyCorridor
+        base_config: configs/minigrid/main/keycorridor_flat_dense.yaml
+    variants:
+      tregh_base:
+        model:
+          variant: treg_h
+          expert_count: 4
+          expert_hidden_size: 256
+          temperature: 1.0
+          ponder_cost: 0.01
+          max_hops: 2
+          halt_bias: 0.0
+      tregh_low_ponder:
+        model:
+          variant: treg_h
+          expert_count: 4
+          expert_hidden_size: 256
+          temperature: 1.0
+          ponder_cost: 0.0025
+          max_hops: 2
+          halt_bias: -0.5
+      tregh_high_ponder:
+        model:
+          variant: treg_h
+          expert_count: 4
+          expert_hidden_size: 256
+          temperature: 1.0
+          ponder_cost: 0.05
+          max_hops: 2
+          halt_bias: 0.5
+      tregh_one_hop:
+        model:
+          variant: treg_h
+          expert_count: 4
+          expert_hidden_size: 256
+          temperature: 1.0
+          ponder_cost: 0.0
+          max_hops: 1
+          halt_bias: 1.0
+  por:
+    stage_root: por_screening
+    seeds_key: screening_seeds
+    schedule_key: recurrent_schedule
+    tasks:
+      memory:
+        display_name: Memory
+        base_config: configs/minigrid/main/memory_token_gru.yaml
+      keycorridor:
+        display_name: KeyCorridor
+        base_config: configs/experiments/minigrid_keycorridor_token_gru.yaml
+    variants:
+      por_base:
+        model:
+          variant: por
+          option_count: 4
+          termination_bias: 0.0
+      por_sticky:
+        model:
+          variant: por
+          option_count: 4
+          termination_bias: -1.0
+      por_very_sticky:
+        model:
+          variant: por
+          option_count: 4
+          termination_bias: -2.0
+      por_switchy:
+        model:
+          variant: por
+          option_count: 4
+          termination_bias: 1.0
+  srw:
+    stage_root: srw_screening
+    seeds_key: screening_seeds
+    schedule_key: train_schedule
+    tasks:
+      dynamic_obstacles:
+        display_name: DynamicObstacles
+        base_config: configs/experiments/minigrid_dynamic_obstacles_flat_dense.yaml
+      keycorridor:
+        display_name: KeyCorridor
+        base_config: configs/minigrid/main/keycorridor_flat_dense.yaml
+    variants:
+      srw_base:
+        model:
+          variant: srw
+          expert_count: 4
+          expert_hidden_size: 256
+          top_k: 2
+          relational_tokens: 4
+          num_heads: 4
+      srw_sparse:
+        model:
+          variant: srw
+          expert_count: 4
+          expert_hidden_size: 256
+          top_k: 1
+          relational_tokens: 2
+          num_heads: 4
+      srw_wide:
+        model:
+          variant: srw
+          expert_count: 4
+          expert_hidden_size: 256
+          top_k: 2
+          relational_tokens: 6
+          num_heads: 4
+  sare_persistence:
+    stage_root: sare_persistence
+    seeds_key: route_memory_seeds
+    schedule_key: train_schedule
+    tasks:
+      keycorridor:
+        display_name: KeyCorridor
+        base_config: configs/minigrid/main/keycorridor_flat_dense.yaml
+    variants:
+      sare_phase_memory:
+        model:
+          variant: sare_phase_memory
+          expert_count: 4
+          top_k: 2
+          expert_hidden_size: 256
+          memory_mix: 0.5
+      sare_route_bias:
+        model:
+          variant: sare_phase_memory_route_bias
+          expert_count: 4
+          top_k: 2
+          expert_hidden_size: 256
+          memory_mix: 0.5
+          route_memory_scale: 0.5
+      sare_keyed_residual:
+        model:
+          variant: sare_phase_memory_route_bias_keyed_residual
+          expert_count: 4
+          top_k: 2
+          expert_hidden_size: 256
+          memory_mix: 0.5
+          route_memory_scale: 0.5
+
+recurrent_controls:
+  stage_root: recurrent_controls
+  schedule_key: recurrent_schedule
+  tasks:
+    memory:
+      display_name: Memory
+      base_config: configs/minigrid/main/memory_token_gru.yaml
+    keycorridor:
+      display_name: KeyCorridor
+      base_config: configs/experiments/minigrid_keycorridor_token_gru.yaml

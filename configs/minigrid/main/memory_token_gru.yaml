@@ -16,6 +16,7 @@ ppo:
   total_updates: 120
   update_epochs: 4
   minibatches: 4
+  sequence_minibatches: true
   learning_rate: 0.0003
 model:
   variant: token_gru

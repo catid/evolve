@@ -128,3 +128,22 @@ def test_linear_entropy_schedule_with_late_start() -> None:
     assert values[1] == pytest.approx(0.01)
     assert values[-1] == pytest.approx(0.001)
     assert values[-2] > values[-1]
+
+
+def test_sequence_minibatches_support_recurrent_token_gru(tmp_path: Path) -> None:
+    config = load_config("configs/minigrid/main/memory_token_gru.yaml")
+    config.system.device = "cpu"
+    config.logging.tensorboard = False
+    config.env.num_envs = 2
+    config.env.num_eval_envs = 1
+    config.ppo.rollout_steps = 4
+    config.ppo.total_updates = 1
+    config.ppo.update_epochs = 1
+    config.ppo.minibatches = 2
+    config.ppo.sequence_minibatches = True
+    config.evaluation.episodes = 1
+    config.logging.output_dir = str(tmp_path / "memory_token_gru_seq")
+
+    metrics = run_training(config, max_updates=1)
+
+    assert metrics["global_step"] == 8.0

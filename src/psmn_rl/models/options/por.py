@@ -19,9 +19,11 @@ class PORCore(nn.Module):
         num_layers: int,
         dropout: float,
         option_count: int,
+        termination_bias: float,
     ) -> None:
         super().__init__()
         self.option_count = option_count
+        self.termination_bias = termination_bias
         self.encoder = build_token_encoder(observation_space, token_dim, patch_size)
         self.input_proj = nn.Linear(token_dim, hidden_size)
         self.blocks = nn.ModuleList(
@@ -64,7 +66,7 @@ class PORCore(nn.Module):
 
         prev_context = prev_probs @ self.option_embed.weight
         proposal = torch.softmax(self.option_policy(pooled), dim=-1)
-        terminate_prob = torch.sigmoid(self.termination_head(torch.cat([pooled, prev_context], dim=-1)))
+        terminate_prob = torch.sigmoid(self.termination_head(torch.cat([pooled, prev_context], dim=-1)) + self.termination_bias)
         next_probs = (1.0 - terminate_prob) * prev_probs + terminate_prob * proposal
         next_duration = (1.0 - terminate_prob.squeeze(-1)) * (prev_duration + 1.0) + terminate_prob.squeeze(-1)
         next_context = next_probs @ self.option_embed.weight
@@ -80,6 +82,7 @@ class PORCore(nn.Module):
             "option_duration": float(next_duration.mean().item()),
             "option_switch_rate": float(switch_rate.item()),
             "avg_halting_probability": float(terminate_prob.mean().item()),
+            "termination_bias": float(self.termination_bias),
             "active_compute_proxy": 1.0,
         }
         for option_index, value in enumerate(next_probs.mean(dim=0)):

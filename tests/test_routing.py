@@ -1821,11 +1821,19 @@ def test_sare_phase_memory_route_bias_dual_reports_dual_memory_statistics() -> N
 
 def test_treg_h_reports_hop_and_ponder_metrics() -> None:
     env, obs, done = _obs()
-    model = build_model(ModelConfig(variant="treg_h", expert_count=4), env.observation_space, env.action_space)
+    model = build_model(
+        ModelConfig(variant="treg_h", expert_count=4, max_hops=1, halt_bias=0.75),
+        env.observation_space,
+        env.action_space,
+    )
     output = model.forward(obs, state={}, done=done)
     assert "avg_hop_count" in output.metrics
     assert "avg_halting_probability" in output.metrics
+    assert "max_hops" in output.metrics
+    assert "halt_bias" in output.metrics
     assert "ponder_loss" in output.aux_losses
+    assert float(output.metrics["max_hops"]) == 1.0
+    assert float(output.metrics["halt_bias"]) == 0.75
     env.close()
 
 
@@ -1839,10 +1847,16 @@ def test_srw_reports_relational_usage() -> None:
 
 def test_por_updates_option_state() -> None:
     env, obs, done = _obs()
-    model = build_model(ModelConfig(variant="por", option_count=4), env.observation_space, env.action_space)
+    model = build_model(
+        ModelConfig(variant="por", option_count=4, termination_bias=-1.0),
+        env.observation_space,
+        env.action_space,
+    )
     state = model.initial_state(batch_size=1, device=torch.device("cpu"))
     output = model.forward(obs, state=state, done=done)
     assert "option_probs" in output.next_state
     assert output.next_state["option_probs"].shape == (1, 4)
     assert "option_duration" in output.metrics
+    assert "termination_bias" in output.metrics
+    assert float(output.metrics["termination_bias"]) == -1.0
     env.close()

@@ -39,6 +39,7 @@ class PPOConfig:
     total_updates: int = 64
     update_epochs: int = 4
     minibatches: int = 4
+    sequence_minibatches: bool = False
     gamma: float = 0.99
     gae_lambda: float = 0.95
     clip_coef: float = 0.2
@@ -69,8 +70,11 @@ class ModelConfig:
     expert_hidden_size: int = 256
     temperature: float = 1.0
     ponder_cost: float = 0.01
+    max_hops: int = 2
+    halt_bias: float = 0.0
     relational_tokens: int = 4
     option_count: int = 4
+    termination_bias: float = 0.0
     memory_mix: float = 0.5
     memory_gate_bias: float = 0.0
     memory_reset_bias: float = -2.0

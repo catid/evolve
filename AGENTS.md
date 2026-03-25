@@ -61,9 +61,10 @@ Implement and maintain these first-wave variants:
 6. SRW
 7. POR
 
-Available diagnostic-only control:
+Available recurrent control:
 
-- `token_gru` exists for memory probes, but do not treat it as a fair PPO baseline until sequence-aware rollout batching and minibatching are implemented.
+- `token_gru` is a fair PPO recurrent control only on configs that enable sequence-aware rollout batching and minibatching via `ppo.sequence_minibatches: true`.
+- If a task/config does not use the sequence-aware PPO path yet, keep `token_gru` in the diagnostic-only lane.
 
 ## Experiment Conventions
 
@@ -79,7 +80,7 @@ Available diagnostic-only control:
 - PPO is the first RL algorithm. Keep interfaces open for IMPALA later.
 - Every routed model must be compared against flattened dense, tokenized dense, and tokenized single-expert controls.
 - Do not rerun routed models on a target task unless at least one relevant control shows nonzero evaluation performance there.
-- Do not treat `Memory` as a fair control-vs-routing benchmark unless the control being compared has a valid memory mechanism under the current PPO batching path.
+- Do not treat `Memory` or other persistence-relevant tasks as fair control-vs-routing benchmarks unless the control being compared has a valid recurrent mechanism under the sequence-aware PPO batching path.
 - Save configs, summaries, and metrics for every run under `outputs/`.
 - Favor simple inspectable PyTorch implementations over framework-heavy abstractions.
 
