@@ -13,6 +13,7 @@ from psmn_rl.models.routing.sare import (
     RoutedExpertGatedPhaseMemoryCore,
     RoutedExpertPhaseMemoryCore,
     RoutedExpertRouteBiasedPhaseMemoryCore,
+    RoutedExpertRouteBiasedGatedPhaseMemoryCore,
 )
 from psmn_rl.models.routing.treg_h import TREGHCore
 
@@ -102,6 +103,21 @@ def build_model(model_config: ModelConfig, observation_space: gym.Space, action_
             top_k=model_config.top_k,
             temperature=model_config.temperature,
             memory_mix=model_config.memory_mix,
+            route_memory_scale=model_config.route_memory_scale,
+        )
+    elif variant == "sare_phase_memory_route_bias_gated":
+        core = RoutedExpertRouteBiasedGatedPhaseMemoryCore(
+            observation_space=observation_space,
+            token_dim=model_config.token_dim,
+            patch_size=model_config.patch_size,
+            hidden_size=model_config.hidden_size,
+            expert_count=model_config.expert_count,
+            expert_hidden_size=model_config.expert_hidden_size,
+            top_k=model_config.top_k,
+            temperature=model_config.temperature,
+            memory_mix=model_config.memory_mix,
+            memory_gate_bias=model_config.memory_gate_bias,
+            memory_reset_bias=model_config.memory_reset_bias,
             route_memory_scale=model_config.route_memory_scale,
         )
     elif variant == "treg_h":
