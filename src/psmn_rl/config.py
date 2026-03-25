@@ -72,6 +72,8 @@ class ModelConfig:
     relational_tokens: int = 4
     option_count: int = 4
     memory_mix: float = 0.5
+    memory_gate_bias: float = 0.0
+    memory_reset_bias: float = -2.0
 
 
 @dataclass(slots=True)

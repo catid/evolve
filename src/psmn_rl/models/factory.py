@@ -8,7 +8,11 @@ from psmn_rl.models.cores.dense import FlatDenseCore, TokenDenseCore
 from psmn_rl.models.cores.recurrent import TokenGRUCore
 from psmn_rl.models.options.por import PORCore
 from psmn_rl.models.relational.srw import SRWCore
-from psmn_rl.models.routing.sare import RoutedExpertCore, RoutedExpertPhaseMemoryCore
+from psmn_rl.models.routing.sare import (
+    RoutedExpertCore,
+    RoutedExpertGatedPhaseMemoryCore,
+    RoutedExpertPhaseMemoryCore,
+)
 from psmn_rl.models.routing.treg_h import TREGHCore
 
 
@@ -71,6 +75,20 @@ def build_model(model_config: ModelConfig, observation_space: gym.Space, action_
             top_k=model_config.top_k,
             temperature=model_config.temperature,
             memory_mix=model_config.memory_mix,
+        )
+    elif variant == "sare_phase_memory_gated":
+        core = RoutedExpertGatedPhaseMemoryCore(
+            observation_space=observation_space,
+            token_dim=model_config.token_dim,
+            patch_size=model_config.patch_size,
+            hidden_size=model_config.hidden_size,
+            expert_count=model_config.expert_count,
+            expert_hidden_size=model_config.expert_hidden_size,
+            top_k=model_config.top_k,
+            temperature=model_config.temperature,
+            memory_mix=model_config.memory_mix,
+            memory_gate_bias=model_config.memory_gate_bias,
+            memory_reset_bias=model_config.memory_reset_bias,
         )
     elif variant == "treg_h":
         core = TREGHCore(

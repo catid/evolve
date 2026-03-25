@@ -109,26 +109,47 @@ class RoutedExpertPhaseMemoryCore(RoutedExpertCore):
     def initial_state(self, batch_size: int, device: torch.device) -> dict[str, torch.Tensor]:
         return {"hidden": torch.zeros(batch_size, self.hidden_size, device=device)}
 
+    def _prepare_hidden(
+        self,
+        state: dict[str, torch.Tensor],
+        pooled: torch.Tensor,
+        done: torch.Tensor | None,
+    ) -> torch.Tensor:
+        hidden = state.get("hidden")
+        if hidden is None:
+            hidden = torch.zeros(pooled.size(0), self.hidden_size, device=pooled.device, dtype=pooled.dtype)
+        if done is not None:
+            hidden = hidden * (~done).to(dtype=pooled.dtype).unsqueeze(-1)
+        return hidden
+
+    def _apply_memory(
+        self,
+        pooled: torch.Tensor,
+        hidden: torch.Tensor,
+        route_probs: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor, dict[str, float]]:
+        del route_probs
+        next_hidden = self.memory_cell(pooled, hidden)
+        next_hidden_for_mix = next_hidden.to(dtype=pooled.dtype)
+        mixed_pooled = pooled + float(self.memory_mix) * (next_hidden_for_mix - pooled)
+        metrics = {
+            "memory/hidden_norm": float(next_hidden.norm(dim=-1).mean().item()),
+            "memory/mix": self.memory_mix,
+        }
+        return mixed_pooled, next_hidden, metrics
+
     def forward(self, obs: dict[str, torch.Tensor], state: dict[str, torch.Tensor], done: torch.Tensor | None) -> CoreOutput:
         tokens = self.input_proj(self.encoder(obs))
         route_probs, topk_values, topk_idx = self.route(tokens)
         mixed = self.apply_experts(tokens, topk_values, topk_idx)
         tokens = self.output_norm(tokens + mixed)
         pooled = masked_mean(tokens)
-
-        hidden = state.get("hidden")
-        if hidden is None:
-            hidden = torch.zeros(pooled.size(0), self.hidden_size, device=pooled.device, dtype=pooled.dtype)
-        if done is not None:
-            hidden = hidden * (~done).float().unsqueeze(-1)
-
-        next_hidden = self.memory_cell(pooled, hidden)
-        pooled = torch.lerp(pooled, next_hidden, self.memory_mix)
+        hidden = self._prepare_hidden(state, pooled, done)
+        pooled, next_hidden, memory_metrics = self._apply_memory(pooled, hidden, route_probs)
         metrics = {
             **_route_metrics(route_probs, topk_idx, self.expert_count),
             **token_representation_metrics(tokens, pooled),
-            "memory/hidden_norm": float(next_hidden.norm(dim=-1).mean().item()),
-            "memory/mix": self.memory_mix,
+            **memory_metrics,
         }
         return CoreOutput(
             pooled=pooled,
@@ -136,3 +157,75 @@ class RoutedExpertPhaseMemoryCore(RoutedExpertCore):
             metrics=metrics,
             next_state={"hidden": next_hidden.detach()},
         )
+
+
+class RoutedExpertGatedPhaseMemoryCore(RoutedExpertPhaseMemoryCore):
+    def __init__(
+        self,
+        observation_space,
+        token_dim: int,
+        patch_size: int,
+        hidden_size: int,
+        expert_count: int,
+        expert_hidden_size: int,
+        top_k: int,
+        temperature: float,
+        memory_mix: float,
+        memory_gate_bias: float,
+        memory_reset_bias: float,
+    ) -> None:
+        super().__init__(
+            observation_space=observation_space,
+            token_dim=token_dim,
+            patch_size=patch_size,
+            hidden_size=hidden_size,
+            expert_count=expert_count,
+            expert_hidden_size=expert_hidden_size,
+            top_k=top_k,
+            temperature=temperature,
+            memory_mix=memory_mix,
+        )
+        self.route_context = nn.Linear(expert_count, hidden_size, bias=False)
+        self.memory_input = nn.Linear(hidden_size * 2, hidden_size)
+        self.update_gate = nn.Sequential(
+            nn.Linear(hidden_size * 3, hidden_size),
+            nn.GELU(),
+            nn.Linear(hidden_size, hidden_size),
+        )
+        self.reset_gate = nn.Sequential(
+            nn.Linear(hidden_size * 3, hidden_size),
+            nn.GELU(),
+            nn.Linear(hidden_size, hidden_size),
+        )
+        nn.init.constant_(self.update_gate[-1].bias, float(memory_gate_bias))
+        nn.init.constant_(self.reset_gate[-1].bias, float(memory_reset_bias))
+
+    def _apply_memory(
+        self,
+        pooled: torch.Tensor,
+        hidden: torch.Tensor,
+        route_probs: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor, dict[str, float]]:
+        route_summary = route_probs.mean(dim=1)
+        route_context = torch.tanh(self.route_context(route_summary))
+
+        gate_features = torch.cat([pooled, hidden, route_context], dim=-1)
+        reset_gate = torch.sigmoid(self.reset_gate(gate_features))
+        reset_hidden = hidden * (1.0 - reset_gate)
+
+        memory_input = torch.cat([pooled, route_context], dim=-1)
+        next_hidden = self.memory_cell(self.memory_input(memory_input), reset_hidden)
+
+        update_features = torch.cat([pooled, next_hidden, route_context], dim=-1)
+        update_gate = torch.sigmoid(self.update_gate(update_features))
+        next_hidden_for_mix = next_hidden.to(dtype=pooled.dtype)
+        effective_mix = (self.memory_mix * update_gate).to(dtype=pooled.dtype)
+        mixed_pooled = pooled + effective_mix * (next_hidden_for_mix - pooled)
+        metrics = {
+            "memory/hidden_norm": float(next_hidden.norm(dim=-1).mean().item()),
+            "memory/mix": float(effective_mix.mean().item()),
+            "memory/update_gate_mean": float(update_gate.mean().item()),
+            "memory/reset_gate_mean": float(reset_gate.mean().item()),
+            "memory/route_context_norm": float(route_context.norm(dim=-1).mean().item()),
+        }
+        return mixed_pooled, next_hidden, metrics

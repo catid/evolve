@@ -1,4 +1,5 @@
 import gymnasium as gym
+import minigrid  # noqa: F401
 import torch
 
 from psmn_rl.config import ModelConfig
@@ -23,6 +24,30 @@ def test_sare_reports_route_statistics() -> None:
     assert "route_entropy" in output.metrics
     assert "path_coverage_top_10" in output.metrics
     assert any(key.startswith("expert_load_") for key in output.metrics)
+    env.close()
+
+
+def test_sare_phase_memory_gated_reports_memory_gate_statistics() -> None:
+    env, obs, done = _obs()
+    model = build_model(
+        ModelConfig(
+            variant="sare_phase_memory_gated",
+            expert_count=4,
+            top_k=2,
+            memory_mix=0.5,
+            memory_gate_bias=0.0,
+            memory_reset_bias=-2.0,
+        ),
+        env.observation_space,
+        env.action_space,
+    )
+    state = model.initial_state(batch_size=1, device=torch.device("cpu"))
+    output = model.forward(obs, state=state, done=done)
+    assert "hidden" in output.next_state
+    assert output.next_state["hidden"].shape == (1, 128)
+    assert 0.0 <= float(output.metrics["memory/update_gate_mean"]) <= 1.0
+    assert 0.0 <= float(output.metrics["memory/reset_gate_mean"]) <= 1.0
+    assert "memory/route_context_norm" in output.metrics
     env.close()
 
 
