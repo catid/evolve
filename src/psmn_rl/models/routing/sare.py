@@ -1147,6 +1147,97 @@ class RoutedExpertRouteBiasedKeyedResidualPredictiveWeakPriorTop1AssistPhaseMemo
         )
 
 
+class RoutedExpertRouteBiasedKeyedResidualPredictiveWeakPriorTop1MaxMergePhaseMemoryCore(RoutedExpertPhaseMemoryCore):
+    def __init__(
+        self,
+        observation_space,
+        token_dim: int,
+        patch_size: int,
+        hidden_size: int,
+        expert_count: int,
+        expert_hidden_size: int,
+        top_k: int,
+        temperature: float,
+        memory_mix: float,
+        route_memory_scale: float,
+    ) -> None:
+        super().__init__(
+            observation_space=observation_space,
+            token_dim=token_dim,
+            patch_size=patch_size,
+            hidden_size=hidden_size,
+            expert_count=expert_count,
+            expert_hidden_size=expert_hidden_size,
+            top_k=top_k,
+            temperature=temperature,
+            memory_mix=memory_mix,
+        )
+        self.route_memory_scale = float(route_memory_scale)
+        self.route_bias_proj = nn.Linear(hidden_size, expert_count)
+
+    def forward(self, obs: dict[str, torch.Tensor], state: dict[str, torch.Tensor], done: torch.Tensor | None) -> CoreOutput:
+        tokens = self.input_proj(self.encoder(obs))
+        token_summary = masked_mean(tokens)
+        hidden = self._prepare_hidden(
+            state,
+            token_summary,
+            done,
+        )
+        predictive_hidden = self.memory_cell(token_summary, hidden)
+        predictive_hidden_for_logits = predictive_hidden.to(dtype=hidden.dtype)
+
+        base_route_logits = self.route_bias_proj(hidden)
+        prior_route_memory_query = self.query(hidden)
+        predictive_route_memory_query = self.query(predictive_hidden_for_logits)
+        prior_keyed_route_logits = prior_route_memory_query @ self.expert_keys.t() / math.sqrt(prior_route_memory_query.size(-1))
+        predictive_keyed_route_logits = predictive_route_memory_query @ self.expert_keys.t() / math.sqrt(predictive_route_memory_query.size(-1))
+        prior_abs = prior_keyed_route_logits.abs()
+        predictive_abs = predictive_keyed_route_logits.abs()
+        prior_scale = prior_abs.mean(dim=-1, keepdim=True).clamp_min(1e-6)
+        weak_prior_merge_gate = torch.clamp(1.0 - (prior_abs / (prior_scale * 1.5)), min=0.0, max=1.0)
+        weakest_idx = prior_abs.argmin(dim=-1, keepdim=True)
+        weakest_mask = torch.zeros_like(prior_keyed_route_logits).scatter_(-1, weakest_idx, 1.0)
+        predictive_wins = (predictive_abs > prior_abs).to(dtype=prior_keyed_route_logits.dtype)
+        eligible_weakest_mask = weakest_mask * (weak_prior_merge_gate > 0.0).to(dtype=prior_keyed_route_logits.dtype)
+        top1_weak_prior_max_merge_gate = eligible_weakest_mask * predictive_wins
+        maxmerged_predictive_keyed_route_logits = predictive_keyed_route_logits * top1_weak_prior_max_merge_gate
+        kept_prior_keyed_route_logits = prior_keyed_route_logits * (1.0 - top1_weak_prior_max_merge_gate)
+        keyed_route_logits = kept_prior_keyed_route_logits + maxmerged_predictive_keyed_route_logits
+        route_bias_logits = base_route_logits + keyed_route_logits
+        route_bias = torch.tanh(route_bias_logits) * self.route_memory_scale
+        route_probs, topk_values, topk_idx = self.route(tokens, route_bias=route_bias)
+        mixed = self.apply_experts(tokens, topk_values, topk_idx)
+        tokens = self.output_norm(tokens + mixed)
+        pooled = masked_mean(tokens)
+        pooled, next_hidden, memory_metrics = self._apply_memory(pooled, hidden, route_probs)
+        metrics = {
+            **_route_metrics(route_probs, topk_idx, self.expert_count),
+            **token_representation_metrics(tokens, pooled),
+            **memory_metrics,
+            "memory/route_bias_norm": float(route_bias.norm(dim=-1).mean().item()),
+            "memory/route_bias_absmax": float(route_bias.abs().max().item()),
+            "memory/route_bias_scale": self.route_memory_scale,
+            "memory/base_route_bias_logits_norm": float(base_route_logits.norm(dim=-1).mean().item()),
+            "memory/prior_keyed_route_bias_logits_norm": float(prior_keyed_route_logits.norm(dim=-1).mean().item()),
+            "memory/predictive_keyed_route_bias_logits_norm": float(predictive_keyed_route_logits.norm(dim=-1).mean().item()),
+            "memory/maxmerged_predictive_keyed_route_bias_logits_norm": float(maxmerged_predictive_keyed_route_logits.norm(dim=-1).mean().item()),
+            "memory/keyed_route_bias_logits_norm": float(keyed_route_logits.norm(dim=-1).mean().item()),
+            "memory/weak_prior_merge_gate": float(weak_prior_merge_gate.mean().item()),
+            "memory/top1_weak_prior_max_merge_gate": float(top1_weak_prior_max_merge_gate.mean().item()),
+            "memory/top1_weak_prior_density": float(weakest_mask.mean().item()),
+            "memory/route_bias_logits_norm": float(route_bias_logits.norm(dim=-1).mean().item()),
+            "memory/route_memory_query_norm": float(predictive_route_memory_query.norm(dim=-1).mean().item()),
+            "memory/predictive_hidden_norm": float(predictive_hidden_for_logits.norm(dim=-1).mean().item()),
+            "memory/keyed_predictive_delta_norm": float((predictive_keyed_route_logits - prior_keyed_route_logits).norm(dim=-1).mean().item()),
+        }
+        return CoreOutput(
+            pooled=pooled,
+            tokens=tokens,
+            metrics=metrics,
+            next_state={"hidden": next_hidden.detach()},
+        )
+
+
 class RoutedExpertRouteBiasedKeyedResidualPredictiveDeltaGatedPhaseMemoryCore(RoutedExpertPhaseMemoryCore):
     def __init__(
         self,
