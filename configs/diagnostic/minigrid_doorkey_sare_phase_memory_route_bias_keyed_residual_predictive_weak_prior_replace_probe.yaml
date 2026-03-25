@@ -1,0 +1,46 @@
+seed: 7
+tags:
+  - diagnostic
+  - minigrid
+  - doorkey
+  - sare
+  - phase_memory
+  - architecture_probe
+  - route_bias
+  - keyed_residual
+  - predictive_weak_prior_replace
+system:
+  device: auto
+  precision: auto
+  deterministic: true
+  log_interval: 4
+  checkpoint_interval: 12
+env:
+  suite: minigrid
+  env_id: MiniGrid-DoorKey-5x5-v0
+  num_envs: 8
+  num_eval_envs: 8
+ppo:
+  rollout_steps: 64
+  total_updates: 24
+  update_epochs: 4
+  minibatches: 4
+  learning_rate: 0.0003
+  ent_coef: 0.001
+model:
+  variant: sare_phase_memory_route_bias_keyed_residual_predictive_weak_prior_replace
+  hidden_size: 128
+  token_dim: 128
+  expert_count: 4
+  top_k: 2
+  expert_hidden_size: 256
+  temperature: 1.0
+  memory_mix: 0.5
+  route_memory_scale: 0.5
+logging:
+  project: psmn_rl
+  run_name: diagnostic_minigrid_doorkey_sare_phase_memory_route_bias_keyed_residual_predictive_weak_prior_replace_probe
+  output_dir: outputs/diagnostics/architecture_route_bias_keyed_residual_predictive_weak_prior_replace_probe
+evaluation:
+  episodes: 16
+  greedy: true
