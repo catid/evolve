@@ -1223,6 +1223,43 @@ def test_sare_phase_memory_route_bias_keyed_residual_weak_base_margin_advantage_
     env.close()
 
 
+def test_sare_phase_memory_route_bias_keyed_residual_weak_base_margin_bonus_expert_gate_reports_gate_statistics() -> None:
+    env, obs, done = _obs()
+    model = build_model(
+        ModelConfig(
+            variant="sare_phase_memory_route_bias_keyed_residual_weak_base_margin_bonus_expert_gate",
+            expert_count=4,
+            top_k=2,
+            memory_mix=0.5,
+            route_memory_scale=0.5,
+        ),
+        env.observation_space,
+        env.action_space,
+    )
+    state = model.initial_state(batch_size=1, device=torch.device("cpu"))
+    output = model.forward(obs, state=state, done=done)
+    assert "hidden" in output.next_state
+    assert output.next_state["hidden"].shape == (1, 128)
+    assert "memory/weak_base_expert_gate_mean" in output.metrics
+    assert "memory/margin_advantage_gate_mean" in output.metrics
+    assert "memory/margin_advantage_gate_max" in output.metrics
+    assert "memory/combined_weak_margin_advantage_gate_mean" in output.metrics
+    assert "memory/combined_weak_margin_advantage_gate_max" in output.metrics
+    assert "memory/margin_advantage_logits_norm" in output.metrics
+    assert "memory/margin_bonus_logits_norm" in output.metrics
+    assert "memory/margin_advantage_density" in output.metrics
+    assert "memory/margin_bonus_factor" in output.metrics
+    assert float(output.metrics["memory/route_bias_scale"]) == 0.5
+    assert 0.0 <= float(output.metrics["memory/weak_base_expert_gate_mean"]) <= 1.0
+    assert 0.0 <= float(output.metrics["memory/margin_advantage_gate_mean"]) <= 1.0
+    assert 0.0 <= float(output.metrics["memory/margin_advantage_gate_max"]) <= 1.0
+    assert 0.0 <= float(output.metrics["memory/combined_weak_margin_advantage_gate_mean"]) <= 1.0
+    assert 0.0 <= float(output.metrics["memory/combined_weak_margin_advantage_gate_max"]) <= 1.0
+    assert 0.0 <= float(output.metrics["memory/margin_advantage_density"]) <= 1.0
+    assert float(output.metrics["memory/margin_bonus_logits_norm"]) >= 0.0
+    env.close()
+
+
 def test_sare_phase_memory_route_bias_keyed_residual_weak_base_sign_disagreement_expert_gate_reports_gate_statistics() -> None:
     env, obs, done = _obs()
     model = build_model(
