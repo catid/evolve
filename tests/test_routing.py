@@ -410,6 +410,36 @@ def test_sare_phase_memory_route_bias_keyed_residual_predictive_weak_prior_top1_
     env.close()
 
 
+def test_sare_phase_memory_route_bias_keyed_residual_predictive_top1_consensus_bonus_reports_consensus_statistics() -> None:
+    env, obs, done = _obs()
+    model = build_model(
+        ModelConfig(
+            variant="sare_phase_memory_route_bias_keyed_residual_predictive_top1_consensus_bonus",
+            expert_count=4,
+            top_k=2,
+            memory_mix=0.5,
+            route_memory_scale=0.5,
+        ),
+        env.observation_space,
+        env.action_space,
+    )
+    state = model.initial_state(batch_size=1, device=torch.device("cpu"))
+    output = model.forward(obs, state=state, done=done)
+    assert "hidden" in output.next_state
+    assert output.next_state["hidden"].shape == (1, 128)
+    assert "memory/prior_keyed_route_bias_logits_norm" in output.metrics
+    assert "memory/predictive_keyed_route_bias_logits_norm" in output.metrics
+    assert "memory/consensus_bonus_logits_norm" in output.metrics
+    assert "memory/top1_consensus_rate" in output.metrics
+    assert "memory/top1_consensus_density" in output.metrics
+    assert "memory/keyed_predictive_delta_norm" in output.metrics
+    assert float(output.metrics["memory/route_bias_scale"]) == 0.5
+    assert float(output.metrics["memory/consensus_bonus_scale"]) == 0.5
+    assert 0.0 <= float(output.metrics["memory/top1_consensus_rate"]) <= 1.0
+    assert 0.0 <= float(output.metrics["memory/top1_consensus_density"]) <= 0.25
+    env.close()
+
+
 def test_sare_phase_memory_route_bias_keyed_residual_predictive_delta_gate_reports_gate_statistics() -> None:
     env, obs, done = _obs()
     model = build_model(
