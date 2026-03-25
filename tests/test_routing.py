@@ -213,6 +213,33 @@ def test_sare_phase_memory_route_bias_keyed_residual_predictive_capped_reports_c
     env.close()
 
 
+def test_sare_phase_memory_route_bias_keyed_residual_predictive_delta_mix_reports_mix_statistics() -> None:
+    env, obs, done = _obs()
+    model = build_model(
+        ModelConfig(
+            variant="sare_phase_memory_route_bias_keyed_residual_predictive_delta_mix",
+            expert_count=4,
+            top_k=2,
+            memory_mix=0.5,
+            route_memory_scale=0.5,
+        ),
+        env.observation_space,
+        env.action_space,
+    )
+    state = model.initial_state(batch_size=1, device=torch.device("cpu"))
+    output = model.forward(obs, state=state, done=done)
+    assert "hidden" in output.next_state
+    assert output.next_state["hidden"].shape == (1, 128)
+    assert "memory/prior_keyed_route_bias_logits_norm" in output.metrics
+    assert "memory/predictive_keyed_route_bias_logits_norm" in output.metrics
+    assert "memory/mixed_predictive_delta_logits_norm" in output.metrics
+    assert "memory/keyed_predictive_delta_norm" in output.metrics
+    assert "memory/keyed_predictive_delta_mix" in output.metrics
+    assert float(output.metrics["memory/route_bias_scale"]) == 0.5
+    assert abs(float(output.metrics["memory/keyed_predictive_delta_mix"]) - 0.25) < 1e-6
+    env.close()
+
+
 def test_sare_phase_memory_route_bias_keyed_residual_ema_reports_ema_statistics() -> None:
     env, obs, done = _obs()
     model = build_model(
