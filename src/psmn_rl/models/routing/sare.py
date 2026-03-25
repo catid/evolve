@@ -419,6 +419,86 @@ class RoutedExpertRouteBiasedKeyedResidualPhaseMemoryCore(RoutedExpertPhaseMemor
         )
 
 
+class RoutedExpertRouteBiasedKeyedResidualEmaPhaseMemoryCore(RoutedExpertPhaseMemoryCore):
+    def __init__(
+        self,
+        observation_space,
+        token_dim: int,
+        patch_size: int,
+        hidden_size: int,
+        expert_count: int,
+        expert_hidden_size: int,
+        top_k: int,
+        temperature: float,
+        memory_mix: float,
+        route_memory_scale: float,
+        keyed_ema_decay: float = 0.75,
+    ) -> None:
+        super().__init__(
+            observation_space=observation_space,
+            token_dim=token_dim,
+            patch_size=patch_size,
+            hidden_size=hidden_size,
+            expert_count=expert_count,
+            expert_hidden_size=expert_hidden_size,
+            top_k=top_k,
+            temperature=temperature,
+            memory_mix=memory_mix,
+        )
+        self.route_memory_scale = float(route_memory_scale)
+        self.keyed_ema_decay = float(keyed_ema_decay)
+        self.route_bias_proj = nn.Linear(hidden_size, expert_count)
+
+    def forward(self, obs: dict[str, torch.Tensor], state: dict[str, torch.Tensor], done: torch.Tensor | None) -> CoreOutput:
+        tokens = self.input_proj(self.encoder(obs))
+        hidden = self._prepare_hidden(
+            state,
+            masked_mean(tokens),
+            done,
+        )
+        ema_hidden = state.get("ema_hidden")
+        if ema_hidden is None:
+            ema_hidden = hidden
+        else:
+            ema_hidden = ema_hidden.to(device=hidden.device, dtype=hidden.dtype)
+            if done is not None:
+                ema_hidden = ema_hidden * (~done).to(dtype=hidden.dtype).unsqueeze(-1)
+
+        base_route_logits = self.route_bias_proj(hidden)
+        route_memory_query = self.query(ema_hidden)
+        keyed_route_logits = route_memory_query @ self.expert_keys.t() / math.sqrt(route_memory_query.size(-1))
+        route_bias_logits = base_route_logits + keyed_route_logits
+        route_bias = torch.tanh(route_bias_logits) * self.route_memory_scale
+        route_probs, topk_values, topk_idx = self.route(tokens, route_bias=route_bias)
+        mixed = self.apply_experts(tokens, topk_values, topk_idx)
+        tokens = self.output_norm(tokens + mixed)
+        pooled = masked_mean(tokens)
+        pooled, next_hidden, memory_metrics = self._apply_memory(pooled, hidden, route_probs)
+        next_hidden_for_ema = next_hidden.to(dtype=ema_hidden.dtype)
+        next_ema_hidden = self.keyed_ema_decay * ema_hidden + (1.0 - self.keyed_ema_decay) * next_hidden_for_ema
+        metrics = {
+            **_route_metrics(route_probs, topk_idx, self.expert_count),
+            **token_representation_metrics(tokens, pooled),
+            **memory_metrics,
+            "memory/route_bias_norm": float(route_bias.norm(dim=-1).mean().item()),
+            "memory/route_bias_absmax": float(route_bias.abs().max().item()),
+            "memory/route_bias_scale": self.route_memory_scale,
+            "memory/base_route_bias_logits_norm": float(base_route_logits.norm(dim=-1).mean().item()),
+            "memory/keyed_route_bias_logits_norm": float(keyed_route_logits.norm(dim=-1).mean().item()),
+            "memory/route_bias_logits_norm": float(route_bias_logits.norm(dim=-1).mean().item()),
+            "memory/route_memory_query_norm": float(route_memory_query.norm(dim=-1).mean().item()),
+            "memory/ema_hidden_norm": float(next_ema_hidden.norm(dim=-1).mean().item()),
+            "memory/keyed_ema_delta_norm": float((next_ema_hidden - hidden).norm(dim=-1).mean().item()),
+            "memory/keyed_ema_decay": self.keyed_ema_decay,
+        }
+        return CoreOutput(
+            pooled=pooled,
+            tokens=tokens,
+            metrics=metrics,
+            next_state={"hidden": next_hidden.detach(), "ema_hidden": next_ema_hidden.detach()},
+        )
+
+
 class RoutedExpertRouteBiasedKeyedResidualOrthogonalPhaseMemoryCore(RoutedExpertPhaseMemoryCore):
     def __init__(
         self,
