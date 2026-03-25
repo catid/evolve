@@ -1,0 +1,250 @@
+extends: ../lss_deadlock_escape_program/campaign.yaml
+name: lss_architecture_specialist_program
+
+current_decision_memo: outputs/reports/deadlock_oracle_decision_memo.md
+
+decision_strings:
+  replace: architecture-derived challenger replaces the active benchmark
+  confirm: active benchmark confirmed and architecture frontier clarified
+  narrow: active benchmark remains and the architecture frontier narrows further
+  arch_future_branch: architecture branch justified for future specialist-only work but not benchmark promotion
+
+stage_roots:
+  stage1_train: outputs/experiments/lss_architecture_specialist_program/stageB1_train
+  stage1_eval: outputs/experiments/lss_architecture_specialist_program/stageB1_eval
+  stage2_train: outputs/experiments/lss_architecture_specialist_program/stageB2_train
+  stage2_eval: outputs/experiments/lss_architecture_specialist_program/stageB2_eval
+  stage3_eval: outputs/experiments/lss_architecture_specialist_program/stageB3_eval
+  stage4_route: outputs/experiments/lss_architecture_specialist_program/stageB4_route
+  stage4_stability: outputs/experiments/lss_architecture_specialist_program/stageB4_stability
+  stage5_practicalization: outputs/experiments/lss_architecture_specialist_program/stageC1_practicalization
+  stage6_practicalization: outputs/experiments/lss_architecture_specialist_program/stageC2_practicalization
+  stage7_pack: outputs/experiments/lss_architecture_specialist_program/stageC3_pack
+
+reports:
+  state_reconciliation: outputs/reports/architecture_program_state_reconciliation.md
+  frontier_manifest: outputs/reports/architecture_frontier_manifest.md
+  deadlock_family_definition: outputs/reports/architecture_deadlock_family_definition.md
+  registration_report: outputs/reports/architecture_rescue_registration.md
+  registration_json: outputs/reports/architecture_rescue_registration.json
+  run_manifest_json: outputs/reports/architecture_program_run_manifest.json
+  baseline_eval_json: outputs/reports/architecture_stageB1_baseline_eval.json
+  stage1_raw_json: outputs/reports/architecture_stageB1_screening_raw.json
+  stage1_exploit_report: outputs/reports/architecture_stageB1_screening_exploit.md
+  stage1_exploit_json: outputs/reports/architecture_stageB1_screening_exploit.json
+  stage1_explore_report: outputs/reports/architecture_stageB1_screening_explore.md
+  stage1_explore_json: outputs/reports/architecture_stageB1_screening_explore.json
+  stage2_report: outputs/reports/architecture_stageB2_verification.md
+  stage2_json: outputs/reports/architecture_stageB2_verification.json
+  stage3_report: outputs/reports/architecture_stageB3_specialist_validation.md
+  stage3_json: outputs/reports/architecture_stageB3_specialist_validation.json
+  stage4_route_report: outputs/reports/architecture_stageB4_route_validation.md
+  stage4_route_json: outputs/reports/architecture_stageB4_route_validation.json
+  stage4_stability_report: outputs/reports/architecture_stageB4_stability.md
+  stage4_stability_json: outputs/reports/architecture_stageB4_stability.json
+  stage5_report: outputs/reports/architecture_stageC1_practicalization.md
+  stage5_json: outputs/reports/architecture_stageC1_practicalization.json
+  stage6_report: outputs/reports/architecture_stageC2_fairness_holdout_antiregression.md
+  stage6_json: outputs/reports/architecture_stageC2_fairness_holdout_antiregression.json
+  candidate_pack_json: outputs/reports/architecture_next_candidate_pack.json
+  gate_report_markdown: outputs/reports/architecture_next_gate_report.md
+  gate_report_json: outputs/reports/architecture_next_gate_report.json
+  decision_memo: outputs/reports/architecture_next_decision_memo.md
+
+selection:
+  screening_eval_episodes: 16
+  verification_eval_episodes: 32
+  final_eval_episodes: 64
+  max_steps: 256
+  min_arch_gain: 0.05
+  min_round6_gain: 0.02
+  selected_per_family: 1
+  rerun_consistency_tolerance: 0.05
+  healthy_regression_tolerance: 0.10
+  pack_gate_required_verdict: "PASS: thaw consideration allowed"
+
+analysis:
+  program_label: 2x-Scale Architecture Specialist Rescue and Practicalization Program
+  current_gate_report: outputs/reports/round6_current_benchmark_pack_validation.md
+  current_gate_report_json: outputs/reports/portfolio_gate_report.json
+  current_stability_report: outputs/reports/deadlock_oracle_stageB6_stability.md
+  current_stability_json: outputs/reports/deadlock_oracle_stageB6_stability.json
+  current_route_report: outputs/reports/deadlock_oracle_stageB6_route_validation.md
+  current_route_json: outputs/reports/deadlock_oracle_stageB6_route_validation.json
+  phase_targets:
+    - pre_key
+    - carry_key
+    - at_locked_door
+    - post_unlock
+  prior_arch_report_glob: outputs/reports/architecture*_probe.json
+  prior_arch_report_exclude_substrings:
+    - sampled_eval
+    - run_summary
+  training_seeds:
+    - 7
+    - 11
+  teacher_locked_dev_groups:
+    - label: teacher_locked_dev_primary
+      cases:
+        - [prospective_c, 191]
+        - [prospective_c, 193]
+    - label: teacher_locked_dev_secondary
+      cases:
+        - [prospective_c, 181]
+  teacher_locked_holdout_groups:
+    - label: teacher_locked_holdout_primary
+      cases:
+        - [prospective_g, 251]
+        - [prospective_g, 257]
+    - label: teacher_locked_holdout_secondary
+      cases:
+        - [prospective_g, 263]
+  ambiguous_groups:
+    - label: ambiguous_primary
+      cases:
+        - [prospective_i, 281]
+        - [prospective_i, 283]
+    - label: ambiguous_secondary
+      cases:
+        - [prospective_i, 293]
+  healthy_groups:
+    - label: healthy_original
+      cases:
+        - [original, 7]
+        - [original, 11]
+    - label: healthy_fresh
+      cases:
+        - [fresh, 23]
+        - [fresh, 29]
+  guardrail_groups:
+    - label: guardrail_primary
+      cases:
+        - [prospective_f, 239]
+        - [prospective_f, 241]
+
+arch_candidates:
+  keyed_residual:
+    track: exploit
+    family: keyed_residual_stabilization
+    label: sare_phase_memory_route_bias_keyed_residual
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_route_bias_keyed_residual_probe.yaml
+  keyed_residual_target_norm:
+    track: exploit
+    family: keyed_residual_stabilization
+    label: sare_phase_memory_route_bias_keyed_residual_target_norm
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_route_bias_keyed_residual_target_norm_probe.yaml
+  keyed_residual_mild_boost:
+    track: exploit
+    family: keyed_residual_stabilization
+    label: sare_phase_memory_route_bias_keyed_residual_mild_boost
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_route_bias_keyed_residual_mild_boost_probe.yaml
+  keyed_residual_predictive:
+    track: exploit
+    family: keyed_residual_stabilization
+    label: sare_phase_memory_route_bias_keyed_residual_predictive
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_route_bias_keyed_residual_predictive_probe.yaml
+
+  weak_base_expert_gate:
+    track: exploit
+    family: conditional_activation
+    label: sare_phase_memory_route_bias_keyed_residual_weak_base_expert_gate
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_route_bias_keyed_residual_weak_base_expert_gate_probe.yaml
+  weak_base_concentration_blend:
+    track: exploit
+    family: conditional_activation
+    label: sare_phase_memory_route_bias_keyed_residual_weak_base_expert_concentration_blend
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_route_bias_keyed_residual_weak_base_expert_concentration_blend_probe.yaml
+  weak_base_keyed_relative:
+    track: exploit
+    family: conditional_activation
+    label: sare_phase_memory_route_bias_keyed_residual_weak_base_keyed_relative_expert_gate
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_route_bias_keyed_residual_weak_base_keyed_relative_expert_gate_probe.yaml
+  weak_base_cosine_disagreement:
+    track: exploit
+    family: conditional_activation
+    label: sare_phase_memory_route_bias_keyed_residual_weak_base_cosine_disagreement_expert_gate
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_route_bias_keyed_residual_weak_base_cosine_disagreement_expert_gate_probe.yaml
+
+  route_bias:
+    track: exploit
+    family: greedy_conversion
+    label: sare_phase_memory_route_bias
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_route_bias_probe.yaml
+  keyed_residual_entropy_gate:
+    track: exploit
+    family: greedy_conversion
+    label: sare_phase_memory_route_bias_keyed_residual_entropy_gate
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_route_bias_keyed_residual_entropy_gate_probe.yaml
+  keyed_residual_floor_boost:
+    track: exploit
+    family: greedy_conversion
+    label: sare_phase_memory_route_bias_keyed_residual_floor_boost
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_route_bias_keyed_residual_floor_boost_probe.yaml
+  weak_base_margin_bonus:
+    track: exploit
+    family: greedy_conversion
+    label: sare_phase_memory_route_bias_keyed_residual_weak_base_margin_bonus_expert_gate
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_route_bias_keyed_residual_weak_base_margin_bonus_expert_gate_probe.yaml
+
+  weak_base_sign_disagreement:
+    track: explore
+    family: selective_disagreement
+    label: sare_phase_memory_route_bias_keyed_residual_weak_base_sign_disagreement_expert_gate
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_route_bias_keyed_residual_weak_base_sign_disagreement_expert_gate_probe.yaml
+  weak_base_sign_aligned:
+    track: explore
+    family: selective_disagreement
+    label: sare_phase_memory_route_bias_keyed_residual_weak_base_sign_aligned_expert_gate
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_route_bias_keyed_residual_weak_base_sign_aligned_expert_gate_probe.yaml
+  weak_base_margin_advantage:
+    track: explore
+    family: selective_disagreement
+    label: sare_phase_memory_route_bias_keyed_residual_weak_base_margin_advantage_expert_gate
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_route_bias_keyed_residual_weak_base_margin_advantage_expert_gate_probe.yaml
+  weak_base_keyed_abs_top2:
+    track: explore
+    family: selective_disagreement
+    label: sare_phase_memory_route_bias_keyed_residual_weak_base_keyed_abs_top2_expert_gate
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_route_bias_keyed_residual_weak_base_keyed_abs_top2_expert_gate_probe.yaml
+
+  phase_memory:
+    track: explore
+    family: memory_split_pilot
+    label: sare_phase_memory
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_probe.yaml
+  phase_memory_gated:
+    track: explore
+    family: memory_split_pilot
+    label: sare_phase_memory_gated
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_gated_probe.yaml
+  route_bias_gated:
+    track: explore
+    family: memory_split_pilot
+    label: sare_phase_memory_route_bias_gated
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_route_bias_gated_probe.yaml
+  route_bias_dual:
+    track: explore
+    family: memory_split_pilot
+    label: sare_phase_memory_route_bias_dual
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_route_bias_dual_probe.yaml
+
+  predictive_base_delta_mix:
+    track: explore
+    family: predictive_base_pilot
+    label: sare_phase_memory_route_bias_keyed_residual_predictive_base_delta_mix
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_route_bias_keyed_residual_predictive_base_delta_mix_probe.yaml
+  predictive_base_delta_entropy_gate:
+    track: explore
+    family: predictive_base_pilot
+    label: sare_phase_memory_route_bias_keyed_residual_predictive_base_delta_entropy_gate
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_route_bias_keyed_residual_predictive_base_delta_entropy_gate_probe.yaml
+  predictive_positive:
+    track: explore
+    family: predictive_base_pilot
+    label: sare_phase_memory_route_bias_keyed_residual_predictive_positive
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_route_bias_keyed_residual_predictive_positive_probe.yaml
+  predictive_aligned:
+    track: explore
+    family: predictive_base_pilot
+    label: sare_phase_memory_route_bias_keyed_residual_predictive_aligned
+    config: configs/diagnostic/minigrid_doorkey_sare_phase_memory_route_bias_keyed_residual_predictive_aligned_probe.yaml
