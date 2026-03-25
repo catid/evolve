@@ -125,6 +125,35 @@ def test_sare_phase_memory_route_bias_keyed_residual_reports_residual_statistics
     env.close()
 
 
+def test_sare_phase_memory_route_bias_keyed_residual_per_expert_scale_reports_scale_statistics() -> None:
+    env, obs, done = _obs()
+    model = build_model(
+        ModelConfig(
+            variant="sare_phase_memory_route_bias_keyed_residual_per_expert_scale",
+            expert_count=4,
+            top_k=2,
+            memory_mix=0.5,
+            route_memory_scale=0.5,
+        ),
+        env.observation_space,
+        env.action_space,
+    )
+    state = model.initial_state(batch_size=1, device=torch.device("cpu"))
+    output = model.forward(obs, state=state, done=done)
+    assert "hidden" in output.next_state
+    assert output.next_state["hidden"].shape == (1, 128)
+    assert "memory/base_route_bias_logits_norm" in output.metrics
+    assert "memory/keyed_route_bias_logits_norm" in output.metrics
+    assert "memory/scaled_keyed_route_bias_logits_norm" in output.metrics
+    assert "memory/keyed_residual_scale_mean" in output.metrics
+    assert "memory/keyed_residual_scale_std" in output.metrics
+    assert "memory/route_bias_logits_norm" in output.metrics
+    assert float(output.metrics["memory/route_bias_scale"]) == 0.5
+    assert abs(float(output.metrics["memory/keyed_residual_scale_mean"]) - 1.0) < 1e-6
+    assert abs(float(output.metrics["memory/keyed_residual_scale_std"]) - 0.0) < 1e-6
+    env.close()
+
+
 def test_sare_phase_memory_route_bias_keyed_residual_learned_scale_reports_scale_statistics() -> None:
     env, obs, done = _obs()
     model = build_model(
