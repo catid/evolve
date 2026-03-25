@@ -36,6 +36,7 @@ from psmn_rl.models.routing.sare import (
     RoutedExpertRouteBiasedKeyedResidualHiddenGatedPhaseMemoryCore,
     RoutedExpertRouteBiasedKeyedResidualWeakBaseExpertGatedPhaseMemoryCore,
     RoutedExpertRouteBiasedKeyedResidualWeakBaseExpertHighBaseGatedPhaseMemoryCore,
+    RoutedExpertRouteBiasedKeyedResidualWeakBaseExpertLowBaseRenormedPhaseMemoryCore,
     RoutedExpertRouteBiasedKeyedResidualWeakBaseExpertRenormedPhaseMemoryCore,
     RoutedExpertRouteBiasedKeyedResidualWeakBaseWeakKeyedExpertGatedPhaseMemoryCore,
     RoutedExpertRouteBiasedKeyedResidualMarginGatePhaseMemoryCore,
@@ -647,6 +648,19 @@ def build_model(model_config: ModelConfig, observation_space: gym.Space, action_
         )
     elif variant == "sare_phase_memory_route_bias_keyed_residual_weak_base_expert_high_base_gate":
         core = RoutedExpertRouteBiasedKeyedResidualWeakBaseExpertHighBaseGatedPhaseMemoryCore(
+            observation_space=observation_space,
+            token_dim=model_config.token_dim,
+            patch_size=model_config.patch_size,
+            hidden_size=model_config.hidden_size,
+            expert_count=model_config.expert_count,
+            expert_hidden_size=model_config.expert_hidden_size,
+            top_k=model_config.top_k,
+            temperature=model_config.temperature,
+            memory_mix=model_config.memory_mix,
+            route_memory_scale=model_config.route_memory_scale,
+        )
+    elif variant == "sare_phase_memory_route_bias_keyed_residual_weak_base_expert_low_base_renorm":
+        core = RoutedExpertRouteBiasedKeyedResidualWeakBaseExpertLowBaseRenormedPhaseMemoryCore(
             observation_space=observation_space,
             token_dim=model_config.token_dim,
             patch_size=model_config.patch_size,
