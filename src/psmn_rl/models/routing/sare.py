@@ -3278,6 +3278,101 @@ class RoutedExpertRouteBiasedKeyedResidualWeakBaseExpertGatedPhaseMemoryCore(Rou
         )
 
 
+class RoutedExpertRouteBiasedKeyedResidualWeakBaseMarginAdvantageExpertGatedPhaseMemoryCore(RoutedExpertPhaseMemoryCore):
+    def __init__(
+        self,
+        observation_space,
+        token_dim: int,
+        patch_size: int,
+        hidden_size: int,
+        expert_count: int,
+        expert_hidden_size: int,
+        top_k: int,
+        temperature: float,
+        memory_mix: float,
+        route_memory_scale: float,
+        keyed_residual_weak_base_boost: float = 0.5,
+        weak_base_factor: float = 1.5,
+        margin_advantage_factor: float = 1.0,
+    ) -> None:
+        super().__init__(
+            observation_space=observation_space,
+            token_dim=token_dim,
+            patch_size=patch_size,
+            hidden_size=hidden_size,
+            expert_count=expert_count,
+            expert_hidden_size=expert_hidden_size,
+            top_k=top_k,
+            temperature=temperature,
+            memory_mix=memory_mix,
+        )
+        self.route_memory_scale = float(route_memory_scale)
+        self.keyed_residual_weak_base_boost = float(keyed_residual_weak_base_boost)
+        self.weak_base_factor = float(weak_base_factor)
+        self.margin_advantage_factor = float(margin_advantage_factor)
+        self.route_bias_proj = nn.Linear(hidden_size, expert_count)
+
+    def forward(self, obs: dict[str, torch.Tensor], state: dict[str, torch.Tensor], done: torch.Tensor | None) -> CoreOutput:
+        tokens = self.input_proj(self.encoder(obs))
+        hidden = self._prepare_hidden(
+            state,
+            masked_mean(tokens),
+            done,
+        )
+        base_route_logits = self.route_bias_proj(hidden)
+        route_memory_query = self.query(hidden)
+        keyed_route_logits = route_memory_query @ self.expert_keys.t() / math.sqrt(route_memory_query.size(-1))
+        base_abs = base_route_logits.abs()
+        base_scale = base_abs.mean(dim=-1, keepdim=True).clamp_min(1e-6)
+        weak_base_gate = torch.clamp(1.0 - (base_abs / (base_scale * self.weak_base_factor)), min=0.0, max=1.0)
+        margin_advantage_logits = torch.relu(keyed_route_logits - base_route_logits)
+        margin_advantage_gate = torch.clamp(
+            margin_advantage_logits / (base_scale * self.margin_advantage_factor),
+            min=0.0,
+            max=1.0,
+        )
+        combined_gate = weak_base_gate * margin_advantage_gate
+        keyed_residual_scale = 1.0 + combined_gate * self.keyed_residual_weak_base_boost
+        gated_keyed_route_logits = keyed_route_logits * keyed_residual_scale
+        route_bias_logits = base_route_logits + gated_keyed_route_logits
+        route_bias = torch.tanh(route_bias_logits) * self.route_memory_scale
+        route_probs, topk_values, topk_idx = self.route(tokens, route_bias=route_bias)
+        mixed = self.apply_experts(tokens, topk_values, topk_idx)
+        tokens = self.output_norm(tokens + mixed)
+        pooled = masked_mean(tokens)
+        pooled, next_hidden, memory_metrics = self._apply_memory(pooled, hidden, route_probs)
+        metrics = {
+            **_route_metrics(route_probs, topk_idx, self.expert_count),
+            **token_representation_metrics(tokens, pooled),
+            **memory_metrics,
+            "memory/route_bias_norm": float(route_bias.norm(dim=-1).mean().item()),
+            "memory/route_bias_absmax": float(route_bias.abs().max().item()),
+            "memory/route_bias_scale": self.route_memory_scale,
+            "memory/base_route_bias_logits_norm": float(base_route_logits.norm(dim=-1).mean().item()),
+            "memory/keyed_route_bias_logits_norm": float(keyed_route_logits.norm(dim=-1).mean().item()),
+            "memory/gated_keyed_route_bias_logits_norm": float(gated_keyed_route_logits.norm(dim=-1).mean().item()),
+            "memory/route_bias_logits_norm": float(route_bias_logits.norm(dim=-1).mean().item()),
+            "memory/route_memory_query_norm": float(route_memory_query.norm(dim=-1).mean().item()),
+            "memory/weak_base_expert_gate_mean": float(weak_base_gate.mean().item()),
+            "memory/weak_base_expert_gate_std": float(weak_base_gate.std(unbiased=False).item()),
+            "memory/weak_base_expert_gate_max": float(weak_base_gate.max().item()),
+            "memory/margin_advantage_gate_mean": float(margin_advantage_gate.mean().item()),
+            "memory/margin_advantage_gate_max": float(margin_advantage_gate.max().item()),
+            "memory/combined_weak_margin_advantage_gate_mean": float(combined_gate.mean().item()),
+            "memory/combined_weak_margin_advantage_gate_max": float(combined_gate.max().item()),
+            "memory/keyed_residual_scale_mean": float(keyed_residual_scale.mean().item()),
+            "memory/keyed_residual_weak_base_boost": self.keyed_residual_weak_base_boost,
+            "memory/weak_base_factor": self.weak_base_factor,
+            "memory/margin_advantage_factor": self.margin_advantage_factor,
+        }
+        return CoreOutput(
+            pooled=pooled,
+            tokens=tokens,
+            metrics=metrics,
+            next_state={"hidden": next_hidden.detach()},
+        )
+
+
 class RoutedExpertRouteBiasedKeyedResidualWeakBaseSignDisagreementExpertGatedPhaseMemoryCore(RoutedExpertPhaseMemoryCore):
     def __init__(
         self,

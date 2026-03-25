@@ -55,6 +55,7 @@ ALL_VARIANTS = [
     "sare_phase_memory_route_bias_keyed_residual_hidden_gate",
     "sare_phase_memory_route_bias_keyed_residual_weak_base_expert_gate",
     "sare_phase_memory_route_bias_keyed_residual_weak_base_expert_concentration_blend",
+    "sare_phase_memory_route_bias_keyed_residual_weak_base_margin_advantage_expert_gate",
     "sare_phase_memory_route_bias_keyed_residual_weak_base_sign_disagreement_expert_gate",
     "sare_phase_memory_route_bias_keyed_residual_weak_base_cosine_disagreement_expert_gate",
     "sare_phase_memory_route_bias_keyed_residual_weak_base_expert_softmax_redistribute",
