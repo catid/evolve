@@ -311,8 +311,8 @@ def _forward_with_route_capture(model, obs_t: dict[str, torch.Tensor], state: di
     core: RoutedExpertCore = model.core
     original_route = core.route
 
-    def route_with_capture(self: RoutedExpertCore, tokens: torch.Tensor):
-        route_probs, topk_values, topk_idx = original_route(tokens)
+    def route_with_capture(self: RoutedExpertCore, tokens: torch.Tensor, *args: Any, **kwargs: Any):
+        route_probs, topk_values, topk_idx = original_route(tokens, *args, **kwargs)
         captured["route_probs"] = route_probs.detach().cpu()
         captured["topk_values"] = topk_values.detach().cpu()
         captured["topk_idx"] = topk_idx.detach().cpu()
