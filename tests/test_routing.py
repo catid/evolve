@@ -1188,6 +1188,42 @@ def test_sare_phase_memory_route_bias_keyed_residual_weak_base_expert_concentrat
     env.close()
 
 
+def test_sare_phase_memory_route_bias_keyed_residual_weak_base_cosine_disagreement_expert_gate_reports_gate_statistics() -> None:
+    env, obs, done = _obs()
+    model = build_model(
+        ModelConfig(
+            variant="sare_phase_memory_route_bias_keyed_residual_weak_base_cosine_disagreement_expert_gate",
+            expert_count=4,
+            top_k=2,
+            memory_mix=0.5,
+            route_memory_scale=0.5,
+        ),
+        env.observation_space,
+        env.action_space,
+    )
+    state = model.initial_state(batch_size=1, device=torch.device("cpu"))
+    output = model.forward(obs, state=state, done=done)
+    assert "hidden" in output.next_state
+    assert output.next_state["hidden"].shape == (1, 128)
+    assert "memory/weak_base_expert_gate_mean" in output.metrics
+    assert "memory/base_keyed_alignment_cosine" in output.metrics
+    assert "memory/cosine_disagreement_gate_mean" in output.metrics
+    assert "memory/cosine_disagreement_gate_max" in output.metrics
+    assert "memory/combined_weak_cosine_disagreement_gate_mean" in output.metrics
+    assert "memory/combined_weak_cosine_disagreement_gate_max" in output.metrics
+    assert "memory/gated_keyed_route_bias_logits_norm" in output.metrics
+    assert "memory/keyed_residual_scale_mean" in output.metrics
+    assert float(output.metrics["memory/route_bias_scale"]) == 0.5
+    assert 0.0 <= float(output.metrics["memory/weak_base_expert_gate_mean"]) <= 1.0
+    assert -1.0 <= float(output.metrics["memory/base_keyed_alignment_cosine"]) <= 1.0
+    assert 0.0 <= float(output.metrics["memory/cosine_disagreement_gate_mean"]) <= 1.0
+    assert 0.0 <= float(output.metrics["memory/cosine_disagreement_gate_max"]) <= 1.0
+    assert 0.0 <= float(output.metrics["memory/combined_weak_cosine_disagreement_gate_mean"]) <= 1.0
+    assert 0.0 <= float(output.metrics["memory/combined_weak_cosine_disagreement_gate_max"]) <= 1.0
+    assert 1.0 <= float(output.metrics["memory/keyed_residual_scale_mean"]) <= 1.5
+    env.close()
+
+
 def test_sare_phase_memory_route_bias_keyed_residual_weak_base_expert_softmax_redistribute_reports_gate_statistics() -> None:
     env, obs, done = _obs()
     model = build_model(
