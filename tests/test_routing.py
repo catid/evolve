@@ -1125,6 +1125,37 @@ def test_sare_phase_memory_route_bias_keyed_residual_hidden_gate_reports_gate_st
     env.close()
 
 
+def test_sare_phase_memory_route_bias_keyed_residual_weak_base_expert_gate_reports_gate_statistics() -> None:
+    env, obs, done = _obs()
+    model = build_model(
+        ModelConfig(
+            variant="sare_phase_memory_route_bias_keyed_residual_weak_base_expert_gate",
+            expert_count=4,
+            top_k=2,
+            memory_mix=0.5,
+            route_memory_scale=0.5,
+        ),
+        env.observation_space,
+        env.action_space,
+    )
+    state = model.initial_state(batch_size=1, device=torch.device("cpu"))
+    output = model.forward(obs, state=state, done=done)
+    assert "hidden" in output.next_state
+    assert output.next_state["hidden"].shape == (1, 128)
+    assert "memory/weak_base_expert_gate_mean" in output.metrics
+    assert "memory/weak_base_expert_gate_std" in output.metrics
+    assert "memory/weak_base_expert_gate_max" in output.metrics
+    assert "memory/gated_keyed_route_bias_logits_norm" in output.metrics
+    assert "memory/keyed_residual_scale_mean" in output.metrics
+    assert "memory/keyed_residual_weak_base_boost" in output.metrics
+    assert "memory/weak_base_factor" in output.metrics
+    assert float(output.metrics["memory/route_bias_scale"]) == 0.5
+    assert 0.0 <= float(output.metrics["memory/weak_base_expert_gate_mean"]) <= 1.0
+    assert 0.0 <= float(output.metrics["memory/weak_base_expert_gate_max"]) <= 1.0
+    assert 1.0 <= float(output.metrics["memory/keyed_residual_scale_mean"]) <= 1.5
+    env.close()
+
+
 def test_sare_phase_memory_route_bias_contextual_reports_context_bias_statistics() -> None:
     env, obs, done = _obs()
     model = build_model(
