@@ -74,6 +74,30 @@ def test_sare_phase_memory_route_bias_reports_route_memory_statistics() -> None:
     env.close()
 
 
+def test_sare_phase_memory_route_bias_contextual_reports_context_bias_statistics() -> None:
+    env, obs, done = _obs()
+    model = build_model(
+        ModelConfig(
+            variant="sare_phase_memory_route_bias_contextual",
+            expert_count=4,
+            top_k=2,
+            memory_mix=0.5,
+            route_memory_scale=0.5,
+        ),
+        env.observation_space,
+        env.action_space,
+    )
+    state = model.initial_state(batch_size=1, device=torch.device("cpu"))
+    output = model.forward(obs, state=state, done=done)
+    assert "hidden" in output.next_state
+    assert output.next_state["hidden"].shape == (1, 128)
+    assert "memory/route_bias_norm" in output.metrics
+    assert "memory/route_context_bias_norm" in output.metrics
+    assert "memory/route_memory_bias_norm" in output.metrics
+    assert float(output.metrics["memory/route_bias_scale"]) == 0.5
+    env.close()
+
+
 def test_sare_phase_memory_route_bias_gated_reports_hybrid_memory_statistics() -> None:
     env, obs, done = _obs()
     model = build_model(
