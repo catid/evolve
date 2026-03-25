@@ -489,6 +489,83 @@ class RoutedExpertRouteBiasedKeyedResidualBoostedPhaseMemoryCore(RoutedExpertPha
         )
 
 
+class RoutedExpertRouteBiasedKeyedResidualEntropyGatePhaseMemoryCore(RoutedExpertPhaseMemoryCore):
+    def __init__(
+        self,
+        observation_space,
+        token_dim: int,
+        patch_size: int,
+        hidden_size: int,
+        expert_count: int,
+        expert_hidden_size: int,
+        top_k: int,
+        temperature: float,
+        memory_mix: float,
+        route_memory_scale: float,
+        keyed_residual_base_scale: float = 0.5,
+        keyed_residual_uncertainty_scale: float = 1.0,
+    ) -> None:
+        super().__init__(
+            observation_space=observation_space,
+            token_dim=token_dim,
+            patch_size=patch_size,
+            hidden_size=hidden_size,
+            expert_count=expert_count,
+            expert_hidden_size=expert_hidden_size,
+            top_k=top_k,
+            temperature=temperature,
+            memory_mix=memory_mix,
+        )
+        self.route_memory_scale = float(route_memory_scale)
+        self.keyed_residual_base_scale = float(keyed_residual_base_scale)
+        self.keyed_residual_uncertainty_scale = float(keyed_residual_uncertainty_scale)
+        self.route_bias_proj = nn.Linear(hidden_size, expert_count)
+
+    def forward(self, obs: dict[str, torch.Tensor], state: dict[str, torch.Tensor], done: torch.Tensor | None) -> CoreOutput:
+        tokens = self.input_proj(self.encoder(obs))
+        hidden = self._prepare_hidden(
+            state,
+            masked_mean(tokens),
+            done,
+        )
+        base_route_logits = self.route_bias_proj(hidden)
+        base_route_probs = torch.softmax(base_route_logits / max(self.temperature, 1e-6), dim=-1)
+        base_route_entropy = entropy_from_probs(base_route_probs)
+        normalized_uncertainty = (base_route_entropy / math.log(self.expert_count)).clamp(0.0, 1.0)
+        keyed_gate = self.keyed_residual_base_scale + self.keyed_residual_uncertainty_scale * normalized_uncertainty
+        route_memory_query = self.query(hidden)
+        keyed_route_logits = route_memory_query @ self.expert_keys.t() / math.sqrt(route_memory_query.size(-1))
+        gated_keyed_route_logits = keyed_route_logits * keyed_gate.unsqueeze(-1)
+        route_bias_logits = base_route_logits + gated_keyed_route_logits
+        route_bias = torch.tanh(route_bias_logits) * self.route_memory_scale
+        route_probs, topk_values, topk_idx = self.route(tokens, route_bias=route_bias)
+        mixed = self.apply_experts(tokens, topk_values, topk_idx)
+        tokens = self.output_norm(tokens + mixed)
+        pooled = masked_mean(tokens)
+        pooled, next_hidden, memory_metrics = self._apply_memory(pooled, hidden, route_probs)
+        metrics = {
+            **_route_metrics(route_probs, topk_idx, self.expert_count),
+            **token_representation_metrics(tokens, pooled),
+            **memory_metrics,
+            "memory/route_bias_norm": float(route_bias.norm(dim=-1).mean().item()),
+            "memory/route_bias_absmax": float(route_bias.abs().max().item()),
+            "memory/route_bias_scale": self.route_memory_scale,
+            "memory/base_route_bias_logits_norm": float(base_route_logits.norm(dim=-1).mean().item()),
+            "memory/base_route_bias_entropy": float(base_route_entropy.mean().item()),
+            "memory/keyed_route_bias_logits_norm": float(keyed_route_logits.norm(dim=-1).mean().item()),
+            "memory/gated_keyed_route_bias_logits_norm": float(gated_keyed_route_logits.norm(dim=-1).mean().item()),
+            "memory/route_bias_logits_norm": float(route_bias_logits.norm(dim=-1).mean().item()),
+            "memory/route_memory_query_norm": float(route_memory_query.norm(dim=-1).mean().item()),
+            "memory/keyed_residual_gate_mean": float(keyed_gate.mean().item()),
+        }
+        return CoreOutput(
+            pooled=pooled,
+            tokens=tokens,
+            metrics=metrics,
+            next_state={"hidden": next_hidden.detach()},
+        )
+
+
 class RoutedExpertRouteBiasedContextualPhaseMemoryCore(RoutedExpertPhaseMemoryCore):
     def __init__(
         self,
