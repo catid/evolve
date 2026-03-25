@@ -101,6 +101,31 @@ def test_sare_phase_memory_route_bias_gated_reports_hybrid_memory_statistics() -
     env.close()
 
 
+def test_sare_phase_memory_route_bias_dual_reports_dual_memory_statistics() -> None:
+    env, obs, done = _obs()
+    model = build_model(
+        ModelConfig(
+            variant="sare_phase_memory_route_bias_dual",
+            expert_count=4,
+            top_k=2,
+            memory_mix=0.5,
+            route_memory_scale=0.5,
+        ),
+        env.observation_space,
+        env.action_space,
+    )
+    state = model.initial_state(batch_size=1, device=torch.device("cpu"))
+    output = model.forward(obs, state=state, done=done)
+    assert "hidden" in output.next_state
+    assert "route_hidden" in output.next_state
+    assert output.next_state["hidden"].shape == (1, 128)
+    assert output.next_state["route_hidden"].shape == (1, 128)
+    assert "memory/route_bias_norm" in output.metrics
+    assert "memory/route_hidden_norm" in output.metrics
+    assert float(output.metrics["memory/route_bias_scale"]) == 0.5
+    env.close()
+
+
 def test_treg_h_reports_hop_and_ponder_metrics() -> None:
     env, obs, done = _obs()
     model = build_model(ModelConfig(variant="treg_h", expert_count=4), env.observation_space, env.action_space)

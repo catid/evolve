@@ -353,3 +353,82 @@ class RoutedExpertRouteBiasedGatedPhaseMemoryCore(RoutedExpertGatedPhaseMemoryCo
             metrics=metrics,
             next_state={"hidden": next_hidden.detach()},
         )
+
+
+class RoutedExpertRouteBiasedDualPhaseMemoryCore(RoutedExpertPhaseMemoryCore):
+    def __init__(
+        self,
+        observation_space,
+        token_dim: int,
+        patch_size: int,
+        hidden_size: int,
+        expert_count: int,
+        expert_hidden_size: int,
+        top_k: int,
+        temperature: float,
+        memory_mix: float,
+        route_memory_scale: float,
+    ) -> None:
+        super().__init__(
+            observation_space=observation_space,
+            token_dim=token_dim,
+            patch_size=patch_size,
+            hidden_size=hidden_size,
+            expert_count=expert_count,
+            expert_hidden_size=expert_hidden_size,
+            top_k=top_k,
+            temperature=temperature,
+            memory_mix=memory_mix,
+        )
+        self.route_memory_scale = float(route_memory_scale)
+        self.route_bias_proj = nn.Linear(hidden_size, expert_count)
+        self.route_memory_cell = nn.GRUCell(hidden_size, hidden_size)
+
+    def initial_state(self, batch_size: int, device: torch.device) -> dict[str, torch.Tensor]:
+        zeros = torch.zeros(batch_size, self.hidden_size, device=device)
+        return {"hidden": zeros.clone(), "route_hidden": zeros}
+
+    def _prepare_named_hidden(
+        self,
+        state: dict[str, torch.Tensor],
+        key: str,
+        pooled: torch.Tensor,
+        done: torch.Tensor | None,
+    ) -> torch.Tensor:
+        hidden = state.get(key)
+        if hidden is None:
+            hidden = torch.zeros(pooled.size(0), self.hidden_size, device=pooled.device, dtype=pooled.dtype)
+        if done is not None:
+            hidden = hidden * (~done).to(dtype=pooled.dtype).unsqueeze(-1)
+        return hidden
+
+    def forward(self, obs: dict[str, torch.Tensor], state: dict[str, torch.Tensor], done: torch.Tensor | None) -> CoreOutput:
+        tokens = self.input_proj(self.encoder(obs))
+        token_summary = masked_mean(tokens)
+        route_hidden = self._prepare_named_hidden(state, "route_hidden", token_summary, done)
+        route_bias = torch.tanh(self.route_bias_proj(route_hidden)) * self.route_memory_scale
+        route_probs, topk_values, topk_idx = self.route(tokens, route_bias=route_bias)
+        mixed = self.apply_experts(tokens, topk_values, topk_idx)
+        tokens = self.output_norm(tokens + mixed)
+        pooled = masked_mean(tokens)
+        phase_hidden = self._prepare_named_hidden(state, "hidden", pooled, done)
+        pooled, next_hidden, memory_metrics = self._apply_memory(pooled, phase_hidden, route_probs)
+        next_route_hidden = self.route_memory_cell(pooled, route_hidden)
+        metrics = {
+            **_route_metrics(route_probs, topk_idx, self.expert_count),
+            **token_representation_metrics(tokens, pooled),
+            **memory_metrics,
+            "memory/route_bias_norm": float(route_bias.norm(dim=-1).mean().item()),
+            "memory/route_bias_absmax": float(route_bias.abs().max().item()),
+            "memory/route_bias_scale": self.route_memory_scale,
+            "memory/route_hidden_norm": float(next_route_hidden.norm(dim=-1).mean().item()),
+        }
+        return CoreOutput(
+            pooled=pooled,
+            tokens=tokens,
+            metrics=metrics,
+            next_state={
+                "hidden": next_hidden.detach(),
+                "route_hidden": next_route_hidden.detach(),
+            },
+        )
