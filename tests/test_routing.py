@@ -529,6 +529,35 @@ def test_sare_phase_memory_route_bias_keyed_residual_predictive_base_delta_mix_r
     env.close()
 
 
+def test_sare_phase_memory_route_bias_keyed_residual_predictive_base_delta_entropy_gate_reports_entropy_statistics() -> None:
+    env, obs, done = _obs()
+    model = build_model(
+        ModelConfig(
+            variant="sare_phase_memory_route_bias_keyed_residual_predictive_base_delta_entropy_gate",
+            expert_count=4,
+            top_k=2,
+            memory_mix=0.5,
+            route_memory_scale=0.5,
+        ),
+        env.observation_space,
+        env.action_space,
+    )
+    state = model.initial_state(batch_size=1, device=torch.device("cpu"))
+    output = model.forward(obs, state=state, done=done)
+    assert "hidden" in output.next_state
+    assert output.next_state["hidden"].shape == (1, 128)
+    assert "memory/base_route_bias_logits_norm" in output.metrics
+    assert "memory/predictive_base_route_bias_logits_norm" in output.metrics
+    assert "memory/predictive_base_delta_logits_norm" in output.metrics
+    assert "memory/mixed_predictive_base_delta_logits_norm" in output.metrics
+    assert "memory/predictive_base_uncertainty_gate" in output.metrics
+    assert "memory/predictive_hidden_norm" in output.metrics
+    assert float(output.metrics["memory/route_bias_scale"]) == 0.5
+    assert float(output.metrics["memory/predictive_base_delta_mix"]) == 0.25
+    assert 0.0 <= float(output.metrics["memory/predictive_base_uncertainty_gate"]) <= 1.0
+    env.close()
+
+
 def test_sare_phase_memory_route_bias_keyed_residual_predictive_delta_gate_reports_gate_statistics() -> None:
     env, obs, done = _obs()
     model = build_model(
