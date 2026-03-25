@@ -55,9 +55,15 @@ class RoutedExpertCore(nn.Module):
         self.bank = ExpertBank(hidden_size, expert_hidden_size, expert_count)
         self.output_norm = nn.LayerNorm(hidden_size)
 
-    def route(self, tokens: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    def route(
+        self,
+        tokens: torch.Tensor,
+        route_bias: torch.Tensor | None = None,
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         query = self.query(tokens)
         scores = query @ self.expert_keys.t() / math.sqrt(query.size(-1))
+        if route_bias is not None:
+            scores = scores + route_bias.to(dtype=scores.dtype).unsqueeze(1)
         route_probs = torch.softmax(scores / self.temperature, dim=-1)
         topk_values, topk_idx = torch.topk(route_probs, k=min(self.top_k, self.expert_count), dim=-1)
         topk_values = topk_values / topk_values.sum(dim=-1, keepdim=True).clamp_min(1e-8)
@@ -229,3 +235,60 @@ class RoutedExpertGatedPhaseMemoryCore(RoutedExpertPhaseMemoryCore):
             "memory/route_context_norm": float(route_context.norm(dim=-1).mean().item()),
         }
         return mixed_pooled, next_hidden, metrics
+
+
+class RoutedExpertRouteBiasedPhaseMemoryCore(RoutedExpertPhaseMemoryCore):
+    def __init__(
+        self,
+        observation_space,
+        token_dim: int,
+        patch_size: int,
+        hidden_size: int,
+        expert_count: int,
+        expert_hidden_size: int,
+        top_k: int,
+        temperature: float,
+        memory_mix: float,
+        route_memory_scale: float,
+    ) -> None:
+        super().__init__(
+            observation_space=observation_space,
+            token_dim=token_dim,
+            patch_size=patch_size,
+            hidden_size=hidden_size,
+            expert_count=expert_count,
+            expert_hidden_size=expert_hidden_size,
+            top_k=top_k,
+            temperature=temperature,
+            memory_mix=memory_mix,
+        )
+        self.route_memory_scale = float(route_memory_scale)
+        self.route_bias_proj = nn.Linear(hidden_size, expert_count)
+
+    def forward(self, obs: dict[str, torch.Tensor], state: dict[str, torch.Tensor], done: torch.Tensor | None) -> CoreOutput:
+        tokens = self.input_proj(self.encoder(obs))
+        hidden = self._prepare_hidden(
+            state,
+            masked_mean(tokens),
+            done,
+        )
+        route_bias = torch.tanh(self.route_bias_proj(hidden)) * self.route_memory_scale
+        route_probs, topk_values, topk_idx = self.route(tokens, route_bias=route_bias)
+        mixed = self.apply_experts(tokens, topk_values, topk_idx)
+        tokens = self.output_norm(tokens + mixed)
+        pooled = masked_mean(tokens)
+        pooled, next_hidden, memory_metrics = self._apply_memory(pooled, hidden, route_probs)
+        metrics = {
+            **_route_metrics(route_probs, topk_idx, self.expert_count),
+            **token_representation_metrics(tokens, pooled),
+            **memory_metrics,
+            "memory/route_bias_norm": float(route_bias.norm(dim=-1).mean().item()),
+            "memory/route_bias_absmax": float(route_bias.abs().max().item()),
+            "memory/route_bias_scale": self.route_memory_scale,
+        }
+        return CoreOutput(
+            pooled=pooled,
+            tokens=tokens,
+            metrics=metrics,
+            next_state={"hidden": next_hidden.detach()},
+        )

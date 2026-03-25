@@ -74,6 +74,7 @@ class ModelConfig:
     memory_mix: float = 0.5
     memory_gate_bias: float = 0.0
     memory_reset_bias: float = -2.0
+    route_memory_scale: float = 0.5
 
 
 @dataclass(slots=True)
