@@ -1,0 +1,383 @@
+extends: ../lss_deadlock_oracle_program/campaign.yaml
+name: lss_deadlock_escape_program
+
+current_decision_memo: outputs/reports/deadlock_oracle_decision_memo.md
+
+decision_strings:
+  replace: challenger replaces the active benchmark
+  confirm: active benchmark confirmed and bounded rescue frontier clarified
+  narrow: active benchmark remains and the frontier narrows further
+  narrow_state: benchmark state itself needs narrowing
+  arch_future_branch: architecture-adjacent branch justified for the next phase
+
+stage_roots:
+  stage1_screening: outputs/experiments/lss_deadlock_escape_program/stageC1_screening
+  stage2_verification_a: outputs/experiments/lss_deadlock_escape_program/stageC2_verification_a
+  stage2_verification_b: outputs/experiments/lss_deadlock_escape_program/stageC2_verification_b
+  stage2_fairness: outputs/experiments/lss_deadlock_escape_program/stageC2_fairness
+  stage3_holdout: outputs/experiments/lss_deadlock_escape_program/stageC2_holdout
+  stage4_antiregression: outputs/experiments/lss_deadlock_escape_program/stageC2_antiregression
+  rescue_screening: outputs/experiments/lss_deadlock_escape_program/stageB1_rescue
+  rescue_rerun: outputs/experiments/lss_deadlock_escape_program/stageB2_rerun
+  rescue_antiregression: outputs/experiments/lss_deadlock_escape_program/stageB3_antiregression
+  practicalization_screening: outputs/experiments/lss_deadlock_escape_program/stageC1_practicalization
+  practicalization_verification: outputs/experiments/lss_deadlock_escape_program/stageC2_verification
+  practicalization_route: outputs/experiments/lss_deadlock_escape_program/stageC3_route
+  archpilot: outputs/experiments/lss_deadlock_escape_program/stageD_archpilot
+  stage7_pack: outputs/experiments/lss_deadlock_escape_program/stageE1_pack
+
+reports:
+  state_reconciliation: outputs/reports/escape_program_state_reconciliation.md
+  baseline_sync: outputs/reports/escape_program_baseline_sync.md
+  baseline_sync_csv: outputs/reports/escape_program_baseline_sync.csv
+  baseline_sync_json: outputs/reports/escape_program_baseline_sync.json
+  subgroup_detector_report: outputs/reports/escape_program_subgroup_detector.md
+  subgroup_detector_json: outputs/reports/escape_program_subgroup_detector.json
+  registration_report: outputs/reports/escape_program_registration.md
+  registration_json: outputs/reports/escape_program_registration.json
+  rescue_queue_manifest_json: outputs/reports/escape_program_run_manifest.json
+  rescue_stage1_report: outputs/reports/escape_stageB1_rescue_screening.md
+  rescue_stage1_csv: outputs/reports/escape_stageB1_rescue_screening.csv
+  rescue_stage1_json: outputs/reports/escape_stageB1_rescue_screening.json
+  rescue_stage2_report: outputs/reports/escape_stageB2_rerun_holdout.md
+  rescue_stage2_csv: outputs/reports/escape_stageB2_rerun_holdout.csv
+  rescue_stage2_json: outputs/reports/escape_stageB2_rerun_holdout.json
+  rescue_stage3_report: outputs/reports/escape_stageB3_antiregression_route.md
+  rescue_stage3_csv: outputs/reports/escape_stageB3_antiregression_route.csv
+  rescue_stage3_json: outputs/reports/escape_stageB3_antiregression_route.json
+  rescue_route_raw_report: outputs/reports/escape_stageB3_route_raw.md
+  rescue_route_raw_csv: outputs/reports/escape_stageB3_route_raw.csv
+  stage1_report: outputs/reports/escape_stageC1_practicalization_raw.md
+  stage1_csv: outputs/reports/escape_stageC1_practicalization_raw.csv
+  stage1_raw_json: outputs/reports/escape_stageC1_practicalization_raw.json
+  stage1_json: outputs/reports/escape_stageC1_practicalization_screening_internal.json
+  stage1_fruitful_report: outputs/reports/escape_stageC1_practicalization_fruitful_internal.md
+  stage1_fruitful_json: outputs/reports/escape_stageC1_practicalization_fruitful_internal.json
+  stage1_exploratory_report: outputs/reports/escape_stageC1_practicalization_explore_internal.md
+  stage1_exploratory_json: outputs/reports/escape_stageC1_practicalization_explore_internal.json
+  stage1_archpilot_report: outputs/reports/escape_stageC1_practicalization_archpilot_internal.md
+  stage1_archpilot_json: outputs/reports/escape_stageC1_practicalization_archpilot_internal.json
+  stage2_verification_report: outputs/reports/escape_stageC2_verification_internal.md
+  stage2_verification_csv: outputs/reports/escape_stageC2_verification_internal.csv
+  stage2_verification_json: outputs/reports/escape_stageC2_verification_internal.json
+  stage2_report: outputs/reports/escape_stageC2_fairness_internal.md
+  stage2_csv: outputs/reports/escape_stageC2_fairness_internal.csv
+  stage2_json: outputs/reports/escape_stageC2_fairness_internal.json
+  stage3_report: outputs/reports/escape_stageC2_holdout_internal.md
+  stage3_csv: outputs/reports/escape_stageC2_holdout_internal.csv
+  stage3_json: outputs/reports/escape_stageC2_holdout_internal.json
+  stage4_report: outputs/reports/escape_stageC2_antiregression_internal.md
+  stage4_csv: outputs/reports/escape_stageC2_antiregression_internal.csv
+  stage4_json: outputs/reports/escape_stageC2_antiregression_internal.json
+  route_raw_dir: outputs/reports/escape_stageC3_route_raw
+  stage5_report: outputs/reports/escape_stageC3_route_internal.md
+  stage5_csv: outputs/reports/escape_stageC3_route_internal.csv
+  stage5_json: outputs/reports/escape_stageC3_route_internal.json
+  stage6_report: outputs/reports/escape_stageC3_stability_internal.md
+  stage6_csv: outputs/reports/escape_stageC3_stability_internal.csv
+  stage6_json: outputs/reports/escape_stageC3_stability_internal.json
+  practicalization_stage1_report: outputs/reports/escape_stageC1_practicalization_screening.md
+  practicalization_stage1_json: outputs/reports/escape_stageC1_practicalization_screening.json
+  practicalization_stage2_report: outputs/reports/escape_stageC2_verification_fairness_holdout.md
+  practicalization_stage2_json: outputs/reports/escape_stageC2_verification_fairness_holdout.json
+  practicalization_stage3_report: outputs/reports/escape_stageC3_route_stability.md
+  practicalization_stage3_json: outputs/reports/escape_stageC3_route_stability.json
+  archpilot_report: outputs/reports/escape_stageD_archpilot.md
+  archpilot_json: outputs/reports/escape_stageD_archpilot.json
+  candidate_pack_json: outputs/reports/escape_next_candidate_pack.json
+  gate_report_markdown: outputs/reports/escape_next_gate_report.md
+  gate_report_json: outputs/reports/escape_next_gate_report.json
+  decision_memo: outputs/reports/escape_next_decision_memo.md
+
+selection:
+  min_dev_gain: 0.05
+  rescue_family_top_k: 1
+  rescue_holdout_min_gain: 0.02
+  rescue_ambiguous_tolerance: 0.05
+
+candidate_subset:
+  - round10_search_x2
+  - round10_search_x4
+  - round10_search_x6
+  - round10_search_x4_atkey_x2
+  - round10_search_x4_temp105
+  - round10_search_x4_temp110
+  - round10_conf_search_x4_temp105
+  - round10_conf_search_x4_temp110
+  - round10_conf_search_x6_temp105
+  - round10_prekey_phase_balanced_4096
+  - round10_prekey_phase_balanced_4096_temp105
+  - round10_prekey_phase_balanced_4096_conf
+  - round10_transition_phase_balanced_4096
+  - round10_transition_phase_balanced_4096_temp105
+  - round10_conf_search_x4_transition_temp105
+  - round10_warm1_last_step
+  - round10_warm2_last_step
+  - settling_round10_last_step
+  - round10_warm1_last_two
+
+analysis:
+  program_label: Deadlock-Escape and Practicalization Program
+  current_gate_report: outputs/reports/deadlock_oracle_gate_report.md
+  current_gate_report_json: outputs/reports/deadlock_oracle_gate_report.json
+  current_stability_report: outputs/reports/deadlock_oracle_stageB6_stability.md
+  current_stability_json: outputs/reports/deadlock_oracle_stageB6_stability.json
+  current_route_report: outputs/reports/deadlock_oracle_stageB6_route_validation.md
+  current_route_json: outputs/reports/deadlock_oracle_stageB6_route_validation.json
+  current_oracle_inference_report: outputs/reports/oracle_stageA5_inference_escape.md
+  current_oracle_inference_json: outputs/reports/oracle_stageA5_inference_escape.json
+  detector_trace_episodes: 16
+  rescue_screening_episodes: 32
+  rescue_validation_episodes: 64
+  rescue_max_steps: 256
+  detector:
+    stall_window: 6
+    repeated_position_window: 6
+    low_unique_ratio_threshold: 0.50
+    high_confidence_threshold: 0.90
+    low_confidence_threshold: 0.60
+    high_route_pair_fraction: 0.55
+    high_route_entropy_threshold: 0.90
+    output_settle_action_switch_ceiling: 0.20
+    output_settle_confidence_std_ceiling: 0.08
+    route_settle_pair_switch_ceiling: 0.35
+    route_settle_entropy_std_ceiling: 0.10
+  teacher_locked_dev_groups:
+    - label: teacher_locked_dev_primary
+      cases:
+        - [prospective_c, 191]
+        - [prospective_c, 193]
+    - label: teacher_locked_dev_secondary
+      cases:
+        - [prospective_c, 181]
+  teacher_locked_holdout_groups:
+    - label: teacher_locked_holdout_primary
+      cases:
+        - [prospective_g, 251]
+        - [prospective_g, 257]
+    - label: teacher_locked_holdout_secondary
+      cases:
+        - [prospective_g, 263]
+  ambiguous_groups:
+    - label: ambiguous_primary
+      cases:
+        - [prospective_i, 281]
+        - [prospective_i, 283]
+    - label: ambiguous_secondary
+      cases:
+        - [prospective_i, 293]
+  guardrail_groups:
+    - label: guardrail_primary
+      cases:
+        - [prospective_f, 239]
+        - [prospective_f, 241]
+  healthy_groups:
+    - label: healthy_original
+      cases:
+        - [original, 7]
+        - [original, 11]
+    - label: healthy_fresh
+      cases:
+        - [fresh, 23]
+        - [fresh, 29]
+  practicalization_families:
+    - label: escape_distillation
+      track: exploit
+      candidates:
+        - round10_search_x4_temp105
+        - round10_search_x4_temp110
+        - round10_conf_search_x4_temp105
+        - round10_conf_search_x4_temp110
+        - round10_conf_search_x6_temp105
+      hypothesis: if rescue turns teacher-locked deadlocks into successful sampled trajectories, a selective teacher-contract line should be the smallest benchmark-lane approximation.
+      failure: teacher-locked dev stays in the incumbent tie bucket or healthy cases regress.
+    - label: selective_teacher_contract
+      track: exploit
+      candidates:
+        - round10_search_x2
+        - round10_search_x4
+        - round10_search_x6
+        - round10_search_x4_atkey_x2
+      hypothesis: rescue may imply the current family needs more early-phase divergence allowance before key pickup rather than a global contract change.
+      failure: teacher-locked cases stay flat while guardrail cases lose routed wins.
+    - label: selective_curriculum_repair
+      track: exploit
+      candidates:
+        - round10_prekey_phase_balanced_4096
+        - round10_prekey_phase_balanced_4096_temp105
+        - round10_prekey_phase_balanced_4096_conf
+        - round10_transition_phase_balanced_4096
+        - round10_transition_phase_balanced_4096_temp105
+      hypothesis: rescue-informed successful trajectories may still need only a narrow transition-state rebalance in the accepted family.
+      failure: phase mix moves without a teacher-locked gain.
+    - label: hybrid_selective
+      track: exploit
+      candidates:
+        - round10_conf_search_x4_transition_temp105
+      hypothesis: if rescue exposes both target and pre-key transition pressure, the joint line should be the most plausible practical approximation.
+      failure: the hybrid only recreates prior ties or adds new failures.
+    - label: rescue_informed_contract_probe
+      track: exploratory
+      candidates:
+        - round10_warm1_last_step
+        - round10_warm2_last_step
+        - settling_round10_last_step
+        - round10_warm1_last_two
+      hypothesis: if rescue succeeds by tiny bounded divergence, a narrow terminal-credit contract tweak may be the least invasive training-side approximation.
+      failure: the exploratory line stays below the incumbent or adds instability.
+
+rescue_candidates:
+  rescue_sample_t1p0_w4:
+    family: extra_think_rescue
+    label: sample_t1.0_w4
+    rescue_type: sampled_window
+    temperature: 1.0
+    window: 4
+  rescue_sample_t0p7_w4:
+    family: extra_think_rescue
+    label: sample_t0.7_w4
+    rescue_type: sampled_window
+    temperature: 0.7
+    window: 4
+  rescue_sample_t0p7_w8:
+    family: extra_think_rescue
+    label: sample_t0.7_w8
+    rescue_type: sampled_window
+    temperature: 0.7
+    window: 8
+  rescue_sample_t0p5_w8:
+    family: extra_think_rescue
+    label: sample_t0.5_w8
+    rescue_type: sampled_window
+    temperature: 0.5
+    window: 8
+  rescue_sample_t0p7_adaptive:
+    family: extra_think_rescue
+    label: sample_t0.7_adaptive
+    rescue_type: sampled_window
+    temperature: 0.7
+    window: 12
+    adaptive: true
+  rescue_route_uniform_w4_t1p0:
+    family: route_perturbation_rescue
+    label: route_uniform_w4_t1.0
+    rescue_type: route_window
+    route_mode: uniform_topk_random
+    temperature: 1.0
+    window: 4
+  rescue_route_uniform_w4_t0p7:
+    family: route_perturbation_rescue
+    label: route_uniform_w4_t0.7
+    rescue_type: route_window
+    route_mode: uniform_topk_random
+    temperature: 0.7
+    window: 4
+  rescue_route_uniform_w8_t0p7:
+    family: route_perturbation_rescue
+    label: route_uniform_w8_t0.7
+    rescue_type: route_window
+    route_mode: uniform_topk_random
+    temperature: 0.7
+    window: 8
+  rescue_route_single_w4_t1p0:
+    family: route_perturbation_rescue
+    label: route_single_w4_t1.0
+    rescue_type: route_window
+    route_mode: random_single_expert
+    temperature: 1.0
+    window: 4
+  rescue_route_single_w8_t0p7:
+    family: route_perturbation_rescue
+    label: route_single_w8_t0.7
+    rescue_type: route_window
+    route_mode: random_single_expert
+    temperature: 0.7
+    window: 8
+  rescue_restart_back1_t1p0:
+    family: restart_from_last_good
+    label: restart_back1_t1.0
+    rescue_type: restart_from_last_good
+    restart_backtrack: 1
+    temperature: 1.0
+  rescue_restart_back1_t0p7:
+    family: restart_from_last_good
+    label: restart_back1_t0.7
+    rescue_type: restart_from_last_good
+    restart_backtrack: 1
+    temperature: 0.7
+  rescue_restart_back2_t0p7:
+    family: restart_from_last_good
+    label: restart_back2_t0.7
+    rescue_type: restart_from_last_good
+    restart_backtrack: 2
+    temperature: 0.7
+  rescue_restart_back2_t0p5:
+    family: restart_from_last_good
+    label: restart_back2_t0.5
+    rescue_type: restart_from_last_good
+    restart_backtrack: 2
+    temperature: 0.5
+  rescue_restart_back3_t0p7:
+    family: restart_from_last_good
+    label: restart_back3_t0.7
+    rescue_type: restart_from_last_good
+    restart_backtrack: 3
+    temperature: 0.7
+  rescue_branch2_t1p0:
+    family: multi_branch_sampled_escape
+    label: branch2_t1.0
+    rescue_type: multi_branch
+    branch_count: 2
+    temperature: 1.0
+  rescue_branch2_t0p7:
+    family: multi_branch_sampled_escape
+    label: branch2_t0.7
+    rescue_type: multi_branch
+    branch_count: 2
+    temperature: 0.7
+  rescue_branch3_t0p7:
+    family: multi_branch_sampled_escape
+    label: branch3_t0.7
+    rescue_type: multi_branch
+    branch_count: 3
+    temperature: 0.7
+  rescue_branch4_t0p7:
+    family: multi_branch_sampled_escape
+    label: branch4_t0.7
+    rescue_type: multi_branch
+    branch_count: 4
+    temperature: 0.7
+  rescue_branch2_t0p5:
+    family: multi_branch_sampled_escape
+    label: branch2_t0.5
+    rescue_type: multi_branch
+    branch_count: 2
+    temperature: 0.5
+  rescue_settling_output_t0p7:
+    family: settling_aware_rescue
+    label: settling_output_t0.7
+    rescue_type: settling_window
+    settling_mode: output_unsettled
+    temperature: 0.7
+    window: 4
+  rescue_settling_route_t0p7:
+    family: settling_aware_rescue
+    label: settling_route_t0.7
+    rescue_type: settling_window
+    settling_mode: route_unsettled
+    temperature: 0.7
+    window: 4
+  rescue_settling_mismatch_t0p7:
+    family: settling_aware_rescue
+    label: settling_mismatch_t0.7
+    rescue_type: settling_window
+    settling_mode: mismatch
+    temperature: 0.7
+    window: 4
+  rescue_settling_mismatch_t0p5:
+    family: settling_aware_rescue
+    label: settling_mismatch_t0.5
+    rescue_type: settling_window
+    settling_mode: mismatch
+    temperature: 0.5
+    window: 4

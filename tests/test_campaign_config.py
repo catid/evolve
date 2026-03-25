@@ -158,3 +158,23 @@ def test_deadlock_oracle_program_campaign_separates_oracle_and_practical_lanes()
     assert campaign["analysis"]["shortlist_max_directions"] == 5
     assert campaign["analysis"]["oracle_case_order"] == ["teacher_locked", "ambiguous", "guardrail"]
     assert "outputs/experiments/lss_deadlock_arch_program/stageB1_screening" in campaign["reuse_roots"]["stage1_sare"]
+
+
+def test_deadlock_escape_program_campaign_registers_rescue_and_practicalization_lanes() -> None:
+    campaign = load_campaign_config("configs/experiments/lss_deadlock_escape_program/campaign.yaml")
+    track_counts = Counter(str(meta["track"]) for meta in campaign["candidates"].values())
+
+    assert campaign["name"] == "lss_deadlock_escape_program"
+    assert track_counts == {"fruitful": 15, "exploratory": 4}
+    assert len(campaign["candidates"]) == 19
+    assert campaign["current_decision_memo"] == "outputs/reports/deadlock_oracle_decision_memo.md"
+    assert campaign["decision_strings"]["confirm"] == "active benchmark confirmed and bounded rescue frontier clarified"
+    assert campaign["reports"]["subgroup_detector_report"] == "outputs/reports/escape_program_subgroup_detector.md"
+    assert campaign["reports"]["rescue_stage1_report"] == "outputs/reports/escape_stageB1_rescue_screening.md"
+    assert campaign["reports"]["practicalization_stage2_report"] == "outputs/reports/escape_stageC2_verification_fairness_holdout.md"
+    assert campaign["reports"]["decision_memo"] == "outputs/reports/escape_next_decision_memo.md"
+    assert len(campaign["rescue_candidates"]) == 24
+    assert len(campaign["analysis"]["teacher_locked_dev_groups"]) == 2
+    assert len(campaign["analysis"]["teacher_locked_holdout_groups"]) == 2
+    assert len(campaign["analysis"]["ambiguous_groups"]) == 2
+    assert len(campaign["analysis"]["healthy_groups"]) == 2
