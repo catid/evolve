@@ -15,6 +15,7 @@ from psmn_rl.models.routing.sare import (
     RoutedExpertRouteBiasedContextualPhaseMemoryCore,
     RoutedExpertRouteBiasedKeyedResidualCenteredPhaseMemoryCore,
     RoutedExpertRouteBiasedKeyedResidualPredictiveDeltaMixPhaseMemoryCore,
+    RoutedExpertRouteBiasedKeyedResidualPredictiveDeltaGatedPhaseMemoryCore,
     RoutedExpertRouteBiasedKeyedResidualPredictivePositivePhaseMemoryCore,
     RoutedExpertRouteBiasedKeyedResidualEmaPhaseMemoryCore,
     RoutedExpertRouteBiasedKeyedResidualPredictiveCappedPhaseMemoryCore,
@@ -214,6 +215,19 @@ def build_model(model_config: ModelConfig, observation_space: gym.Space, action_
         )
     elif variant == "sare_phase_memory_route_bias_keyed_residual_predictive_positive":
         core = RoutedExpertRouteBiasedKeyedResidualPredictivePositivePhaseMemoryCore(
+            observation_space=observation_space,
+            token_dim=model_config.token_dim,
+            patch_size=model_config.patch_size,
+            hidden_size=model_config.hidden_size,
+            expert_count=model_config.expert_count,
+            expert_hidden_size=model_config.expert_hidden_size,
+            top_k=model_config.top_k,
+            temperature=model_config.temperature,
+            memory_mix=model_config.memory_mix,
+            route_memory_scale=model_config.route_memory_scale,
+        )
+    elif variant == "sare_phase_memory_route_bias_keyed_residual_predictive_delta_gate":
+        core = RoutedExpertRouteBiasedKeyedResidualPredictiveDeltaGatedPhaseMemoryCore(
             observation_space=observation_space,
             token_dim=model_config.token_dim,
             patch_size=model_config.patch_size,
