@@ -11,7 +11,7 @@ from psmn_rl.analysis.learner_state_supervision import (
     _apply_weight_adjustments,
     _warmup_only_round,
 )
-from psmn_rl.analysis.policy_distillation import DistillationBatch
+from psmn_rl.analysis.policy_distillation import DistillationBatch, _dataset_weights
 
 
 def _batch(*, steps_from_end: list[int], disagreement: list[float] | None = None) -> DistillationBatch:
@@ -85,3 +85,27 @@ def test_warmup_only_round_uses_configured_prefix() -> None:
     assert _warmup_only_round(spec, 1) is True
     assert _warmup_only_round(spec, 2) is True
     assert _warmup_only_round(spec, 3) is False
+
+
+def test_dataset_weights_support_teacher_confidence_floor_and_ceiling() -> None:
+    batch = DistillationBatch(
+        obs={"image": torch.zeros(3, 1, 1, 1)},
+        actions=torch.zeros(3, dtype=torch.long),
+        teacher_logits=torch.zeros(3, 2),
+        weights=torch.ones(3),
+        accepted_episodes=1,
+        episodes_seen=1,
+        steps=3,
+        mean_return=1.0,
+        mean_length=3.0,
+        teacher_confidence=torch.as_tensor([0.4, 0.8, 0.99], dtype=torch.float32),
+    )
+    student = StudentConfig(
+        config="student.yaml",
+        checkpoint="student.pt",
+        weighting="teacher_confidence",
+        teacher_confidence_floor=0.6,
+        teacher_confidence_ceiling=0.9,
+    )
+    weights = _dataset_weights(student, batch, torch.device("cpu"))
+    assert torch.allclose(weights, torch.as_tensor([0.6, 0.8, 0.9], dtype=torch.float32))

@@ -73,7 +73,10 @@ def _decision_strings(campaign: dict[str, Any]) -> dict[str, str]:
     if isinstance(overrides, dict):
         required = {"replace", "confirm", "narrow", "narrow_state"}
         if required.issubset(overrides):
-            return {key: str(overrides[key]) for key in required}
+            labels = {key: str(overrides[key]) for key in required}
+            if "arch_future_branch" in overrides:
+                labels["arch_future_branch"] = str(overrides["arch_future_branch"])
+            return labels
     if bool(campaign.get("generic_decision_language")):
         return {
             "replace": "challenger replaces the active benchmark",
@@ -845,6 +848,13 @@ def _decision_status(
     round6_ready = bool(route.get("round6_pass")) and bool(stability.get("round6_pass")) and gate_verdict == required
     if winner["challenger_viable"] and gate_verdict == required:
         return labels["replace"]
+    if (
+        winner["winner"] == str(campaign["current_canonical_name"])
+        and round6_ready
+        and bool(exploratory.get("architecture_branch_justified"))
+        and "arch_future_branch" in labels
+    ):
+        return labels["arch_future_branch"]
     if winner["winner"] == str(campaign["current_canonical_name"]) and round6_ready and _door_key_strengthened(campaign, holdout, anti_regression):
         return labels["confirm"]
     if winner["winner"] == str(campaign["current_canonical_name"]) and round6_ready:

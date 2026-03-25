@@ -1,0 +1,444 @@
+extends: ../lss_deadlock_arch_program/campaign.yaml
+name: lss_deadlock_oracle_program
+
+current_decision_memo: outputs/reports/deadlock_arch_decision_memo.md
+
+decision_strings:
+  replace: challenger replaces the active benchmark
+  confirm: active benchmark confirmed and deadlock/data-contract frontier clarified
+  narrow: active benchmark remains and the frontier narrows further
+  narrow_state: benchmark state itself needs narrowing
+  arch_future_branch: oracle evidence suggests a future architecture branch but not a benchmark change
+
+selection:
+  stage1_fruitful_top_k: 3
+  stage1_exploratory_top_k: 2
+  stage1_archpilot_top_k: 1
+  stage2_top_k: 2
+  min_dev_gain: 0.01
+
+stage_roots:
+  oracle_teacher_target: outputs/experiments/lss_deadlock_oracle_program/stageA2_teacher_target
+  oracle_transition_coverage: outputs/experiments/lss_deadlock_oracle_program/stageA3_transition_coverage
+  oracle_combined: outputs/experiments/lss_deadlock_oracle_program/stageA4_combined
+  stage1_screening: outputs/experiments/lss_deadlock_oracle_program/stageB1_screening
+  stage2_verification_a: outputs/experiments/lss_deadlock_oracle_program/stageB2_verification_a
+  stage2_verification_b: outputs/experiments/lss_deadlock_oracle_program/stageB2_verification_b
+  stage2_fairness: outputs/experiments/lss_deadlock_oracle_program/stageB3_fairness
+  stage3_holdout: outputs/experiments/lss_deadlock_oracle_program/stageB4_holdout
+  stage4_antiregression: outputs/experiments/lss_deadlock_oracle_program/stageB5_antiregression
+  stage7_pack: outputs/experiments/lss_deadlock_oracle_program/stageC1_pack
+  stage8_exploratory: outputs/experiments/lss_deadlock_oracle_program/unused_exploratory
+
+reuse_roots:
+  stage1_sare:
+    - outputs/experiments/lss_deadlock_arch_program/stageB1_screening
+    - outputs/experiments/lss_deadlock_plus_program/stageB1_screening
+    - outputs/experiments/lss_deadlock_contract_program/stageB1_screening
+    - outputs/experiments/lss_deadlock_program/stageB1_screening
+    - outputs/experiments/lss_mechanism_program/stageB1_screening
+    - outputs/experiments/lss_next_round_campaign/stage2_screening
+    - outputs/experiments/lss_next_portfolio_campaign/stage1_screening
+
+reports:
+  state_reconciliation: outputs/reports/oracle_program_state_reconciliation.md
+  baseline_sync: outputs/reports/oracle_program_baseline_sync.md
+  baseline_sync_csv: outputs/reports/oracle_program_baseline_sync.csv
+  baseline_sync_json: outputs/reports/oracle_program_baseline_sync.json
+  family_definition: outputs/reports/oracle_deadlock_family_definition.md
+  teacher_audit_report: outputs/reports/oracle_teacher_audit_refresh.md
+  teacher_audit_json: outputs/reports/oracle_teacher_audit_refresh.json
+  distribution_audit_report: outputs/reports/oracle_distribution_audit_refresh.md
+  distribution_audit_json: outputs/reports/oracle_distribution_audit_refresh.json
+  oracle_queue_manifest_json: outputs/reports/oracle_run_manifest.json
+  oracle_teacher_target_report: outputs/reports/oracle_stageA2_teacher_target.md
+  oracle_teacher_target_json: outputs/reports/oracle_stageA2_teacher_target.json
+  oracle_transition_report: outputs/reports/oracle_stageA3_transition_coverage.md
+  oracle_transition_json: outputs/reports/oracle_stageA3_transition_coverage.json
+  oracle_combined_report: outputs/reports/oracle_stageA4_combined.md
+  oracle_combined_json: outputs/reports/oracle_stageA4_combined.json
+  oracle_inference_report: outputs/reports/oracle_stageA5_inference_escape.md
+  oracle_inference_csv: outputs/reports/oracle_stageA5_inference_escape.csv
+  oracle_inference_json: outputs/reports/oracle_stageA5_inference_escape.json
+  oracle_synthesis_report: outputs/reports/oracle_stageA6_synthesis.md
+  oracle_synthesis_json: outputs/reports/oracle_stageA6_synthesis.json
+  oracle_shortlist_report: outputs/reports/oracle_practical_shortlist.md
+  oracle_shortlist_json: outputs/reports/oracle_practical_shortlist.json
+  stage1_report: outputs/reports/deadlock_oracle_stageB1_screening_raw.md
+  stage1_csv: outputs/reports/deadlock_oracle_stageB1_screening.csv
+  stage1_raw_json: outputs/reports/deadlock_oracle_stageB1_screening_raw.json
+  stage1_json: outputs/reports/deadlock_oracle_stageB1_screening.json
+  stage1_fruitful_report: outputs/reports/deadlock_oracle_stageB1_screening_exploit.md
+  stage1_fruitful_json: outputs/reports/deadlock_oracle_stageB1_screening_exploit.json
+  stage1_exploratory_report: outputs/reports/deadlock_oracle_stageB1_screening_explore.md
+  stage1_exploratory_json: outputs/reports/deadlock_oracle_stageB1_screening_explore.json
+  stage1_archpilot_report: outputs/reports/deadlock_oracle_stageB1_screening_archpilot.md
+  stage1_archpilot_json: outputs/reports/deadlock_oracle_stageB1_screening_archpilot.json
+  stage2_verification_report: outputs/reports/deadlock_oracle_stageB2_verification.md
+  stage2_verification_csv: outputs/reports/deadlock_oracle_stageB2_verification.csv
+  stage2_verification_json: outputs/reports/deadlock_oracle_stageB2_verification.json
+  stage2_report: outputs/reports/deadlock_oracle_stageB3_fairness.md
+  stage2_csv: outputs/reports/deadlock_oracle_stageB3_fairness.csv
+  stage2_json: outputs/reports/deadlock_oracle_stageB3_fairness.json
+  stage3_report: outputs/reports/deadlock_oracle_stageB4_holdout.md
+  stage3_csv: outputs/reports/deadlock_oracle_stageB4_holdout.csv
+  stage3_json: outputs/reports/deadlock_oracle_stageB4_holdout.json
+  stage4_report: outputs/reports/deadlock_oracle_stageB5_antiregression.md
+  stage4_csv: outputs/reports/deadlock_oracle_stageB5_antiregression.csv
+  stage4_json: outputs/reports/deadlock_oracle_stageB5_antiregression.json
+  route_raw_dir: outputs/reports/deadlock_oracle_stageB6_route_raw
+  stage5_report: outputs/reports/deadlock_oracle_stageB6_route_validation.md
+  stage5_csv: outputs/reports/deadlock_oracle_stageB6_route_validation.csv
+  stage5_json: outputs/reports/deadlock_oracle_stageB6_route_validation.json
+  stage6_report: outputs/reports/deadlock_oracle_stageB6_stability.md
+  stage6_csv: outputs/reports/deadlock_oracle_stageB6_stability.csv
+  stage6_json: outputs/reports/deadlock_oracle_stageB6_stability.json
+  candidate_summary_markdown: outputs/reports/deadlock_oracle_candidate_summary.md
+  candidate_metrics_json: outputs/reports/deadlock_oracle_candidate_metrics.json
+  candidate_combined_markdown: outputs/reports/deadlock_oracle_candidate_combined_report.md
+  candidate_combined_csv: outputs/reports/deadlock_oracle_candidate_combined_report.csv
+  candidate_retry_markdown: outputs/reports/deadlock_oracle_candidate_retry_report.md
+  candidate_retry_csv: outputs/reports/deadlock_oracle_candidate_retry_report.csv
+  candidate_pack_json: outputs/reports/deadlock_oracle_candidate_pack.json
+  gate_report_markdown: outputs/reports/deadlock_oracle_gate_report.md
+  gate_report_json: outputs/reports/deadlock_oracle_gate_report.json
+  decision_memo: outputs/reports/deadlock_oracle_decision_memo.md
+
+candidate_subset:
+  - round7_search_x4
+  - round10_search_x2
+  - round10_search_x4
+  - round10_search_x6
+  - round10_search_x4_atkey_x2
+  - round10_search_x4_temp105
+  - round10_search_x4_temp110
+  - round10_conf_search_x4_temp105
+  - round10_conf_search_x4_temp110
+  - round10_conf_search_x6_temp105
+  - round10_prekey_phase_balanced_4096
+  - round10_prekey_phase_balanced_4096_temp105
+  - round10_prekey_phase_balanced_4096_conf
+  - round10_transition_phase_balanced_4096
+  - round10_transition_phase_balanced_4096_temp105
+  - round10_conf_search_x4_transition_temp105
+  - round10_warm1_last_step
+  - round10_warm2_last_step
+  - round10_stoch25_last_two
+  - round10_stoch50_last_two
+  - settling_round10_last_step
+  - round10_warm1_last_two
+  - round10_phase_memory_mix025_search_x4
+  - round10_phase_memory_mix050_conf_search_x4
+
+oracle_candidates:
+  oracle_teacher_base_search4:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    oracle_stage: teacher_target
+    description: baseline deadlock-window teacher contract with search-key x4 and no teacher correction
+    overrides:
+      loop:
+        rounds: 4
+        episodes_per_round: 32
+        max_episodes_per_round: 48
+      evaluation:
+        episodes: 32
+      student:
+        phase_weights:
+          search_key: 4.0
+  oracle_teacher_temp105_search4:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    oracle_stage: teacher_target
+    description: deadlock-window teacher contract with true teacher smoothing at temperature 1.05
+    overrides:
+      loop:
+        rounds: 4
+        episodes_per_round: 32
+        max_episodes_per_round: 48
+      evaluation:
+        episodes: 32
+      teacher:
+        temperature: 1.05
+      student:
+        phase_weights:
+          search_key: 4.0
+  oracle_teacher_temp115_search4:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    oracle_stage: teacher_target
+    description: deadlock-window teacher contract with stronger smoothing at temperature 1.15
+    overrides:
+      loop:
+        rounds: 4
+        episodes_per_round: 32
+        max_episodes_per_round: 48
+      evaluation:
+        episodes: 32
+      teacher:
+        temperature: 1.15
+      student:
+        phase_weights:
+          search_key: 4.0
+  oracle_teacher_confclip_search4:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    oracle_stage: teacher_target
+    description: deadlock-window teacher contract with clipped teacher-confidence weighting on search-key states
+    overrides:
+      loop:
+        rounds: 4
+        episodes_per_round: 32
+        max_episodes_per_round: 48
+      evaluation:
+        episodes: 32
+      student:
+        weighting: teacher_confidence
+        teacher_confidence_floor: 0.70
+        teacher_confidence_ceiling: 0.95
+        phase_weights:
+          search_key: 4.0
+  oracle_transition_base_search4:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    oracle_stage: transition_coverage
+    description: baseline transition oracle lane with the current learner-state distribution and search-key x4
+    overrides:
+      loop:
+        rounds: 4
+        episodes_per_round: 32
+        max_episodes_per_round: 48
+      evaluation:
+        episodes: 32
+      student:
+        phase_weights:
+          search_key: 4.0
+  oracle_transition_phase_balanced_2048:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    oracle_stage: transition_coverage
+    description: transition-coverage oracle with phase-balanced replay at 2048 steps
+    overrides:
+      loop:
+        rounds: 4
+        episodes_per_round: 32
+        max_episodes_per_round: 48
+        aggregation: phase_balanced_recent
+        max_dataset_steps: 2048
+        phase_quota_weights:
+          default: 1.0
+          search_key: 1.0
+          at_key: 1.0
+          carry_key: 4.0
+          at_locked_door: 4.0
+          post_unlock: 2.0
+      evaluation:
+        episodes: 32
+      student:
+        phase_weights:
+          search_key: 2.0
+          at_key: 1.5
+          carry_key: 3.0
+          at_locked_door: 3.0
+          post_unlock: 2.0
+  oracle_transition_phase_balanced_4096:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    oracle_stage: transition_coverage
+    description: transition-coverage oracle with phase-balanced replay at 4096 steps
+    overrides:
+      loop:
+        rounds: 4
+        episodes_per_round: 32
+        max_episodes_per_round: 48
+        aggregation: phase_balanced_recent
+        max_dataset_steps: 4096
+        phase_quota_weights:
+          default: 1.0
+          search_key: 1.0
+          at_key: 1.0
+          carry_key: 4.0
+          at_locked_door: 4.0
+          post_unlock: 2.0
+      evaluation:
+        episodes: 32
+      student:
+        phase_weights:
+          search_key: 2.0
+          at_key: 1.5
+          carry_key: 3.0
+          at_locked_door: 3.0
+          post_unlock: 2.0
+  oracle_transition_phase_balanced_4096_temp105:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    oracle_stage: transition_coverage
+    description: transition-coverage oracle with phase-balanced replay and mild teacher smoothing
+    overrides:
+      loop:
+        rounds: 4
+        episodes_per_round: 32
+        max_episodes_per_round: 48
+        aggregation: phase_balanced_recent
+        max_dataset_steps: 4096
+        phase_quota_weights:
+          default: 1.0
+          search_key: 1.0
+          at_key: 1.0
+          carry_key: 4.0
+          at_locked_door: 4.0
+          post_unlock: 2.0
+      evaluation:
+        episodes: 32
+      teacher:
+        temperature: 1.05
+      student:
+        phase_weights:
+          search_key: 2.0
+          at_key: 1.5
+          carry_key: 3.0
+          at_locked_door: 3.0
+          post_unlock: 2.0
+  oracle_combined_temp105_transition4096:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    oracle_stage: combined
+    description: combined oracle with teacher smoothing and transition-state replay repair
+    overrides:
+      loop:
+        rounds: 4
+        episodes_per_round: 32
+        max_episodes_per_round: 48
+        aggregation: phase_balanced_recent
+        max_dataset_steps: 4096
+        phase_quota_weights:
+          default: 1.0
+          search_key: 1.0
+          at_key: 1.0
+          carry_key: 4.0
+          at_locked_door: 4.0
+          post_unlock: 2.0
+      evaluation:
+        episodes: 32
+      teacher:
+        temperature: 1.05
+      student:
+        phase_weights:
+          search_key: 4.0
+          at_key: 2.0
+          carry_key: 3.0
+          at_locked_door: 3.0
+          post_unlock: 2.0
+  oracle_combined_confclip_transition4096:
+    template: configs/experiments/lss_long_campaign/lss_kl_post_unlock_weighted.yaml
+    oracle_stage: combined
+    description: combined oracle with clipped teacher-confidence weighting plus transition-state replay repair
+    overrides:
+      loop:
+        rounds: 4
+        episodes_per_round: 32
+        max_episodes_per_round: 48
+        aggregation: phase_balanced_recent
+        max_dataset_steps: 4096
+        phase_quota_weights:
+          default: 1.0
+          search_key: 1.0
+          at_key: 1.0
+          carry_key: 4.0
+          at_locked_door: 4.0
+          post_unlock: 2.0
+      evaluation:
+        episodes: 32
+      teacher:
+        temperature: 1.05
+      student:
+        weighting: teacher_confidence
+        teacher_confidence_floor: 0.70
+        teacher_confidence_ceiling: 0.95
+        phase_weights:
+          search_key: 4.0
+          at_key: 2.0
+          carry_key: 3.0
+          at_locked_door: 3.0
+          post_unlock: 2.0
+
+analysis:
+  program_label: Teacher-Target and Transition-Coverage Oracle Program
+  current_gate_report: outputs/reports/deadlock_arch_gate_report.md
+  current_gate_report_json: outputs/reports/deadlock_arch_gate_report.json
+  source_stage1_root: outputs/experiments/lss_deadlock_arch_program/stageB1_screening
+  shortlist_max_directions: 5
+  oracle_case_groups:
+    teacher_locked:
+      - [prospective_c, 193]
+      - [prospective_g, 251]
+    ambiguous:
+      - [prospective_i, 283]
+    guardrail:
+      - [prospective_f, 241]
+  oracle_case_order:
+    - teacher_locked
+    - ambiguous
+    - guardrail
+  oracle_runs:
+    teacher_target:
+      baseline_candidate: oracle_teacher_base_search4
+      candidates:
+        - oracle_teacher_base_search4
+        - oracle_teacher_temp105_search4
+        - oracle_teacher_temp115_search4
+        - oracle_teacher_confclip_search4
+    transition_coverage:
+      baseline_candidate: oracle_transition_base_search4
+      candidates:
+        - oracle_transition_base_search4
+        - oracle_transition_phase_balanced_2048
+        - oracle_transition_phase_balanced_4096
+        - oracle_transition_phase_balanced_4096_temp105
+    combined:
+      baseline_candidate: oracle_combined_temp105_transition4096
+      candidates:
+        - oracle_combined_temp105_transition4096
+        - oracle_combined_confclip_transition4096
+  oracle_eval_episodes: 32
+  oracle_eval_modes:
+    - [greedy, true, 1.0]
+    - [sampled_t1.0, false, 1.0]
+    - [sampled_t0.7, false, 0.7]
+    - [sampled_t0.5, false, 0.5]
+  practical_shortlist:
+    - label: selective_teacher_contract
+      track: fruitful
+      candidates:
+        - round10_search_x4_temp105
+        - round10_search_x4_temp110
+        - round10_conf_search_x4_temp105
+        - round10_conf_search_x4_temp110
+        - round10_conf_search_x6_temp105
+      hypothesis: the most practical within-family approximation to the teacher-target oracle is selective teacher smoothing on the teacher-locked pre-key window.
+      failure: the teacher-locked deadlocks remain flat while the guardrail regresses.
+    - label: transition_coverage_injection
+      track: fruitful
+      candidates:
+        - round10_prekey_phase_balanced_4096
+        - round10_prekey_phase_balanced_4096_temp105
+        - round10_prekey_phase_balanced_4096_conf
+        - round10_transition_phase_balanced_4096
+        - round10_transition_phase_balanced_4096_temp105
+      hypothesis: the most practical within-family approximation to the coverage oracle is stronger carry-key and locked-door replay pressure without leaving the accepted family.
+      failure: the family only shifts mix and entropy without creating deadlock-family gains.
+    - label: hybrid_teacher_plus_transition
+      track: fruitful
+      candidates:
+        - round10_conf_search_x4_transition_temp105
+      hypothesis: if the oracle signal is genuinely mixed, the main practical headroom should live in the joint teacher-plus-transition contract rather than either component alone.
+      failure: the joint lane only ties round6 again and does not improve the teacher-locked subgroup.
+    - label: recursive_contract_probe
+      track: exploratory
+      candidates:
+        - round10_warm1_last_step
+        - round10_warm2_last_step
+        - round10_stoch25_last_two
+        - round10_stoch50_last_two
+        - settling_round10_last_step
+        - round10_warm1_last_two
+      hypothesis: a bounded training-contract adjustment may still matter if the oracle signal suggests some residual student-side deadlock escape failure.
+      failure: the contract bracket only recreates the tie bucket or adds instability.
+    - label: phase_memory_pilot
+      track: archpilot
+      candidates:
+        - round10_phase_memory_mix025_search_x4
+        - round10_phase_memory_mix050_conf_search_x4
+      hypothesis: if the combined oracle still fails, a tiny quarantined phase-memory pilot is the smallest architecture-adjacent test of a real family ceiling.
+      failure: the pilot cannot even match the incumbent deadlock-dev bucket or it weakens route structure enough to make a follow-on branch unjustified.

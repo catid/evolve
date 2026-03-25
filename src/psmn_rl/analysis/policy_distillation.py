@@ -40,6 +40,8 @@ class StudentConfig:
     ce_weight: float = 1.0
     kl_weight: float = 1.0
     weighting: str = "uniform"
+    teacher_confidence_floor: float | None = None
+    teacher_confidence_ceiling: float | None = None
     phase_weights: dict[str, float] | None = None
     default_phase_weight: float = 1.0
     disagreement_bonus: float = 0.0
@@ -193,6 +195,18 @@ def _dataset_weights(spec: StudentConfig, dataset: DistillationBatch, device: to
         if dataset.teacher_confidence is None:
             raise ValueError("teacher_confidence weighting requested but dataset lacks teacher_confidence")
         weights = dataset.teacher_confidence.to(device)
+        floor = spec.teacher_confidence_floor
+        ceiling = spec.teacher_confidence_ceiling
+        if floor is not None:
+            if floor < 0.0 or floor > 1.0:
+                raise ValueError("teacher_confidence_floor must be in [0, 1]")
+            weights = torch.clamp_min(weights, float(floor))
+        if ceiling is not None:
+            if ceiling < 0.0 or ceiling > 1.0:
+                raise ValueError("teacher_confidence_ceiling must be in [0, 1]")
+            weights = torch.clamp_max(weights, float(ceiling))
+        if floor is not None and ceiling is not None and floor > ceiling:
+            raise ValueError("teacher_confidence_floor cannot exceed teacher_confidence_ceiling")
     elif spec.weighting != "uniform":
         raise ValueError(f"unsupported weighting mode: {spec.weighting}")
     return weights

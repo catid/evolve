@@ -1307,7 +1307,11 @@ def render_decision_memo(campaign: dict[str, Any], output: Path) -> None:
     gate_payload = _optional_json(campaign["reports"].get("gate_report_json"))
     teacher_audit = _optional_json(campaign["reports"].get("teacher_audit_json"))
     distribution_audit = _optional_json(campaign["reports"].get("distribution_audit_json"))
-    exploratory = {"overall_boundary": "not_run"}
+    oracle_synthesis = _optional_json(campaign["reports"].get("oracle_synthesis_json"))
+    exploratory = {
+        "overall_boundary": "not_run",
+        "architecture_branch_justified": bool(oracle_synthesis.get("architecture_branch_justified")),
+    }
     final_status = _decision_status(campaign, stage4, stage5, stage6, stage7, exploratory, gate_payload)
     winner = _winner(campaign, stage4, stage5, stage6, stage7)
     lines = [
@@ -1331,12 +1335,16 @@ def render_decision_memo(campaign: dict[str, Any], output: Path) -> None:
         f"- Stage B6 incumbent stability pass: `{stage7.get('round6_pass')}`",
         f"- teacher audit verdict: `{teacher_audit.get('overall_classification', 'missing')}`",
         f"- distribution audit verdict: `{distribution_audit.get('overall_classification', 'missing')}`",
+        f"- oracle mechanism verdict: `{oracle_synthesis.get('mechanism_verdict', 'not_run')}`",
+        f"- oracle architecture-branch justification: `{oracle_synthesis.get('architecture_branch_justified', 'not_run')}`",
         "",
         "## Decision",
         "",
     ]
     if final_status == str(campaign["decision_strings"]["replace"]):
         lines.append("- A deadlock-targeted challenger survived the narrowed funnel, stayed meaningful after verification and controls, generalized to deadlock holdout, preserved healthy DoorKey behavior, stayed routed and stable, and cleared the final gate strongly enough to replace `round6`.")
+    elif final_status == str(campaign["decision_strings"].get("arch_future_branch", "__missing__")):
+        lines.append("- The oracle program sharpened the mechanism picture enough to justify a future architecture branch, but the practical within-family approximations still failed to produce a benchmark-changing challenger. `round6` therefore stays in the candidate pack while the follow-on architecture work remains quarantined from the public benchmark lane.")
     elif final_status == str(campaign["decision_strings"]["confirm"]):
         lines.append("- No deadlock-targeted challenger displaced `round6`. The program clarified that the blocker is a mixed deadlock/data-contract problem: the canonical dev deadlock is primarily teacher-locked, the holdout family includes a secondary ambiguous/unstable subgroup, and older replay/cap/bridge variants did not create the missing transition-state coverage before failing. `round6` still preserves the routed early-phase strengths on `prospective_f/241`, so it remains active and the deadlock/data-contract frontier is clearer than before.")
         if stage1.get("archpilot_advancing_candidates"):

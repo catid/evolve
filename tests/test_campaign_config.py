@@ -129,3 +129,32 @@ def test_deadlock_plus_program_campaign_scales_to_seventy_two_candidates() -> No
     assert campaign["analysis"]["shortlist_max_directions"] == 8
     assert "round10_phase_memory_mix075_search_x4" in campaign["candidates"]
     assert "outputs/experiments/lss_deadlock_arch_program/stageB1_screening" in campaign["reuse_roots"]["stage1_sare"]
+
+
+def test_deadlock_oracle_program_campaign_separates_oracle_and_practical_lanes() -> None:
+    campaign = load_campaign_config("configs/experiments/lss_deadlock_oracle_program/campaign.yaml")
+    track_counts = Counter(str(meta["track"]) for meta in campaign["candidates"].values())
+
+    assert campaign["name"] == "lss_deadlock_oracle_program"
+    assert track_counts == {"fruitful": 16, "exploratory": 6, "archpilot": 2}
+    assert len(campaign["candidates"]) == 24
+    assert campaign["current_decision_memo"] == "outputs/reports/deadlock_arch_decision_memo.md"
+    assert campaign["decision_strings"]["arch_future_branch"] == "oracle evidence suggests a future architecture branch but not a benchmark change"
+    assert campaign["reports"]["oracle_teacher_target_report"] == "outputs/reports/oracle_stageA2_teacher_target.md"
+    assert campaign["reports"]["oracle_synthesis_report"] == "outputs/reports/oracle_stageA6_synthesis.md"
+    assert campaign["reports"]["decision_memo"] == "outputs/reports/deadlock_oracle_decision_memo.md"
+    assert sorted(campaign["oracle_candidates"].keys()) == [
+        "oracle_combined_confclip_transition4096",
+        "oracle_combined_temp105_transition4096",
+        "oracle_teacher_base_search4",
+        "oracle_teacher_confclip_search4",
+        "oracle_teacher_temp105_search4",
+        "oracle_teacher_temp115_search4",
+        "oracle_transition_base_search4",
+        "oracle_transition_phase_balanced_2048",
+        "oracle_transition_phase_balanced_4096",
+        "oracle_transition_phase_balanced_4096_temp105",
+    ]
+    assert campaign["analysis"]["shortlist_max_directions"] == 5
+    assert campaign["analysis"]["oracle_case_order"] == ["teacher_locked", "ambiguous", "guardrail"]
+    assert "outputs/experiments/lss_deadlock_arch_program/stageB1_screening" in campaign["reuse_roots"]["stage1_sare"]

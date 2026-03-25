@@ -282,6 +282,39 @@ def test_decision_status_supports_explicit_label_overrides() -> None:
     )
 
 
+def test_decision_status_supports_oracle_future_architecture_branch() -> None:
+    campaign = {
+        "current_canonical_name": "round6",
+        "decision_strings": {
+            "replace": "challenger replaces the active benchmark",
+            "confirm": "active benchmark confirmed and frontier clarified",
+            "narrow": "active benchmark remains and the frontier narrows further",
+            "narrow_state": "benchmark state itself needs narrowing",
+            "arch_future_branch": "oracle evidence suggests a future architecture branch but not a benchmark change",
+        },
+        "selection": {
+            "pack_gate_required_verdict": "PASS: thaw consideration allowed",
+            "control_eps": 0.02,
+        },
+    }
+    holdout = {
+        "best_candidate": None,
+        "round6_summary": {"sare_mean": 0.84, "token_mean": 0.84, "single_mean": 0.84},
+    }
+    anti_regression = {
+        "challenger_pass": False,
+        "round6_summary": {"sare_mean": 1.00, "token_mean": 0.89, "single_mean": 0.89},
+    }
+    route = {"round6_pass": True, "challenger_pass": False}
+    stability = {"round6_pass": True, "challenger_pass": False}
+    exploratory = {"architecture_branch_justified": True}
+    gate_payload = {"verdict": "PASS: thaw consideration allowed"}
+    assert (
+        _decision_status(campaign, holdout, anti_regression, route, stability, exploratory, gate_payload)
+        == "oracle evidence suggests a future architecture branch but not a benchmark change"
+    )
+
+
 def test_synthetic_control_rows_reconstruct_token_and_single_scores() -> None:
     sare_rows = [
         {
