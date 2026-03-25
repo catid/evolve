@@ -125,6 +125,35 @@ def test_sare_phase_memory_route_bias_keyed_residual_reports_residual_statistics
     env.close()
 
 
+def test_sare_phase_memory_route_bias_keyed_residual_predictive_reports_predictive_statistics() -> None:
+    env, obs, done = _obs()
+    model = build_model(
+        ModelConfig(
+            variant="sare_phase_memory_route_bias_keyed_residual_predictive",
+            expert_count=4,
+            top_k=2,
+            memory_mix=0.5,
+            route_memory_scale=0.5,
+        ),
+        env.observation_space,
+        env.action_space,
+    )
+    state = model.initial_state(batch_size=1, device=torch.device("cpu"))
+    output = model.forward(obs, state=state, done=done)
+    assert "hidden" in output.next_state
+    assert output.next_state["hidden"].shape == (1, 128)
+    assert "memory/base_route_bias_logits_norm" in output.metrics
+    assert "memory/keyed_route_bias_logits_norm" in output.metrics
+    assert "memory/route_bias_logits_norm" in output.metrics
+    assert "memory/route_memory_query_norm" in output.metrics
+    assert "memory/predictive_hidden_norm" in output.metrics
+    assert "memory/keyed_predictive_delta_norm" in output.metrics
+    assert float(output.metrics["memory/route_bias_scale"]) == 0.5
+    assert float(output.metrics["memory/predictive_hidden_norm"]) >= 0.0
+    assert float(output.metrics["memory/keyed_predictive_delta_norm"]) >= 0.0
+    env.close()
+
+
 def test_sare_phase_memory_route_bias_keyed_residual_ema_reports_ema_statistics() -> None:
     env, obs, done = _obs()
     model = build_model(
