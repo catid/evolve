@@ -307,6 +307,30 @@ def test_por_option_top2_duration_reports_metrics() -> None:
     env.close()
 
 
+def test_por_actor_hidden_film_reports_metrics() -> None:
+    env = gym.make("MiniGrid-MemoryS9-v0")
+    obs = _sample_obs(env)
+    done = torch.ones(1, dtype=torch.bool)
+    model = build_model(
+        ModelConfig(
+            variant="por",
+            por_option_actor_features=True,
+            policy_option_hidden_film=True,
+            policy_option_hidden_film_scale=0.5,
+            policy_option_hidden_use_duration_gate=True,
+        ),
+        env.observation_space,
+        env.action_space,
+    )
+    state = model.initial_state(batch_size=1, device=torch.device("cpu"))
+    output = model.forward(obs, state=state, done=done)
+    assert "policy/option_actor_features_duration_gate" in output.metrics
+    assert "policy/option_hidden_film_gate_signal_mean" in output.metrics
+    assert "policy/option_hidden_film_scale_norm" in output.metrics
+    assert "policy/option_hidden_film_shift_norm" in output.metrics
+    env.close()
+
+
 def test_logit_gain_reports_metrics() -> None:
     env = gym.make("MiniGrid-MemoryS9-v0")
     obs = _sample_obs(env)

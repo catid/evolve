@@ -1000,6 +1000,9 @@ def build_model(model_config: ModelConfig, observation_space: gym.Space, action_
             option_top2_rerank=model_config.por_option_top2_rerank,
             option_top2_rerank_min_duration=model_config.por_option_top2_rerank_min_duration,
             option_top2_rerank_duration_sharpness=model_config.por_option_top2_rerank_duration_sharpness,
+            option_actor_features=model_config.por_option_actor_features,
+            option_actor_features_min_duration=model_config.por_option_actor_features_min_duration,
+            option_actor_features_duration_sharpness=model_config.por_option_actor_features_duration_sharpness,
             option_context_gain=model_config.por_option_context_gain,
             option_context_gain_scale=model_config.por_option_context_gain_scale,
             option_context_gain_min_duration=model_config.por_option_context_gain_min_duration,
@@ -1032,4 +1035,7 @@ def build_model(model_config: ModelConfig, observation_space: gym.Space, action_
         policy_option_top2_rerank_threshold=model_config.policy_option_top2_rerank_threshold,
         policy_option_top2_rerank_sharpness=model_config.policy_option_top2_rerank_sharpness,
         policy_option_top2_use_duration_gate=model_config.policy_option_top2_use_duration_gate,
+        policy_option_hidden_film=model_config.policy_option_hidden_film,
+        policy_option_hidden_film_scale=model_config.policy_option_hidden_film_scale,
+        policy_option_hidden_use_duration_gate=model_config.policy_option_hidden_use_duration_gate,
     )

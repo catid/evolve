@@ -53,6 +53,9 @@ class PORCore(nn.Module):
         option_top2_rerank: bool,
         option_top2_rerank_min_duration: float,
         option_top2_rerank_duration_sharpness: float,
+        option_actor_features: bool,
+        option_actor_features_min_duration: float,
+        option_actor_features_duration_sharpness: float,
         option_context_gain: bool,
         option_context_gain_scale: float,
         option_context_gain_min_duration: float,
@@ -91,6 +94,9 @@ class PORCore(nn.Module):
         self.option_top2_rerank = option_top2_rerank
         self.option_top2_rerank_min_duration = option_top2_rerank_min_duration
         self.option_top2_rerank_duration_sharpness = option_top2_rerank_duration_sharpness
+        self.option_actor_features = option_actor_features
+        self.option_actor_features_min_duration = option_actor_features_min_duration
+        self.option_actor_features_duration_sharpness = option_actor_features_duration_sharpness
         self.option_context_gain = option_context_gain
         self.option_context_gain_scale = option_context_gain_scale
         self.option_context_gain_min_duration = option_context_gain_min_duration
@@ -213,6 +219,7 @@ class PORCore(nn.Module):
             or self.option_context_logits
             or self.option_margin_adapter
             or self.option_top2_rerank
+            or self.option_actor_features
             or self.option_context_gain
         ):
             entropy = -(next_probs.clamp_min(1e-8) * next_probs.clamp_min(1e-8).log()).sum(dim=-1)
@@ -220,6 +227,9 @@ class PORCore(nn.Module):
             if self.option_context_gain:
                 gate_min_duration = self.option_context_gain_min_duration
                 gate_sharpness = self.option_context_gain_duration_sharpness
+            elif self.option_actor_features:
+                gate_min_duration = self.option_actor_features_min_duration
+                gate_sharpness = self.option_actor_features_duration_sharpness
             elif self.option_top2_rerank:
                 gate_min_duration = self.option_top2_rerank_min_duration
                 gate_sharpness = self.option_top2_rerank_duration_sharpness
@@ -306,6 +316,17 @@ class PORCore(nn.Module):
         option_top2_features = None
         if self.option_top2_rerank and stability is not None and duration_gate is not None:
             option_top2_features = torch.cat(
+                [
+                    pooled,
+                    option_context_projected,
+                    duration_gate.unsqueeze(-1),
+                    terminate_prob,
+                ],
+                dim=-1,
+            )
+        option_actor_features = None
+        if self.option_actor_features and duration_gate is not None:
+            option_actor_features = torch.cat(
                 [
                     pooled,
                     option_context_projected,
@@ -449,6 +470,14 @@ class PORCore(nn.Module):
                     "policy/option_top2_rerank_feature_norm": option_top2_features.norm(dim=-1).mean(),
                 }
             )
+        if self.option_actor_features and duration_gate is not None:
+            metrics.update(
+                {
+                    "policy/option_actor_features_duration_gate": duration_gate.mean(),
+                    "policy/option_actor_features_stability": stability.mean() if stability is not None else 0.0,
+                    "policy/option_actor_features_norm": option_actor_features.norm(dim=-1).mean(),
+                }
+            )
         if self.option_context_gain and stability is not None and duration_gate is not None and entropy_norm is not None:
             metrics.update(
                 {
@@ -475,5 +504,8 @@ class PORCore(nn.Module):
                 "option_top2_features": option_top2_features,
                 "option_top2_stability": stability.unsqueeze(-1) if stability is not None else None,
                 "option_top2_duration_gate": duration_gate.unsqueeze(-1) if duration_gate is not None else None,
+                "option_actor_features": option_actor_features,
+                "option_actor_stability": stability.unsqueeze(-1) if stability is not None else None,
+                "option_actor_duration_gate": duration_gate.unsqueeze(-1) if duration_gate is not None else None,
             },
         )

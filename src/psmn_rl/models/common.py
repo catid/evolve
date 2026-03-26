@@ -12,6 +12,21 @@ from torch.distributions import Categorical
 TensorDict = dict[str, torch.Tensor]
 
 
+class _ParameterCollection:
+    def __init__(self, *modules: nn.Module) -> None:
+        self._modules = modules
+
+    def parameters(self, recurse: bool = True):
+        seen: set[int] = set()
+        for module in self._modules:
+            for parameter in module.parameters(recurse=recurse):
+                parameter_id = id(parameter)
+                if parameter_id in seen:
+                    continue
+                seen.add(parameter_id)
+                yield parameter
+
+
 @dataclass
 class CoreOutput:
     pooled: torch.Tensor
@@ -94,6 +109,9 @@ class ActorCriticModel(nn.Module):
         policy_option_top2_rerank_threshold: float = 0.25,
         policy_option_top2_rerank_sharpness: float = 12.0,
         policy_option_top2_use_duration_gate: bool = False,
+        policy_option_hidden_film: bool = False,
+        policy_option_hidden_film_scale: float = 0.5,
+        policy_option_hidden_use_duration_gate: bool = False,
     ) -> None:
         super().__init__()
         self.core = core
@@ -118,12 +136,14 @@ class ActorCriticModel(nn.Module):
         self.policy_option_top2_rerank_threshold = policy_option_top2_rerank_threshold
         self.policy_option_top2_rerank_sharpness = policy_option_top2_rerank_sharpness
         self.policy_option_top2_use_duration_gate = policy_option_top2_use_duration_gate
-        self.policy_head = nn.Sequential(
-            nn.LayerNorm(hidden_size),
-            nn.Linear(hidden_size, hidden_size),
-            nn.GELU(),
-            nn.Linear(hidden_size, action_dim),
-        )
+        self.policy_option_hidden_film = policy_option_hidden_film
+        self.policy_option_hidden_film_scale = policy_option_hidden_film_scale
+        self.policy_option_hidden_use_duration_gate = policy_option_hidden_use_duration_gate
+        self.policy_norm = nn.LayerNorm(hidden_size)
+        self.policy_hidden = nn.Linear(hidden_size, hidden_size)
+        self.policy_activation = nn.GELU()
+        self.policy_out = nn.Linear(hidden_size, action_dim)
+        self._policy_head_view = _ParameterCollection(self.policy_norm, self.policy_hidden, self.policy_out)
         if self.policy_top2_rerank:
             top2_embed_dim = min(hidden_size, 32)
             self.policy_top2_action_embed = nn.Embedding(action_dim, top2_embed_dim)
@@ -188,12 +208,25 @@ class ActorCriticModel(nn.Module):
                 nn.GELU(),
                 nn.Linear(hidden_size, 1),
             )
+        if self.policy_option_hidden_film:
+            self.policy_option_hidden_film_head = nn.Sequential(
+                nn.LazyLinear(hidden_size),
+                nn.GELU(),
+                nn.Linear(hidden_size, hidden_size * 2),
+            )
+            final_linear = self.policy_option_hidden_film_head[-1]
+            nn.init.zeros_(final_linear.weight)
+            nn.init.zeros_(final_linear.bias)
         self.value_head = nn.Sequential(
             nn.LayerNorm(hidden_size),
             nn.Linear(hidden_size, hidden_size),
             nn.GELU(),
             nn.Linear(hidden_size, 1),
         )
+
+    @property
+    def policy_head(self) -> _ParameterCollection:
+        return self._policy_head_view
 
     def initial_state(self, batch_size: int, device: torch.device) -> TensorDict:
         if hasattr(self.core, "initial_state"):
@@ -203,7 +236,32 @@ class ActorCriticModel(nn.Module):
     def forward(self, obs: TensorDict, state: TensorDict | None = None, done: torch.Tensor | None = None) -> ModelOutput:
         core_output: CoreOutput = self.core(obs, state or {}, done)
         metrics = dict(core_output.metrics)
-        base_logits = self.policy_head(core_output.pooled)
+        policy_hidden = self.policy_activation(self.policy_hidden(self.policy_norm(core_output.pooled)))
+        if self.policy_option_hidden_film:
+            option_actor_features = core_output.policy_features.get("option_actor_features")
+            option_actor_stability = core_output.policy_features.get("option_actor_stability")
+            option_actor_duration_gate = core_output.policy_features.get("option_actor_duration_gate")
+            if option_actor_features is not None and option_actor_stability is not None:
+                if self.policy_option_hidden_use_duration_gate and option_actor_duration_gate is not None:
+                    option_gate_signal = option_actor_duration_gate
+                else:
+                    option_gate_signal = option_actor_stability
+                raw_film = self.policy_option_hidden_film_head(option_actor_features)
+                raw_scale, raw_shift = raw_film.chunk(2, dim=-1)
+                gate = (self.policy_option_hidden_film_scale * option_gate_signal).to(policy_hidden.dtype)
+                film_scale = torch.tanh(raw_scale) * gate
+                film_shift = raw_shift * gate
+                policy_hidden = policy_hidden * (1.0 + film_scale) + film_shift
+                metrics.update(
+                    {
+                        "policy/option_hidden_film_gate_signal_mean": option_gate_signal.squeeze(-1),
+                        "policy/option_hidden_film_gate_mean": gate.mean(dim=-1),
+                        "policy/option_hidden_film_stability_mean": option_actor_stability.squeeze(-1),
+                        "policy/option_hidden_film_scale_norm": film_scale.norm(dim=-1),
+                        "policy/option_hidden_film_shift_norm": film_shift.norm(dim=-1),
+                    }
+                )
+        base_logits = self.policy_out(policy_hidden)
         logits = base_logits
         if core_output.logit_bias is not None:
             logits = logits + core_output.logit_bias

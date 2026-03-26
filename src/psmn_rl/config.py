@@ -100,6 +100,9 @@ class ModelConfig:
     policy_option_top2_rerank_threshold: float = 0.25
     policy_option_top2_rerank_sharpness: float = 12.0
     policy_option_top2_use_duration_gate: bool = False
+    policy_option_hidden_film: bool = False
+    policy_option_hidden_film_scale: float = 0.5
+    policy_option_hidden_use_duration_gate: bool = False
     por_option_action_adapter: bool = False
     por_option_action_adapter_scale: float = 1.0
     por_option_action_adapter_min_duration: float = 2.0
@@ -130,6 +133,9 @@ class ModelConfig:
     por_option_top2_rerank: bool = False
     por_option_top2_rerank_min_duration: float = 2.0
     por_option_top2_rerank_duration_sharpness: float = 1.0
+    por_option_actor_features: bool = False
+    por_option_actor_features_min_duration: float = 2.0
+    por_option_actor_features_duration_sharpness: float = 1.0
     por_option_context_gain: bool = False
     por_option_context_gain_scale: float = 0.5
     por_option_context_gain_min_duration: float = 2.0
