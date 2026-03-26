@@ -39,6 +39,10 @@ class PORCore(nn.Module):
         option_film_scale: float,
         option_film_min_duration: float,
         option_film_duration_sharpness: float,
+        option_context_film: bool,
+        option_context_film_scale: float,
+        option_context_film_min_duration: float,
+        option_context_film_duration_sharpness: float,
     ) -> None:
         super().__init__()
         self.option_count = option_count
@@ -59,6 +63,10 @@ class PORCore(nn.Module):
         self.option_film_scale = option_film_scale
         self.option_film_min_duration = option_film_min_duration
         self.option_film_duration_sharpness = option_film_duration_sharpness
+        self.option_context_film = option_context_film
+        self.option_context_film_scale = option_context_film_scale
+        self.option_context_film_min_duration = option_context_film_min_duration
+        self.option_context_film_duration_sharpness = option_context_film_duration_sharpness
         self.encoder = build_token_encoder(observation_space, token_dim, patch_size)
         self.input_proj = nn.Linear(token_dim, hidden_size)
         self.blocks = nn.ModuleList(
@@ -106,6 +114,13 @@ class PORCore(nn.Module):
                 nn.GELU(),
                 nn.Linear(hidden_size, hidden_size * 2),
             )
+        if self.option_context_film:
+            self.option_context_film_head = nn.Sequential(
+                nn.LayerNorm(hidden_size * 3 + 2),
+                nn.Linear(hidden_size * 3 + 2, hidden_size),
+                nn.GELU(),
+                nn.Linear(hidden_size, hidden_size * 2),
+            )
         self.norm = nn.LayerNorm(hidden_size)
 
     def initial_state(self, batch_size: int, device: torch.device) -> dict[str, torch.Tensor]:
@@ -138,7 +153,6 @@ class PORCore(nn.Module):
         next_probs = (1.0 - terminate_prob) * prev_probs + terminate_prob * proposal
         next_duration = (1.0 - terminate_prob.squeeze(-1)) * (prev_duration + 1.0) + terminate_prob.squeeze(-1)
         next_context = next_probs @ self.option_embed.weight
-        conditioned = pooled + self.option_proj(next_context)
 
         prev_idx = prev_probs.argmax(dim=-1)
         next_idx = next_probs.argmax(dim=-1)
@@ -148,10 +162,19 @@ class PORCore(nn.Module):
         stability = None
         duration_gate = None
         entropy_norm = None
-        if self.option_action_adapter or self.option_hidden_residual or self.option_action_experts or self.option_film:
+        if (
+            self.option_action_adapter
+            or self.option_hidden_residual
+            or self.option_action_experts
+            or self.option_film
+            or self.option_context_film
+        ):
             entropy = -(next_probs.clamp_min(1e-8) * next_probs.clamp_min(1e-8).log()).sum(dim=-1)
             entropy_norm = entropy / math.log(max(self.option_count, 2))
-            if self.option_film:
+            if self.option_context_film:
+                gate_min_duration = self.option_context_film_min_duration
+                gate_sharpness = self.option_context_film_duration_sharpness
+            elif self.option_film:
                 gate_min_duration = self.option_film_min_duration
                 gate_sharpness = self.option_film_duration_sharpness
             elif self.option_action_experts:
@@ -168,8 +191,30 @@ class PORCore(nn.Module):
             )
             stability = duration_gate * (1.0 - entropy_norm.clamp(0.0, 1.0))
         context_delta = None
-        if (self.option_hidden_residual or self.option_film) and stability is not None and duration_gate is not None and entropy_norm is not None:
+        if (
+            self.option_hidden_residual
+            or self.option_film
+            or self.option_context_film
+        ) and stability is not None and duration_gate is not None and entropy_norm is not None:
             context_delta = next_context - prev_context
+        if self.option_context_film and context_delta is not None and stability is not None:
+            context_film_features = torch.cat(
+                [
+                    pooled,
+                    next_context,
+                    context_delta,
+                    duration_gate.unsqueeze(-1),
+                    terminate_prob,
+                ],
+                dim=-1,
+            )
+            raw_context_film = self.option_context_film_head(context_film_features)
+            raw_context_scale, raw_context_shift = raw_context_film.chunk(2, dim=-1)
+            context_film_gate = self.option_context_film_scale * stability.unsqueeze(-1)
+            context_film_scale = torch.tanh(raw_context_scale) * context_film_gate
+            context_film_shift = raw_context_shift * context_film_gate
+            next_context = next_context * (1.0 + context_film_scale) + context_film_shift
+        conditioned = pooled + self.option_proj(next_context)
         if self.option_film and context_delta is not None and stability is not None:
             film_features = torch.cat(
                 [
@@ -264,6 +309,16 @@ class PORCore(nn.Module):
                     "policy/option_film_entropy_norm": entropy_norm.mean(),
                     "policy/option_film_scale_norm": film_scale.norm(dim=-1).mean(),
                     "policy/option_film_shift_norm": film_shift.norm(dim=-1).mean(),
+                }
+            )
+        if self.option_context_film and stability is not None and duration_gate is not None and entropy_norm is not None:
+            metrics.update(
+                {
+                    "policy/option_context_film_stability": stability.mean(),
+                    "policy/option_context_film_duration_gate": duration_gate.mean(),
+                    "policy/option_context_film_entropy_norm": entropy_norm.mean(),
+                    "policy/option_context_film_scale_norm": context_film_scale.norm(dim=-1).mean(),
+                    "policy/option_context_film_shift_norm": context_film_shift.norm(dim=-1).mean(),
                 }
             )
         for option_index, value in enumerate(next_probs.mean(dim=0)):

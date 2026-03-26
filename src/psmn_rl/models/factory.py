@@ -986,6 +986,10 @@ def build_model(model_config: ModelConfig, observation_space: gym.Space, action_
             option_film_scale=model_config.por_option_film_scale,
             option_film_min_duration=model_config.por_option_film_min_duration,
             option_film_duration_sharpness=model_config.por_option_film_duration_sharpness,
+            option_context_film=model_config.por_option_context_film,
+            option_context_film_scale=model_config.por_option_context_film_scale,
+            option_context_film_min_duration=model_config.por_option_context_film_min_duration,
+            option_context_film_duration_sharpness=model_config.por_option_context_film_duration_sharpness,
         )
     else:
         raise ValueError(f"Unknown model variant: {variant}")
