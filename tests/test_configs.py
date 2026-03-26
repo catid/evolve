@@ -283,3 +283,14 @@ def test_load_memory_actor_hidden_low_margin_config() -> None:
     assert por.model.policy_option_hidden_low_margin_gate is True
     assert por.model.policy_option_hidden_margin_threshold == 0.35
     assert por.model.policy_option_hidden_shift_weight == 0.25
+
+
+def test_load_memory_actor_hidden_blend_config() -> None:
+    por = load_config(Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift25_blend100.yaml"))
+
+    assert por.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert por.model.variant == "por"
+    assert por.model.policy_option_hidden_film is True
+    assert por.model.policy_option_hidden_blend_gate is True
+    assert por.model.policy_option_hidden_blend_scale == 1.0
+    assert por.model.policy_option_hidden_shift_weight == 0.25

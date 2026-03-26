@@ -478,7 +478,7 @@ def test_por_actor_hidden_film_logs_metrics(tmp_path: Path) -> None:
     config.ppo.minibatches = 2
     config.evaluation.episodes = 1
     config.logging.output_dir = str(tmp_path / "memory_por_actor_hidden_film")
-    config.model.policy_option_hidden_low_margin_gate = True
+    config.model.policy_option_hidden_blend_gate = True
 
     run_training(config, max_updates=1)
 
@@ -492,8 +492,9 @@ def test_por_actor_hidden_film_logs_metrics(tmp_path: Path) -> None:
     assert "policy/option_hidden_film_duration_mix" in last_scalar
     assert "policy/option_hidden_film_scale_only" in last_scalar
     assert "policy/option_hidden_film_scale_weight" in last_scalar
-    assert "policy/option_hidden_film_low_margin_gate" in last_scalar
-    assert "policy/option_hidden_film_low_margin_gate_mean" in last_scalar
+    assert "policy/option_hidden_blend_gate" in last_scalar
+    assert "policy/option_hidden_blend_scale" in last_scalar
+    assert "policy/option_hidden_blend_gate_mean" in last_scalar
     assert "policy/option_hidden_film_shift_weight" in last_scalar
     assert "policy/option_hidden_post_norm" in last_scalar
     assert "policy/option_hidden_film_scale_norm" in last_scalar

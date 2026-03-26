@@ -118,6 +118,8 @@ class ActorCriticModel(nn.Module):
         policy_option_hidden_low_margin_gate: bool = False,
         policy_option_hidden_margin_threshold: float = 0.25,
         policy_option_hidden_margin_sharpness: float = 12.0,
+        policy_option_hidden_blend_gate: bool = False,
+        policy_option_hidden_blend_scale: float = 1.0,
         policy_option_hidden_shift_weight: float = 1.0,
         policy_option_hidden_post_norm: bool = False,
     ) -> None:
@@ -153,6 +155,8 @@ class ActorCriticModel(nn.Module):
         self.policy_option_hidden_low_margin_gate = policy_option_hidden_low_margin_gate
         self.policy_option_hidden_margin_threshold = policy_option_hidden_margin_threshold
         self.policy_option_hidden_margin_sharpness = policy_option_hidden_margin_sharpness
+        self.policy_option_hidden_blend_gate = policy_option_hidden_blend_gate
+        self.policy_option_hidden_blend_scale = max(0.0, policy_option_hidden_blend_scale)
         self.policy_option_hidden_shift_weight = max(0.0, policy_option_hidden_shift_weight)
         self.policy_option_hidden_post_norm = policy_option_hidden_post_norm
         self.policy_norm = nn.LayerNorm(hidden_size)
@@ -233,6 +237,15 @@ class ActorCriticModel(nn.Module):
             final_linear = self.policy_option_hidden_film_head[-1]
             nn.init.zeros_(final_linear.weight)
             nn.init.zeros_(final_linear.bias)
+            if self.policy_option_hidden_blend_gate:
+                self.policy_option_hidden_blend_head = nn.Sequential(
+                    nn.LazyLinear(hidden_size),
+                    nn.GELU(),
+                    nn.Linear(hidden_size, 1),
+                )
+                final_blend_linear = self.policy_option_hidden_blend_head[-1]
+                nn.init.zeros_(final_blend_linear.weight)
+                nn.init.constant_(final_blend_linear.bias, 2.0)
             if self.policy_option_hidden_post_norm:
                 self.policy_option_hidden_post_layernorm = nn.LayerNorm(hidden_size)
         self.value_head = nn.Sequential(
@@ -260,11 +273,12 @@ class ActorCriticModel(nn.Module):
             option_actor_stability = core_output.policy_features.get("option_actor_stability")
             option_actor_duration_gate = core_output.policy_features.get("option_actor_duration_gate")
             if option_actor_features is not None and option_actor_stability is not None:
+                base_policy_hidden = policy_hidden
                 low_margin_gate = None
                 margin_before = None
                 if self.policy_option_hidden_low_margin_gate:
                     with torch.no_grad():
-                        pre_film_logits = self.policy_out(policy_hidden)
+                        pre_film_logits = self.policy_out(base_policy_hidden)
                         top2 = torch.topk(pre_film_logits, k=min(2, pre_film_logits.size(-1)), dim=-1).values
                         if top2.size(-1) > 1:
                             margin_before = top2[..., 0] - top2[..., 1]
@@ -290,6 +304,11 @@ class ActorCriticModel(nn.Module):
                 else:
                     film_shift = raw_shift * gate * self.policy_option_hidden_shift_weight
                 policy_hidden = policy_hidden * (1.0 + film_scale) + film_shift
+                blend_gate = None
+                if self.policy_option_hidden_blend_gate:
+                    blend_gate = torch.sigmoid(self.policy_option_hidden_blend_head(option_actor_features)).squeeze(-1)
+                    blend_gate = (blend_gate * self.policy_option_hidden_blend_scale).clamp(0.0, 1.0)
+                    policy_hidden = base_policy_hidden + blend_gate.unsqueeze(-1) * (policy_hidden - base_policy_hidden)
                 if self.policy_option_hidden_post_norm:
                     policy_hidden = self.policy_option_hidden_post_layernorm(policy_hidden)
                 metrics.update(
@@ -302,6 +321,8 @@ class ActorCriticModel(nn.Module):
                         "policy/option_hidden_film_scale_weight": float(self.policy_option_hidden_scale_weight),
                         "policy/option_hidden_film_low_margin_gate": float(self.policy_option_hidden_low_margin_gate),
                         "policy/option_hidden_film_margin_threshold": float(self.policy_option_hidden_margin_threshold),
+                        "policy/option_hidden_blend_gate": float(self.policy_option_hidden_blend_gate),
+                        "policy/option_hidden_blend_scale": float(self.policy_option_hidden_blend_scale),
                         "policy/option_hidden_film_shift_weight": float(self.policy_option_hidden_shift_weight),
                         "policy/option_hidden_post_norm": float(self.policy_option_hidden_post_norm),
                         "policy/option_hidden_film_scale_norm": film_scale.norm(dim=-1),
@@ -309,6 +330,8 @@ class ActorCriticModel(nn.Module):
                         "policy/option_hidden_post_hidden_norm": policy_hidden.norm(dim=-1),
                     }
                 )
+                if blend_gate is not None:
+                    metrics["policy/option_hidden_blend_gate_mean"] = blend_gate
                 if low_margin_gate is not None and margin_before is not None:
                     metrics["policy/option_hidden_film_low_margin_gate_mean"] = low_margin_gate
                     metrics["policy/option_hidden_film_margin_before"] = margin_before
