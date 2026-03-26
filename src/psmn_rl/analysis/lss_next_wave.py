@@ -435,6 +435,7 @@ def _collect_rows(campaign: dict[str, Any], family: str) -> list[dict[str, Any]]
                 "task_label": item["task_label"],
                 "variant": item["variant"],
                 "seed": int(item["seed_block"]),
+                "output_root": item["output_root"],
                 **run_summary,
             }
         )

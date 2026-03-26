@@ -193,3 +193,22 @@ def test_next_wave_campaign_registers_cross_family_budget_and_reports() -> None:
     assert campaign["families"]["por"]["variants"]["por_very_sticky"]["model"]["termination_bias"] == -2.0
     assert campaign["families"]["srw"]["variants"]["srw_sparse"]["model"]["relational_tokens"] == 2
     assert campaign["reports"]["decision_memo"] == "outputs/reports/next_wave_decision_memo.md"
+
+
+def test_next_arch_wave_campaign_registers_second_wave_budget_and_reports() -> None:
+    campaign = load_campaign_config("configs/experiments/lss_next_arch_wave_program/campaign.yaml")
+
+    assert campaign["name"] == "lss_next_arch_wave_program"
+    assert campaign["current_canonical_name"] == "round6"
+    assert campaign["target_substantive_runs"] == 96
+    assert campaign["screening_seeds"] == [7, 11]
+    assert campaign["holdout_seeds"] == [19, 23]
+    assert campaign["healthy_seeds"] == [29, 31]
+    assert campaign["persistence_seeds"] == [7, 11, 19, 23]
+    assert campaign["families"]["tregh"]["tasks"]["doorkey"]["base_config"] == "configs/treg_h/minigrid_doorkey.yaml"
+    assert campaign["families"]["recurrent_control"]["tasks"]["memory"]["base_config"] == "configs/minigrid/main/memory_token_gru.yaml"
+    assert campaign["families"]["por"]["variants"]["por_very_sticky"]["model"]["termination_bias"] == -2.0
+    assert campaign["families"]["srw"]["variants"]["srw_focused"]["model"]["top_k"] == 1
+    assert campaign["families"]["sare_persistence"]["variants"]["sare_keyed_residual_high_memory"]["model"]["memory_mix"] == 0.75
+    assert campaign["families"]["sare_persistence"]["variants"]["sare_keyed_residual_high_memory"]["model"]["route_memory_scale"] == 0.75
+    assert campaign["reports"]["decision_memo"] == "outputs/reports/next_arch_wave_decision_memo.md"

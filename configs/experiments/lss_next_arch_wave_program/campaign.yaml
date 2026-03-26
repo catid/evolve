@@ -1,0 +1,368 @@
+name: lss_next_arch_wave_program
+
+current_canonical_name: round6
+current_canonical_pack: outputs/reports/portfolio_candidate_pack.json
+current_gate_reference_pack: outputs/reports/round6_current_benchmark_pack.json
+frozen_pack: outputs/reports/frozen_benchmark_pack.json
+current_decision_memo: outputs/reports/next_wave_decision_memo.md
+prior_wave_manifest: outputs/reports/next_wave_run_manifest.json
+
+target_substantive_runs: 96
+screening_seeds: [7, 11]
+holdout_seeds: [19, 23]
+healthy_seeds: [29, 31]
+persistence_seeds: [7, 11, 19, 23]
+route_validation_seeds: [7, 11]
+stability_seeds: [7, 11]
+
+defaults:
+  train_schedule:
+    system:
+      deterministic: true
+      log_interval: 5
+      checkpoint_interval: 8
+    env:
+      num_envs: 8
+      num_eval_envs: 8
+    ppo:
+      rollout_steps: 64
+      total_updates: 20
+      update_epochs: 4
+      minibatches: 4
+      learning_rate: 0.0003
+    evaluation:
+      episodes: 16
+      greedy: true
+  recurrent_schedule:
+    system:
+      deterministic: true
+      log_interval: 5
+      checkpoint_interval: 8
+    env:
+      num_envs: 8
+      num_eval_envs: 8
+    ppo:
+      rollout_steps: 64
+      total_updates: 24
+      update_epochs: 4
+      minibatches: 4
+      sequence_minibatches: true
+      learning_rate: 0.0003
+    evaluation:
+      episodes: 16
+      greedy: true
+
+analysis:
+  diagnostic_episodes: 4
+  diagnostic_max_steps: 96
+  tregh_continue_threshold: 1.01
+  tregh_halting_threshold: 0.98
+  srw_rel_usage_threshold: 0.55
+  por_duration_threshold: 2.0
+  sare_route_entropy_threshold: 1.38
+  recurrent_progress_probe_target: slice_bucket
+  third_task_status:
+    tregh: skipped_control_fit
+    por: skipped_control_fit
+    srw: skipped_control_fit
+  dev_groups:
+    tregh: ["doorkey_seed7", "keycorridor_seed7"]
+    por: ["memory_seed7", "keycorridor_seed7"]
+    srw: ["dynamic_obstacles_seed7", "keycorridor_seed7"]
+    sare_persistence: ["keycorridor_seed7", "keycorridor_seed11"]
+  holdout_groups:
+    tregh: ["doorkey_seed19", "keycorridor_seed19"]
+    por: ["memory_seed19", "keycorridor_seed19"]
+    srw: ["dynamic_obstacles_seed19", "keycorridor_seed19"]
+    sare_persistence: ["keycorridor_seed19", "keycorridor_seed23"]
+  healthy_groups:
+    tregh: ["doorkey_seed29", "keycorridor_seed29"]
+    por: ["memory_seed29", "keycorridor_seed29"]
+    srw: ["dynamic_obstacles_seed29", "keycorridor_seed29"]
+    sare_persistence: ["keycorridor_seed29", "keycorridor_seed31"]
+
+stage_roots:
+  tregh_screening: outputs/experiments/lss_next_arch_wave_program/tregh_stage2_alive_baseline
+  recurrent_controls: outputs/experiments/lss_next_arch_wave_program/por_stage1_recurrent_controls
+  por_screening: outputs/experiments/lss_next_arch_wave_program/por_stage2_alive_baseline
+  srw_screening: outputs/experiments/lss_next_arch_wave_program/srw_stage2_alive_baseline
+  sare_persistence: outputs/experiments/lss_next_arch_wave_program/sare_persist_stage2_diagnostic
+
+reports:
+  state_reconciliation: outputs/reports/next_arch_wave_state_reconciliation.md
+  registration: outputs/reports/next_arch_wave_registration.md
+  baseline_sync: outputs/reports/next_arch_wave_baseline_sync.md
+  manifest_json: outputs/reports/next_arch_wave_run_manifest.json
+  recurrent_controls_json: outputs/reports/por2_stage1_recurrent_controls.json
+  tregh_stage1: outputs/reports/tregh2_stage1_hardslice.md
+  tregh_stage1_json: outputs/reports/tregh2_stage1_hardslice.json
+  tregh_stage2: outputs/reports/tregh2_stage2_alive_baseline.md
+  tregh_stage2_json: outputs/reports/tregh2_stage2_alive_baseline.json
+  tregh_stage3: outputs/reports/tregh2_stage3_compute_structure.md
+  tregh_stage4: outputs/reports/tregh2_stage4_fairness_holdout.md
+  tregh_stage5: outputs/reports/tregh2_stage5_route_stability.md
+  por_stage1: outputs/reports/por2_stage1_recurrent_hardslice.md
+  por_stage1_json: outputs/reports/por2_stage1_recurrent_hardslice.json
+  por_stage2: outputs/reports/por2_stage2_alive_baseline.md
+  por_stage2_json: outputs/reports/por2_stage2_alive_baseline.json
+  por_stage3: outputs/reports/por2_stage3_compute_structure.md
+  por_stage4: outputs/reports/por2_stage4_fairness_holdout.md
+  por_stage5: outputs/reports/por2_stage5_stability.md
+  srw_stage1: outputs/reports/srw2_stage1_hardslice.md
+  srw_stage1_json: outputs/reports/srw2_stage1_hardslice.json
+  srw_stage2: outputs/reports/srw2_stage2_alive_baseline.md
+  srw_stage2_json: outputs/reports/srw2_stage2_alive_baseline.json
+  srw_stage3: outputs/reports/srw2_stage3_compute_structure.md
+  srw_stage4: outputs/reports/srw2_stage4_fairness_holdout.md
+  srw_stage5: outputs/reports/srw2_stage5_stability.md
+  sare_stage1: outputs/reports/sare_persist2_stage1_hardslice.md
+  sare_stage1_json: outputs/reports/sare_persist2_stage1_hardslice.json
+  sare_stage2: outputs/reports/sare_persist2_stage2_diagnostic.md
+  sare_stage2_json: outputs/reports/sare_persist2_stage2_diagnostic.json
+  frontier_report: outputs/reports/compute_frontier_wave2_report.md
+  frontier_json: outputs/reports/compute_frontier_wave2_report.json
+  frontier_csv: outputs/reports/compute_frontier_wave2_report.csv
+  candidate_pack_summary: outputs/reports/next_arch_wave_candidate_pack_summary.json
+  gate_report: outputs/reports/next_arch_wave_gate_report_no_promotion.md
+  decision_memo: outputs/reports/next_arch_wave_decision_memo.md
+
+families:
+  tregh:
+    stage_root: tregh_screening
+    seeds_key: screening_seeds
+    schedule_key: train_schedule
+    tasks:
+      doorkey:
+        display_name: DoorKey
+        base_config: configs/treg_h/minigrid_doorkey.yaml
+      keycorridor:
+        display_name: KeyCorridor
+        base_config: configs/minigrid/main/keycorridor_flat_dense.yaml
+    variants:
+      tregh_base:
+        model:
+          variant: treg_h
+          expert_count: 4
+          expert_hidden_size: 256
+          temperature: 1.0
+          ponder_cost: 0.01
+          max_hops: 2
+          halt_bias: 0.0
+      tregh_low_ponder:
+        model:
+          variant: treg_h
+          expert_count: 4
+          expert_hidden_size: 256
+          temperature: 1.0
+          ponder_cost: 0.0025
+          max_hops: 2
+          halt_bias: -0.5
+      tregh_high_ponder:
+        model:
+          variant: treg_h
+          expert_count: 4
+          expert_hidden_size: 256
+          temperature: 1.0
+          ponder_cost: 0.05
+          max_hops: 2
+          halt_bias: 0.5
+      tregh_one_hop:
+        model:
+          variant: treg_h
+          expert_count: 4
+          expert_hidden_size: 256
+          temperature: 1.0
+          ponder_cost: 0.0
+          max_hops: 1
+          halt_bias: 1.0
+      tregh_continue_bias:
+        model:
+          variant: treg_h
+          expert_count: 4
+          expert_hidden_size: 256
+          temperature: 1.0
+          ponder_cost: 0.005
+          max_hops: 2
+          halt_bias: -1.0
+      tregh_early_halt:
+        model:
+          variant: treg_h
+          expert_count: 4
+          expert_hidden_size: 256
+          temperature: 1.0
+          ponder_cost: 0.02
+          max_hops: 2
+          halt_bias: 1.5
+      tregh_cold_router:
+        model:
+          variant: treg_h
+          expert_count: 4
+          expert_hidden_size: 256
+          temperature: 0.75
+          ponder_cost: 0.01
+          max_hops: 2
+          halt_bias: 0.0
+  recurrent_control:
+    stage_root: recurrent_controls
+    seeds_key: screening_seeds
+    schedule_key: recurrent_schedule
+    tasks:
+      memory:
+        display_name: Memory
+        base_config: configs/minigrid/main/memory_token_gru.yaml
+      keycorridor:
+        display_name: KeyCorridor
+        base_config: configs/experiments/minigrid_keycorridor_token_gru.yaml
+    variants:
+      gru_base:
+        model:
+          variant: token_gru
+      gru_low_entropy:
+        ppo:
+          ent_coef: 0.001
+        model:
+          variant: token_gru
+      gru_long_rollout:
+        ppo:
+          rollout_steps: 96
+          total_updates: 32
+        model:
+          variant: token_gru
+  por:
+    stage_root: por_screening
+    seeds_key: screening_seeds
+    schedule_key: recurrent_schedule
+    tasks:
+      memory:
+        display_name: Memory
+        base_config: configs/minigrid/main/memory_token_gru.yaml
+      keycorridor:
+        display_name: KeyCorridor
+        base_config: configs/experiments/minigrid_keycorridor_token_gru.yaml
+    variants:
+      por_base:
+        model:
+          variant: por
+          option_count: 4
+          termination_bias: 0.0
+      por_sticky:
+        model:
+          variant: por
+          option_count: 4
+          termination_bias: -1.0
+      por_very_sticky:
+        model:
+          variant: por
+          option_count: 4
+          termination_bias: -2.0
+      por_switchy:
+        model:
+          variant: por
+          option_count: 4
+          termination_bias: 1.0
+  srw:
+    stage_root: srw_screening
+    seeds_key: screening_seeds
+    schedule_key: train_schedule
+    tasks:
+      dynamic_obstacles:
+        display_name: DynamicObstacles
+        base_config: configs/experiments/minigrid_dynamic_obstacles_flat_dense.yaml
+      keycorridor:
+        display_name: KeyCorridor
+        base_config: configs/minigrid/main/keycorridor_flat_dense.yaml
+    variants:
+      srw_base:
+        model:
+          variant: srw
+          expert_count: 4
+          expert_hidden_size: 256
+          top_k: 2
+          relational_tokens: 4
+          num_heads: 4
+          temperature: 1.0
+      srw_sparse:
+        model:
+          variant: srw
+          expert_count: 4
+          expert_hidden_size: 256
+          top_k: 1
+          relational_tokens: 2
+          num_heads: 4
+          temperature: 1.0
+      srw_wide:
+        model:
+          variant: srw
+          expert_count: 4
+          expert_hidden_size: 256
+          top_k: 2
+          relational_tokens: 6
+          num_heads: 4
+          temperature: 1.0
+      srw_extra_wide:
+        model:
+          variant: srw
+          expert_count: 4
+          expert_hidden_size: 256
+          top_k: 2
+          relational_tokens: 8
+          num_heads: 4
+          temperature: 1.0
+      srw_focused:
+        model:
+          variant: srw
+          expert_count: 4
+          expert_hidden_size: 256
+          top_k: 1
+          relational_tokens: 4
+          num_heads: 4
+          temperature: 1.0
+      srw_cold:
+        model:
+          variant: srw
+          expert_count: 4
+          expert_hidden_size: 256
+          top_k: 2
+          relational_tokens: 4
+          num_heads: 4
+          temperature: 0.75
+  sare_persistence:
+    stage_root: sare_persistence
+    seeds_key: persistence_seeds
+    schedule_key: train_schedule
+    tasks:
+      keycorridor:
+        display_name: KeyCorridor
+        base_config: configs/minigrid/main/keycorridor_flat_dense.yaml
+    variants:
+      sare_phase_memory:
+        model:
+          variant: sare_phase_memory
+          expert_count: 4
+          top_k: 2
+          expert_hidden_size: 256
+          memory_mix: 0.5
+      sare_route_bias:
+        model:
+          variant: sare_phase_memory_route_bias
+          expert_count: 4
+          top_k: 2
+          expert_hidden_size: 256
+          memory_mix: 0.5
+          route_memory_scale: 0.5
+      sare_keyed_residual:
+        model:
+          variant: sare_phase_memory_route_bias_keyed_residual
+          expert_count: 4
+          top_k: 2
+          expert_hidden_size: 256
+          memory_mix: 0.5
+          route_memory_scale: 0.5
+      sare_keyed_residual_high_memory:
+        model:
+          variant: sare_phase_memory_route_bias_keyed_residual
+          expert_count: 4
+          top_k: 2
+          expert_hidden_size: 256
+          memory_mix: 0.75
+          route_memory_scale: 0.75
