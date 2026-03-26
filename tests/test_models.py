@@ -178,3 +178,23 @@ def test_por_option_hidden_residual_reports_metrics() -> None:
     assert "policy/option_hidden_residual_stability" in output.metrics
     assert "policy/option_hidden_residual_norm" in output.metrics
     env.close()
+
+
+def test_por_option_action_experts_report_metrics() -> None:
+    env = gym.make("MiniGrid-MemoryS9-v0")
+    obs = _sample_obs(env)
+    done = torch.ones(1, dtype=torch.bool)
+    model = build_model(
+        ModelConfig(
+            variant="por",
+            por_option_action_experts=True,
+            por_option_action_experts_scale=1.0,
+        ),
+        env.observation_space,
+        env.action_space,
+    )
+    state = model.initial_state(batch_size=1, device=torch.device("cpu"))
+    output = model.forward(obs, state=state, done=done)
+    assert "policy/option_action_experts_stability" in output.metrics
+    assert "policy/option_action_experts_bias_norm" in output.metrics
+    env.close()

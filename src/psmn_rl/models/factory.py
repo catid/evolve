@@ -978,6 +978,10 @@ def build_model(model_config: ModelConfig, observation_space: gym.Space, action_
             option_hidden_residual_scale=model_config.por_option_hidden_residual_scale,
             option_hidden_residual_min_duration=model_config.por_option_hidden_residual_min_duration,
             option_hidden_residual_duration_sharpness=model_config.por_option_hidden_residual_duration_sharpness,
+            option_action_experts=model_config.por_option_action_experts,
+            option_action_experts_scale=model_config.por_option_action_experts_scale,
+            option_action_experts_min_duration=model_config.por_option_action_experts_min_duration,
+            option_action_experts_duration_sharpness=model_config.por_option_action_experts_duration_sharpness,
         )
     else:
         raise ValueError(f"Unknown model variant: {variant}")

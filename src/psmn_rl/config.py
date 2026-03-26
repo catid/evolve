@@ -91,6 +91,10 @@ class ModelConfig:
     por_option_hidden_residual_scale: float = 1.0
     por_option_hidden_residual_min_duration: float = 2.0
     por_option_hidden_residual_duration_sharpness: float = 1.0
+    por_option_action_experts: bool = False
+    por_option_action_experts_scale: float = 1.0
+    por_option_action_experts_min_duration: float = 2.0
+    por_option_action_experts_duration_sharpness: float = 1.0
 
 
 @dataclass(slots=True)

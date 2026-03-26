@@ -31,6 +31,10 @@ class PORCore(nn.Module):
         option_hidden_residual_scale: float,
         option_hidden_residual_min_duration: float,
         option_hidden_residual_duration_sharpness: float,
+        option_action_experts: bool,
+        option_action_experts_scale: float,
+        option_action_experts_min_duration: float,
+        option_action_experts_duration_sharpness: float,
     ) -> None:
         super().__init__()
         self.option_count = option_count
@@ -43,6 +47,10 @@ class PORCore(nn.Module):
         self.option_hidden_residual_scale = option_hidden_residual_scale
         self.option_hidden_residual_min_duration = option_hidden_residual_min_duration
         self.option_hidden_residual_duration_sharpness = option_hidden_residual_duration_sharpness
+        self.option_action_experts = option_action_experts
+        self.option_action_experts_scale = option_action_experts_scale
+        self.option_action_experts_min_duration = option_action_experts_min_duration
+        self.option_action_experts_duration_sharpness = option_action_experts_duration_sharpness
         self.encoder = build_token_encoder(observation_space, token_dim, patch_size)
         self.input_proj = nn.Linear(token_dim, hidden_size)
         self.blocks = nn.ModuleList(
@@ -70,6 +78,18 @@ class PORCore(nn.Module):
                 nn.Linear(hidden_size * 3 + 2, hidden_size),
                 nn.GELU(),
                 nn.Linear(hidden_size, hidden_size),
+            )
+        if self.option_action_experts:
+            self.option_action_expert_heads = nn.ModuleList(
+                [
+                    nn.Sequential(
+                        nn.LayerNorm(hidden_size),
+                        nn.Linear(hidden_size, hidden_size),
+                        nn.GELU(),
+                        nn.Linear(hidden_size, action_dim),
+                    )
+                    for _ in range(option_count)
+                ]
             )
         self.norm = nn.LayerNorm(hidden_size)
 
@@ -113,19 +133,18 @@ class PORCore(nn.Module):
         stability = None
         duration_gate = None
         entropy_norm = None
-        if self.option_action_adapter or self.option_hidden_residual:
+        if self.option_action_adapter or self.option_hidden_residual or self.option_action_experts:
             entropy = -(next_probs.clamp_min(1e-8) * next_probs.clamp_min(1e-8).log()).sum(dim=-1)
             entropy_norm = entropy / math.log(max(self.option_count, 2))
-            gate_min_duration = (
-                self.option_action_adapter_min_duration
-                if self.option_action_adapter
-                else self.option_hidden_residual_min_duration
-            )
-            gate_sharpness = (
-                self.option_action_adapter_duration_sharpness
-                if self.option_action_adapter
-                else self.option_hidden_residual_duration_sharpness
-            )
+            if self.option_action_experts:
+                gate_min_duration = self.option_action_experts_min_duration
+                gate_sharpness = self.option_action_experts_duration_sharpness
+            elif self.option_action_adapter:
+                gate_min_duration = self.option_action_adapter_min_duration
+                gate_sharpness = self.option_action_adapter_duration_sharpness
+            else:
+                gate_min_duration = self.option_hidden_residual_min_duration
+                gate_sharpness = self.option_hidden_residual_duration_sharpness
             duration_gate = torch.sigmoid(
                 (next_duration - gate_min_duration) * gate_sharpness
             )
@@ -156,6 +175,11 @@ class PORCore(nn.Module):
             )
             raw_adapter = self.option_action_head(adapter_features)
             logit_bias = raw_adapter * (self.option_action_adapter_scale * stability.unsqueeze(-1))
+        if self.option_action_experts and stability is not None:
+            expert_logits = torch.stack([head(conditioned) for head in self.option_action_expert_heads], dim=1)
+            mixed_expert_logits = (next_probs.unsqueeze(-1) * expert_logits).sum(dim=1)
+            expert_bias = mixed_expert_logits * (self.option_action_experts_scale * stability.unsqueeze(-1))
+            logit_bias = expert_bias if logit_bias is None else (logit_bias + expert_bias)
 
         metrics = {
             "route_entropy": float(option_entropy.item()),
@@ -183,6 +207,16 @@ class PORCore(nn.Module):
                     "policy/option_hidden_residual_entropy_norm": entropy_norm.mean(),
                     "policy/option_hidden_residual_context_delta_norm": context_delta.norm(dim=-1).mean(),
                     "policy/option_hidden_residual_norm": hidden_residual.norm(dim=-1).mean(),
+                }
+            )
+        if self.option_action_experts and stability is not None and duration_gate is not None and entropy_norm is not None:
+            metrics.update(
+                {
+                    "policy/option_action_experts_stability": stability.mean(),
+                    "policy/option_action_experts_duration_gate": duration_gate.mean(),
+                    "policy/option_action_experts_entropy_norm": entropy_norm.mean(),
+                    "policy/option_action_experts_logits_norm": mixed_expert_logits.norm(dim=-1).mean(),
+                    "policy/option_action_experts_bias_norm": expert_bias.norm(dim=-1).mean(),
                 }
             )
         for option_index, value in enumerate(next_probs.mean(dim=0)):
