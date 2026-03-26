@@ -115,3 +115,26 @@ def test_visual_box_variants_forward_shapes() -> None:
         output = model.forward(obs, state=state, done=done)
         assert output.logits.shape == (1, action_space.n)
         assert output.value.shape == (1,)
+
+
+def test_margin_residual_policy_head_reports_decode_metrics() -> None:
+    env = gym.make("MiniGrid-MemoryS9-v0")
+    obs = _sample_obs(env)
+    done = torch.ones(1, dtype=torch.bool)
+    model = build_model(
+        ModelConfig(
+            variant="por",
+            policy_margin_residual=True,
+            policy_margin_threshold=0.25,
+            policy_margin_sharpness=12.0,
+        ),
+        env.observation_space,
+        env.action_space,
+    )
+    state = model.initial_state(batch_size=1, device=torch.device("cpu"))
+    output = model.forward(obs, state=state, done=done)
+    assert "policy/margin_residual_gate_mean" in output.metrics
+    assert "policy/margin_residual_low_margin_mean" in output.metrics
+    assert "policy/margin_residual_base_margin" in output.metrics
+    assert "policy/margin_residual_logits_norm" in output.metrics
+    env.close()

@@ -972,4 +972,12 @@ def build_model(model_config: ModelConfig, observation_space: gym.Space, action_
         )
     else:
         raise ValueError(f"Unknown model variant: {variant}")
-    return ActorCriticModel(core=core, action_dim=action_space.n, hidden_size=model_config.hidden_size)
+    return ActorCriticModel(
+        core=core,
+        action_dim=action_space.n,
+        hidden_size=model_config.hidden_size,
+        policy_margin_residual=model_config.policy_margin_residual,
+        policy_margin_residual_scale=model_config.policy_margin_residual_scale,
+        policy_margin_threshold=model_config.policy_margin_threshold,
+        policy_margin_sharpness=model_config.policy_margin_sharpness,
+    )

@@ -70,15 +70,37 @@ class ActorCriticModel(nn.Module):
         core: nn.Module,
         action_dim: int,
         hidden_size: int,
+        *,
+        policy_margin_residual: bool = False,
+        policy_margin_residual_scale: float = 1.0,
+        policy_margin_threshold: float = 0.25,
+        policy_margin_sharpness: float = 12.0,
     ) -> None:
         super().__init__()
         self.core = core
+        self.policy_margin_residual = policy_margin_residual
+        self.policy_margin_residual_scale = policy_margin_residual_scale
+        self.policy_margin_threshold = policy_margin_threshold
+        self.policy_margin_sharpness = policy_margin_sharpness
         self.policy_head = nn.Sequential(
             nn.LayerNorm(hidden_size),
             nn.Linear(hidden_size, hidden_size),
             nn.GELU(),
             nn.Linear(hidden_size, action_dim),
         )
+        if self.policy_margin_residual:
+            self.policy_residual_head = nn.Sequential(
+                nn.LayerNorm(hidden_size),
+                nn.Linear(hidden_size, hidden_size),
+                nn.GELU(),
+                nn.Linear(hidden_size, action_dim),
+            )
+            self.policy_residual_gate = nn.Sequential(
+                nn.LayerNorm(hidden_size),
+                nn.Linear(hidden_size, hidden_size),
+                nn.GELU(),
+                nn.Linear(hidden_size, 1),
+            )
         self.value_head = nn.Sequential(
             nn.LayerNorm(hidden_size),
             nn.Linear(hidden_size, hidden_size),
@@ -93,12 +115,31 @@ class ActorCriticModel(nn.Module):
 
     def forward(self, obs: TensorDict, state: TensorDict | None = None, done: torch.Tensor | None = None) -> ModelOutput:
         core_output: CoreOutput = self.core(obs, state or {}, done)
-        logits = self.policy_head(core_output.pooled)
+        metrics = dict(core_output.metrics)
+        base_logits = self.policy_head(core_output.pooled)
+        logits = base_logits
+        if self.policy_margin_residual:
+            top2 = torch.topk(base_logits, k=min(2, base_logits.size(-1)), dim=-1).values
+            margin = top2[..., 0] - top2[..., 1] if top2.size(-1) > 1 else top2[..., 0]
+            low_margin_gate = torch.sigmoid((self.policy_margin_threshold - margin) * self.policy_margin_sharpness)
+            learned_gate = torch.sigmoid(self.policy_residual_gate(core_output.pooled)).squeeze(-1)
+            gate = low_margin_gate * learned_gate
+            residual_logits = self.policy_residual_head(core_output.pooled) * self.policy_margin_residual_scale
+            logits = base_logits + gate.unsqueeze(-1) * residual_logits
+            metrics.update(
+                {
+                    "policy/margin_residual_gate_mean": gate,
+                    "policy/margin_residual_gate_max": gate.max(),
+                    "policy/margin_residual_low_margin_mean": low_margin_gate,
+                    "policy/margin_residual_base_margin": margin,
+                    "policy/margin_residual_logits_norm": residual_logits.norm(dim=-1),
+                }
+            )
         value = self.value_head(core_output.pooled).squeeze(-1)
         return ModelOutput(
             logits=logits,
             value=value,
-            metrics=core_output.metrics,
+            metrics=metrics,
             next_state=core_output.next_state,
             aux_losses=core_output.aux_losses,
         )

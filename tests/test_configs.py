@@ -54,3 +54,15 @@ def test_load_experiment_config() -> None:
     config = load_config(Path("configs/experiments/minigrid_doorkey_sare.yaml"))
     assert config.env.env_id == "MiniGrid-DoorKey-5x5-v0"
     assert config.model.variant == "sare"
+
+
+def test_load_memory_margin_decode_configs() -> None:
+    por = load_config(Path("configs/experiments/minigrid_memory_por_switchy_margin_residual.yaml"))
+    gru = load_config(Path("configs/experiments/minigrid_memory_token_gru_long_margin_residual.yaml"))
+
+    assert por.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert por.model.variant == "por"
+    assert por.model.policy_margin_residual is True
+    assert gru.model.variant == "token_gru"
+    assert gru.model.policy_margin_residual is True
+    assert gru.ppo.sequence_minibatches is True

@@ -79,6 +79,10 @@ class ModelConfig:
     memory_gate_bias: float = 0.0
     memory_reset_bias: float = -2.0
     route_memory_scale: float = 0.5
+    policy_margin_residual: bool = False
+    policy_margin_residual_scale: float = 1.0
+    policy_margin_threshold: float = 0.25
+    policy_margin_sharpness: float = 12.0
 
 
 @dataclass(slots=True)
