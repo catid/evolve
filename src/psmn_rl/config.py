@@ -105,6 +105,7 @@ class ModelConfig:
     policy_option_hidden_use_duration_gate: bool = False
     policy_option_hidden_duration_mix: float = 1.0
     policy_option_hidden_scale_only: bool = False
+    policy_option_hidden_scale_weight: float = 1.0
     policy_option_hidden_shift_weight: float = 1.0
     policy_option_hidden_post_norm: bool = False
     por_option_action_adapter: bool = False

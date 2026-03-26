@@ -114,6 +114,7 @@ class ActorCriticModel(nn.Module):
         policy_option_hidden_use_duration_gate: bool = False,
         policy_option_hidden_duration_mix: float = 1.0,
         policy_option_hidden_scale_only: bool = False,
+        policy_option_hidden_scale_weight: float = 1.0,
         policy_option_hidden_shift_weight: float = 1.0,
         policy_option_hidden_post_norm: bool = False,
     ) -> None:
@@ -145,6 +146,7 @@ class ActorCriticModel(nn.Module):
         self.policy_option_hidden_use_duration_gate = policy_option_hidden_use_duration_gate
         self.policy_option_hidden_duration_mix = max(0.0, min(1.0, policy_option_hidden_duration_mix))
         self.policy_option_hidden_scale_only = policy_option_hidden_scale_only
+        self.policy_option_hidden_scale_weight = max(0.0, policy_option_hidden_scale_weight)
         self.policy_option_hidden_shift_weight = max(0.0, policy_option_hidden_shift_weight)
         self.policy_option_hidden_post_norm = policy_option_hidden_post_norm
         self.policy_norm = nn.LayerNorm(hidden_size)
@@ -260,7 +262,7 @@ class ActorCriticModel(nn.Module):
                 raw_film = self.policy_option_hidden_film_head(option_actor_features)
                 raw_scale, raw_shift = raw_film.chunk(2, dim=-1)
                 gate = (self.policy_option_hidden_film_scale * option_gate_signal).to(policy_hidden.dtype)
-                film_scale = torch.tanh(raw_scale) * gate
+                film_scale = torch.tanh(raw_scale) * gate * self.policy_option_hidden_scale_weight
                 if self.policy_option_hidden_scale_only:
                     film_shift = torch.zeros_like(policy_hidden)
                 else:
@@ -275,6 +277,7 @@ class ActorCriticModel(nn.Module):
                         "policy/option_hidden_film_stability_mean": option_actor_stability.squeeze(-1),
                         "policy/option_hidden_film_duration_mix": float(self.policy_option_hidden_duration_mix),
                         "policy/option_hidden_film_scale_only": float(self.policy_option_hidden_scale_only),
+                        "policy/option_hidden_film_scale_weight": float(self.policy_option_hidden_scale_weight),
                         "policy/option_hidden_film_shift_weight": float(self.policy_option_hidden_shift_weight),
                         "policy/option_hidden_post_norm": float(self.policy_option_hidden_post_norm),
                         "policy/option_hidden_film_scale_norm": film_scale.norm(dim=-1),
