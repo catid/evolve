@@ -87,6 +87,10 @@ class ModelConfig:
     por_option_action_adapter_scale: float = 1.0
     por_option_action_adapter_min_duration: float = 2.0
     por_option_action_adapter_duration_sharpness: float = 1.0
+    por_option_hidden_residual: bool = False
+    por_option_hidden_residual_scale: float = 1.0
+    por_option_hidden_residual_min_duration: float = 2.0
+    por_option_hidden_residual_duration_sharpness: float = 1.0
 
 
 @dataclass(slots=True)

@@ -27,6 +27,10 @@ class PORCore(nn.Module):
         option_action_adapter_scale: float,
         option_action_adapter_min_duration: float,
         option_action_adapter_duration_sharpness: float,
+        option_hidden_residual: bool,
+        option_hidden_residual_scale: float,
+        option_hidden_residual_min_duration: float,
+        option_hidden_residual_duration_sharpness: float,
     ) -> None:
         super().__init__()
         self.option_count = option_count
@@ -35,6 +39,10 @@ class PORCore(nn.Module):
         self.option_action_adapter_scale = option_action_adapter_scale
         self.option_action_adapter_min_duration = option_action_adapter_min_duration
         self.option_action_adapter_duration_sharpness = option_action_adapter_duration_sharpness
+        self.option_hidden_residual = option_hidden_residual
+        self.option_hidden_residual_scale = option_hidden_residual_scale
+        self.option_hidden_residual_min_duration = option_hidden_residual_min_duration
+        self.option_hidden_residual_duration_sharpness = option_hidden_residual_duration_sharpness
         self.encoder = build_token_encoder(observation_space, token_dim, patch_size)
         self.input_proj = nn.Linear(token_dim, hidden_size)
         self.blocks = nn.ModuleList(
@@ -55,6 +63,13 @@ class PORCore(nn.Module):
                 nn.Linear(option_count + 2, hidden_size),
                 nn.GELU(),
                 nn.Linear(hidden_size, action_dim),
+            )
+        if self.option_hidden_residual:
+            self.option_hidden_residual_head = nn.Sequential(
+                nn.LayerNorm(hidden_size * 3 + 2),
+                nn.Linear(hidden_size * 3 + 2, hidden_size),
+                nn.GELU(),
+                nn.Linear(hidden_size, hidden_size),
             )
         self.norm = nn.LayerNorm(hidden_size)
 
@@ -95,13 +110,42 @@ class PORCore(nn.Module):
         switch_rate = (prev_idx != next_idx).float().mean()
         option_entropy = -(next_probs.clamp_min(1e-8) * next_probs.clamp_min(1e-8).log()).sum(dim=-1).mean()
         logit_bias = None
-        if self.option_action_adapter:
+        stability = None
+        duration_gate = None
+        entropy_norm = None
+        if self.option_action_adapter or self.option_hidden_residual:
             entropy = -(next_probs.clamp_min(1e-8) * next_probs.clamp_min(1e-8).log()).sum(dim=-1)
             entropy_norm = entropy / math.log(max(self.option_count, 2))
+            gate_min_duration = (
+                self.option_action_adapter_min_duration
+                if self.option_action_adapter
+                else self.option_hidden_residual_min_duration
+            )
+            gate_sharpness = (
+                self.option_action_adapter_duration_sharpness
+                if self.option_action_adapter
+                else self.option_hidden_residual_duration_sharpness
+            )
             duration_gate = torch.sigmoid(
-                (next_duration - self.option_action_adapter_min_duration) * self.option_action_adapter_duration_sharpness
+                (next_duration - gate_min_duration) * gate_sharpness
             )
             stability = duration_gate * (1.0 - entropy_norm.clamp(0.0, 1.0))
+        if self.option_hidden_residual and stability is not None and duration_gate is not None and entropy_norm is not None:
+            context_delta = next_context - prev_context
+            hidden_features = torch.cat(
+                [
+                    pooled,
+                    next_context,
+                    context_delta,
+                    duration_gate.unsqueeze(-1),
+                    terminate_prob,
+                ],
+                dim=-1,
+            )
+            raw_hidden_residual = self.option_hidden_residual_head(hidden_features)
+            hidden_residual = raw_hidden_residual * (self.option_hidden_residual_scale * stability.unsqueeze(-1))
+            conditioned = conditioned + hidden_residual
+        if self.option_action_adapter:
             adapter_features = torch.cat(
                 [
                     next_probs,
@@ -129,6 +173,16 @@ class PORCore(nn.Module):
                     "policy/option_action_adapter_entropy_norm": entropy_norm.mean(),
                     "policy/option_action_adapter_logits_norm": raw_adapter.norm(dim=-1).mean(),
                     "policy/option_action_adapter_bias_norm": logit_bias.norm(dim=-1).mean(),
+                }
+            )
+        if self.option_hidden_residual and stability is not None and duration_gate is not None and entropy_norm is not None:
+            metrics.update(
+                {
+                    "policy/option_hidden_residual_stability": stability.mean(),
+                    "policy/option_hidden_residual_duration_gate": duration_gate.mean(),
+                    "policy/option_hidden_residual_entropy_norm": entropy_norm.mean(),
+                    "policy/option_hidden_residual_context_delta_norm": context_delta.norm(dim=-1).mean(),
+                    "policy/option_hidden_residual_norm": hidden_residual.norm(dim=-1).mean(),
                 }
             )
         for option_index, value in enumerate(next_probs.mean(dim=0)):

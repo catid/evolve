@@ -75,3 +75,12 @@ def test_load_memory_option_adapter_config() -> None:
     assert por.model.variant == "por"
     assert por.model.por_option_action_adapter is True
     assert por.model.por_option_action_adapter_scale == 0.5
+
+
+def test_load_memory_hidden_residual_config() -> None:
+    por = load_config(Path("configs/experiments/minigrid_memory_por_switchy_hidden_residual.yaml"))
+
+    assert por.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert por.model.variant == "por"
+    assert por.model.por_option_hidden_residual is True
+    assert por.model.por_option_hidden_residual_scale == 0.5
