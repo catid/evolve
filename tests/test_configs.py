@@ -263,6 +263,17 @@ def test_load_memory_actor_hidden_mid_shift_config() -> None:
     assert por.model.policy_option_hidden_shift_weight == 0.225
 
 
+def test_load_memory_actor_hidden_scale_followup_config() -> None:
+    por = load_config(Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift225_scale375.yaml"))
+
+    assert por.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert por.model.variant == "por"
+    assert por.model.policy_option_hidden_film is True
+    assert por.model.policy_option_hidden_scale_only is False
+    assert por.model.policy_option_hidden_film_scale == 0.375
+    assert por.model.policy_option_hidden_shift_weight == 0.225
+
+
 def test_load_memory_actor_hidden_partial_shift_scale_config() -> None:
     por = load_config(Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift25_scale30.yaml"))
 
