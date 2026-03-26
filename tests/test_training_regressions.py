@@ -319,6 +319,30 @@ def test_top2_rerank_logs_metrics(tmp_path: Path) -> None:
     assert "policy/top2_rerank_raw_delta_mean_abs" in last_scalar
 
 
+def test_por_option_context_gain_logs_metrics(tmp_path: Path) -> None:
+    config = load_config("configs/experiments/minigrid_memory_por_switchy_context_gain.yaml")
+    config.system.device = "cpu"
+    config.logging.tensorboard = False
+    config.env.num_envs = 2
+    config.env.num_eval_envs = 1
+    config.ppo.rollout_steps = 4
+    config.ppo.total_updates = 1
+    config.ppo.update_epochs = 1
+    config.ppo.minibatches = 2
+    config.evaluation.episodes = 1
+    config.logging.output_dir = str(tmp_path / "memory_context_gain")
+
+    run_training(config, max_updates=1)
+
+    last_scalar = {}
+    for line in Path(config.logging.output_dir, "metrics.jsonl").read_text().splitlines():
+        row = json.loads(line)
+        if row.get("type") == "scalar":
+            last_scalar = row
+    assert "policy/option_context_gain_stability" in last_scalar
+    assert "policy/option_context_gain_mean" in last_scalar
+
+
 def test_por_option_context_film_logs_metrics(tmp_path: Path) -> None:
     config = load_config("configs/experiments/minigrid_memory_por_switchy_context_film_small.yaml")
     config.system.device = "cpu"

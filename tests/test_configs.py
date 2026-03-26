@@ -130,6 +130,15 @@ def test_load_memory_top2_rerank_configs() -> None:
     assert gru.ppo.sequence_minibatches is True
 
 
+def test_load_memory_context_gain_config() -> None:
+    por = load_config(Path("configs/experiments/minigrid_memory_por_switchy_context_gain.yaml"))
+
+    assert por.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert por.model.variant == "por"
+    assert por.model.por_option_context_gain is True
+    assert por.model.por_option_context_gain_scale == 0.5
+
+
 def test_load_memory_context_film_config() -> None:
     por = load_config(Path("configs/experiments/minigrid_memory_por_switchy_context_film.yaml"))
 

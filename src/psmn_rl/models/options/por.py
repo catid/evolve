@@ -43,6 +43,10 @@ class PORCore(nn.Module):
         option_context_film_scale: float,
         option_context_film_min_duration: float,
         option_context_film_duration_sharpness: float,
+        option_context_gain: bool,
+        option_context_gain_scale: float,
+        option_context_gain_min_duration: float,
+        option_context_gain_duration_sharpness: float,
     ) -> None:
         super().__init__()
         self.option_count = option_count
@@ -67,6 +71,10 @@ class PORCore(nn.Module):
         self.option_context_film_scale = option_context_film_scale
         self.option_context_film_min_duration = option_context_film_min_duration
         self.option_context_film_duration_sharpness = option_context_film_duration_sharpness
+        self.option_context_gain = option_context_gain
+        self.option_context_gain_scale = option_context_gain_scale
+        self.option_context_gain_min_duration = option_context_gain_min_duration
+        self.option_context_gain_duration_sharpness = option_context_gain_duration_sharpness
         self.encoder = build_token_encoder(observation_space, token_dim, patch_size)
         self.input_proj = nn.Linear(token_dim, hidden_size)
         self.blocks = nn.ModuleList(
@@ -168,10 +176,14 @@ class PORCore(nn.Module):
             or self.option_action_experts
             or self.option_film
             or self.option_context_film
+            or self.option_context_gain
         ):
             entropy = -(next_probs.clamp_min(1e-8) * next_probs.clamp_min(1e-8).log()).sum(dim=-1)
             entropy_norm = entropy / math.log(max(self.option_count, 2))
-            if self.option_context_film:
+            if self.option_context_gain:
+                gate_min_duration = self.option_context_gain_min_duration
+                gate_sharpness = self.option_context_gain_duration_sharpness
+            elif self.option_context_film:
                 gate_min_duration = self.option_context_film_min_duration
                 gate_sharpness = self.option_context_film_duration_sharpness
             elif self.option_film:
@@ -214,7 +226,12 @@ class PORCore(nn.Module):
             context_film_scale = torch.tanh(raw_context_scale) * context_film_gate
             context_film_shift = raw_context_shift * context_film_gate
             next_context = next_context * (1.0 + context_film_scale) + context_film_shift
-        conditioned = pooled + self.option_proj(next_context)
+        option_context_projected = self.option_proj(next_context)
+        option_context_gain = None
+        if self.option_context_gain and stability is not None:
+            option_context_gain = 1.0 + (self.option_context_gain_scale * stability.unsqueeze(-1))
+            option_context_projected = option_context_projected * option_context_gain
+        conditioned = pooled + option_context_projected
         if self.option_film and context_delta is not None and stability is not None:
             film_features = torch.cat(
                 [
@@ -319,6 +336,16 @@ class PORCore(nn.Module):
                     "policy/option_context_film_entropy_norm": entropy_norm.mean(),
                     "policy/option_context_film_scale_norm": context_film_scale.norm(dim=-1).mean(),
                     "policy/option_context_film_shift_norm": context_film_shift.norm(dim=-1).mean(),
+                }
+            )
+        if self.option_context_gain and stability is not None and duration_gate is not None and entropy_norm is not None:
+            metrics.update(
+                {
+                    "policy/option_context_gain_stability": stability.mean(),
+                    "policy/option_context_gain_duration_gate": duration_gate.mean(),
+                    "policy/option_context_gain_entropy_norm": entropy_norm.mean(),
+                    "policy/option_context_gain_mean": option_context_gain.mean(),
+                    "policy/option_context_gain_proj_norm": option_context_projected.norm(dim=-1).mean(),
                 }
             )
         for option_index, value in enumerate(next_probs.mean(dim=0)):

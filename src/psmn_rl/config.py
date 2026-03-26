@@ -111,6 +111,10 @@ class ModelConfig:
     por_option_context_film_scale: float = 1.0
     por_option_context_film_min_duration: float = 2.0
     por_option_context_film_duration_sharpness: float = 1.0
+    por_option_context_gain: bool = False
+    por_option_context_gain_scale: float = 0.5
+    por_option_context_gain_min_duration: float = 2.0
+    por_option_context_gain_duration_sharpness: float = 1.0
 
 
 @dataclass(slots=True)
