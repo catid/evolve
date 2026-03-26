@@ -474,5 +474,6 @@ class PORCore(nn.Module):
                 "option_margin_stability": stability.unsqueeze(-1) if stability is not None else None,
                 "option_top2_features": option_top2_features,
                 "option_top2_stability": stability.unsqueeze(-1) if stability is not None else None,
+                "option_top2_duration_gate": duration_gate.unsqueeze(-1) if duration_gate is not None else None,
             },
         )

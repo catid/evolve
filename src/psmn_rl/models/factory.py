@@ -1031,4 +1031,5 @@ def build_model(model_config: ModelConfig, observation_space: gym.Space, action_
         policy_option_top2_rerank_scale=model_config.policy_option_top2_rerank_scale,
         policy_option_top2_rerank_threshold=model_config.policy_option_top2_rerank_threshold,
         policy_option_top2_rerank_sharpness=model_config.policy_option_top2_rerank_sharpness,
+        policy_option_top2_use_duration_gate=model_config.policy_option_top2_use_duration_gate,
     )

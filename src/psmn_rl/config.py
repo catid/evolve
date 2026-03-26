@@ -99,6 +99,7 @@ class ModelConfig:
     policy_option_top2_rerank_scale: float = 0.5
     policy_option_top2_rerank_threshold: float = 0.25
     policy_option_top2_rerank_sharpness: float = 12.0
+    policy_option_top2_use_duration_gate: bool = False
     por_option_action_adapter: bool = False
     por_option_action_adapter_scale: float = 1.0
     por_option_action_adapter_min_duration: float = 2.0

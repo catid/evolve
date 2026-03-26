@@ -93,6 +93,7 @@ class ActorCriticModel(nn.Module):
         policy_option_top2_rerank_scale: float = 0.5,
         policy_option_top2_rerank_threshold: float = 0.25,
         policy_option_top2_rerank_sharpness: float = 12.0,
+        policy_option_top2_use_duration_gate: bool = False,
     ) -> None:
         super().__init__()
         self.core = core
@@ -116,6 +117,7 @@ class ActorCriticModel(nn.Module):
         self.policy_option_top2_rerank_scale = policy_option_top2_rerank_scale
         self.policy_option_top2_rerank_threshold = policy_option_top2_rerank_threshold
         self.policy_option_top2_rerank_sharpness = policy_option_top2_rerank_sharpness
+        self.policy_option_top2_use_duration_gate = policy_option_top2_use_duration_gate
         self.policy_head = nn.Sequential(
             nn.LayerNorm(hidden_size),
             nn.Linear(hidden_size, hidden_size),
@@ -313,6 +315,7 @@ class ActorCriticModel(nn.Module):
         if self.policy_option_top2_rerank and logits.size(-1) > 1:
             option_top2_features = core_output.policy_features.get("option_top2_features")
             option_top2_stability = core_output.policy_features.get("option_top2_stability")
+            option_top2_duration_gate = core_output.policy_features.get("option_top2_duration_gate")
             if option_top2_features is not None and option_top2_stability is not None:
                 top2 = torch.topk(logits, k=2, dim=-1)
                 top2_values = top2.values
@@ -321,7 +324,11 @@ class ActorCriticModel(nn.Module):
                 low_margin_gate = torch.sigmoid(
                     (self.policy_option_top2_rerank_threshold - margin) * self.policy_option_top2_rerank_sharpness
                 )
-                gate = low_margin_gate * option_top2_stability.squeeze(-1)
+                if self.policy_option_top2_use_duration_gate and option_top2_duration_gate is not None:
+                    option_gate_signal = option_top2_duration_gate.squeeze(-1)
+                else:
+                    option_gate_signal = option_top2_stability.squeeze(-1)
+                gate = low_margin_gate * option_gate_signal
                 top1_embed = self.policy_option_top2_action_embed(top2_indices[..., 0])
                 top2_embed = self.policy_option_top2_action_embed(top2_indices[..., 1])
                 rerank_features = torch.cat(
@@ -350,6 +357,7 @@ class ActorCriticModel(nn.Module):
                         "policy/option_top2_rerank_margin_before": margin,
                         "policy/option_top2_rerank_margin_after": top2_after[..., 0] - top2_after[..., 1],
                         "policy/option_top2_rerank_stability_mean": option_top2_stability.squeeze(-1),
+                        "policy/option_top2_rerank_gate_signal_mean": option_gate_signal,
                         "policy/option_top2_rerank_raw_delta_mean_abs": raw_delta.abs(),
                         "policy/option_top2_rerank_effective_delta_mean_abs": effective_delta.abs(),
                         "policy/option_top2_rerank_promote_second_mean": (effective_delta < 0).float(),
