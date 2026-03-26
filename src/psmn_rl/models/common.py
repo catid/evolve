@@ -80,6 +80,10 @@ class ActorCriticModel(nn.Module):
         policy_logit_gain_scale: float = 0.5,
         policy_logit_gain_threshold: float = 0.25,
         policy_logit_gain_sharpness: float = 12.0,
+        policy_top2_rerank: bool = False,
+        policy_top2_rerank_scale: float = 0.5,
+        policy_top2_rerank_threshold: float = 0.25,
+        policy_top2_rerank_sharpness: float = 12.0,
     ) -> None:
         super().__init__()
         self.core = core
@@ -91,12 +95,31 @@ class ActorCriticModel(nn.Module):
         self.policy_logit_gain_scale = policy_logit_gain_scale
         self.policy_logit_gain_threshold = policy_logit_gain_threshold
         self.policy_logit_gain_sharpness = policy_logit_gain_sharpness
+        self.policy_top2_rerank = policy_top2_rerank
+        self.policy_top2_rerank_scale = policy_top2_rerank_scale
+        self.policy_top2_rerank_threshold = policy_top2_rerank_threshold
+        self.policy_top2_rerank_sharpness = policy_top2_rerank_sharpness
         self.policy_head = nn.Sequential(
             nn.LayerNorm(hidden_size),
             nn.Linear(hidden_size, hidden_size),
             nn.GELU(),
             nn.Linear(hidden_size, action_dim),
         )
+        if self.policy_top2_rerank:
+            top2_embed_dim = min(hidden_size, 32)
+            self.policy_top2_action_embed = nn.Embedding(action_dim, top2_embed_dim)
+            self.policy_top2_head = nn.Sequential(
+                nn.LayerNorm(hidden_size + top2_embed_dim * 2 + 2),
+                nn.Linear(hidden_size + top2_embed_dim * 2 + 2, hidden_size),
+                nn.GELU(),
+                nn.Linear(hidden_size, 1),
+            )
+            self.policy_top2_gate = nn.Sequential(
+                nn.LayerNorm(hidden_size),
+                nn.Linear(hidden_size, hidden_size),
+                nn.GELU(),
+                nn.Linear(hidden_size, 1),
+            )
         if self.policy_margin_residual:
             self.policy_residual_head = nn.Sequential(
                 nn.LayerNorm(hidden_size),
@@ -142,6 +165,46 @@ class ActorCriticModel(nn.Module):
         logits = base_logits
         if core_output.logit_bias is not None:
             logits = logits + core_output.logit_bias
+        if self.policy_top2_rerank and logits.size(-1) > 1:
+            top2 = torch.topk(logits, k=2, dim=-1)
+            top2_values = top2.values
+            top2_indices = top2.indices
+            margin = top2_values[..., 0] - top2_values[..., 1]
+            low_margin_gate = torch.sigmoid(
+                (self.policy_top2_rerank_threshold - margin) * self.policy_top2_rerank_sharpness
+            )
+            learned_gate = torch.sigmoid(self.policy_top2_gate(core_output.pooled)).squeeze(-1)
+            gate = low_margin_gate * learned_gate
+            top1_embed = self.policy_top2_action_embed(top2_indices[..., 0])
+            top2_embed = self.policy_top2_action_embed(top2_indices[..., 1])
+            rerank_features = torch.cat(
+                [
+                    core_output.pooled,
+                    top1_embed,
+                    top2_embed,
+                    top2_values,
+                ],
+                dim=-1,
+            )
+            raw_delta = torch.tanh(self.policy_top2_head(rerank_features)).squeeze(-1) * self.policy_top2_rerank_scale
+            effective_delta = gate * raw_delta
+            correction = torch.zeros_like(logits)
+            correction.scatter_add_(1, top2_indices[..., 0].unsqueeze(-1), effective_delta.unsqueeze(-1))
+            correction.scatter_add_(1, top2_indices[..., 1].unsqueeze(-1), (-effective_delta).unsqueeze(-1))
+            logits = logits + correction
+            top2_after = torch.topk(logits, k=2, dim=-1).values
+            metrics.update(
+                {
+                    "policy/top2_rerank_gate_mean": gate,
+                    "policy/top2_rerank_gate_max": gate.max(),
+                    "policy/top2_rerank_low_margin_mean": low_margin_gate,
+                    "policy/top2_rerank_margin_before": margin,
+                    "policy/top2_rerank_margin_after": top2_after[..., 0] - top2_after[..., 1],
+                    "policy/top2_rerank_raw_delta_mean_abs": raw_delta.abs(),
+                    "policy/top2_rerank_effective_delta_mean_abs": effective_delta.abs(),
+                    "policy/top2_rerank_promote_second_mean": (effective_delta < 0).float(),
+                }
+            )
         if self.policy_logit_gain:
             top2 = torch.topk(logits, k=min(2, logits.size(-1)), dim=-1).values
             margin = top2[..., 0] - top2[..., 1] if top2.size(-1) > 1 else top2[..., 0]

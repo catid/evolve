@@ -117,6 +117,19 @@ def test_load_memory_logit_gain_configs() -> None:
     assert gru.ppo.sequence_minibatches is True
 
 
+def test_load_memory_top2_rerank_configs() -> None:
+    por = load_config(Path("configs/experiments/minigrid_memory_por_switchy_top2_rerank.yaml"))
+    gru = load_config(Path("configs/experiments/minigrid_memory_token_gru_long_top2_rerank.yaml"))
+
+    assert por.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert por.model.variant == "por"
+    assert por.model.policy_top2_rerank is True
+    assert por.model.policy_top2_rerank_scale == 0.5
+    assert gru.model.variant == "token_gru"
+    assert gru.model.policy_top2_rerank is True
+    assert gru.ppo.sequence_minibatches is True
+
+
 def test_load_memory_context_film_config() -> None:
     por = load_config(Path("configs/experiments/minigrid_memory_por_switchy_context_film.yaml"))
 

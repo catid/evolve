@@ -87,6 +87,10 @@ class ModelConfig:
     policy_logit_gain_scale: float = 0.5
     policy_logit_gain_threshold: float = 0.25
     policy_logit_gain_sharpness: float = 12.0
+    policy_top2_rerank: bool = False
+    policy_top2_rerank_scale: float = 0.5
+    policy_top2_rerank_threshold: float = 0.25
+    policy_top2_rerank_sharpness: float = 12.0
     por_option_action_adapter: bool = False
     por_option_action_adapter_scale: float = 1.0
     por_option_action_adapter_min_duration: float = 2.0
