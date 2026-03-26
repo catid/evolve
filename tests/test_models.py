@@ -326,6 +326,7 @@ def test_por_actor_hidden_film_reports_metrics() -> None:
     output = model.forward(obs, state=state, done=done)
     assert "policy/option_actor_features_duration_gate" in output.metrics
     assert "policy/option_hidden_film_gate_signal_mean" in output.metrics
+    assert "policy/option_hidden_film_duration_mix" in output.metrics
     assert "policy/option_hidden_film_scale_norm" in output.metrics
     assert "policy/option_hidden_film_shift_norm" in output.metrics
     env.close()

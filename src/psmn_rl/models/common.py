@@ -112,6 +112,7 @@ class ActorCriticModel(nn.Module):
         policy_option_hidden_film: bool = False,
         policy_option_hidden_film_scale: float = 0.5,
         policy_option_hidden_use_duration_gate: bool = False,
+        policy_option_hidden_duration_mix: float = 1.0,
     ) -> None:
         super().__init__()
         self.core = core
@@ -139,6 +140,7 @@ class ActorCriticModel(nn.Module):
         self.policy_option_hidden_film = policy_option_hidden_film
         self.policy_option_hidden_film_scale = policy_option_hidden_film_scale
         self.policy_option_hidden_use_duration_gate = policy_option_hidden_use_duration_gate
+        self.policy_option_hidden_duration_mix = max(0.0, min(1.0, policy_option_hidden_duration_mix))
         self.policy_norm = nn.LayerNorm(hidden_size)
         self.policy_hidden = nn.Linear(hidden_size, hidden_size)
         self.policy_activation = nn.GELU()
@@ -243,7 +245,8 @@ class ActorCriticModel(nn.Module):
             option_actor_duration_gate = core_output.policy_features.get("option_actor_duration_gate")
             if option_actor_features is not None and option_actor_stability is not None:
                 if self.policy_option_hidden_use_duration_gate and option_actor_duration_gate is not None:
-                    option_gate_signal = option_actor_duration_gate
+                    mix = self.policy_option_hidden_duration_mix
+                    option_gate_signal = (mix * option_actor_duration_gate) + ((1.0 - mix) * option_actor_stability)
                 else:
                     option_gate_signal = option_actor_stability
                 raw_film = self.policy_option_hidden_film_head(option_actor_features)
@@ -257,6 +260,7 @@ class ActorCriticModel(nn.Module):
                         "policy/option_hidden_film_gate_signal_mean": option_gate_signal.squeeze(-1),
                         "policy/option_hidden_film_gate_mean": gate.mean(dim=-1),
                         "policy/option_hidden_film_stability_mean": option_actor_stability.squeeze(-1),
+                        "policy/option_hidden_film_duration_mix": float(self.policy_option_hidden_duration_mix),
                         "policy/option_hidden_film_scale_norm": film_scale.norm(dim=-1),
                         "policy/option_hidden_film_shift_norm": film_shift.norm(dim=-1),
                     }
