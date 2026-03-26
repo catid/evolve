@@ -1001,4 +1001,8 @@ def build_model(model_config: ModelConfig, observation_space: gym.Space, action_
         policy_margin_residual_scale=model_config.policy_margin_residual_scale,
         policy_margin_threshold=model_config.policy_margin_threshold,
         policy_margin_sharpness=model_config.policy_margin_sharpness,
+        policy_logit_gain=model_config.policy_logit_gain,
+        policy_logit_gain_scale=model_config.policy_logit_gain_scale,
+        policy_logit_gain_threshold=model_config.policy_logit_gain_threshold,
+        policy_logit_gain_sharpness=model_config.policy_logit_gain_sharpness,
     )

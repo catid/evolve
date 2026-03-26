@@ -76,6 +76,10 @@ class ActorCriticModel(nn.Module):
         policy_margin_residual_scale: float = 1.0,
         policy_margin_threshold: float = 0.25,
         policy_margin_sharpness: float = 12.0,
+        policy_logit_gain: bool = False,
+        policy_logit_gain_scale: float = 0.5,
+        policy_logit_gain_threshold: float = 0.25,
+        policy_logit_gain_sharpness: float = 12.0,
     ) -> None:
         super().__init__()
         self.core = core
@@ -83,6 +87,10 @@ class ActorCriticModel(nn.Module):
         self.policy_margin_residual_scale = policy_margin_residual_scale
         self.policy_margin_threshold = policy_margin_threshold
         self.policy_margin_sharpness = policy_margin_sharpness
+        self.policy_logit_gain = policy_logit_gain
+        self.policy_logit_gain_scale = policy_logit_gain_scale
+        self.policy_logit_gain_threshold = policy_logit_gain_threshold
+        self.policy_logit_gain_sharpness = policy_logit_gain_sharpness
         self.policy_head = nn.Sequential(
             nn.LayerNorm(hidden_size),
             nn.Linear(hidden_size, hidden_size),
@@ -97,6 +105,19 @@ class ActorCriticModel(nn.Module):
                 nn.Linear(hidden_size, action_dim),
             )
             self.policy_residual_gate = nn.Sequential(
+                nn.LayerNorm(hidden_size),
+                nn.Linear(hidden_size, hidden_size),
+                nn.GELU(),
+                nn.Linear(hidden_size, 1),
+            )
+        if self.policy_logit_gain:
+            self.policy_gain_head = nn.Sequential(
+                nn.LayerNorm(hidden_size),
+                nn.Linear(hidden_size, hidden_size),
+                nn.GELU(),
+                nn.Linear(hidden_size, action_dim),
+            )
+            self.policy_gain_gate = nn.Sequential(
                 nn.LayerNorm(hidden_size),
                 nn.Linear(hidden_size, hidden_size),
                 nn.GELU(),
@@ -121,6 +142,27 @@ class ActorCriticModel(nn.Module):
         logits = base_logits
         if core_output.logit_bias is not None:
             logits = logits + core_output.logit_bias
+        if self.policy_logit_gain:
+            top2 = torch.topk(logits, k=min(2, logits.size(-1)), dim=-1).values
+            margin = top2[..., 0] - top2[..., 1] if top2.size(-1) > 1 else top2[..., 0]
+            low_margin_gate = torch.sigmoid(
+                (self.policy_logit_gain_threshold - margin) * self.policy_logit_gain_sharpness
+            )
+            learned_gate = torch.sigmoid(self.policy_gain_gate(core_output.pooled)).squeeze(-1)
+            gate = low_margin_gate * learned_gate
+            raw_gain = torch.tanh(self.policy_gain_head(core_output.pooled)) * self.policy_logit_gain_scale
+            effective_gain = gate.unsqueeze(-1) * raw_gain
+            logits = logits * (1.0 + effective_gain)
+            metrics.update(
+                {
+                    "policy/logit_gain_gate_mean": gate,
+                    "policy/logit_gain_gate_max": gate.max(),
+                    "policy/logit_gain_low_margin_mean": low_margin_gate,
+                    "policy/logit_gain_base_margin": margin,
+                    "policy/logit_gain_raw_norm": raw_gain.norm(dim=-1),
+                    "policy/logit_gain_effective_norm": effective_gain.norm(dim=-1),
+                }
+            )
         if self.policy_margin_residual:
             top2 = torch.topk(base_logits, k=min(2, base_logits.size(-1)), dim=-1).values
             margin = top2[..., 0] - top2[..., 1] if top2.size(-1) > 1 else top2[..., 0]

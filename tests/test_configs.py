@@ -104,6 +104,19 @@ def test_load_memory_option_film_config() -> None:
     assert por.model.por_option_film_scale == 0.5
 
 
+def test_load_memory_logit_gain_configs() -> None:
+    por = load_config(Path("configs/experiments/minigrid_memory_por_switchy_logit_gain.yaml"))
+    gru = load_config(Path("configs/experiments/minigrid_memory_token_gru_long_logit_gain.yaml"))
+
+    assert por.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert por.model.variant == "por"
+    assert por.model.policy_logit_gain is True
+    assert por.model.policy_logit_gain_scale == 0.5
+    assert gru.model.variant == "token_gru"
+    assert gru.model.policy_logit_gain is True
+    assert gru.ppo.sequence_minibatches is True
+
+
 def test_load_memory_context_film_config() -> None:
     por = load_config(Path("configs/experiments/minigrid_memory_por_switchy_context_film.yaml"))
 
