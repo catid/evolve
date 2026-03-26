@@ -20,6 +20,7 @@ class CoreOutput:
     next_state: TensorDict = field(default_factory=dict)
     aux_losses: dict[str, torch.Tensor] = field(default_factory=dict)
     logit_bias: torch.Tensor | None = None
+    policy_features: TensorDict = field(default_factory=dict)
 
 
 @dataclass
@@ -84,6 +85,10 @@ class ActorCriticModel(nn.Module):
         policy_top2_rerank_scale: float = 0.5,
         policy_top2_rerank_threshold: float = 0.25,
         policy_top2_rerank_sharpness: float = 12.0,
+        policy_option_margin_adapter: bool = False,
+        policy_option_margin_adapter_scale: float = 0.5,
+        policy_option_margin_threshold: float = 0.25,
+        policy_option_margin_sharpness: float = 12.0,
     ) -> None:
         super().__init__()
         self.core = core
@@ -99,6 +104,10 @@ class ActorCriticModel(nn.Module):
         self.policy_top2_rerank_scale = policy_top2_rerank_scale
         self.policy_top2_rerank_threshold = policy_top2_rerank_threshold
         self.policy_top2_rerank_sharpness = policy_top2_rerank_sharpness
+        self.policy_option_margin_adapter = policy_option_margin_adapter
+        self.policy_option_margin_adapter_scale = policy_option_margin_adapter_scale
+        self.policy_option_margin_threshold = policy_option_margin_threshold
+        self.policy_option_margin_sharpness = policy_option_margin_sharpness
         self.policy_head = nn.Sequential(
             nn.LayerNorm(hidden_size),
             nn.Linear(hidden_size, hidden_size),
@@ -146,6 +155,21 @@ class ActorCriticModel(nn.Module):
                 nn.GELU(),
                 nn.Linear(hidden_size, 1),
             )
+        if self.policy_option_margin_adapter:
+            self.policy_option_margin_gate = nn.Sequential(
+                nn.LayerNorm(hidden_size),
+                nn.Linear(hidden_size, hidden_size),
+                nn.GELU(),
+                nn.Linear(hidden_size, 1),
+            )
+            self.policy_option_margin_adapter_head = nn.Sequential(
+                nn.LazyLinear(hidden_size),
+                nn.GELU(),
+                nn.Linear(hidden_size, action_dim),
+            )
+            final_linear = self.policy_option_margin_adapter_head[-1]
+            nn.init.zeros_(final_linear.weight)
+            nn.init.zeros_(final_linear.bias)
         self.value_head = nn.Sequential(
             nn.LayerNorm(hidden_size),
             nn.Linear(hidden_size, hidden_size),
@@ -243,6 +267,32 @@ class ActorCriticModel(nn.Module):
                     "policy/margin_residual_logits_norm": residual_logits.norm(dim=-1),
                 }
             )
+        if self.policy_option_margin_adapter:
+            option_margin_features = core_output.policy_features.get("option_margin_features")
+            option_margin_stability = core_output.policy_features.get("option_margin_stability")
+            if option_margin_features is not None and option_margin_stability is not None:
+                top2 = torch.topk(logits, k=min(2, logits.size(-1)), dim=-1).values
+                margin = top2[..., 0] - top2[..., 1] if top2.size(-1) > 1 else top2[..., 0]
+                low_margin_gate = torch.sigmoid(
+                    (self.policy_option_margin_threshold - margin) * self.policy_option_margin_sharpness
+                )
+                learned_gate = torch.sigmoid(self.policy_option_margin_gate(core_output.pooled)).squeeze(-1)
+                gate = low_margin_gate * learned_gate * option_margin_stability.squeeze(-1)
+                raw_option_delta = torch.tanh(self.policy_option_margin_adapter_head(option_margin_features))
+                raw_option_delta = raw_option_delta * self.policy_option_margin_adapter_scale
+                effective_option_delta = gate.unsqueeze(-1) * raw_option_delta
+                logits = logits + effective_option_delta
+                metrics.update(
+                    {
+                        "policy/option_margin_adapter_gate_mean": gate,
+                        "policy/option_margin_adapter_gate_max": gate.max(),
+                        "policy/option_margin_adapter_low_margin_mean": low_margin_gate,
+                        "policy/option_margin_adapter_margin_before": margin,
+                        "policy/option_margin_adapter_stability_mean": option_margin_stability.squeeze(-1),
+                        "policy/option_margin_adapter_raw_norm": raw_option_delta.norm(dim=-1),
+                        "policy/option_margin_adapter_effective_norm": effective_option_delta.norm(dim=-1),
+                    }
+                )
         value = self.value_head(core_output.pooled).squeeze(-1)
         return ModelOutput(
             logits=logits,

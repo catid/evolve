@@ -994,6 +994,9 @@ def build_model(model_config: ModelConfig, observation_space: gym.Space, action_
             option_context_logits_scale=model_config.por_option_context_logits_scale,
             option_context_logits_min_duration=model_config.por_option_context_logits_min_duration,
             option_context_logits_duration_sharpness=model_config.por_option_context_logits_duration_sharpness,
+            option_margin_adapter=model_config.por_option_margin_adapter,
+            option_margin_adapter_min_duration=model_config.por_option_margin_adapter_min_duration,
+            option_margin_adapter_duration_sharpness=model_config.por_option_margin_adapter_duration_sharpness,
             option_context_gain=model_config.por_option_context_gain,
             option_context_gain_scale=model_config.por_option_context_gain_scale,
             option_context_gain_min_duration=model_config.por_option_context_gain_min_duration,
@@ -1017,4 +1020,8 @@ def build_model(model_config: ModelConfig, observation_space: gym.Space, action_
         policy_top2_rerank_scale=model_config.policy_top2_rerank_scale,
         policy_top2_rerank_threshold=model_config.policy_top2_rerank_threshold,
         policy_top2_rerank_sharpness=model_config.policy_top2_rerank_sharpness,
+        policy_option_margin_adapter=model_config.policy_option_margin_adapter,
+        policy_option_margin_adapter_scale=model_config.policy_option_margin_adapter_scale,
+        policy_option_margin_threshold=model_config.policy_option_margin_threshold,
+        policy_option_margin_sharpness=model_config.policy_option_margin_sharpness,
     )

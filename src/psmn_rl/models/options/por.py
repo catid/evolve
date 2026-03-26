@@ -47,6 +47,9 @@ class PORCore(nn.Module):
         option_context_logits_scale: float,
         option_context_logits_min_duration: float,
         option_context_logits_duration_sharpness: float,
+        option_margin_adapter: bool,
+        option_margin_adapter_min_duration: float,
+        option_margin_adapter_duration_sharpness: float,
         option_context_gain: bool,
         option_context_gain_scale: float,
         option_context_gain_min_duration: float,
@@ -79,6 +82,9 @@ class PORCore(nn.Module):
         self.option_context_logits_scale = option_context_logits_scale
         self.option_context_logits_min_duration = option_context_logits_min_duration
         self.option_context_logits_duration_sharpness = option_context_logits_duration_sharpness
+        self.option_margin_adapter = option_margin_adapter
+        self.option_margin_adapter_min_duration = option_margin_adapter_min_duration
+        self.option_margin_adapter_duration_sharpness = option_margin_adapter_duration_sharpness
         self.option_context_gain = option_context_gain
         self.option_context_gain_scale = option_context_gain_scale
         self.option_context_gain_min_duration = option_context_gain_min_duration
@@ -144,6 +150,13 @@ class PORCore(nn.Module):
                 nn.GELU(),
                 nn.Linear(hidden_size, action_dim),
             )
+        if self.option_margin_adapter:
+            self.option_margin_adapter_head = nn.Sequential(
+                nn.LayerNorm(hidden_size * 2 + 2),
+                nn.Linear(hidden_size * 2 + 2, hidden_size),
+                nn.GELU(),
+                nn.Linear(hidden_size, action_dim),
+            )
         self.norm = nn.LayerNorm(hidden_size)
 
     def initial_state(self, batch_size: int, device: torch.device) -> dict[str, torch.Tensor]:
@@ -192,6 +205,7 @@ class PORCore(nn.Module):
             or self.option_film
             or self.option_context_film
             or self.option_context_logits
+            or self.option_margin_adapter
             or self.option_context_gain
         ):
             entropy = -(next_probs.clamp_min(1e-8) * next_probs.clamp_min(1e-8).log()).sum(dim=-1)
@@ -199,6 +213,9 @@ class PORCore(nn.Module):
             if self.option_context_gain:
                 gate_min_duration = self.option_context_gain_min_duration
                 gate_sharpness = self.option_context_gain_duration_sharpness
+            elif self.option_margin_adapter:
+                gate_min_duration = self.option_margin_adapter_min_duration
+                gate_sharpness = self.option_margin_adapter_duration_sharpness
             elif self.option_context_logits:
                 gate_min_duration = self.option_context_logits_min_duration
                 gate_sharpness = self.option_context_logits_duration_sharpness
@@ -263,6 +280,19 @@ class PORCore(nn.Module):
             raw_context_logits = self.option_context_logits_head(context_logits_features)
             context_logits_bias = raw_context_logits * (self.option_context_logits_scale * stability.unsqueeze(-1))
             logit_bias = context_logits_bias if logit_bias is None else (logit_bias + context_logits_bias)
+        option_margin_features = None
+        raw_option_margin_adapter = None
+        if self.option_margin_adapter and stability is not None and duration_gate is not None:
+            option_margin_features = torch.cat(
+                [
+                    pooled,
+                    option_context_projected,
+                    duration_gate.unsqueeze(-1),
+                    terminate_prob,
+                ],
+                dim=-1,
+            )
+            raw_option_margin_adapter = self.option_margin_adapter_head(option_margin_features)
         conditioned = pooled + option_context_projected
         if self.option_film and context_delta is not None and stability is not None:
             film_features = torch.cat(
@@ -380,6 +410,15 @@ class PORCore(nn.Module):
                     "policy/option_context_logits_bias_norm": context_logits_bias.norm(dim=-1).mean(),
                 }
             )
+        if self.option_margin_adapter and stability is not None and duration_gate is not None and entropy_norm is not None:
+            metrics.update(
+                {
+                    "policy/option_margin_adapter_stability": stability.mean(),
+                    "policy/option_margin_adapter_duration_gate": duration_gate.mean(),
+                    "policy/option_margin_adapter_entropy_norm": entropy_norm.mean(),
+                    "policy/option_margin_adapter_raw_norm": raw_option_margin_adapter.norm(dim=-1).mean(),
+                }
+            )
         if self.option_context_gain and stability is not None and duration_gate is not None and entropy_norm is not None:
             metrics.update(
                 {
@@ -400,4 +439,8 @@ class PORCore(nn.Module):
             metrics=metrics,
             next_state=next_state,
             logit_bias=logit_bias,
+            policy_features={
+                "option_margin_features": option_margin_features,
+                "option_margin_stability": stability.unsqueeze(-1) if stability is not None else None,
+            },
         )
