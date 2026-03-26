@@ -318,6 +318,7 @@ def test_por_actor_hidden_film_reports_metrics() -> None:
             policy_option_hidden_film=True,
             policy_option_hidden_film_scale=0.5,
             policy_option_hidden_use_duration_gate=True,
+            policy_option_hidden_low_margin_gate=True,
         ),
         env.observation_space,
         env.action_space,
@@ -329,6 +330,9 @@ def test_por_actor_hidden_film_reports_metrics() -> None:
     assert "policy/option_hidden_film_duration_mix" in output.metrics
     assert "policy/option_hidden_film_scale_only" in output.metrics
     assert "policy/option_hidden_film_scale_weight" in output.metrics
+    assert "policy/option_hidden_film_low_margin_gate" in output.metrics
+    assert "policy/option_hidden_film_low_margin_gate_mean" in output.metrics
+    assert "policy/option_hidden_film_margin_before" in output.metrics
     assert "policy/option_hidden_film_shift_weight" in output.metrics
     assert "policy/option_hidden_post_norm" in output.metrics
     assert "policy/option_hidden_film_scale_norm" in output.metrics

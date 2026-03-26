@@ -115,6 +115,9 @@ class ActorCriticModel(nn.Module):
         policy_option_hidden_duration_mix: float = 1.0,
         policy_option_hidden_scale_only: bool = False,
         policy_option_hidden_scale_weight: float = 1.0,
+        policy_option_hidden_low_margin_gate: bool = False,
+        policy_option_hidden_margin_threshold: float = 0.25,
+        policy_option_hidden_margin_sharpness: float = 12.0,
         policy_option_hidden_shift_weight: float = 1.0,
         policy_option_hidden_post_norm: bool = False,
     ) -> None:
@@ -147,6 +150,9 @@ class ActorCriticModel(nn.Module):
         self.policy_option_hidden_duration_mix = max(0.0, min(1.0, policy_option_hidden_duration_mix))
         self.policy_option_hidden_scale_only = policy_option_hidden_scale_only
         self.policy_option_hidden_scale_weight = max(0.0, policy_option_hidden_scale_weight)
+        self.policy_option_hidden_low_margin_gate = policy_option_hidden_low_margin_gate
+        self.policy_option_hidden_margin_threshold = policy_option_hidden_margin_threshold
+        self.policy_option_hidden_margin_sharpness = policy_option_hidden_margin_sharpness
         self.policy_option_hidden_shift_weight = max(0.0, policy_option_hidden_shift_weight)
         self.policy_option_hidden_post_norm = policy_option_hidden_post_norm
         self.policy_norm = nn.LayerNorm(hidden_size)
@@ -254,6 +260,20 @@ class ActorCriticModel(nn.Module):
             option_actor_stability = core_output.policy_features.get("option_actor_stability")
             option_actor_duration_gate = core_output.policy_features.get("option_actor_duration_gate")
             if option_actor_features is not None and option_actor_stability is not None:
+                low_margin_gate = None
+                margin_before = None
+                if self.policy_option_hidden_low_margin_gate:
+                    with torch.no_grad():
+                        pre_film_logits = self.policy_out(policy_hidden)
+                        top2 = torch.topk(pre_film_logits, k=min(2, pre_film_logits.size(-1)), dim=-1).values
+                        if top2.size(-1) > 1:
+                            margin_before = top2[..., 0] - top2[..., 1]
+                        else:
+                            margin_before = top2[..., 0]
+                        low_margin_gate = torch.sigmoid(
+                            (self.policy_option_hidden_margin_threshold - margin_before)
+                            * self.policy_option_hidden_margin_sharpness
+                        ).to(policy_hidden.dtype)
                 if self.policy_option_hidden_use_duration_gate and option_actor_duration_gate is not None:
                     mix = self.policy_option_hidden_duration_mix
                     option_gate_signal = (mix * option_actor_duration_gate) + ((1.0 - mix) * option_actor_stability)
@@ -262,6 +282,8 @@ class ActorCriticModel(nn.Module):
                 raw_film = self.policy_option_hidden_film_head(option_actor_features)
                 raw_scale, raw_shift = raw_film.chunk(2, dim=-1)
                 gate = (self.policy_option_hidden_film_scale * option_gate_signal).to(policy_hidden.dtype)
+                if low_margin_gate is not None:
+                    gate = gate * low_margin_gate.unsqueeze(-1)
                 film_scale = torch.tanh(raw_scale) * gate * self.policy_option_hidden_scale_weight
                 if self.policy_option_hidden_scale_only:
                     film_shift = torch.zeros_like(policy_hidden)
@@ -278,6 +300,8 @@ class ActorCriticModel(nn.Module):
                         "policy/option_hidden_film_duration_mix": float(self.policy_option_hidden_duration_mix),
                         "policy/option_hidden_film_scale_only": float(self.policy_option_hidden_scale_only),
                         "policy/option_hidden_film_scale_weight": float(self.policy_option_hidden_scale_weight),
+                        "policy/option_hidden_film_low_margin_gate": float(self.policy_option_hidden_low_margin_gate),
+                        "policy/option_hidden_film_margin_threshold": float(self.policy_option_hidden_margin_threshold),
                         "policy/option_hidden_film_shift_weight": float(self.policy_option_hidden_shift_weight),
                         "policy/option_hidden_post_norm": float(self.policy_option_hidden_post_norm),
                         "policy/option_hidden_film_scale_norm": film_scale.norm(dim=-1),
@@ -285,6 +309,9 @@ class ActorCriticModel(nn.Module):
                         "policy/option_hidden_post_hidden_norm": policy_hidden.norm(dim=-1),
                     }
                 )
+                if low_margin_gate is not None and margin_before is not None:
+                    metrics["policy/option_hidden_film_low_margin_gate_mean"] = low_margin_gate
+                    metrics["policy/option_hidden_film_margin_before"] = margin_before
         base_logits = self.policy_out(policy_hidden)
         logits = base_logits
         if core_output.logit_bias is not None:
