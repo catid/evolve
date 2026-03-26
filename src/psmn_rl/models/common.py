@@ -115,6 +115,7 @@ class ActorCriticModel(nn.Module):
         policy_option_hidden_duration_mix: float = 1.0,
         policy_option_hidden_scale_only: bool = False,
         policy_option_hidden_shift_weight: float = 1.0,
+        policy_option_hidden_post_norm: bool = False,
     ) -> None:
         super().__init__()
         self.core = core
@@ -145,6 +146,7 @@ class ActorCriticModel(nn.Module):
         self.policy_option_hidden_duration_mix = max(0.0, min(1.0, policy_option_hidden_duration_mix))
         self.policy_option_hidden_scale_only = policy_option_hidden_scale_only
         self.policy_option_hidden_shift_weight = max(0.0, policy_option_hidden_shift_weight)
+        self.policy_option_hidden_post_norm = policy_option_hidden_post_norm
         self.policy_norm = nn.LayerNorm(hidden_size)
         self.policy_hidden = nn.Linear(hidden_size, hidden_size)
         self.policy_activation = nn.GELU()
@@ -223,6 +225,8 @@ class ActorCriticModel(nn.Module):
             final_linear = self.policy_option_hidden_film_head[-1]
             nn.init.zeros_(final_linear.weight)
             nn.init.zeros_(final_linear.bias)
+            if self.policy_option_hidden_post_norm:
+                self.policy_option_hidden_post_layernorm = nn.LayerNorm(hidden_size)
         self.value_head = nn.Sequential(
             nn.LayerNorm(hidden_size),
             nn.Linear(hidden_size, hidden_size),
@@ -262,6 +266,8 @@ class ActorCriticModel(nn.Module):
                 else:
                     film_shift = raw_shift * gate * self.policy_option_hidden_shift_weight
                 policy_hidden = policy_hidden * (1.0 + film_scale) + film_shift
+                if self.policy_option_hidden_post_norm:
+                    policy_hidden = self.policy_option_hidden_post_layernorm(policy_hidden)
                 metrics.update(
                     {
                         "policy/option_hidden_film_gate_signal_mean": option_gate_signal.squeeze(-1),
@@ -270,8 +276,10 @@ class ActorCriticModel(nn.Module):
                         "policy/option_hidden_film_duration_mix": float(self.policy_option_hidden_duration_mix),
                         "policy/option_hidden_film_scale_only": float(self.policy_option_hidden_scale_only),
                         "policy/option_hidden_film_shift_weight": float(self.policy_option_hidden_shift_weight),
+                        "policy/option_hidden_post_norm": float(self.policy_option_hidden_post_norm),
                         "policy/option_hidden_film_scale_norm": film_scale.norm(dim=-1),
                         "policy/option_hidden_film_shift_norm": film_shift.norm(dim=-1),
+                        "policy/option_hidden_post_hidden_norm": policy_hidden.norm(dim=-1),
                     }
                 )
         base_logits = self.policy_out(policy_hidden)

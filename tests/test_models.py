@@ -329,6 +329,7 @@ def test_por_actor_hidden_film_reports_metrics() -> None:
     assert "policy/option_hidden_film_duration_mix" in output.metrics
     assert "policy/option_hidden_film_scale_only" in output.metrics
     assert "policy/option_hidden_film_shift_weight" in output.metrics
+    assert "policy/option_hidden_post_norm" in output.metrics
     assert "policy/option_hidden_film_scale_norm" in output.metrics
     assert "policy/option_hidden_film_shift_norm" in output.metrics
     env.close()
