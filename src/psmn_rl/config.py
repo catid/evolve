@@ -83,6 +83,10 @@ class ModelConfig:
     policy_margin_residual_scale: float = 1.0
     policy_margin_threshold: float = 0.25
     policy_margin_sharpness: float = 12.0
+    por_option_action_adapter: bool = False
+    por_option_action_adapter_scale: float = 1.0
+    por_option_action_adapter_min_duration: float = 2.0
+    por_option_action_adapter_duration_sharpness: float = 1.0
 
 
 @dataclass(slots=True)

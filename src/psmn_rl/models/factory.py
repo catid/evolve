@@ -967,8 +967,13 @@ def build_model(model_config: ModelConfig, observation_space: gym.Space, action_
             num_heads=model_config.num_heads,
             num_layers=model_config.encoder_layers,
             dropout=model_config.dropout,
+            action_dim=action_space.n,
             option_count=model_config.option_count,
             termination_bias=model_config.termination_bias,
+            option_action_adapter=model_config.por_option_action_adapter,
+            option_action_adapter_scale=model_config.por_option_action_adapter_scale,
+            option_action_adapter_min_duration=model_config.por_option_action_adapter_min_duration,
+            option_action_adapter_duration_sharpness=model_config.por_option_action_adapter_duration_sharpness,
         )
     else:
         raise ValueError(f"Unknown model variant: {variant}")

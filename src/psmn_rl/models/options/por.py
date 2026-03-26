@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 import torch
 from torch import nn
 
@@ -18,12 +20,21 @@ class PORCore(nn.Module):
         num_heads: int,
         num_layers: int,
         dropout: float,
+        action_dim: int,
         option_count: int,
         termination_bias: float,
+        option_action_adapter: bool,
+        option_action_adapter_scale: float,
+        option_action_adapter_min_duration: float,
+        option_action_adapter_duration_sharpness: float,
     ) -> None:
         super().__init__()
         self.option_count = option_count
         self.termination_bias = termination_bias
+        self.option_action_adapter = option_action_adapter
+        self.option_action_adapter_scale = option_action_adapter_scale
+        self.option_action_adapter_min_duration = option_action_adapter_min_duration
+        self.option_action_adapter_duration_sharpness = option_action_adapter_duration_sharpness
         self.encoder = build_token_encoder(observation_space, token_dim, patch_size)
         self.input_proj = nn.Linear(token_dim, hidden_size)
         self.blocks = nn.ModuleList(
@@ -38,6 +49,13 @@ class PORCore(nn.Module):
             nn.GELU(),
             nn.Linear(hidden_size, 1),
         )
+        if self.option_action_adapter:
+            self.option_action_head = nn.Sequential(
+                nn.LayerNorm(option_count + 2),
+                nn.Linear(option_count + 2, hidden_size),
+                nn.GELU(),
+                nn.Linear(hidden_size, action_dim),
+            )
         self.norm = nn.LayerNorm(hidden_size)
 
     def initial_state(self, batch_size: int, device: torch.device) -> dict[str, torch.Tensor]:
@@ -76,6 +94,24 @@ class PORCore(nn.Module):
         next_idx = next_probs.argmax(dim=-1)
         switch_rate = (prev_idx != next_idx).float().mean()
         option_entropy = -(next_probs.clamp_min(1e-8) * next_probs.clamp_min(1e-8).log()).sum(dim=-1).mean()
+        logit_bias = None
+        if self.option_action_adapter:
+            entropy = -(next_probs.clamp_min(1e-8) * next_probs.clamp_min(1e-8).log()).sum(dim=-1)
+            entropy_norm = entropy / math.log(max(self.option_count, 2))
+            duration_gate = torch.sigmoid(
+                (next_duration - self.option_action_adapter_min_duration) * self.option_action_adapter_duration_sharpness
+            )
+            stability = duration_gate * (1.0 - entropy_norm.clamp(0.0, 1.0))
+            adapter_features = torch.cat(
+                [
+                    next_probs,
+                    duration_gate.unsqueeze(-1),
+                    terminate_prob,
+                ],
+                dim=-1,
+            )
+            raw_adapter = self.option_action_head(adapter_features)
+            logit_bias = raw_adapter * (self.option_action_adapter_scale * stability.unsqueeze(-1))
 
         metrics = {
             "route_entropy": float(option_entropy.item()),
@@ -85,8 +121,24 @@ class PORCore(nn.Module):
             "termination_bias": float(self.termination_bias),
             "active_compute_proxy": 1.0,
         }
+        if self.option_action_adapter and logit_bias is not None:
+            metrics.update(
+                {
+                    "policy/option_action_adapter_stability": stability.mean(),
+                    "policy/option_action_adapter_duration_gate": duration_gate.mean(),
+                    "policy/option_action_adapter_entropy_norm": entropy_norm.mean(),
+                    "policy/option_action_adapter_logits_norm": raw_adapter.norm(dim=-1).mean(),
+                    "policy/option_action_adapter_bias_norm": logit_bias.norm(dim=-1).mean(),
+                }
+            )
         for option_index, value in enumerate(next_probs.mean(dim=0)):
             metrics[f"expert_load_{option_index}"] = float(value.item())
 
         next_state = {"option_probs": next_probs.detach(), "option_duration": next_duration.detach()}
-        return CoreOutput(pooled=conditioned, tokens=tokens, metrics=metrics, next_state=next_state)
+        return CoreOutput(
+            pooled=conditioned,
+            tokens=tokens,
+            metrics=metrics,
+            next_state=next_state,
+            logit_bias=logit_bias,
+        )

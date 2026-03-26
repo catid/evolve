@@ -19,6 +19,7 @@ class CoreOutput:
     metrics: dict[str, torch.Tensor | float] = field(default_factory=dict)
     next_state: TensorDict = field(default_factory=dict)
     aux_losses: dict[str, torch.Tensor] = field(default_factory=dict)
+    logit_bias: torch.Tensor | None = None
 
 
 @dataclass
@@ -118,6 +119,8 @@ class ActorCriticModel(nn.Module):
         metrics = dict(core_output.metrics)
         base_logits = self.policy_head(core_output.pooled)
         logits = base_logits
+        if core_output.logit_bias is not None:
+            logits = logits + core_output.logit_bias
         if self.policy_margin_residual:
             top2 = torch.topk(base_logits, k=min(2, base_logits.size(-1)), dim=-1).values
             margin = top2[..., 0] - top2[..., 1] if top2.size(-1) > 1 else top2[..., 0]

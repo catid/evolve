@@ -138,3 +138,23 @@ def test_margin_residual_policy_head_reports_decode_metrics() -> None:
     assert "policy/margin_residual_base_margin" in output.metrics
     assert "policy/margin_residual_logits_norm" in output.metrics
     env.close()
+
+
+def test_por_option_action_adapter_reports_metrics() -> None:
+    env = gym.make("MiniGrid-MemoryS9-v0")
+    obs = _sample_obs(env)
+    done = torch.ones(1, dtype=torch.bool)
+    model = build_model(
+        ModelConfig(
+            variant="por",
+            por_option_action_adapter=True,
+            por_option_action_adapter_scale=0.5,
+        ),
+        env.observation_space,
+        env.action_space,
+    )
+    state = model.initial_state(batch_size=1, device=torch.device("cpu"))
+    output = model.forward(obs, state=state, done=done)
+    assert "policy/option_action_adapter_stability" in output.metrics
+    assert "policy/option_action_adapter_bias_norm" in output.metrics
+    env.close()

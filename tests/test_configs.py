@@ -66,3 +66,12 @@ def test_load_memory_margin_decode_configs() -> None:
     assert gru.model.variant == "token_gru"
     assert gru.model.policy_margin_residual is True
     assert gru.ppo.sequence_minibatches is True
+
+
+def test_load_memory_option_adapter_config() -> None:
+    por = load_config(Path("configs/experiments/minigrid_memory_por_switchy_option_adapter.yaml"))
+
+    assert por.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert por.model.variant == "por"
+    assert por.model.por_option_action_adapter is True
+    assert por.model.por_option_action_adapter_scale == 0.5
