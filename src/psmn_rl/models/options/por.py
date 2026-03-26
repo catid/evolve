@@ -43,6 +43,10 @@ class PORCore(nn.Module):
         option_context_film_scale: float,
         option_context_film_min_duration: float,
         option_context_film_duration_sharpness: float,
+        option_context_logits: bool,
+        option_context_logits_scale: float,
+        option_context_logits_min_duration: float,
+        option_context_logits_duration_sharpness: float,
         option_context_gain: bool,
         option_context_gain_scale: float,
         option_context_gain_min_duration: float,
@@ -71,6 +75,10 @@ class PORCore(nn.Module):
         self.option_context_film_scale = option_context_film_scale
         self.option_context_film_min_duration = option_context_film_min_duration
         self.option_context_film_duration_sharpness = option_context_film_duration_sharpness
+        self.option_context_logits = option_context_logits
+        self.option_context_logits_scale = option_context_logits_scale
+        self.option_context_logits_min_duration = option_context_logits_min_duration
+        self.option_context_logits_duration_sharpness = option_context_logits_duration_sharpness
         self.option_context_gain = option_context_gain
         self.option_context_gain_scale = option_context_gain_scale
         self.option_context_gain_min_duration = option_context_gain_min_duration
@@ -129,6 +137,13 @@ class PORCore(nn.Module):
                 nn.GELU(),
                 nn.Linear(hidden_size, hidden_size * 2),
             )
+        if self.option_context_logits:
+            self.option_context_logits_head = nn.Sequential(
+                nn.LayerNorm(hidden_size * 2 + 2),
+                nn.Linear(hidden_size * 2 + 2, hidden_size),
+                nn.GELU(),
+                nn.Linear(hidden_size, action_dim),
+            )
         self.norm = nn.LayerNorm(hidden_size)
 
     def initial_state(self, batch_size: int, device: torch.device) -> dict[str, torch.Tensor]:
@@ -176,6 +191,7 @@ class PORCore(nn.Module):
             or self.option_action_experts
             or self.option_film
             or self.option_context_film
+            or self.option_context_logits
             or self.option_context_gain
         ):
             entropy = -(next_probs.clamp_min(1e-8) * next_probs.clamp_min(1e-8).log()).sum(dim=-1)
@@ -183,6 +199,9 @@ class PORCore(nn.Module):
             if self.option_context_gain:
                 gate_min_duration = self.option_context_gain_min_duration
                 gate_sharpness = self.option_context_gain_duration_sharpness
+            elif self.option_context_logits:
+                gate_min_duration = self.option_context_logits_min_duration
+                gate_sharpness = self.option_context_logits_duration_sharpness
             elif self.option_context_film:
                 gate_min_duration = self.option_context_film_min_duration
                 gate_sharpness = self.option_context_film_duration_sharpness
@@ -231,6 +250,19 @@ class PORCore(nn.Module):
         if self.option_context_gain and stability is not None:
             option_context_gain = 1.0 + (self.option_context_gain_scale * stability.unsqueeze(-1))
             option_context_projected = option_context_projected * option_context_gain
+        if self.option_context_logits and stability is not None and duration_gate is not None:
+            context_logits_features = torch.cat(
+                [
+                    pooled,
+                    option_context_projected,
+                    duration_gate.unsqueeze(-1),
+                    terminate_prob,
+                ],
+                dim=-1,
+            )
+            raw_context_logits = self.option_context_logits_head(context_logits_features)
+            context_logits_bias = raw_context_logits * (self.option_context_logits_scale * stability.unsqueeze(-1))
+            logit_bias = context_logits_bias if logit_bias is None else (logit_bias + context_logits_bias)
         conditioned = pooled + option_context_projected
         if self.option_film and context_delta is not None and stability is not None:
             film_features = torch.cat(
@@ -336,6 +368,16 @@ class PORCore(nn.Module):
                     "policy/option_context_film_entropy_norm": entropy_norm.mean(),
                     "policy/option_context_film_scale_norm": context_film_scale.norm(dim=-1).mean(),
                     "policy/option_context_film_shift_norm": context_film_shift.norm(dim=-1).mean(),
+                }
+            )
+        if self.option_context_logits and stability is not None and duration_gate is not None and entropy_norm is not None:
+            metrics.update(
+                {
+                    "policy/option_context_logits_stability": stability.mean(),
+                    "policy/option_context_logits_duration_gate": duration_gate.mean(),
+                    "policy/option_context_logits_entropy_norm": entropy_norm.mean(),
+                    "policy/option_context_logits_norm": raw_context_logits.norm(dim=-1).mean(),
+                    "policy/option_context_logits_bias_norm": context_logits_bias.norm(dim=-1).mean(),
                 }
             )
         if self.option_context_gain and stability is not None and duration_gate is not None and entropy_norm is not None:

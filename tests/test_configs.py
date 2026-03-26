@@ -146,3 +146,12 @@ def test_load_memory_context_film_config() -> None:
     assert por.model.variant == "por"
     assert por.model.por_option_context_film is True
     assert por.model.por_option_context_film_scale == 0.5
+
+
+def test_load_memory_context_logits_config() -> None:
+    por = load_config(Path("configs/experiments/minigrid_memory_por_switchy_context_logits.yaml"))
+
+    assert por.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert por.model.variant == "por"
+    assert por.model.por_option_context_logits is True
+    assert por.model.por_option_context_logits_scale == 0.5

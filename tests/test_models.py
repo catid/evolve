@@ -220,6 +220,26 @@ def test_por_option_film_reports_metrics() -> None:
     env.close()
 
 
+def test_por_option_context_logits_reports_metrics() -> None:
+    env = gym.make("MiniGrid-MemoryS9-v0")
+    obs = _sample_obs(env)
+    done = torch.ones(1, dtype=torch.bool)
+    model = build_model(
+        ModelConfig(
+            variant="por",
+            por_option_context_logits=True,
+            por_option_context_logits_scale=0.5,
+        ),
+        env.observation_space,
+        env.action_space,
+    )
+    state = model.initial_state(batch_size=1, device=torch.device("cpu"))
+    output = model.forward(obs, state=state, done=done)
+    assert "policy/option_context_logits_stability" in output.metrics
+    assert "policy/option_context_logits_bias_norm" in output.metrics
+    env.close()
+
+
 def test_logit_gain_reports_metrics() -> None:
     env = gym.make("MiniGrid-MemoryS9-v0")
     obs = _sample_obs(env)
