@@ -165,3 +165,13 @@ def test_load_memory_option_margin_adapter_config() -> None:
     assert por.model.por_option_margin_adapter is True
     assert por.model.policy_option_margin_adapter is True
     assert por.model.policy_option_margin_adapter_scale == 0.5
+
+
+def test_load_memory_option_top2_rerank_config() -> None:
+    por = load_config(Path("configs/experiments/minigrid_memory_por_switchy_option_top2_rerank.yaml"))
+
+    assert por.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert por.model.variant == "por"
+    assert por.model.por_option_top2_rerank is True
+    assert por.model.policy_option_top2_rerank is True
+    assert por.model.policy_option_top2_rerank_scale == 0.5
