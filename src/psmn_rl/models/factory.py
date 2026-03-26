@@ -1040,4 +1040,5 @@ def build_model(model_config: ModelConfig, observation_space: gym.Space, action_
         policy_option_hidden_use_duration_gate=model_config.policy_option_hidden_use_duration_gate,
         policy_option_hidden_duration_mix=model_config.policy_option_hidden_duration_mix,
         policy_option_hidden_scale_only=model_config.policy_option_hidden_scale_only,
+        policy_option_hidden_shift_weight=model_config.policy_option_hidden_shift_weight,
     )

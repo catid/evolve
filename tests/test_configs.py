@@ -217,3 +217,14 @@ def test_load_memory_actor_hidden_scale_film_config() -> None:
     assert por.model.por_option_actor_features is True
     assert por.model.policy_option_hidden_film is True
     assert por.model.policy_option_hidden_scale_only is True
+
+
+def test_load_memory_actor_hidden_partial_shift_config() -> None:
+    por = load_config(Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift25.yaml"))
+
+    assert por.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert por.model.variant == "por"
+    assert por.model.policy_option_hidden_film is True
+    assert por.model.policy_option_hidden_scale_only is False
+    assert por.model.policy_option_hidden_film_scale == 0.35
+    assert por.model.policy_option_hidden_shift_weight == 0.25

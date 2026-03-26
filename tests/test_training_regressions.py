@@ -490,4 +490,5 @@ def test_por_actor_hidden_film_logs_metrics(tmp_path: Path) -> None:
     assert "policy/option_hidden_film_gate_signal_mean" in last_scalar
     assert "policy/option_hidden_film_duration_mix" in last_scalar
     assert "policy/option_hidden_film_scale_only" in last_scalar
+    assert "policy/option_hidden_film_shift_weight" in last_scalar
     assert "policy/option_hidden_film_scale_norm" in last_scalar
