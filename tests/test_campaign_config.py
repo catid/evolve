@@ -212,3 +212,20 @@ def test_next_arch_wave_campaign_registers_second_wave_budget_and_reports() -> N
     assert campaign["families"]["sare_persistence"]["variants"]["sare_keyed_residual_high_memory"]["model"]["memory_mix"] == 0.75
     assert campaign["families"]["sare_persistence"]["variants"]["sare_keyed_residual_high_memory"]["model"]["route_memory_scale"] == 0.75
     assert campaign["reports"]["decision_memo"] == "outputs/reports/next_arch_wave_decision_memo.md"
+
+
+def test_memory_conversion_campaign_registers_memory_budget_and_reports() -> None:
+    campaign = load_campaign_config("configs/experiments/lss_memory_conversion_program/campaign.yaml")
+
+    assert campaign["name"] == "lss_memory_conversion_program"
+    assert campaign["current_canonical_name"] == "round6"
+    assert campaign["target_substantive_runs"] == 64
+    assert len(campaign["analysis"]["dev_groups"]) == 3
+    assert len(campaign["analysis"]["holdout_groups"]) == 3
+    assert len(campaign["analysis"]["healthy_groups"]) == 2
+    assert campaign["checkpoints"]["por_nearby_switchy_7"]["variant"] == "por_switchy"
+    assert campaign["conversion_families"]["sample_consensus"]["variants"]["gru_consensus4_t055"]["draws"] == 4
+    assert campaign["conversion_families"]["option_persistence_decode"]["variants"]["por_hysteresis090_t005"]["hysteresis_alpha"] == 0.9
+    assert campaign["practicalization"]["students"][0]["checkpoint"] == "por_nearby_switchy_7"
+    assert campaign["practicalization"]["families"]["hybrid"]["targets"] == ["policy_head_plus_last_shared"]
+    assert campaign["reports"]["decision_memo"] == "outputs/reports/memory_conversion_decision_memo.md"

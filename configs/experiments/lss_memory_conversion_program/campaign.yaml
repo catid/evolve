@@ -1,0 +1,313 @@
+name: lss_memory_conversion_program
+
+current_canonical_name: round6
+current_canonical_pack: outputs/reports/portfolio_candidate_pack.json
+current_gate_reference_pack: outputs/reports/round6_current_benchmark_pack.json
+frozen_pack: outputs/reports/frozen_benchmark_pack.json
+current_decision_memo: outputs/reports/next_arch_wave_decision_memo.md
+nearby_followup_report: outputs/reports/next_arch_wave_nearby_followup.md
+
+target_substantive_runs: 64
+
+analysis:
+  program_label: Memory Conversion Program
+  max_steps: 405
+  diagnostic_episodes: 64
+  source_probe_episode_limit: 8
+  source_probe_draws: 16
+  dev_groups:
+    - label: dev_a
+      start_seed: 5000
+      episodes: 24
+    - label: dev_b
+      start_seed: 6000
+      episodes: 24
+    - label: dev_c
+      start_seed: 7000
+      episodes: 24
+  holdout_groups:
+    - label: holdout_a
+      start_seed: 8000
+      episodes: 24
+    - label: holdout_b
+      start_seed: 9000
+      episodes: 24
+    - label: holdout_c
+      start_seed: 10000
+      episodes: 24
+  healthy_groups:
+    - label: healthy_upper_a
+      start_seed: 11000
+      episodes: 24
+    - label: healthy_upper_b
+      start_seed: 12000
+      episodes: 24
+  source_modes:
+    greedy:
+      label: greedy
+      strategy: greedy
+    lower_t005:
+      label: lower_t005
+      strategy: constant_temp
+      temperature: 0.05
+    gap_t0525:
+      label: gap_t0525
+      strategy: constant_temp
+      temperature: 0.0525
+    shoulder_t008:
+      label: shoulder_t008
+      strategy: constant_temp
+      temperature: 0.08
+  temperature_bands:
+    lower_boundary: [0.04, 0.045, 0.05]
+    strongest_gap: [0.05, 0.0525, 0.055]
+    shoulder: [0.06, 0.065, 0.07]
+    upper_plateau: [0.075, 0.08]
+  route_validation_checkpoints:
+    - por_nearby_switchy_7
+    - por_original_switchy_7
+  stability_checkpoints:
+    - por_nearby_switchy_7
+    - gru_long_11
+
+checkpoints:
+  por_nearby_switchy_7:
+    family: por
+    family_label: POR
+    variant: por_switchy
+    seed: 7
+    source: nearby_followup
+    config_path: outputs/experiments/lss_next_arch_wave_nearby_followup/por_stage2_alive_baseline/memory/por_switchy/seed_7/resolved_config.yaml
+    checkpoint_path: outputs/experiments/lss_next_arch_wave_nearby_followup/por_stage2_alive_baseline/memory/por_switchy/seed_7/latest.pt
+  por_nearby_base_11:
+    family: por
+    family_label: POR
+    variant: por_base
+    seed: 11
+    source: nearby_followup
+    config_path: outputs/experiments/lss_next_arch_wave_nearby_followup/por_stage2_alive_baseline/memory/por_base/seed_11/resolved_config.yaml
+    checkpoint_path: outputs/experiments/lss_next_arch_wave_nearby_followup/por_stage2_alive_baseline/memory/por_base/seed_11/latest.pt
+  por_original_switchy_7:
+    family: por
+    family_label: POR
+    variant: por_switchy
+    seed: 7
+    source: wave2
+    config_path: outputs/experiments/lss_next_arch_wave_program/por_stage2_alive_baseline/memory/por_switchy/seed_7/resolved_config.yaml
+    checkpoint_path: outputs/experiments/lss_next_arch_wave_program/por_stage2_alive_baseline/memory/por_switchy/seed_7/latest.pt
+  por_original_base_11:
+    family: por
+    family_label: POR
+    variant: por_base
+    seed: 11
+    source: wave2
+    config_path: outputs/experiments/lss_next_arch_wave_program/por_stage2_alive_baseline/memory/por_base/seed_11/resolved_config.yaml
+    checkpoint_path: outputs/experiments/lss_next_arch_wave_program/por_stage2_alive_baseline/memory/por_base/seed_11/latest.pt
+  gru_long_11:
+    family: recurrent_control
+    family_label: Recurrent Control
+    variant: gru_long_rollout
+    seed: 11
+    source: wave2
+    config_path: outputs/experiments/lss_next_arch_wave_program/por_stage1_recurrent_controls/memory/gru_long_rollout/seed_11/resolved_config.yaml
+    checkpoint_path: outputs/experiments/lss_next_arch_wave_program/por_stage1_recurrent_controls/memory/gru_long_rollout/seed_11/latest.pt
+  gru_base_11:
+    family: recurrent_control
+    family_label: Recurrent Control
+    variant: gru_base
+    seed: 11
+    source: wave2
+    config_path: outputs/experiments/lss_next_arch_wave_program/por_stage1_recurrent_controls/memory/gru_base/seed_11/resolved_config.yaml
+    checkpoint_path: outputs/experiments/lss_next_arch_wave_program/por_stage1_recurrent_controls/memory/gru_base/seed_11/latest.pt
+
+conversion_families:
+  temperature_schedule:
+    label: Temperature / Schedule Conversion
+    variants:
+      por_constant_t005:
+        checkpoint: por_nearby_switchy_7
+        strategy: constant_temp
+        temperature: 0.05
+      por_constant_t0525:
+        checkpoint: por_nearby_switchy_7
+        strategy: constant_temp
+        temperature: 0.0525
+      por_anneal_008_to_005_64:
+        checkpoint: por_nearby_switchy_7
+        strategy: anneal_temp
+        start_temperature: 0.08
+        end_temperature: 0.05
+        anneal_steps: 64
+      por_anneal_007_to_005_96:
+        checkpoint: por_nearby_switchy_7
+        strategy: anneal_temp
+        start_temperature: 0.07
+        end_temperature: 0.05
+        anneal_steps: 96
+      gru_constant_t055:
+        checkpoint: gru_long_11
+        strategy: constant_temp
+        temperature: 0.055
+      gru_anneal_008_to_006_64:
+        checkpoint: gru_long_11
+        strategy: anneal_temp
+        start_temperature: 0.08
+        end_temperature: 0.06
+        anneal_steps: 64
+  sample_consensus:
+    label: Sample Consensus
+    variants:
+      por_consensus2_t005:
+        checkpoint: por_nearby_switchy_7
+        strategy: consensus
+        temperature: 0.05
+        draws: 2
+      por_consensus4_t005:
+        checkpoint: por_nearby_switchy_7
+        strategy: consensus
+        temperature: 0.05
+        draws: 4
+      por_consensus2_t0525:
+        checkpoint: por_nearby_switchy_7
+        strategy: consensus
+        temperature: 0.0525
+        draws: 2
+      por_consensus4_t0525:
+        checkpoint: por_nearby_switchy_7
+        strategy: consensus
+        temperature: 0.0525
+        draws: 4
+      gru_consensus2_t055:
+        checkpoint: gru_long_11
+        strategy: consensus
+        temperature: 0.055
+        draws: 2
+      gru_consensus4_t055:
+        checkpoint: gru_long_11
+        strategy: consensus
+        temperature: 0.055
+        draws: 4
+  checkpoint_policy:
+    label: Checkpoint Policy
+    variants:
+      lowerband_por_nearby_switchy7:
+        checkpoint: por_nearby_switchy_7
+        strategy: constant_temp
+        temperature: 0.05
+      shoulder_por_nearby_switchy7:
+        checkpoint: por_nearby_switchy_7
+        strategy: constant_temp
+        temperature: 0.055
+      original_switchy7:
+        checkpoint: por_original_switchy_7
+        strategy: constant_temp
+        temperature: 0.15
+      original_base11:
+        checkpoint: por_original_base_11
+        strategy: constant_temp
+        temperature: 0.15
+      nearby_base11:
+        checkpoint: por_nearby_base_11
+        strategy: constant_temp
+        temperature: 0.10
+      recurrent_long11:
+        checkpoint: gru_long_11
+        strategy: constant_temp
+        temperature: 0.055
+  option_persistence_decode:
+    label: Option / Persistence Decode
+    variants:
+      por_bias_minus05_t005:
+        checkpoint: por_nearby_switchy_7
+        strategy: termination_bias_shift
+        temperature: 0.05
+        termination_bias_delta: -0.5
+      por_bias_minus10_t005:
+        checkpoint: por_nearby_switchy_7
+        strategy: termination_bias_shift
+        temperature: 0.05
+        termination_bias_delta: -1.0
+      por_bias_plus05_t005:
+        checkpoint: por_nearby_switchy_7
+        strategy: termination_bias_shift
+        temperature: 0.05
+        termination_bias_delta: 0.5
+      por_hysteresis075_t005:
+        checkpoint: por_nearby_switchy_7
+        strategy: option_hysteresis
+        temperature: 0.05
+        hysteresis_alpha: 0.75
+      por_hysteresis090_t005:
+        checkpoint: por_nearby_switchy_7
+        strategy: option_hysteresis
+        temperature: 0.05
+        hysteresis_alpha: 0.9
+      por_duration_floor4_t005:
+        checkpoint: por_nearby_switchy_7
+        strategy: duration_floor
+        temperature: 0.05
+        duration_floor: 4
+
+practicalization:
+  students:
+    - checkpoint: por_nearby_switchy_7
+      student_label: por_switchy_nearby_7
+    - checkpoint: gru_long_11
+      student_label: gru_long_11
+  families:
+    sampled_success:
+      label: Sampled-Success Distillation
+      temperatures: [0.05, 0.0525]
+      targets: [policy_head]
+      weightings: [uniform, return]
+    selective_shared:
+      label: Selective Shared Fine-Tune
+      temperatures: [0.05, 0.0525]
+      targets: [policy_head_plus_last_shared]
+      weightings: [uniform, return]
+    low_temp_finetune:
+      label: Low-Temperature Fine-Tune
+      temperatures: [0.055]
+      targets: [policy_head]
+      weightings: [uniform, return]
+    hybrid:
+      label: Hybrid Fine-Tune
+      temperatures: [0.055]
+      targets: [policy_head_plus_last_shared]
+      weightings: [uniform, return]
+  success_target: 24
+  max_episodes: 256
+  batch_size: 128
+  epochs: 6
+  learning_rate: 0.0001
+  eval_episodes: 32
+
+stage_roots:
+  source_audit: outputs/experiments/lss_memory_conversion_program/stageA2_source_quality_v2
+  conversion_screening: outputs/experiments/lss_memory_conversion_program/stageB1_screening
+  conversion_rerun: outputs/experiments/lss_memory_conversion_program/stageB1_rerun
+  conversion_holdout: outputs/experiments/lss_memory_conversion_program/stageB2_holdout
+  practicalization_screening: outputs/experiments/lss_memory_conversion_program/stageC1_practicalization
+  practicalization_rerun: outputs/experiments/lss_memory_conversion_program/stageC2_rerun
+
+reports:
+  state_reconciliation: outputs/reports/memory_conversion_state_reconciliation.md
+  baseline_sync: outputs/reports/memory_conversion_baseline_sync.md
+  registration: outputs/reports/memory_conversion_registration.md
+  source_quality: outputs/reports/memory_conversion_source_quality.md
+  source_quality_json: outputs/reports/memory_conversion_source_quality.json
+  stageB1_report: outputs/reports/memory_conversion_stageB1_screening.md
+  stageB1_json: outputs/reports/memory_conversion_stageB1_screening.json
+  stageB2_report: outputs/reports/memory_conversion_stageB2_rerun_holdout.md
+  stageB2_json: outputs/reports/memory_conversion_stageB2_rerun_holdout.json
+  stageC1_report: outputs/reports/memory_conversion_stageC1_practicalization.md
+  stageC1_json: outputs/reports/memory_conversion_stageC1_practicalization.json
+  stageC2_report: outputs/reports/memory_conversion_stageC2_fairness_holdout.md
+  stageC2_json: outputs/reports/memory_conversion_stageC2_fairness_holdout.json
+  stageC3_report: outputs/reports/memory_conversion_stageC3_stability_persistence.md
+  candidate_pack: outputs/reports/memory_conversion_candidate_pack.json
+  gate_report: outputs/reports/memory_conversion_gate_report.md
+  decision_memo: outputs/reports/memory_conversion_decision_memo.md
+  source_manifest: outputs/reports/memory_conversion_source_manifest.json
+  conversion_manifest: outputs/reports/memory_conversion_conversion_manifest.json
+  practicalization_manifest: outputs/reports/memory_conversion_practicalization_manifest.json
