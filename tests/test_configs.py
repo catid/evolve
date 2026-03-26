@@ -93,3 +93,12 @@ def test_load_memory_action_experts_config() -> None:
     assert por.model.variant == "por"
     assert por.model.por_option_action_experts is True
     assert por.model.por_option_action_experts_scale == 1.0
+
+
+def test_load_memory_option_film_config() -> None:
+    por = load_config(Path("configs/experiments/minigrid_memory_por_switchy_option_film.yaml"))
+
+    assert por.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert por.model.variant == "por"
+    assert por.model.por_option_film is True
+    assert por.model.por_option_film_scale == 0.5

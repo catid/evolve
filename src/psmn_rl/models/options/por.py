@@ -35,6 +35,10 @@ class PORCore(nn.Module):
         option_action_experts_scale: float,
         option_action_experts_min_duration: float,
         option_action_experts_duration_sharpness: float,
+        option_film: bool,
+        option_film_scale: float,
+        option_film_min_duration: float,
+        option_film_duration_sharpness: float,
     ) -> None:
         super().__init__()
         self.option_count = option_count
@@ -51,6 +55,10 @@ class PORCore(nn.Module):
         self.option_action_experts_scale = option_action_experts_scale
         self.option_action_experts_min_duration = option_action_experts_min_duration
         self.option_action_experts_duration_sharpness = option_action_experts_duration_sharpness
+        self.option_film = option_film
+        self.option_film_scale = option_film_scale
+        self.option_film_min_duration = option_film_min_duration
+        self.option_film_duration_sharpness = option_film_duration_sharpness
         self.encoder = build_token_encoder(observation_space, token_dim, patch_size)
         self.input_proj = nn.Linear(token_dim, hidden_size)
         self.blocks = nn.ModuleList(
@@ -90,6 +98,13 @@ class PORCore(nn.Module):
                     )
                     for _ in range(option_count)
                 ]
+            )
+        if self.option_film:
+            self.option_film_head = nn.Sequential(
+                nn.LayerNorm(hidden_size * 3 + 2),
+                nn.Linear(hidden_size * 3 + 2, hidden_size),
+                nn.GELU(),
+                nn.Linear(hidden_size, hidden_size * 2),
             )
         self.norm = nn.LayerNorm(hidden_size)
 
@@ -133,10 +148,13 @@ class PORCore(nn.Module):
         stability = None
         duration_gate = None
         entropy_norm = None
-        if self.option_action_adapter or self.option_hidden_residual or self.option_action_experts:
+        if self.option_action_adapter or self.option_hidden_residual or self.option_action_experts or self.option_film:
             entropy = -(next_probs.clamp_min(1e-8) * next_probs.clamp_min(1e-8).log()).sum(dim=-1)
             entropy_norm = entropy / math.log(max(self.option_count, 2))
-            if self.option_action_experts:
+            if self.option_film:
+                gate_min_duration = self.option_film_min_duration
+                gate_sharpness = self.option_film_duration_sharpness
+            elif self.option_action_experts:
                 gate_min_duration = self.option_action_experts_min_duration
                 gate_sharpness = self.option_action_experts_duration_sharpness
             elif self.option_action_adapter:
@@ -149,8 +167,27 @@ class PORCore(nn.Module):
                 (next_duration - gate_min_duration) * gate_sharpness
             )
             stability = duration_gate * (1.0 - entropy_norm.clamp(0.0, 1.0))
-        if self.option_hidden_residual and stability is not None and duration_gate is not None and entropy_norm is not None:
+        context_delta = None
+        if (self.option_hidden_residual or self.option_film) and stability is not None and duration_gate is not None and entropy_norm is not None:
             context_delta = next_context - prev_context
+        if self.option_film and context_delta is not None and stability is not None:
+            film_features = torch.cat(
+                [
+                    pooled,
+                    next_context,
+                    context_delta,
+                    duration_gate.unsqueeze(-1),
+                    terminate_prob,
+                ],
+                dim=-1,
+            )
+            raw_film = self.option_film_head(film_features)
+            raw_scale, raw_shift = raw_film.chunk(2, dim=-1)
+            film_gate = self.option_film_scale * stability.unsqueeze(-1)
+            film_scale = torch.tanh(raw_scale) * film_gate
+            film_shift = raw_shift * film_gate
+            conditioned = conditioned * (1.0 + film_scale) + film_shift
+        if self.option_hidden_residual and stability is not None and duration_gate is not None and entropy_norm is not None:
             hidden_features = torch.cat(
                 [
                     pooled,
@@ -217,6 +254,16 @@ class PORCore(nn.Module):
                     "policy/option_action_experts_entropy_norm": entropy_norm.mean(),
                     "policy/option_action_experts_logits_norm": mixed_expert_logits.norm(dim=-1).mean(),
                     "policy/option_action_experts_bias_norm": expert_bias.norm(dim=-1).mean(),
+                }
+            )
+        if self.option_film and stability is not None and duration_gate is not None and entropy_norm is not None:
+            metrics.update(
+                {
+                    "policy/option_film_stability": stability.mean(),
+                    "policy/option_film_duration_gate": duration_gate.mean(),
+                    "policy/option_film_entropy_norm": entropy_norm.mean(),
+                    "policy/option_film_scale_norm": film_scale.norm(dim=-1).mean(),
+                    "policy/option_film_shift_norm": film_shift.norm(dim=-1).mean(),
                 }
             )
         for option_index, value in enumerate(next_probs.mean(dim=0)):
