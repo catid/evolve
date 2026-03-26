@@ -1,0 +1,138 @@
+name: lss_next_arch_wave_nearby_followup
+
+screening_seeds: [7, 11]
+
+defaults:
+  long_train_schedule:
+    system:
+      deterministic: true
+      log_interval: 8
+      checkpoint_interval: 12
+    env:
+      num_envs: 8
+      num_eval_envs: 8
+    ppo:
+      rollout_steps: 64
+      total_updates: 48
+      update_epochs: 4
+      minibatches: 4
+      learning_rate: 0.0003
+    evaluation:
+      episodes: 16
+      greedy: true
+  long_recurrent_schedule:
+    system:
+      deterministic: true
+      log_interval: 8
+      checkpoint_interval: 12
+    env:
+      num_envs: 8
+      num_eval_envs: 8
+    ppo:
+      rollout_steps: 96
+      total_updates: 48
+      update_epochs: 4
+      minibatches: 4
+      sequence_minibatches: true
+      learning_rate: 0.0003
+    evaluation:
+      episodes: 16
+      greedy: true
+
+stage_roots:
+  tregh_screening: outputs/experiments/lss_next_arch_wave_nearby_followup/tregh_stage2_alive_baseline
+  por_screening: outputs/experiments/lss_next_arch_wave_nearby_followup/por_stage2_alive_baseline
+  srw_screening: outputs/experiments/lss_next_arch_wave_nearby_followup/srw_stage2_alive_baseline
+
+reports:
+  manifest_json: outputs/reports/next_arch_wave_nearby_followup_manifest.json
+  recurrent_controls_json: outputs/reports/por2_stage1_recurrent_controls.json
+  tregh_stage2: outputs/reports/tregh2_nearby_followup.md
+  tregh_stage2_json: outputs/reports/tregh2_nearby_followup.json
+  tregh_stage3: outputs/reports/tregh2_nearby_followup_stage3.md
+  tregh_stage4: outputs/reports/tregh2_nearby_followup_stage4.md
+  tregh_stage5: outputs/reports/tregh2_nearby_followup_stage5.md
+  por_stage2: outputs/reports/por2_nearby_followup.md
+  por_stage2_json: outputs/reports/por2_nearby_followup.json
+  por_stage3: outputs/reports/por2_nearby_followup_stage3.md
+  por_stage4: outputs/reports/por2_nearby_followup_stage4.md
+  por_stage5: outputs/reports/por2_nearby_followup_stage5.md
+  srw_stage2: outputs/reports/srw2_nearby_followup.md
+  srw_stage2_json: outputs/reports/srw2_nearby_followup.json
+  srw_stage3: outputs/reports/srw2_nearby_followup_stage3.md
+  srw_stage4: outputs/reports/srw2_nearby_followup_stage4.md
+  srw_stage5: outputs/reports/srw2_nearby_followup_stage5.md
+
+families:
+  tregh:
+    stage_root: tregh_screening
+    seeds_key: screening_seeds
+    schedule_key: long_train_schedule
+    tasks:
+      doorkey:
+        display_name: DoorKey
+        base_config: configs/treg_h/minigrid_doorkey.yaml
+      keycorridor:
+        display_name: KeyCorridor
+        base_config: configs/minigrid/main/keycorridor_flat_dense.yaml
+    variants:
+      tregh_early_halt:
+        model:
+          variant: treg_h
+          expert_count: 4
+          expert_hidden_size: 256
+          temperature: 1.0
+          ponder_cost: 0.02
+          max_hops: 2
+          halt_bias: 1.5
+      tregh_continue_bias:
+        model:
+          variant: treg_h
+          expert_count: 4
+          expert_hidden_size: 256
+          temperature: 1.0
+          ponder_cost: 0.005
+          max_hops: 2
+          halt_bias: -1.0
+  por:
+    stage_root: por_screening
+    seeds_key: screening_seeds
+    schedule_key: long_recurrent_schedule
+    tasks:
+      memory:
+        display_name: Memory
+        base_config: configs/minigrid/main/memory_token_gru.yaml
+      keycorridor:
+        display_name: KeyCorridor
+        base_config: configs/experiments/minigrid_keycorridor_token_gru.yaml
+    variants:
+      por_base:
+        model:
+          variant: por
+          option_count: 4
+          termination_bias: 0.0
+      por_switchy:
+        model:
+          variant: por
+          option_count: 4
+          termination_bias: 1.0
+  srw:
+    stage_root: srw_screening
+    seeds_key: screening_seeds
+    schedule_key: long_train_schedule
+    tasks:
+      dynamic_obstacles:
+        display_name: DynamicObstacles
+        base_config: configs/experiments/minigrid_dynamic_obstacles_flat_dense.yaml
+      keycorridor:
+        display_name: KeyCorridor
+        base_config: configs/minigrid/main/keycorridor_flat_dense.yaml
+    variants:
+      srw_focused:
+        model:
+          variant: srw
+          expert_count: 4
+          expert_hidden_size: 256
+          relational_tokens: 4
+          num_heads: 4
+          top_k: 1
