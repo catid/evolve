@@ -1,0 +1,68 @@
+{
+  "rows": [
+    {
+      "gap_t0055/margin": 1.9839314512172601,
+      "gap_t0055/return": 0.0,
+      "gap_t0055/success": 0.0,
+      "greedy/margin": 1.9839314512172601,
+      "greedy/return": 0.0,
+      "greedy/success": 0.0,
+      "label": "por_actor_hidden_partial_shift215",
+      "lower_t005/margin": 1.9839314512172601,
+      "lower_t005/return": 0.0,
+      "lower_t005/success": 0.0,
+      "run_dir": "outputs/experiments/memory_actor_hidden_threshold_probe/memory_por_switchy_actor_hidden_partial_shift215",
+      "shoulder_t008/margin": 1.9839314512172601,
+      "shoulder_t008/return": 0.0,
+      "shoulder_t008/success": 0.0
+    },
+    {
+      "gap_t0055/margin": 1.2885068888234916,
+      "gap_t0055/return": 0.47006076155230403,
+      "gap_t0055/success": 0.4765625,
+      "greedy/margin": 1.3574827321405922,
+      "greedy/return": 0.46300347009673715,
+      "greedy/success": 0.46875,
+      "label": "por_actor_hidden_partial_shift22",
+      "lower_t005/margin": 1.2944285972334324,
+      "lower_t005/return": 0.47006076155230403,
+      "lower_t005/success": 0.4765625,
+      "run_dir": "outputs/experiments/memory_actor_hidden_threshold_probe/memory_por_switchy_actor_hidden_partial_shift22",
+      "shoulder_t008/margin": 1.281189520124408,
+      "shoulder_t008/return": 0.46227430342696607,
+      "shoulder_t008/success": 0.46875
+    },
+    {
+      "gap_t0055/margin": 2.594712993124359,
+      "gap_t0055/return": 0.46685763681307435,
+      "gap_t0055/success": 0.47265625,
+      "greedy/margin": 2.6143205133604903,
+      "greedy/return": 0.46300347009673715,
+      "greedy/success": 0.46875,
+      "label": "por_actor_hidden_partial_shift225",
+      "lower_t005/margin": 2.6025441296003198,
+      "lower_t005/return": 0.46683159517124295,
+      "lower_t005/success": 0.47265625,
+      "run_dir": "outputs/experiments/memory_actor_hidden_threshold_probe/memory_por_switchy_actor_hidden_partial_shift225",
+      "shoulder_t008/margin": 2.5554729263072775,
+      "shoulder_t008/return": 0.4628211781382561,
+      "shoulder_t008/success": 0.46875
+    },
+    {
+      "gap_t0055/margin": 0.43032645015402404,
+      "gap_t0055/return": 0.32479166641132906,
+      "gap_t0055/success": 0.44140625,
+      "greedy/margin": 0.2990187598449856,
+      "greedy/return": 0.0,
+      "greedy/success": 0.0,
+      "label": "por_base",
+      "lower_t005/margin": 0.38212773103749254,
+      "lower_t005/return": 0.23142361175268888,
+      "lower_t005/success": 0.37109375,
+      "run_dir": "outputs/experiments/memory_actor_hidden_threshold_probe/memory_por_switchy_rerun",
+      "shoulder_t008/margin": 0.6880631369923276,
+      "shoulder_t008/return": 0.4383767357794568,
+      "shoulder_t008/success": 0.48046875
+    }
+  ]
+}
