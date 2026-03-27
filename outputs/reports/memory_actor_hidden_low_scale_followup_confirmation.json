@@ -1,0 +1,68 @@
+{
+  "rows": [
+    {
+      "gap_t0055/margin": 2.594712993124359,
+      "gap_t0055/return": 0.46685763681307435,
+      "gap_t0055/success": 0.47265625,
+      "greedy/margin": 2.6143205133604903,
+      "greedy/return": 0.46300347009673715,
+      "greedy/success": 0.46875,
+      "label": "por_actor_hidden_partial_shift225",
+      "lower_t005/margin": 2.6025441296003198,
+      "lower_t005/return": 0.46683159517124295,
+      "lower_t005/success": 0.47265625,
+      "run_dir": "outputs/experiments/memory_actor_hidden_low_scale_followup_probe/memory_por_switchy_actor_hidden_partial_shift225",
+      "shoulder_t008/margin": 2.5554729263072775,
+      "shoulder_t008/return": 0.4628211781382561,
+      "shoulder_t008/success": 0.46875
+    },
+    {
+      "gap_t0055/margin": 0.30969188966751937,
+      "gap_t0055/return": 0.49074652697890997,
+      "gap_t0055/success": 0.52734375,
+      "greedy/margin": 0.18922461335098856,
+      "greedy/return": 0.0,
+      "greedy/success": 0.0,
+      "label": "por_actor_hidden_partial_shift225_scale30",
+      "lower_t005/margin": 0.29016865583304075,
+      "lower_t005/return": 0.48747395840473473,
+      "lower_t005/success": 0.53515625,
+      "run_dir": "outputs/experiments/memory_actor_hidden_low_scale_followup_probe/memory_por_switchy_actor_hidden_partial_shift225_scale30",
+      "shoulder_t008/margin": 0.3958916430132364,
+      "shoulder_t008/return": 0.5065885416697711,
+      "shoulder_t008/success": 0.5234375
+    },
+    {
+      "gap_t0055/margin": 1.0609302941859229,
+      "gap_t0055/return": 0.0,
+      "gap_t0055/success": 0.0,
+      "greedy/margin": 1.0609302941859229,
+      "greedy/return": 0.0,
+      "greedy/success": 0.0,
+      "label": "por_actor_hidden_partial_shift225_scale325",
+      "lower_t005/margin": 1.0609302941859229,
+      "lower_t005/return": 0.0,
+      "lower_t005/success": 0.0,
+      "run_dir": "outputs/experiments/memory_actor_hidden_low_scale_followup_probe/memory_por_switchy_actor_hidden_partial_shift225_scale325",
+      "shoulder_t008/margin": 1.0609302941859229,
+      "shoulder_t008/return": 0.0,
+      "shoulder_t008/success": 0.0
+    },
+    {
+      "gap_t0055/margin": 0.43032645015402404,
+      "gap_t0055/return": 0.32479166641132906,
+      "gap_t0055/success": 0.44140625,
+      "greedy/margin": 0.2990187598449856,
+      "greedy/return": 0.0,
+      "greedy/success": 0.0,
+      "label": "por_base",
+      "lower_t005/margin": 0.38212773103749254,
+      "lower_t005/return": 0.23142361175268888,
+      "lower_t005/success": 0.37109375,
+      "run_dir": "outputs/experiments/memory_actor_hidden_low_scale_followup_probe/memory_por_switchy_rerun",
+      "shoulder_t008/margin": 0.6880631369923276,
+      "shoulder_t008/return": 0.4383767357794568,
+      "shoulder_t008/success": 0.48046875
+    }
+  ]
+}
