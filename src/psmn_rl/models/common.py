@@ -127,6 +127,8 @@ class ActorCriticModel(nn.Module):
         policy_option_hidden_blend_gate: bool = False,
         policy_option_hidden_blend_scale: float = 1.0,
         policy_option_hidden_shift_weight: float = 1.0,
+        policy_option_hidden_center_shift: bool = False,
+        policy_option_hidden_center_shift_scale: float = 1.0,
         policy_option_hidden_bound_shift: bool = False,
         policy_option_hidden_shift_bound_scale: float = 1.0,
         policy_option_hidden_post_norm: bool = False,
@@ -172,6 +174,8 @@ class ActorCriticModel(nn.Module):
         self.policy_option_hidden_blend_gate = policy_option_hidden_blend_gate
         self.policy_option_hidden_blend_scale = max(0.0, policy_option_hidden_blend_scale)
         self.policy_option_hidden_shift_weight = max(0.0, policy_option_hidden_shift_weight)
+        self.policy_option_hidden_center_shift = policy_option_hidden_center_shift
+        self.policy_option_hidden_center_shift_scale = max(0.0, policy_option_hidden_center_shift_scale)
         self.policy_option_hidden_bound_shift = policy_option_hidden_bound_shift
         self.policy_option_hidden_shift_bound_scale = max(0.0, policy_option_hidden_shift_bound_scale)
         self.policy_option_hidden_post_norm = policy_option_hidden_post_norm
@@ -364,6 +368,9 @@ class ActorCriticModel(nn.Module):
                         )
                     else:
                         film_shift = raw_shift * shift_gate * self.policy_option_hidden_shift_weight
+                    if self.policy_option_hidden_center_shift:
+                        film_shift = film_shift - film_shift.mean(dim=-1, keepdim=True)
+                        film_shift = film_shift * self.policy_option_hidden_center_shift_scale
                 policy_hidden = policy_hidden * (1.0 + film_scale) + film_shift
                 blend_gate = None
                 if self.policy_option_hidden_blend_gate:
@@ -396,11 +403,14 @@ class ActorCriticModel(nn.Module):
                         "policy/option_hidden_blend_gate": float(self.policy_option_hidden_blend_gate),
                         "policy/option_hidden_blend_scale": float(self.policy_option_hidden_blend_scale),
                         "policy/option_hidden_film_shift_weight": float(self.policy_option_hidden_shift_weight),
+                        "policy/option_hidden_center_shift": float(self.policy_option_hidden_center_shift),
+                        "policy/option_hidden_center_shift_scale": float(self.policy_option_hidden_center_shift_scale),
                         "policy/option_hidden_bound_shift": float(self.policy_option_hidden_bound_shift),
                         "policy/option_hidden_shift_bound_scale": float(self.policy_option_hidden_shift_bound_scale),
                         "policy/option_hidden_post_norm": float(self.policy_option_hidden_post_norm),
                         "policy/option_hidden_film_scale_norm": film_scale.norm(dim=-1),
                         "policy/option_hidden_film_shift_norm": film_shift.norm(dim=-1),
+                        "policy/option_hidden_center_shift_mean_abs": film_shift.mean(dim=-1).abs(),
                         "policy/option_hidden_post_hidden_norm": policy_hidden.norm(dim=-1),
                     }
                 )
