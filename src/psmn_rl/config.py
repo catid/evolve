@@ -107,6 +107,8 @@ class ModelConfig:
     policy_option_hidden_branch_gates: bool = False
     policy_option_hidden_scale_duration_mix: float = 1.0
     policy_option_hidden_shift_duration_mix: float = 1.0
+    policy_option_hidden_low_rank: bool = False
+    policy_option_hidden_low_rank_dim: int = 32
     policy_option_hidden_split_heads: bool = False
     policy_option_hidden_scale_only: bool = False
     policy_option_hidden_scale_weight: float = 1.0

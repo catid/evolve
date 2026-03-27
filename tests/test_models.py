@@ -321,6 +321,8 @@ def test_por_actor_hidden_film_reports_metrics() -> None:
             policy_option_hidden_branch_gates=True,
             policy_option_hidden_scale_duration_mix=1.0,
             policy_option_hidden_shift_duration_mix=0.95,
+            policy_option_hidden_low_rank=True,
+            policy_option_hidden_low_rank_dim=16,
             policy_option_hidden_split_heads=True,
             policy_option_hidden_blend_gate=True,
             policy_option_hidden_bound_shift=True,
@@ -337,6 +339,8 @@ def test_por_actor_hidden_film_reports_metrics() -> None:
     assert "policy/option_hidden_branch_gates" in output.metrics
     assert "policy/option_hidden_scale_duration_mix" in output.metrics
     assert "policy/option_hidden_shift_duration_mix" in output.metrics
+    assert "policy/option_hidden_low_rank" in output.metrics
+    assert "policy/option_hidden_low_rank_dim" in output.metrics
     assert "policy/option_hidden_scale_gate_signal_mean" in output.metrics
     assert "policy/option_hidden_shift_gate_signal_mean" in output.metrics
     assert "policy/option_hidden_scale_gate_mean" in output.metrics

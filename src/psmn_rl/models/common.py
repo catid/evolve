@@ -116,6 +116,8 @@ class ActorCriticModel(nn.Module):
         policy_option_hidden_branch_gates: bool = False,
         policy_option_hidden_scale_duration_mix: float = 1.0,
         policy_option_hidden_shift_duration_mix: float = 1.0,
+        policy_option_hidden_low_rank: bool = False,
+        policy_option_hidden_low_rank_dim: int = 32,
         policy_option_hidden_split_heads: bool = False,
         policy_option_hidden_scale_only: bool = False,
         policy_option_hidden_scale_weight: float = 1.0,
@@ -159,6 +161,8 @@ class ActorCriticModel(nn.Module):
         self.policy_option_hidden_branch_gates = policy_option_hidden_branch_gates
         self.policy_option_hidden_scale_duration_mix = max(0.0, min(1.0, policy_option_hidden_scale_duration_mix))
         self.policy_option_hidden_shift_duration_mix = max(0.0, min(1.0, policy_option_hidden_shift_duration_mix))
+        self.policy_option_hidden_low_rank = policy_option_hidden_low_rank
+        self.policy_option_hidden_low_rank_dim = max(1, int(policy_option_hidden_low_rank_dim))
         self.policy_option_hidden_split_heads = policy_option_hidden_split_heads
         self.policy_option_hidden_scale_only = policy_option_hidden_scale_only
         self.policy_option_hidden_scale_weight = max(0.0, policy_option_hidden_scale_weight)
@@ -241,16 +245,17 @@ class ActorCriticModel(nn.Module):
                 nn.Linear(hidden_size, 1),
             )
         if self.policy_option_hidden_film:
+            hidden_film_width = self.policy_option_hidden_low_rank_dim if self.policy_option_hidden_low_rank else hidden_size
             if self.policy_option_hidden_split_heads:
                 self.policy_option_hidden_scale_head = nn.Sequential(
-                    nn.LazyLinear(hidden_size),
+                    nn.LazyLinear(hidden_film_width),
                     nn.GELU(),
-                    nn.Linear(hidden_size, hidden_size),
+                    nn.Linear(hidden_film_width, hidden_size),
                 )
                 self.policy_option_hidden_shift_head = nn.Sequential(
-                    nn.LazyLinear(hidden_size),
+                    nn.LazyLinear(hidden_film_width),
                     nn.GELU(),
-                    nn.Linear(hidden_size, hidden_size),
+                    nn.Linear(hidden_film_width, hidden_size),
                 )
                 final_scale_linear = self.policy_option_hidden_scale_head[-1]
                 final_shift_linear = self.policy_option_hidden_shift_head[-1]
@@ -260,9 +265,9 @@ class ActorCriticModel(nn.Module):
                 nn.init.zeros_(final_shift_linear.bias)
             else:
                 self.policy_option_hidden_film_head = nn.Sequential(
-                    nn.LazyLinear(hidden_size),
+                    nn.LazyLinear(hidden_film_width),
                     nn.GELU(),
-                    nn.Linear(hidden_size, hidden_size * 2),
+                    nn.Linear(hidden_film_width, hidden_size * 2),
                 )
                 final_linear = self.policy_option_hidden_film_head[-1]
                 nn.init.zeros_(final_linear.weight)
@@ -377,6 +382,8 @@ class ActorCriticModel(nn.Module):
                         "policy/option_hidden_branch_gates": float(self.policy_option_hidden_branch_gates),
                         "policy/option_hidden_scale_duration_mix": float(self.policy_option_hidden_scale_duration_mix),
                         "policy/option_hidden_shift_duration_mix": float(self.policy_option_hidden_shift_duration_mix),
+                        "policy/option_hidden_low_rank": float(self.policy_option_hidden_low_rank),
+                        "policy/option_hidden_low_rank_dim": float(self.policy_option_hidden_low_rank_dim),
                         "policy/option_hidden_scale_gate_signal_mean": scale_gate_signal.squeeze(-1),
                         "policy/option_hidden_shift_gate_signal_mean": shift_gate_signal.squeeze(-1),
                         "policy/option_hidden_scale_gate_mean": scale_gate.mean(dim=-1),
