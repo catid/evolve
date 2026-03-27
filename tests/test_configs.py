@@ -331,6 +331,25 @@ def test_load_memory_actor_hidden_adaptive_shift_compensation_config() -> None:
     assert por100.model.policy_option_hidden_shift_compensation_scale == 1.0
 
 
+def test_load_memory_actor_hidden_adaptive_shift_compensation_calibration_config() -> None:
+    por20 = load_config(Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_adaptive_floor25_shiftcomp20.yaml"))
+    por35 = load_config(Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_adaptive_floor25_shiftcomp35.yaml"))
+
+    assert por20.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert por20.model.variant == "por"
+    assert por20.model.policy_option_hidden_adaptive_scale_floor is True
+    assert por20.model.policy_option_hidden_scale_floor == 0.25
+    assert por20.model.policy_option_hidden_shift_compensation is True
+    assert por20.model.policy_option_hidden_shift_compensation_scale == 0.2
+
+    assert por35.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert por35.model.variant == "por"
+    assert por35.model.policy_option_hidden_adaptive_scale_floor is True
+    assert por35.model.policy_option_hidden_scale_floor == 0.25
+    assert por35.model.policy_option_hidden_shift_compensation is True
+    assert por35.model.policy_option_hidden_shift_compensation_scale == 0.35
+
+
 def test_load_memory_actor_hidden_option_count_config() -> None:
     por6 = load_config(Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_option6.yaml"))
     por8 = load_config(Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_option8.yaml"))
