@@ -323,6 +323,19 @@ def test_load_memory_actor_hidden_branch_gate_config() -> None:
     assert por.model.policy_option_hidden_shift_weight == 0.22
 
 
+def test_load_memory_actor_hidden_scale_branch_gate_config() -> None:
+    por = load_config(Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_scalemix95.yaml"))
+
+    assert por.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert por.model.variant == "por"
+    assert por.model.policy_option_hidden_film is True
+    assert por.model.policy_option_hidden_use_duration_gate is True
+    assert por.model.policy_option_hidden_branch_gates is True
+    assert por.model.policy_option_hidden_scale_duration_mix == 0.95
+    assert por.model.policy_option_hidden_shift_duration_mix == 1.0
+    assert por.model.policy_option_hidden_shift_weight == 0.22
+
+
 def test_load_memory_actor_hidden_low_rank_config() -> None:
     por = load_config(Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_lowrank16.yaml"))
 
