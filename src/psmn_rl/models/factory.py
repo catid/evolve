@@ -1047,5 +1047,7 @@ def build_model(model_config: ModelConfig, observation_space: gym.Space, action_
         policy_option_hidden_blend_gate=model_config.policy_option_hidden_blend_gate,
         policy_option_hidden_blend_scale=model_config.policy_option_hidden_blend_scale,
         policy_option_hidden_shift_weight=model_config.policy_option_hidden_shift_weight,
+        policy_option_hidden_bound_shift=model_config.policy_option_hidden_bound_shift,
+        policy_option_hidden_shift_bound_scale=model_config.policy_option_hidden_shift_bound_scale,
         policy_option_hidden_post_norm=model_config.policy_option_hidden_post_norm,
     )

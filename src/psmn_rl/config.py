@@ -112,6 +112,8 @@ class ModelConfig:
     policy_option_hidden_blend_gate: bool = False
     policy_option_hidden_blend_scale: float = 1.0
     policy_option_hidden_shift_weight: float = 1.0
+    policy_option_hidden_bound_shift: bool = False
+    policy_option_hidden_shift_bound_scale: float = 1.0
     policy_option_hidden_post_norm: bool = False
     por_option_action_adapter: bool = False
     por_option_action_adapter_scale: float = 1.0

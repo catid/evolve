@@ -121,6 +121,8 @@ class ActorCriticModel(nn.Module):
         policy_option_hidden_blend_gate: bool = False,
         policy_option_hidden_blend_scale: float = 1.0,
         policy_option_hidden_shift_weight: float = 1.0,
+        policy_option_hidden_bound_shift: bool = False,
+        policy_option_hidden_shift_bound_scale: float = 1.0,
         policy_option_hidden_post_norm: bool = False,
     ) -> None:
         super().__init__()
@@ -158,6 +160,8 @@ class ActorCriticModel(nn.Module):
         self.policy_option_hidden_blend_gate = policy_option_hidden_blend_gate
         self.policy_option_hidden_blend_scale = max(0.0, policy_option_hidden_blend_scale)
         self.policy_option_hidden_shift_weight = max(0.0, policy_option_hidden_shift_weight)
+        self.policy_option_hidden_bound_shift = policy_option_hidden_bound_shift
+        self.policy_option_hidden_shift_bound_scale = max(0.0, policy_option_hidden_shift_bound_scale)
         self.policy_option_hidden_post_norm = policy_option_hidden_post_norm
         self.policy_norm = nn.LayerNorm(hidden_size)
         self.policy_hidden = nn.Linear(hidden_size, hidden_size)
@@ -302,7 +306,15 @@ class ActorCriticModel(nn.Module):
                 if self.policy_option_hidden_scale_only:
                     film_shift = torch.zeros_like(policy_hidden)
                 else:
-                    film_shift = raw_shift * gate * self.policy_option_hidden_shift_weight
+                    if self.policy_option_hidden_bound_shift:
+                        film_shift = (
+                            torch.tanh(raw_shift)
+                            * gate
+                            * self.policy_option_hidden_shift_weight
+                            * self.policy_option_hidden_shift_bound_scale
+                        )
+                    else:
+                        film_shift = raw_shift * gate * self.policy_option_hidden_shift_weight
                 policy_hidden = policy_hidden * (1.0 + film_scale) + film_shift
                 blend_gate = None
                 if self.policy_option_hidden_blend_gate:
@@ -324,6 +336,8 @@ class ActorCriticModel(nn.Module):
                         "policy/option_hidden_blend_gate": float(self.policy_option_hidden_blend_gate),
                         "policy/option_hidden_blend_scale": float(self.policy_option_hidden_blend_scale),
                         "policy/option_hidden_film_shift_weight": float(self.policy_option_hidden_shift_weight),
+                        "policy/option_hidden_bound_shift": float(self.policy_option_hidden_bound_shift),
+                        "policy/option_hidden_shift_bound_scale": float(self.policy_option_hidden_shift_bound_scale),
                         "policy/option_hidden_post_norm": float(self.policy_option_hidden_post_norm),
                         "policy/option_hidden_film_scale_norm": film_scale.norm(dim=-1),
                         "policy/option_hidden_film_shift_norm": film_shift.norm(dim=-1),
