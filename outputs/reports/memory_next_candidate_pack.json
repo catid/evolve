@@ -3,7 +3,7 @@
   "generated_at": "2026-03-27T07:55:55+00:00",
   "memory_candidates": [
     {
-      "candidate_id": "partial225_gap_t055",
+      "candidate_id": "partial225_greedy",
       "family_key": "actor_hidden_continuation",
       "gap_success": 0.5208333333333334,
       "greedy_success": 0.5208333333333334,
