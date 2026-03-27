@@ -187,14 +187,14 @@ class ActorCriticModel(nn.Module):
         self.policy_option_hidden_adaptive_scale_floor = policy_option_hidden_adaptive_scale_floor
         self.policy_option_hidden_scale_floor = max(0.0, policy_option_hidden_scale_floor)
         self.policy_option_hidden_scale_floor_power = max(1e-6, policy_option_hidden_scale_floor_power)
-        self.policy_option_hidden_gate_bias_scale = max(0.0, policy_option_hidden_gate_bias_scale)
-        self.policy_option_hidden_scale_gate_bias_scale = max(0.0, policy_option_hidden_scale_gate_bias_scale)
-        self.policy_option_hidden_shift_gate_bias_scale = max(0.0, policy_option_hidden_shift_gate_bias_scale)
+        self.policy_option_hidden_gate_bias_scale = float(policy_option_hidden_gate_bias_scale)
+        self.policy_option_hidden_scale_gate_bias_scale = float(policy_option_hidden_scale_gate_bias_scale)
+        self.policy_option_hidden_shift_gate_bias_scale = float(policy_option_hidden_shift_gate_bias_scale)
         self.policy_option_hidden_gate_bias = (
             policy_option_hidden_gate_bias
-            or self.policy_option_hidden_gate_bias_scale > 0.0
-            or self.policy_option_hidden_scale_gate_bias_scale > 0.0
-            or self.policy_option_hidden_shift_gate_bias_scale > 0.0
+            or abs(self.policy_option_hidden_gate_bias_scale) > 0.0
+            or abs(self.policy_option_hidden_scale_gate_bias_scale) > 0.0
+            or abs(self.policy_option_hidden_shift_gate_bias_scale) > 0.0
         )
         self.policy_option_hidden_adaptive_shift_floor = policy_option_hidden_adaptive_shift_floor
         self.policy_option_hidden_shift_floor = max(0.0, policy_option_hidden_shift_floor)
