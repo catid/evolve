@@ -104,6 +104,9 @@ class ModelConfig:
     policy_option_hidden_film_scale: float = 0.5
     policy_option_hidden_use_duration_gate: bool = False
     policy_option_hidden_duration_mix: float = 1.0
+    policy_option_hidden_branch_gates: bool = False
+    policy_option_hidden_scale_duration_mix: float = 1.0
+    policy_option_hidden_shift_duration_mix: float = 1.0
     policy_option_hidden_split_heads: bool = False
     policy_option_hidden_scale_only: bool = False
     policy_option_hidden_scale_weight: float = 1.0

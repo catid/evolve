@@ -113,6 +113,9 @@ class ActorCriticModel(nn.Module):
         policy_option_hidden_film_scale: float = 0.5,
         policy_option_hidden_use_duration_gate: bool = False,
         policy_option_hidden_duration_mix: float = 1.0,
+        policy_option_hidden_branch_gates: bool = False,
+        policy_option_hidden_scale_duration_mix: float = 1.0,
+        policy_option_hidden_shift_duration_mix: float = 1.0,
         policy_option_hidden_split_heads: bool = False,
         policy_option_hidden_scale_only: bool = False,
         policy_option_hidden_scale_weight: float = 1.0,
@@ -153,6 +156,9 @@ class ActorCriticModel(nn.Module):
         self.policy_option_hidden_film_scale = policy_option_hidden_film_scale
         self.policy_option_hidden_use_duration_gate = policy_option_hidden_use_duration_gate
         self.policy_option_hidden_duration_mix = max(0.0, min(1.0, policy_option_hidden_duration_mix))
+        self.policy_option_hidden_branch_gates = policy_option_hidden_branch_gates
+        self.policy_option_hidden_scale_duration_mix = max(0.0, min(1.0, policy_option_hidden_scale_duration_mix))
+        self.policy_option_hidden_shift_duration_mix = max(0.0, min(1.0, policy_option_hidden_shift_duration_mix))
         self.policy_option_hidden_split_heads = policy_option_hidden_split_heads
         self.policy_option_hidden_scale_only = policy_option_hidden_scale_only
         self.policy_option_hidden_scale_weight = max(0.0, policy_option_hidden_scale_weight)
@@ -315,30 +321,44 @@ class ActorCriticModel(nn.Module):
                 if self.policy_option_hidden_use_duration_gate and option_actor_duration_gate is not None:
                     mix = self.policy_option_hidden_duration_mix
                     option_gate_signal = (mix * option_actor_duration_gate) + ((1.0 - mix) * option_actor_stability)
+                    if self.policy_option_hidden_branch_gates:
+                        scale_gate_signal = (
+                            self.policy_option_hidden_scale_duration_mix * option_actor_duration_gate
+                        ) + ((1.0 - self.policy_option_hidden_scale_duration_mix) * option_actor_stability)
+                        shift_gate_signal = (
+                            self.policy_option_hidden_shift_duration_mix * option_actor_duration_gate
+                        ) + ((1.0 - self.policy_option_hidden_shift_duration_mix) * option_actor_stability)
+                    else:
+                        scale_gate_signal = option_gate_signal
+                        shift_gate_signal = option_gate_signal
                 else:
                     option_gate_signal = option_actor_stability
+                    scale_gate_signal = option_gate_signal
+                    shift_gate_signal = option_gate_signal
                 if self.policy_option_hidden_split_heads:
                     raw_scale = self.policy_option_hidden_scale_head(option_actor_features)
                     raw_shift = self.policy_option_hidden_shift_head(option_actor_features)
                 else:
                     raw_film = self.policy_option_hidden_film_head(option_actor_features)
                     raw_scale, raw_shift = raw_film.chunk(2, dim=-1)
-                gate = (self.policy_option_hidden_film_scale * option_gate_signal).to(policy_hidden.dtype)
+                scale_gate = (self.policy_option_hidden_film_scale * scale_gate_signal).to(policy_hidden.dtype)
+                shift_gate = (self.policy_option_hidden_film_scale * shift_gate_signal).to(policy_hidden.dtype)
                 if low_margin_gate is not None:
-                    gate = gate * low_margin_gate.unsqueeze(-1)
-                film_scale = torch.tanh(raw_scale) * gate * self.policy_option_hidden_scale_weight
+                    scale_gate = scale_gate * low_margin_gate.unsqueeze(-1)
+                    shift_gate = shift_gate * low_margin_gate.unsqueeze(-1)
+                film_scale = torch.tanh(raw_scale) * scale_gate * self.policy_option_hidden_scale_weight
                 if self.policy_option_hidden_scale_only:
                     film_shift = torch.zeros_like(policy_hidden)
                 else:
                     if self.policy_option_hidden_bound_shift:
                         film_shift = (
                             torch.tanh(raw_shift)
-                            * gate
+                            * shift_gate
                             * self.policy_option_hidden_shift_weight
                             * self.policy_option_hidden_shift_bound_scale
                         )
                     else:
-                        film_shift = raw_shift * gate * self.policy_option_hidden_shift_weight
+                        film_shift = raw_shift * shift_gate * self.policy_option_hidden_shift_weight
                 policy_hidden = policy_hidden * (1.0 + film_scale) + film_shift
                 blend_gate = None
                 if self.policy_option_hidden_blend_gate:
@@ -350,9 +370,17 @@ class ActorCriticModel(nn.Module):
                 metrics.update(
                     {
                         "policy/option_hidden_film_gate_signal_mean": option_gate_signal.squeeze(-1),
-                        "policy/option_hidden_film_gate_mean": gate.mean(dim=-1),
+                        "policy/option_hidden_film_gate_mean": 0.5
+                        * (scale_gate.mean(dim=-1) + shift_gate.mean(dim=-1)),
                         "policy/option_hidden_film_stability_mean": option_actor_stability.squeeze(-1),
                         "policy/option_hidden_film_duration_mix": float(self.policy_option_hidden_duration_mix),
+                        "policy/option_hidden_branch_gates": float(self.policy_option_hidden_branch_gates),
+                        "policy/option_hidden_scale_duration_mix": float(self.policy_option_hidden_scale_duration_mix),
+                        "policy/option_hidden_shift_duration_mix": float(self.policy_option_hidden_shift_duration_mix),
+                        "policy/option_hidden_scale_gate_signal_mean": scale_gate_signal.squeeze(-1),
+                        "policy/option_hidden_shift_gate_signal_mean": shift_gate_signal.squeeze(-1),
+                        "policy/option_hidden_scale_gate_mean": scale_gate.mean(dim=-1),
+                        "policy/option_hidden_shift_gate_mean": shift_gate.mean(dim=-1),
                         "policy/option_hidden_split_heads": float(self.policy_option_hidden_split_heads),
                         "policy/option_hidden_film_scale_only": float(self.policy_option_hidden_scale_only),
                         "policy/option_hidden_film_scale_weight": float(self.policy_option_hidden_scale_weight),

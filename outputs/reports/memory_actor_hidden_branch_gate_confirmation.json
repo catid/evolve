@@ -1,0 +1,36 @@
+{
+  "rows": [
+    {
+      "gap_t0055/margin": 2.352037493622906,
+      "gap_t0055/return": 0.46300347009673715,
+      "gap_t0055/success": 0.46875,
+      "greedy/margin": 2.352037493622906,
+      "greedy/return": 0.46300347009673715,
+      "greedy/success": 0.46875,
+      "label": "por_actor_hidden_partial_shift22",
+      "lower_t005/margin": 2.352037493622906,
+      "lower_t005/return": 0.46300347009673715,
+      "lower_t005/success": 0.46875,
+      "run_dir": "outputs/experiments/memory_actor_hidden_branch_gate_probe/memory_por_switchy_actor_hidden_partial_shift22",
+      "shoulder_t008/margin": 2.352037493622906,
+      "shoulder_t008/return": 0.46300347009673715,
+      "shoulder_t008/success": 0.46875
+    },
+    {
+      "gap_t0055/margin": 2.5330521051339536,
+      "gap_t0055/return": 0.46300347009673715,
+      "gap_t0055/success": 0.46875,
+      "greedy/margin": 2.5330521051339536,
+      "greedy/return": 0.46300347009673715,
+      "greedy/success": 0.46875,
+      "label": "por_actor_hidden_partial_shift22_shiftmix90",
+      "lower_t005/margin": 2.5330521051339536,
+      "lower_t005/return": 0.46300347009673715,
+      "lower_t005/success": 0.46875,
+      "run_dir": "outputs/experiments/memory_actor_hidden_branch_gate_probe/memory_por_switchy_actor_hidden_partial_shift22_shiftmix90",
+      "shoulder_t008/margin": 2.5330521051339536,
+      "shoulder_t008/return": 0.46300347009673715,
+      "shoulder_t008/success": 0.46875
+    }
+  ]
+}
