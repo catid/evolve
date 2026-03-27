@@ -1048,3 +1048,26 @@ def test_load_memory_actor_hidden_shiftgate075_scale325_powered_shift_floor_conf
     assert math.isclose(power05.model.policy_option_hidden_shift_floor, 0.20)
     assert math.isclose(power05.model.policy_option_hidden_shift_floor_power, 0.50)
     assert math.isclose(power05.model.policy_option_hidden_shift_gate_power, 0.75)
+
+
+def test_load_memory_actor_hidden_shiftgate075_scale325_shift_bias_configs() -> None:
+    bias025 = load_config(
+        Path(
+            "configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_shiftgate075_scale325_shiftbias025.yaml"
+        )
+    )
+    bias05 = load_config(
+        Path(
+            "configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_shiftgate075_scale325_shiftbias05.yaml"
+        )
+    )
+
+    assert bias025.model.policy_option_hidden_gate_bias is True
+    assert math.isclose(bias025.model.policy_option_hidden_film_scale, 0.325)
+    assert math.isclose(bias025.model.policy_option_hidden_shift_gate_bias_scale, 0.025)
+    assert math.isclose(bias025.model.policy_option_hidden_shift_gate_power, 0.75)
+
+    assert bias05.model.policy_option_hidden_gate_bias is True
+    assert math.isclose(bias05.model.policy_option_hidden_film_scale, 0.325)
+    assert math.isclose(bias05.model.policy_option_hidden_shift_gate_bias_scale, 0.05)
+    assert math.isclose(bias05.model.policy_option_hidden_shift_gate_power, 0.75)
