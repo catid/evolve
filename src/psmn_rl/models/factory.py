@@ -1049,6 +1049,7 @@ def build_model(model_config: ModelConfig, observation_space: gym.Space, action_
         policy_option_hidden_scale_weight=model_config.policy_option_hidden_scale_weight,
         policy_option_hidden_adaptive_scale_floor=model_config.policy_option_hidden_adaptive_scale_floor,
         policy_option_hidden_scale_floor=model_config.policy_option_hidden_scale_floor,
+        policy_option_hidden_scale_floor_power=model_config.policy_option_hidden_scale_floor_power,
         policy_option_hidden_shift_compensation=model_config.policy_option_hidden_shift_compensation,
         policy_option_hidden_shift_compensation_scale=model_config.policy_option_hidden_shift_compensation_scale,
         policy_option_hidden_low_margin_gate=model_config.policy_option_hidden_low_margin_gate,

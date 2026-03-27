@@ -123,6 +123,7 @@ class ActorCriticModel(nn.Module):
         policy_option_hidden_scale_weight: float = 1.0,
         policy_option_hidden_adaptive_scale_floor: bool = False,
         policy_option_hidden_scale_floor: float = 0.0,
+        policy_option_hidden_scale_floor_power: float = 1.0,
         policy_option_hidden_shift_compensation: bool = False,
         policy_option_hidden_shift_compensation_scale: float = 0.0,
         policy_option_hidden_low_margin_gate: bool = False,
@@ -174,6 +175,7 @@ class ActorCriticModel(nn.Module):
         self.policy_option_hidden_scale_weight = max(0.0, policy_option_hidden_scale_weight)
         self.policy_option_hidden_adaptive_scale_floor = policy_option_hidden_adaptive_scale_floor
         self.policy_option_hidden_scale_floor = max(0.0, policy_option_hidden_scale_floor)
+        self.policy_option_hidden_scale_floor_power = max(1e-6, policy_option_hidden_scale_floor_power)
         self.policy_option_hidden_shift_compensation = policy_option_hidden_shift_compensation
         self.policy_option_hidden_shift_compensation_scale = max(0.0, policy_option_hidden_shift_compensation_scale)
         self.policy_option_hidden_low_margin_gate = policy_option_hidden_low_margin_gate
@@ -360,10 +362,11 @@ class ActorCriticModel(nn.Module):
                     raw_scale, raw_shift = raw_film.chunk(2, dim=-1)
                 adaptive_scale = self.policy_option_hidden_film_scale
                 if self.policy_option_hidden_adaptive_scale_floor:
+                    floor_gate_signal = scale_gate_signal.pow(self.policy_option_hidden_scale_floor_power)
                     adaptive_scale = (
                         self.policy_option_hidden_scale_floor
                         + (self.policy_option_hidden_film_scale - self.policy_option_hidden_scale_floor)
-                        * scale_gate_signal
+                        * floor_gate_signal
                     )
                 shift_compensation = 1.0
                 if self.policy_option_hidden_shift_compensation and self.policy_option_hidden_film_scale > 0.0:
@@ -424,6 +427,7 @@ class ActorCriticModel(nn.Module):
                         "policy/option_hidden_film_scale_weight": float(self.policy_option_hidden_scale_weight),
                         "policy/option_hidden_adaptive_scale_floor": float(self.policy_option_hidden_adaptive_scale_floor),
                         "policy/option_hidden_scale_floor": float(self.policy_option_hidden_scale_floor),
+                        "policy/option_hidden_scale_floor_power": float(self.policy_option_hidden_scale_floor_power),
                         "policy/option_hidden_shift_compensation": float(self.policy_option_hidden_shift_compensation),
                         "policy/option_hidden_shift_compensation_scale": float(
                             self.policy_option_hidden_shift_compensation_scale
