@@ -115,6 +115,8 @@ class ModelConfig:
     policy_option_hidden_adaptive_scale_floor: bool = False
     policy_option_hidden_scale_floor: float = 0.0
     policy_option_hidden_scale_floor_power: float = 1.0
+    policy_option_hidden_gate_bias: bool = False
+    policy_option_hidden_gate_bias_scale: float = 0.0
     policy_option_hidden_shift_compensation: bool = False
     policy_option_hidden_shift_compensation_scale: float = 0.0
     policy_option_hidden_low_margin_gate: bool = False

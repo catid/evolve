@@ -124,6 +124,8 @@ class ActorCriticModel(nn.Module):
         policy_option_hidden_adaptive_scale_floor: bool = False,
         policy_option_hidden_scale_floor: float = 0.0,
         policy_option_hidden_scale_floor_power: float = 1.0,
+        policy_option_hidden_gate_bias: bool = False,
+        policy_option_hidden_gate_bias_scale: float = 0.0,
         policy_option_hidden_shift_compensation: bool = False,
         policy_option_hidden_shift_compensation_scale: float = 0.0,
         policy_option_hidden_low_margin_gate: bool = False,
@@ -176,6 +178,8 @@ class ActorCriticModel(nn.Module):
         self.policy_option_hidden_adaptive_scale_floor = policy_option_hidden_adaptive_scale_floor
         self.policy_option_hidden_scale_floor = max(0.0, policy_option_hidden_scale_floor)
         self.policy_option_hidden_scale_floor_power = max(1e-6, policy_option_hidden_scale_floor_power)
+        self.policy_option_hidden_gate_bias = policy_option_hidden_gate_bias
+        self.policy_option_hidden_gate_bias_scale = max(0.0, policy_option_hidden_gate_bias_scale)
         self.policy_option_hidden_shift_compensation = policy_option_hidden_shift_compensation
         self.policy_option_hidden_shift_compensation_scale = max(0.0, policy_option_hidden_shift_compensation_scale)
         self.policy_option_hidden_low_margin_gate = policy_option_hidden_low_margin_gate
@@ -295,6 +299,15 @@ class ActorCriticModel(nn.Module):
                 final_blend_linear = self.policy_option_hidden_blend_head[-1]
                 nn.init.zeros_(final_blend_linear.weight)
                 nn.init.constant_(final_blend_linear.bias, 2.0)
+            if self.policy_option_hidden_gate_bias:
+                self.policy_option_hidden_gate_bias_head = nn.Sequential(
+                    nn.LazyLinear(hidden_film_width),
+                    nn.GELU(),
+                    nn.Linear(hidden_film_width, 1),
+                )
+                final_gate_bias_linear = self.policy_option_hidden_gate_bias_head[-1]
+                nn.init.zeros_(final_gate_bias_linear.weight)
+                nn.init.zeros_(final_gate_bias_linear.bias)
             if self.policy_option_hidden_post_norm:
                 self.policy_option_hidden_post_layernorm = nn.LayerNorm(hidden_size)
         self.value_head = nn.Sequential(
@@ -354,12 +367,18 @@ class ActorCriticModel(nn.Module):
                     option_gate_signal = option_actor_stability
                     scale_gate_signal = option_gate_signal
                     shift_gate_signal = option_gate_signal
+                gate_bias = None
                 if self.policy_option_hidden_split_heads:
                     raw_scale = self.policy_option_hidden_scale_head(option_actor_features)
                     raw_shift = self.policy_option_hidden_shift_head(option_actor_features)
                 else:
                     raw_film = self.policy_option_hidden_film_head(option_actor_features)
                     raw_scale, raw_shift = raw_film.chunk(2, dim=-1)
+                if self.policy_option_hidden_gate_bias:
+                    gate_bias = torch.tanh(self.policy_option_hidden_gate_bias_head(option_actor_features))
+                    gate_bias = gate_bias * self.policy_option_hidden_gate_bias_scale
+                    scale_gate_signal = (scale_gate_signal + gate_bias).clamp(0.0, 1.0)
+                    shift_gate_signal = (shift_gate_signal + gate_bias).clamp(0.0, 1.0)
                 adaptive_scale = self.policy_option_hidden_film_scale
                 if self.policy_option_hidden_adaptive_scale_floor:
                     floor_gate_signal = scale_gate_signal.pow(self.policy_option_hidden_scale_floor_power)
@@ -428,6 +447,8 @@ class ActorCriticModel(nn.Module):
                         "policy/option_hidden_adaptive_scale_floor": float(self.policy_option_hidden_adaptive_scale_floor),
                         "policy/option_hidden_scale_floor": float(self.policy_option_hidden_scale_floor),
                         "policy/option_hidden_scale_floor_power": float(self.policy_option_hidden_scale_floor_power),
+                        "policy/option_hidden_gate_bias": float(self.policy_option_hidden_gate_bias),
+                        "policy/option_hidden_gate_bias_scale": float(self.policy_option_hidden_gate_bias_scale),
                         "policy/option_hidden_shift_compensation": float(self.policy_option_hidden_shift_compensation),
                         "policy/option_hidden_shift_compensation_scale": float(
                             self.policy_option_hidden_shift_compensation_scale
@@ -452,6 +473,8 @@ class ActorCriticModel(nn.Module):
                 )
                 if blend_gate is not None:
                     metrics["policy/option_hidden_blend_gate_mean"] = blend_gate
+                if gate_bias is not None:
+                    metrics["policy/option_hidden_gate_bias_mean"] = gate_bias.squeeze(-1)
                 if low_margin_gate is not None and margin_before is not None:
                     metrics["policy/option_hidden_film_low_margin_gate_mean"] = low_margin_gate
                     metrics["policy/option_hidden_film_margin_before"] = margin_before
