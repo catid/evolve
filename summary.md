@@ -48,6 +48,14 @@
   - contract artifact: [portfolio_frontier_contract.json](outputs/reports/portfolio_frontier_contract.json)
   - seed pack artifact: [portfolio_seed_pack.json](outputs/reports/portfolio_seed_pack.json)
   - seed-pack doctor: [portfolio_seed_pack_doctor.md](outputs/reports/portfolio_seed_pack_doctor.md)
+- The accepted adjacent-task state is now also explicit:
+  - internal task-scoped Memory candidate: `partial225_greedy`
+  - task-scoped status: `POR or recurrent-control Memory branch earns task-scoped benchmark-candidate status`
+  - candidate pack: [memory_next_candidate_pack.json](outputs/reports/memory_next_candidate_pack.json)
+  - gate report: [memory_next_gate_report.md](outputs/reports/memory_next_gate_report.md)
+  - decision memo: [memory_next_decision_memo.md](outputs/reports/memory_next_decision_memo.md)
+  - canonicalization note: [memory_next_candidate_canonicalization.md](outputs/reports/memory_next_candidate_canonicalization.md)
+  - this does not widen the public claim envelope; `round6` remains the only active benchmark
 - Allowed current scope:
   - teacher-guided KL learner-state DoorKey `SARE` result
   - external `64`-episode evaluation only
@@ -114,7 +122,7 @@
   - route randomization is catastrophic on most recovered seeds, but seed `29` is now a genuine narrow exception rather than a weak-probe artifact
   - see [lss_seed29_route_randomization_forensics.md](outputs/reports/lss_seed29_route_randomization_forensics.md) and [lss_broader_route_dependence_report.md](outputs/reports/lss_broader_route_dependence_report.md)
 - The exact same method shows no bounded KeyCorridor transfer. See [lss_keycorridor_transfer_report.md](outputs/reports/lss_keycorridor_transfer_report.md).
-- The current repo recommendation is that `round6` is the active canonical DoorKey benchmark, now explicitly re-confirmed after the 50/50 portfolio campaign, while future candidates still have to go through the automated gate and candidate-pack discipline against that active benchmark and the archived frozen pack. See [portfolio_decision_memo.md](outputs/reports/portfolio_decision_memo.md), [portfolio_candidate_pack.json](outputs/reports/portfolio_candidate_pack.json), [portfolio_frontier_contract.json](outputs/reports/portfolio_frontier_contract.json), and [freeze_hardening_operational_memo.md](outputs/reports/freeze_hardening_operational_memo.md).
+- The current repo recommendation is that `round6` is the active canonical DoorKey benchmark, now explicitly re-confirmed after the 50/50 portfolio campaign, while future candidates still have to go through the automated gate and candidate-pack discipline against that active benchmark and the archived frozen pack. The only adjacent non-DoorKey lane that has advanced beyond exploratory status is the task-scoped `Memory` candidate `partial225_greedy`, and it remains internal rather than public-claim widening. See [portfolio_decision_memo.md](outputs/reports/portfolio_decision_memo.md), [portfolio_candidate_pack.json](outputs/reports/portfolio_candidate_pack.json), [portfolio_frontier_contract.json](outputs/reports/portfolio_frontier_contract.json), [freeze_hardening_operational_memo.md](outputs/reports/freeze_hardening_operational_memo.md), and [memory_next_decision_memo.md](outputs/reports/memory_next_decision_memo.md).
 
 ## Claim Gate
 

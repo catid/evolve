@@ -17,6 +17,14 @@
   - exploratory adjacent-task result: `KeyCorridor clearly negative`
   - legacy baseline: the frozen benchmark pack remains archived for provenance and historical comparison
   - current gate reference pack: `outputs/reports/round6_current_benchmark_pack.json`
+- There is now one adjacent internal lane that is stronger than exploratory-only but still below benchmark promotion:
+  - task: `Memory`
+  - canonical task-scoped candidate: `partial225_greedy`
+  - status: `POR or recurrent-control Memory branch earns task-scoped benchmark-candidate status`
+  - candidate pack: `outputs/reports/memory_next_candidate_pack.json`
+  - decision memo: `outputs/reports/memory_next_decision_memo.md`
+  - canonicalization note: `outputs/reports/memory_next_candidate_canonicalization.md`
+  - this does not widen the public claim envelope or displace `round6`
 - This is still not a PPO-only, specifically multi-expert, cross-task, or KeyCorridor claim.
 
 ## Frozen Benchmark Baseline

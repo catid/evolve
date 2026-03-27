@@ -211,6 +211,14 @@ Compare greedy and sampled evaluation for a checkpoint:
 
 Current high-level findings are summarized in `summary.md` and `report.md` at the repo root, with detailed phase artifacts under `outputs/reports/`.
 
+Current accepted state:
+
+- active benchmark: `round6` on DoorKey only
+- public claim envelope: still teacher-guided, KL learner-state, DoorKey only, external `64`-episode evaluation only
+- internal adjacent-task candidate: `partial225_greedy` on `Memory`, with task-scoped benchmark-candidate status only
+
+See `outputs/reports/memory_next_decision_memo.md`, `outputs/reports/memory_next_candidate_pack.json`, and `outputs/reports/memory_next_candidate_canonicalization.md` for the current Memory-side status.
+
 ## Frozen Benchmark Pack
 
 The DoorKey claim is now sealed as a frozen benchmark pack rather than a loose collection of reports.
