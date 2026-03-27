@@ -116,6 +116,8 @@ class ActorCriticModel(nn.Module):
         policy_option_hidden_branch_gates: bool = False,
         policy_option_hidden_scale_duration_mix: float = 1.0,
         policy_option_hidden_shift_duration_mix: float = 1.0,
+        policy_option_hidden_scale_gate_power: float = 1.0,
+        policy_option_hidden_shift_gate_power: float = 1.0,
         policy_option_hidden_low_rank: bool = False,
         policy_option_hidden_low_rank_dim: int = 32,
         policy_option_hidden_split_heads: bool = False,
@@ -175,6 +177,8 @@ class ActorCriticModel(nn.Module):
         self.policy_option_hidden_branch_gates = policy_option_hidden_branch_gates
         self.policy_option_hidden_scale_duration_mix = max(0.0, min(1.0, policy_option_hidden_scale_duration_mix))
         self.policy_option_hidden_shift_duration_mix = max(0.0, min(1.0, policy_option_hidden_shift_duration_mix))
+        self.policy_option_hidden_scale_gate_power = max(1e-6, policy_option_hidden_scale_gate_power)
+        self.policy_option_hidden_shift_gate_power = max(1e-6, policy_option_hidden_shift_gate_power)
         self.policy_option_hidden_low_rank = policy_option_hidden_low_rank
         self.policy_option_hidden_low_rank_dim = max(1, int(policy_option_hidden_low_rank_dim))
         self.policy_option_hidden_split_heads = policy_option_hidden_split_heads
@@ -382,6 +386,8 @@ class ActorCriticModel(nn.Module):
                     option_gate_signal = option_actor_stability
                     scale_gate_signal = option_gate_signal
                     shift_gate_signal = option_gate_signal
+                scale_gate_signal = scale_gate_signal.clamp(0.0, 1.0).pow(self.policy_option_hidden_scale_gate_power)
+                shift_gate_signal = shift_gate_signal.clamp(0.0, 1.0).pow(self.policy_option_hidden_shift_gate_power)
                 gate_bias = None
                 if self.policy_option_hidden_split_heads:
                     raw_scale = self.policy_option_hidden_scale_head(option_actor_features)
@@ -468,6 +474,8 @@ class ActorCriticModel(nn.Module):
                         "policy/option_hidden_branch_gates": float(self.policy_option_hidden_branch_gates),
                         "policy/option_hidden_scale_duration_mix": float(self.policy_option_hidden_scale_duration_mix),
                         "policy/option_hidden_shift_duration_mix": float(self.policy_option_hidden_shift_duration_mix),
+                        "policy/option_hidden_scale_gate_power": float(self.policy_option_hidden_scale_gate_power),
+                        "policy/option_hidden_shift_gate_power": float(self.policy_option_hidden_shift_gate_power),
                         "policy/option_hidden_low_rank": float(self.policy_option_hidden_low_rank),
                         "policy/option_hidden_low_rank_dim": float(self.policy_option_hidden_low_rank_dim),
                         "policy/option_hidden_scale_gate_signal_mean": scale_gate_signal.squeeze(-1),

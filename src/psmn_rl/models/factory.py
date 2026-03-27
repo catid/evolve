@@ -1042,6 +1042,8 @@ def build_model(model_config: ModelConfig, observation_space: gym.Space, action_
         policy_option_hidden_branch_gates=model_config.policy_option_hidden_branch_gates,
         policy_option_hidden_scale_duration_mix=model_config.policy_option_hidden_scale_duration_mix,
         policy_option_hidden_shift_duration_mix=model_config.policy_option_hidden_shift_duration_mix,
+        policy_option_hidden_scale_gate_power=model_config.policy_option_hidden_scale_gate_power,
+        policy_option_hidden_shift_gate_power=model_config.policy_option_hidden_shift_gate_power,
         policy_option_hidden_low_rank=model_config.policy_option_hidden_low_rank,
         policy_option_hidden_low_rank_dim=model_config.policy_option_hidden_low_rank_dim,
         policy_option_hidden_split_heads=model_config.policy_option_hidden_split_heads,
