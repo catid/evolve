@@ -522,6 +522,33 @@ def test_load_memory_actor_hidden_shiftgate075_scale325_scale_gate_micro_configs
     assert scalegate105.model.policy_option_hidden_shift_gate_power == 0.75
 
 
+def test_load_memory_actor_hidden_shiftgate075_scale325_branch_gate_configs() -> None:
+    shiftmix95 = load_config(
+        Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_shiftgate075_scale325_shiftmix95.yaml")
+    )
+    shiftmix90 = load_config(
+        Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_shiftgate075_scale325_shiftmix90.yaml")
+    )
+
+    assert shiftmix95.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert shiftmix95.model.variant == "por"
+    assert shiftmix95.model.policy_option_hidden_film is True
+    assert shiftmix95.model.policy_option_hidden_branch_gates is True
+    assert shiftmix95.model.policy_option_hidden_film_scale == 0.325
+    assert shiftmix95.model.policy_option_hidden_scale_duration_mix == 1.0
+    assert shiftmix95.model.policy_option_hidden_shift_duration_mix == 0.95
+    assert shiftmix95.model.policy_option_hidden_shift_gate_power == 0.75
+
+    assert shiftmix90.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert shiftmix90.model.variant == "por"
+    assert shiftmix90.model.policy_option_hidden_film is True
+    assert shiftmix90.model.policy_option_hidden_branch_gates is True
+    assert shiftmix90.model.policy_option_hidden_film_scale == 0.325
+    assert shiftmix90.model.policy_option_hidden_scale_duration_mix == 1.0
+    assert shiftmix90.model.policy_option_hidden_shift_duration_mix == 0.90
+    assert shiftmix90.model.policy_option_hidden_shift_gate_power == 0.75
+
+
 def test_load_memory_actor_hidden_scale_gate_power_configs() -> None:
     gate125 = load_config(
         Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_scalegate125.yaml")
