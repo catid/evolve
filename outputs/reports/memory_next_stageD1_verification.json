@@ -1,0 +1,61 @@
+{
+  "exploit_rows": [
+    {
+      "candidate_id": "partial225_gap_t055",
+      "family_key": "actor_hidden_continuation",
+      "rerun_greedy_success": 0.5208333333333334,
+      "rerun_success": 0.5208333333333334,
+      "screen_success": 0.5208333333333334
+    },
+    {
+      "candidate_id": "partial225_greedy",
+      "family_key": "actor_hidden_continuation",
+      "rerun_greedy_success": 0.5208333333333334,
+      "rerun_success": 0.5208333333333334,
+      "screen_success": 0.5208333333333334
+    },
+    {
+      "candidate_id": "select_partial225_greedy",
+      "family_key": "checkpoint_selection",
+      "rerun_greedy_success": 0.5208333333333334,
+      "rerun_success": 0.5208333333333334,
+      "screen_success": 0.5208333333333334
+    },
+    {
+      "candidate_id": "select_partial22_greedy",
+      "family_key": "checkpoint_selection",
+      "rerun_greedy_success": 0.5208333333333334,
+      "rerun_success": 0.5208333333333334,
+      "screen_success": 0.5208333333333334
+    },
+    {
+      "candidate_id": "partial22_conf_gate085_t055",
+      "family_key": "sampled_to_greedy_decode",
+      "rerun_greedy_success": 0.5208333333333334,
+      "rerun_success": 0.5208333333333334,
+      "screen_success": 0.5208333333333334
+    },
+    {
+      "candidate_id": "partial22_conf_gate092_t055",
+      "family_key": "sampled_to_greedy_decode",
+      "rerun_greedy_success": 0.5208333333333334,
+      "rerun_success": 0.5208333333333334,
+      "screen_success": 0.5208333333333334
+    },
+    {
+      "candidate_id": "partial22_cons2_t05",
+      "family_key": "small_branch_consensus",
+      "rerun_greedy_success": 0.5208333333333334,
+      "rerun_success": 0.5208333333333334,
+      "screen_success": 0.5208333333333334
+    },
+    {
+      "candidate_id": "partial22_cons2_t055",
+      "family_key": "small_branch_consensus",
+      "rerun_greedy_success": 0.5208333333333334,
+      "rerun_success": 0.5208333333333334,
+      "screen_success": 0.5208333333333334
+    }
+  ],
+  "explore_rows": []
+}

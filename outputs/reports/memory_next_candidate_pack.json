@@ -1,0 +1,20 @@
+{
+  "active_benchmark": "round6",
+  "generated_at": "2026-03-27T07:55:55+00:00",
+  "memory_candidates": [
+    {
+      "candidate_id": "partial225_gap_t055",
+      "family_key": "actor_hidden_continuation",
+      "gap_success": 0.5208333333333334,
+      "greedy_success": 0.5208333333333334,
+      "healthy_gap_success": 0.421875,
+      "lower_success": 0.5208333333333334,
+      "option_duration_mean": 1.2928917446972004,
+      "option_switch_mean": 0.4252728174603174,
+      "shoulder_success": 0.5208333333333334,
+      "stability_greedy_success": 0.546875
+    }
+  ],
+  "pack_type": "memory_next_summary",
+  "status": "POR or recurrent-control Memory branch earns task-scoped benchmark-candidate status"
+}
