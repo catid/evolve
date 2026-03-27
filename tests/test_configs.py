@@ -258,6 +258,29 @@ def test_load_memory_actor_hidden_gate_bias_configs() -> None:
     assert por20.model.policy_option_hidden_shift_weight == 0.22
 
 
+def test_load_memory_actor_hidden_branch_gate_bias_configs() -> None:
+    scale = load_config(
+        Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_scalebias10.yaml")
+    )
+    shift = load_config(
+        Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_shiftbias10.yaml")
+    )
+
+    assert scale.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert scale.model.variant == "por"
+    assert scale.model.policy_option_hidden_film is True
+    assert scale.model.policy_option_hidden_gate_bias is True
+    assert scale.model.policy_option_hidden_scale_gate_bias_scale == 0.10
+    assert scale.model.policy_option_hidden_shift_gate_bias_scale == 0.0
+
+    assert shift.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert shift.model.variant == "por"
+    assert shift.model.policy_option_hidden_film is True
+    assert shift.model.policy_option_hidden_gate_bias is True
+    assert shift.model.policy_option_hidden_scale_gate_bias_scale == 0.0
+    assert shift.model.policy_option_hidden_shift_gate_bias_scale == 0.10
+
+
 def test_load_memory_actor_hidden_upper_shift_config() -> None:
     por = load_config(Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift30.yaml"))
 

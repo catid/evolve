@@ -126,6 +126,8 @@ class ActorCriticModel(nn.Module):
         policy_option_hidden_scale_floor_power: float = 1.0,
         policy_option_hidden_gate_bias: bool = False,
         policy_option_hidden_gate_bias_scale: float = 0.0,
+        policy_option_hidden_scale_gate_bias_scale: float = 0.0,
+        policy_option_hidden_shift_gate_bias_scale: float = 0.0,
         policy_option_hidden_shift_compensation: bool = False,
         policy_option_hidden_shift_compensation_scale: float = 0.0,
         policy_option_hidden_low_margin_gate: bool = False,
@@ -178,8 +180,15 @@ class ActorCriticModel(nn.Module):
         self.policy_option_hidden_adaptive_scale_floor = policy_option_hidden_adaptive_scale_floor
         self.policy_option_hidden_scale_floor = max(0.0, policy_option_hidden_scale_floor)
         self.policy_option_hidden_scale_floor_power = max(1e-6, policy_option_hidden_scale_floor_power)
-        self.policy_option_hidden_gate_bias = policy_option_hidden_gate_bias
         self.policy_option_hidden_gate_bias_scale = max(0.0, policy_option_hidden_gate_bias_scale)
+        self.policy_option_hidden_scale_gate_bias_scale = max(0.0, policy_option_hidden_scale_gate_bias_scale)
+        self.policy_option_hidden_shift_gate_bias_scale = max(0.0, policy_option_hidden_shift_gate_bias_scale)
+        self.policy_option_hidden_gate_bias = (
+            policy_option_hidden_gate_bias
+            or self.policy_option_hidden_gate_bias_scale > 0.0
+            or self.policy_option_hidden_scale_gate_bias_scale > 0.0
+            or self.policy_option_hidden_shift_gate_bias_scale > 0.0
+        )
         self.policy_option_hidden_shift_compensation = policy_option_hidden_shift_compensation
         self.policy_option_hidden_shift_compensation_scale = max(0.0, policy_option_hidden_shift_compensation_scale)
         self.policy_option_hidden_low_margin_gate = policy_option_hidden_low_margin_gate
@@ -376,9 +385,16 @@ class ActorCriticModel(nn.Module):
                     raw_scale, raw_shift = raw_film.chunk(2, dim=-1)
                 if self.policy_option_hidden_gate_bias:
                     gate_bias = torch.tanh(self.policy_option_hidden_gate_bias_head(option_actor_features))
-                    gate_bias = gate_bias * self.policy_option_hidden_gate_bias_scale
-                    scale_gate_signal = (scale_gate_signal + gate_bias).clamp(0.0, 1.0)
-                    shift_gate_signal = (shift_gate_signal + gate_bias).clamp(0.0, 1.0)
+                    scale_gate_bias = gate_bias * (
+                        self.policy_option_hidden_gate_bias_scale
+                        + self.policy_option_hidden_scale_gate_bias_scale
+                    )
+                    shift_gate_bias = gate_bias * (
+                        self.policy_option_hidden_gate_bias_scale
+                        + self.policy_option_hidden_shift_gate_bias_scale
+                    )
+                    scale_gate_signal = (scale_gate_signal + scale_gate_bias).clamp(0.0, 1.0)
+                    shift_gate_signal = (shift_gate_signal + shift_gate_bias).clamp(0.0, 1.0)
                 adaptive_scale = self.policy_option_hidden_film_scale
                 if self.policy_option_hidden_adaptive_scale_floor:
                     floor_gate_signal = scale_gate_signal.pow(self.policy_option_hidden_scale_floor_power)
@@ -449,6 +465,12 @@ class ActorCriticModel(nn.Module):
                         "policy/option_hidden_scale_floor_power": float(self.policy_option_hidden_scale_floor_power),
                         "policy/option_hidden_gate_bias": float(self.policy_option_hidden_gate_bias),
                         "policy/option_hidden_gate_bias_scale": float(self.policy_option_hidden_gate_bias_scale),
+                        "policy/option_hidden_scale_gate_bias_scale": float(
+                            self.policy_option_hidden_scale_gate_bias_scale
+                        ),
+                        "policy/option_hidden_shift_gate_bias_scale": float(
+                            self.policy_option_hidden_shift_gate_bias_scale
+                        ),
                         "policy/option_hidden_shift_compensation": float(self.policy_option_hidden_shift_compensation),
                         "policy/option_hidden_shift_compensation_scale": float(
                             self.policy_option_hidden_shift_compensation_scale
@@ -475,6 +497,8 @@ class ActorCriticModel(nn.Module):
                     metrics["policy/option_hidden_blend_gate_mean"] = blend_gate
                 if gate_bias is not None:
                     metrics["policy/option_hidden_gate_bias_mean"] = gate_bias.squeeze(-1)
+                    metrics["policy/option_hidden_scale_gate_bias_mean"] = scale_gate_bias.squeeze(-1)
+                    metrics["policy/option_hidden_shift_gate_bias_mean"] = shift_gate_bias.squeeze(-1)
                 if low_margin_gate is not None and margin_before is not None:
                     metrics["policy/option_hidden_film_low_margin_gate_mean"] = low_margin_gate
                     metrics["policy/option_hidden_film_margin_before"] = margin_before
