@@ -238,7 +238,20 @@ def _load_checkpoint_into_model(
     strict: bool,
 ) -> None:
     checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)
-    model.load_state_dict(checkpoint["model"], strict=strict)
+    state_dict = dict(checkpoint["model"])
+    legacy_policy_head_map = {
+        "policy_head.0.weight": "policy_norm.weight",
+        "policy_head.0.bias": "policy_norm.bias",
+        "policy_head.1.weight": "policy_hidden.weight",
+        "policy_head.1.bias": "policy_hidden.bias",
+        "policy_head.3.weight": "policy_out.weight",
+        "policy_head.3.bias": "policy_out.bias",
+    }
+    if "policy_head.0.weight" in state_dict and "policy_norm.weight" not in state_dict:
+        for old_key, new_key in legacy_policy_head_map.items():
+            if old_key in state_dict and new_key not in state_dict:
+                state_dict[new_key] = state_dict.pop(old_key)
+    model.load_state_dict(state_dict, strict=strict)
 
 
 def _load_model(config_path: str, checkpoint_path: str, device: torch.device) -> tuple[Any, ActorCriticModel]:

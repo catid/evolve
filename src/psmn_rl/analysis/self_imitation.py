@@ -12,6 +12,7 @@ import torch
 import torch.nn.functional as F
 
 from psmn_rl.analysis.policy_diagnostics import DEFAULT_MODES
+from psmn_rl.analysis.policy_distillation import _load_checkpoint_into_model
 from psmn_rl.config import dump_config, load_config
 from psmn_rl.envs.registry import make_eval_env, make_reset_seeds, make_vector_env
 from psmn_rl.models.common import ActorCriticModel
@@ -100,7 +101,7 @@ def harvest_successful_trajectories(
     envs = make_vector_env(config.env, seed=config.seed)
     model = build_model(config.model, envs.single_observation_space, envs.single_action_space)
     envs.close()
-    model.load_state_dict(torch.load(checkpoint_path, map_location="cpu", weights_only=False)["model"])
+    _load_checkpoint_into_model(model, checkpoint_path, device="cpu", strict=bool(config.model.checkpoint_strict))
     device_t = detect_device(device)
     model.to(device_t)
     model.eval()
@@ -202,7 +203,7 @@ def fine_tune_from_trajectories(
     envs = make_vector_env(config.env, seed=config.seed)
     model = build_model(config.model, envs.single_observation_space, envs.single_action_space)
     envs.close()
-    model.load_state_dict(torch.load(checkpoint_path, map_location="cpu", weights_only=False)["model"])
+    _load_checkpoint_into_model(model, checkpoint_path, device="cpu", strict=bool(config.model.checkpoint_strict))
     device_t = detect_device(device)
     model.to(device_t)
     trainable_params = _set_trainable_parameters(model, target)
@@ -397,7 +398,7 @@ def run_once(args: argparse.Namespace) -> None:
     before_model_env = make_vector_env(config.env, seed=config.seed)
     before_model = build_model(config.model, before_model_env.single_observation_space, before_model_env.single_action_space)
     before_model_env.close()
-    before_model.load_state_dict(torch.load(args.checkpoint, map_location="cpu", weights_only=False)["model"])
+    _load_checkpoint_into_model(before_model, args.checkpoint, device="cpu", strict=bool(config.model.checkpoint_strict))
     before_model.to(detect_device(args.device))
     before = evaluate_modes(args.config, before_model, args.device, args.eval_episodes)
     harvest = harvest_successful_trajectories(

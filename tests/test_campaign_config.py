@@ -229,3 +229,30 @@ def test_memory_conversion_campaign_registers_memory_budget_and_reports() -> Non
     assert campaign["practicalization"]["students"][0]["checkpoint"] == "por_nearby_switchy_7"
     assert campaign["practicalization"]["families"]["hybrid"]["targets"] == ["policy_head_plus_last_shared"]
     assert campaign["reports"]["decision_memo"] == "outputs/reports/memory_conversion_decision_memo.md"
+
+
+def test_memory_next_campaign_registers_eighty_run_budget_and_reports() -> None:
+    campaign = load_campaign_config("configs/experiments/lss_memory_next_program/campaign.yaml")
+
+    exploit_variants = sum(len(family["variants"]) for family in campaign["conversion_families"].values())
+    explore_variants = 0
+    student_labels = {str(student["student_label"]) for student in campaign["practicalization"]["students"]}
+    for family in campaign["practicalization"]["families"].values():
+        allowed = set(family.get("student_keys", student_labels))
+        explore_variants += len(allowed) * len(family["temperatures"]) * len(family["targets"]) * len(family["weightings"])
+
+    assert campaign["name"] == "lss_memory_next_program"
+    assert campaign["current_canonical_name"] == "round6"
+    assert campaign["target_substantive_runs"] == 80
+    assert len(campaign["analysis"]["dev_groups"]) == 3
+    assert len(campaign["analysis"]["holdout_groups"]) == 3
+    assert len(campaign["analysis"]["healthy_groups"]) == 2
+    assert len(campaign["analysis"]["stability_groups"]) == 2
+    assert exploit_variants == 40
+    assert explore_variants == 40
+    assert campaign["analysis"]["current_best_local_point"] == "partial_shift22"
+    assert campaign["checkpoints"]["partial_shift22"]["variant"] == "partial_shift22"
+    assert campaign["conversion_families"]["small_branch_consensus"]["variants"]["partial22_cons4_t055"]["draws"] == 4
+    assert campaign["practicalization"]["families"]["architecture_pilot"]["student_keys"] == ["partial_shift22", "adaptive_floor25", "scale30", "shiftcomp50"]
+    assert campaign["reports"]["band_definition"] == "outputs/reports/memory_next_band_definition.md"
+    assert campaign["reports"]["decision_memo"] == "outputs/reports/memory_next_decision_memo.md"

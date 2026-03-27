@@ -1,0 +1,445 @@
+name: lss_memory_next_program
+
+current_canonical_name: round6
+current_canonical_pack: outputs/reports/portfolio_candidate_pack.json
+current_gate_reference_pack: outputs/reports/round6_current_benchmark_pack.json
+frozen_pack: outputs/reports/frozen_benchmark_pack.json
+current_decision_memo: outputs/reports/memory_conversion_decision_memo.md
+nearby_followup_report: outputs/reports/next_arch_wave_nearby_followup.md
+
+target_substantive_runs: 80
+
+analysis:
+  program_label: Large Memory Next Program
+  max_steps: 405
+  diagnostic_episodes: 64
+  source_probe_episode_limit: 8
+  source_probe_draws: 16
+  dev_groups:
+    - label: dev_a
+      start_seed: 5000
+      episodes: 32
+    - label: dev_b
+      start_seed: 6000
+      episodes: 32
+    - label: dev_c
+      start_seed: 7000
+      episodes: 32
+  holdout_groups:
+    - label: holdout_a
+      start_seed: 8000
+      episodes: 32
+    - label: holdout_b
+      start_seed: 9000
+      episodes: 32
+    - label: holdout_c
+      start_seed: 10000
+      episodes: 32
+  healthy_groups:
+    - label: healthy_upper_a
+      start_seed: 11000
+      episodes: 32
+    - label: healthy_upper_b
+      start_seed: 12000
+      episodes: 32
+  stability_groups:
+    - label: stability_a
+      start_seed: 13000
+      episodes: 32
+    - label: stability_b
+      start_seed: 14000
+      episodes: 32
+  source_modes:
+    greedy:
+      label: greedy
+      strategy: greedy
+    lower_t005:
+      label: lower_t005
+      strategy: constant_temp
+      temperature: 0.05
+    gap_t055:
+      label: gap_t055
+      strategy: constant_temp
+      temperature: 0.055
+    shoulder_t008:
+      label: shoulder_t008
+      strategy: constant_temp
+      temperature: 0.08
+  temperature_bands:
+    lower_boundary: [0.04, 0.045, 0.05]
+    strongest_gap: [0.05, 0.0525, 0.055]
+    shoulder: [0.06, 0.065, 0.07]
+    upper_plateau: [0.075, 0.08, 0.09]
+  current_best_local_point: partial_shift22
+  route_validation_checkpoints:
+    - partial_shift22
+    - partial_shift22_adaptive_floor25
+  stability_checkpoints:
+    - partial_shift22
+    - partial_shift225
+
+checkpoints:
+  por_nearby_switchy_7:
+    family: por
+    family_label: POR
+    variant: por_switchy
+    seed: 7
+    source: nearby_followup
+    config_path: outputs/experiments/lss_next_arch_wave_nearby_followup/por_stage2_alive_baseline/memory/por_switchy/seed_7/resolved_config.yaml
+    checkpoint_path: outputs/experiments/lss_next_arch_wave_nearby_followup/por_stage2_alive_baseline/memory/por_switchy/seed_7/latest.pt
+  por_nearby_base_11:
+    family: por
+    family_label: POR
+    variant: por_base
+    seed: 11
+    source: nearby_followup
+    config_path: outputs/experiments/lss_next_arch_wave_nearby_followup/por_stage2_alive_baseline/memory/por_base/seed_11/resolved_config.yaml
+    checkpoint_path: outputs/experiments/lss_next_arch_wave_nearby_followup/por_stage2_alive_baseline/memory/por_base/seed_11/latest.pt
+  por_original_switchy_7:
+    family: por
+    family_label: POR
+    variant: por_switchy
+    seed: 7
+    source: wave2
+    config_path: outputs/experiments/lss_next_arch_wave_program/por_stage2_alive_baseline/memory/por_switchy/seed_7/resolved_config.yaml
+    checkpoint_path: outputs/experiments/lss_next_arch_wave_program/por_stage2_alive_baseline/memory/por_switchy/seed_7/latest.pt
+  por_original_base_11:
+    family: por
+    family_label: POR
+    variant: por_base
+    seed: 11
+    source: wave2
+    config_path: outputs/experiments/lss_next_arch_wave_program/por_stage2_alive_baseline/memory/por_base/seed_11/resolved_config.yaml
+    checkpoint_path: outputs/experiments/lss_next_arch_wave_program/por_stage2_alive_baseline/memory/por_base/seed_11/latest.pt
+  gru_long_11:
+    family: recurrent_control
+    family_label: Recurrent Control
+    variant: gru_long_rollout
+    seed: 11
+    source: wave2
+    config_path: outputs/experiments/lss_next_arch_wave_program/por_stage1_recurrent_controls/memory/gru_long_rollout/seed_11/resolved_config.yaml
+    checkpoint_path: outputs/experiments/lss_next_arch_wave_program/por_stage1_recurrent_controls/memory/gru_long_rollout/seed_11/latest.pt
+  partial_shift22:
+    family: por_actor_hidden
+    family_label: POR Actor-Hidden
+    variant: partial_shift22
+    seed: 7
+    source: actor_hidden_threshold
+    config_path: outputs/experiments/memory_actor_hidden_threshold_probe/memory_por_switchy_actor_hidden_partial_shift22/resolved_config.yaml
+    checkpoint_path: outputs/experiments/memory_actor_hidden_threshold_probe/memory_por_switchy_actor_hidden_partial_shift22/latest.pt
+  partial_shift225:
+    family: por_actor_hidden
+    family_label: POR Actor-Hidden
+    variant: partial_shift225
+    seed: 7
+    source: actor_hidden_threshold
+    config_path: outputs/experiments/memory_actor_hidden_threshold_probe/memory_por_switchy_actor_hidden_partial_shift225/resolved_config.yaml
+    checkpoint_path: outputs/experiments/memory_actor_hidden_threshold_probe/memory_por_switchy_actor_hidden_partial_shift225/latest.pt
+  partial_shift22_shiftmix90:
+    family: por_actor_hidden
+    family_label: POR Actor-Hidden
+    variant: partial_shift22_shiftmix90
+    seed: 7
+    source: branch_gate
+    config_path: outputs/experiments/memory_actor_hidden_branch_gate_probe/memory_por_switchy_actor_hidden_partial_shift22_shiftmix90/resolved_config.yaml
+    checkpoint_path: outputs/experiments/memory_actor_hidden_branch_gate_probe/memory_por_switchy_actor_hidden_partial_shift22_shiftmix90/latest.pt
+  partial_shift225_scale30:
+    family: por_actor_hidden
+    family_label: POR Actor-Hidden
+    variant: partial_shift225_scale30
+    seed: 7
+    source: low_scale_followup
+    config_path: outputs/experiments/memory_actor_hidden_low_scale_followup_probe/memory_por_switchy_actor_hidden_partial_shift225_scale30/resolved_config.yaml
+    checkpoint_path: outputs/experiments/memory_actor_hidden_low_scale_followup_probe/memory_por_switchy_actor_hidden_partial_shift225_scale30/latest.pt
+  partial_shift22_adaptive_floor25:
+    family: por_actor_hidden
+    family_label: POR Actor-Hidden
+    variant: adaptive_floor25
+    seed: 7
+    source: adaptive_scale_floor
+    config_path: outputs/experiments/memory_actor_hidden_adaptive_scale_floor_probe/memory_por_switchy_actor_hidden_partial_shift22_adaptive_floor25/resolved_config.yaml
+    checkpoint_path: outputs/experiments/memory_actor_hidden_adaptive_scale_floor_probe/memory_por_switchy_actor_hidden_partial_shift22_adaptive_floor25/latest.pt
+  partial_shift22_adaptive_floor25_shiftcomp50:
+    family: por_actor_hidden
+    family_label: POR Actor-Hidden
+    variant: adaptive_floor25_shiftcomp50
+    seed: 7
+    source: adaptive_shift_comp
+    config_path: outputs/experiments/memory_actor_hidden_adaptive_shift_comp_probe/memory_por_switchy_actor_hidden_partial_shift22_adaptive_floor25_shiftcomp50/resolved_config.yaml
+    checkpoint_path: outputs/experiments/memory_actor_hidden_adaptive_shift_comp_probe/memory_por_switchy_actor_hidden_partial_shift22_adaptive_floor25_shiftcomp50/latest.pt
+
+conversion_families:
+  actor_hidden_continuation:
+    label: Actor-Hidden FiLM Continuation
+    variants:
+      partial22_greedy:
+        checkpoint: partial_shift22
+        strategy: greedy
+      partial225_greedy:
+        checkpoint: partial_shift225
+        strategy: greedy
+      partial22_gap_t055:
+        checkpoint: partial_shift22
+        strategy: constant_temp
+        temperature: 0.055
+      partial225_gap_t055:
+        checkpoint: partial_shift225
+        strategy: constant_temp
+        temperature: 0.055
+      partial22_shiftmix90_greedy:
+        checkpoint: partial_shift22_shiftmix90
+        strategy: greedy
+      adaptive_floor25_greedy:
+        checkpoint: partial_shift22_adaptive_floor25
+        strategy: greedy
+      adaptive_floor25_gap_t055:
+        checkpoint: partial_shift22_adaptive_floor25
+        strategy: constant_temp
+        temperature: 0.055
+      scale30_lower_t05:
+        checkpoint: partial_shift225_scale30
+        strategy: constant_temp
+        temperature: 0.05
+      scale30_gap_t055:
+        checkpoint: partial_shift225_scale30
+        strategy: constant_temp
+        temperature: 0.055
+      shiftcomp50_gap_t055:
+        checkpoint: partial_shift22_adaptive_floor25_shiftcomp50
+        strategy: constant_temp
+        temperature: 0.055
+  sampled_to_greedy_decode:
+    label: Sampled-to-Greedy Decode
+    variants:
+      partial22_margin_gate10_t055:
+        checkpoint: partial_shift22
+        strategy: margin_gate
+        temperature: 0.055
+        threshold: 1.0
+      partial22_margin_gate15_t055:
+        checkpoint: partial_shift22
+        strategy: margin_gate
+        temperature: 0.055
+        threshold: 1.5
+      partial22_conf_gate085_t055:
+        checkpoint: partial_shift22
+        strategy: confidence_gate
+        temperature: 0.055
+        threshold: 0.85
+      partial22_conf_gate092_t055:
+        checkpoint: partial_shift22
+        strategy: confidence_gate
+        temperature: 0.055
+        threshold: 0.92
+      adaptive_floor25_margin_gate10_t055:
+        checkpoint: partial_shift22_adaptive_floor25
+        strategy: margin_gate
+        temperature: 0.055
+        threshold: 1.0
+      adaptive_floor25_conf_gate085_t055:
+        checkpoint: partial_shift22_adaptive_floor25
+        strategy: confidence_gate
+        temperature: 0.055
+        threshold: 0.85
+      por_switchy7_duration_floor4_t05:
+        checkpoint: por_nearby_switchy_7
+        strategy: duration_floor
+        temperature: 0.05
+        duration_floor: 4
+      por_switchy7_hysteresis090_t05:
+        checkpoint: por_nearby_switchy_7
+        strategy: option_hysteresis
+        temperature: 0.05
+        hysteresis_alpha: 0.9
+      gru_long_anneal_008_to_006_64:
+        checkpoint: gru_long_11
+        strategy: anneal_temp
+        start_temperature: 0.08
+        end_temperature: 0.06
+        anneal_steps: 64
+      por_switchy7_anneal_008_to_005_64:
+        checkpoint: por_nearby_switchy_7
+        strategy: anneal_temp
+        start_temperature: 0.08
+        end_temperature: 0.05
+        anneal_steps: 64
+  checkpoint_selection:
+    label: Checkpoint / Selection
+    variants:
+      select_por_switchy7_t05:
+        checkpoint: por_nearby_switchy_7
+        strategy: constant_temp
+        temperature: 0.05
+      select_por_switchy7_t055:
+        checkpoint: por_nearby_switchy_7
+        strategy: constant_temp
+        temperature: 0.055
+      select_por_original_switchy7_t015:
+        checkpoint: por_original_switchy_7
+        strategy: constant_temp
+        temperature: 0.15
+      select_por_original_base11_t015:
+        checkpoint: por_original_base_11
+        strategy: constant_temp
+        temperature: 0.15
+      select_gru_long11_t055:
+        checkpoint: gru_long_11
+        strategy: constant_temp
+        temperature: 0.055
+      select_gru_long11_t06:
+        checkpoint: gru_long_11
+        strategy: constant_temp
+        temperature: 0.06
+      select_partial22_greedy:
+        checkpoint: partial_shift22
+        strategy: greedy
+      select_partial225_greedy:
+        checkpoint: partial_shift225
+        strategy: greedy
+      select_adaptive_floor25_greedy:
+        checkpoint: partial_shift22_adaptive_floor25
+        strategy: greedy
+      select_scale30_t055:
+        checkpoint: partial_shift225_scale30
+        strategy: constant_temp
+        temperature: 0.055
+  small_branch_consensus:
+    label: Small Branch / Consensus
+    variants:
+      partial22_cons2_t05:
+        checkpoint: partial_shift22
+        strategy: consensus
+        temperature: 0.05
+        draws: 2
+      partial22_cons4_t05:
+        checkpoint: partial_shift22
+        strategy: consensus
+        temperature: 0.05
+        draws: 4
+      partial22_cons2_t055:
+        checkpoint: partial_shift22
+        strategy: consensus
+        temperature: 0.055
+        draws: 2
+      partial22_cons4_t055:
+        checkpoint: partial_shift22
+        strategy: consensus
+        temperature: 0.055
+        draws: 4
+      adaptive_floor25_cons2_t055:
+        checkpoint: partial_shift22_adaptive_floor25
+        strategy: consensus
+        temperature: 0.055
+        draws: 2
+      adaptive_floor25_cons4_t055:
+        checkpoint: partial_shift22_adaptive_floor25
+        strategy: consensus
+        temperature: 0.055
+        draws: 4
+      por_switchy7_cons2_t05:
+        checkpoint: por_nearby_switchy_7
+        strategy: consensus
+        temperature: 0.05
+        draws: 2
+      por_switchy7_cons4_t05:
+        checkpoint: por_nearby_switchy_7
+        strategy: consensus
+        temperature: 0.05
+        draws: 4
+      gru_long_cons2_t055:
+        checkpoint: gru_long_11
+        strategy: consensus
+        temperature: 0.055
+        draws: 2
+      gru_long_cons4_t055:
+        checkpoint: gru_long_11
+        strategy: consensus
+        temperature: 0.055
+        draws: 4
+
+practicalization:
+  students:
+    - checkpoint: partial_shift22
+      student_label: partial_shift22
+    - checkpoint: partial_shift22_adaptive_floor25
+      student_label: adaptive_floor25
+    - checkpoint: partial_shift225_scale30
+      student_label: scale30
+    - checkpoint: gru_long_11
+      student_label: gru_long_11
+    - checkpoint: partial_shift22_adaptive_floor25_shiftcomp50
+      student_label: shiftcomp50
+  families:
+    sampled_success:
+      label: Sampled-Success Distillation
+      student_keys: [partial_shift22, adaptive_floor25, scale30, gru_long_11]
+      temperatures: [0.05, 0.055]
+      targets: [policy_head]
+      weightings: [return]
+    selective_compute:
+      label: Selective Compute-Structure Extraction
+      student_keys: [partial_shift22, adaptive_floor25, scale30, gru_long_11]
+      temperatures: [0.05, 0.055]
+      targets: [policy_head_plus_last_shared]
+      weightings: [return]
+    temperature_aware_teacher:
+      label: Temperature-Aware Teacher
+      student_keys: [partial_shift22, adaptive_floor25, scale30, gru_long_11]
+      temperatures: [0.045, 0.06]
+      targets: [policy_head]
+      weightings: [return]
+    hybrid:
+      label: Hybrid Practicalization
+      student_keys: [partial_shift22, adaptive_floor25, scale30, gru_long_11]
+      temperatures: [0.05, 0.055]
+      targets: [policy_head_plus_last_shared]
+      weightings: [uniform]
+    architecture_pilot:
+      label: Architecture-Adjacent Memory Pilot
+      student_keys: [partial_shift22, adaptive_floor25, scale30, shiftcomp50]
+      temperatures: [0.05, 0.055]
+      targets: [policy_head]
+      weightings: [uniform]
+  success_target: 32
+  max_episodes: 320
+  batch_size: 128
+  epochs: 6
+  learning_rate: 0.0001
+  eval_episodes: 32
+
+stage_roots:
+  source_audit: outputs/experiments/lss_memory_next_program/stageA1_source_quality
+  exploit_screening: outputs/experiments/lss_memory_next_program/stageB1_exploit_screening
+  exploit_rerun: outputs/experiments/lss_memory_next_program/stageB1_exploit_rerun
+  exploit_verification: outputs/experiments/lss_memory_next_program/stageD1_exploit_verification
+  exploit_holdout: outputs/experiments/lss_memory_next_program/stageD2_holdout
+  exploit_healthy: outputs/experiments/lss_memory_next_program/stageD3_healthy
+  practicalization_screening: outputs/experiments/lss_memory_next_program/stageC1_explore_screening
+  practicalization_rerun: outputs/experiments/lss_memory_next_program/stageD1_explore_verification
+
+reports:
+  state_reconciliation: outputs/reports/memory_next_state_reconciliation.md
+  baseline_sync: outputs/reports/memory_next_baseline_sync.md
+  registration: outputs/reports/memory_next_registration.md
+  source_quality: outputs/reports/memory_next_source_quality.md
+  source_quality_json: outputs/reports/memory_next_source_quality.json
+  band_definition: outputs/reports/memory_next_band_definition.md
+  stageB1_report: outputs/reports/memory_next_stageB1_exploit_screening.md
+  stageB1_json: outputs/reports/memory_next_stageB1_exploit_screening.json
+  stageC1_report: outputs/reports/memory_next_stageC1_explore_screening.md
+  stageC1_json: outputs/reports/memory_next_stageC1_explore_screening.json
+  stageD1_report: outputs/reports/memory_next_stageD1_verification.md
+  stageD1_json: outputs/reports/memory_next_stageD1_verification.json
+  stageD2_report: outputs/reports/memory_next_stageD2_fairness_holdout.md
+  stageD2_json: outputs/reports/memory_next_stageD2_fairness_holdout.json
+  stageD3_report: outputs/reports/memory_next_stageD3_antiregression_stability.md
+  stageD3_json: outputs/reports/memory_next_stageD3_antiregression_stability.json
+  candidate_pack: outputs/reports/memory_next_candidate_pack.json
+  gate_report: outputs/reports/memory_next_gate_report.md
+  decision_memo: outputs/reports/memory_next_decision_memo.md
+  source_manifest: outputs/reports/memory_next_source_manifest.json
+  exploit_manifest: outputs/reports/memory_next_exploit_manifest.json
+  explore_manifest: outputs/reports/memory_next_explore_manifest.json
+  verification_manifest: outputs/reports/memory_next_verification_manifest.json
+  holdout_manifest: outputs/reports/memory_next_holdout_manifest.json
+  healthy_manifest: outputs/reports/memory_next_healthy_manifest.json
