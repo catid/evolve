@@ -123,6 +123,8 @@ class ActorCriticModel(nn.Module):
         policy_option_hidden_scale_weight: float = 1.0,
         policy_option_hidden_adaptive_scale_floor: bool = False,
         policy_option_hidden_scale_floor: float = 0.0,
+        policy_option_hidden_shift_compensation: bool = False,
+        policy_option_hidden_shift_compensation_scale: float = 0.0,
         policy_option_hidden_low_margin_gate: bool = False,
         policy_option_hidden_margin_threshold: float = 0.25,
         policy_option_hidden_margin_sharpness: float = 12.0,
@@ -172,6 +174,8 @@ class ActorCriticModel(nn.Module):
         self.policy_option_hidden_scale_weight = max(0.0, policy_option_hidden_scale_weight)
         self.policy_option_hidden_adaptive_scale_floor = policy_option_hidden_adaptive_scale_floor
         self.policy_option_hidden_scale_floor = max(0.0, policy_option_hidden_scale_floor)
+        self.policy_option_hidden_shift_compensation = policy_option_hidden_shift_compensation
+        self.policy_option_hidden_shift_compensation_scale = max(0.0, policy_option_hidden_shift_compensation_scale)
         self.policy_option_hidden_low_margin_gate = policy_option_hidden_low_margin_gate
         self.policy_option_hidden_margin_threshold = policy_option_hidden_margin_threshold
         self.policy_option_hidden_margin_sharpness = policy_option_hidden_margin_sharpness
@@ -361,8 +365,17 @@ class ActorCriticModel(nn.Module):
                         + (self.policy_option_hidden_film_scale - self.policy_option_hidden_scale_floor)
                         * scale_gate_signal
                     )
+                shift_compensation = 1.0
+                if self.policy_option_hidden_shift_compensation and self.policy_option_hidden_film_scale > 0.0:
+                    shift_compensation = 1.0 + (
+                        self.policy_option_hidden_shift_compensation_scale
+                        * (self.policy_option_hidden_film_scale - adaptive_scale)
+                        / self.policy_option_hidden_film_scale
+                    )
                 scale_gate = (adaptive_scale * scale_gate_signal).to(policy_hidden.dtype)
-                shift_gate = (self.policy_option_hidden_film_scale * shift_gate_signal).to(policy_hidden.dtype)
+                shift_gate = (
+                    self.policy_option_hidden_film_scale * shift_gate_signal * shift_compensation
+                ).to(policy_hidden.dtype)
                 if low_margin_gate is not None:
                     scale_gate = scale_gate * low_margin_gate.unsqueeze(-1)
                     shift_gate = shift_gate * low_margin_gate.unsqueeze(-1)
@@ -411,6 +424,10 @@ class ActorCriticModel(nn.Module):
                         "policy/option_hidden_film_scale_weight": float(self.policy_option_hidden_scale_weight),
                         "policy/option_hidden_adaptive_scale_floor": float(self.policy_option_hidden_adaptive_scale_floor),
                         "policy/option_hidden_scale_floor": float(self.policy_option_hidden_scale_floor),
+                        "policy/option_hidden_shift_compensation": float(self.policy_option_hidden_shift_compensation),
+                        "policy/option_hidden_shift_compensation_scale": float(
+                            self.policy_option_hidden_shift_compensation_scale
+                        ),
                         "policy/option_hidden_film_low_margin_gate": float(self.policy_option_hidden_low_margin_gate),
                         "policy/option_hidden_film_margin_threshold": float(self.policy_option_hidden_margin_threshold),
                         "policy/option_hidden_blend_gate": float(self.policy_option_hidden_blend_gate),
@@ -422,6 +439,7 @@ class ActorCriticModel(nn.Module):
                         "policy/option_hidden_shift_bound_scale": float(self.policy_option_hidden_shift_bound_scale),
                         "policy/option_hidden_post_norm": float(self.policy_option_hidden_post_norm),
                         "policy/option_hidden_adaptive_scale_mean": scale_gate.mean(dim=-1),
+                        "policy/option_hidden_shift_compensation_mean": shift_gate.mean(dim=-1),
                         "policy/option_hidden_film_scale_norm": film_scale.norm(dim=-1),
                         "policy/option_hidden_film_shift_norm": film_shift.norm(dim=-1),
                         "policy/option_hidden_center_shift_mean_abs": film_shift.mean(dim=-1).abs(),

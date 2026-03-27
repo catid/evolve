@@ -1,0 +1,43 @@
+seed: 7
+tags: ["minigrid", "memory", "por", "actor_hidden_partial_shift", "adaptive_scale_floor", "shift_compensation", "architecture_probe"]
+system:
+  device: auto
+  precision: auto
+  deterministic: true
+  log_interval: 8
+  checkpoint_interval: 12
+env:
+  suite: minigrid
+  env_id: MiniGrid-MemoryS9-v0
+  num_envs: 8
+  num_eval_envs: 8
+ppo:
+  rollout_steps: 96
+  total_updates: 48
+  update_epochs: 4
+  minibatches: 4
+  sequence_minibatches: true
+  learning_rate: 0.0003
+model:
+  variant: por
+  hidden_size: 128
+  token_dim: 128
+  encoder_layers: 2
+  num_heads: 4
+  option_count: 4
+  termination_bias: 1.0
+  por_option_actor_features: true
+  policy_option_hidden_film: true
+  policy_option_hidden_film_scale: 0.35
+  policy_option_hidden_use_duration_gate: true
+  policy_option_hidden_shift_weight: 0.22
+  policy_option_hidden_adaptive_scale_floor: true
+  policy_option_hidden_scale_floor: 0.25
+  policy_option_hidden_shift_compensation: true
+  policy_option_hidden_shift_compensation_scale: 1.0
+logging:
+  run_name: memory_por_switchy_actor_hidden_partial_shift22_adaptive_floor25_shiftcomp100
+  output_dir: outputs/experiments/memory_actor_hidden_adaptive_shift_comp_probe/memory_por_switchy_actor_hidden_partial_shift22_adaptive_floor25_shiftcomp100
+evaluation:
+  episodes: 16
+  greedy: true

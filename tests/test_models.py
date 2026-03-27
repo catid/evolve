@@ -327,6 +327,8 @@ def test_por_actor_hidden_film_reports_metrics() -> None:
             policy_option_hidden_blend_gate=True,
             policy_option_hidden_adaptive_scale_floor=True,
             policy_option_hidden_scale_floor=0.3,
+            policy_option_hidden_shift_compensation=True,
+            policy_option_hidden_shift_compensation_scale=0.5,
             policy_option_hidden_center_shift=True,
             policy_option_hidden_center_shift_scale=2.0,
             policy_option_hidden_bound_shift=True,
@@ -355,6 +357,9 @@ def test_por_actor_hidden_film_reports_metrics() -> None:
     assert "policy/option_hidden_adaptive_scale_floor" in output.metrics
     assert "policy/option_hidden_scale_floor" in output.metrics
     assert "policy/option_hidden_adaptive_scale_mean" in output.metrics
+    assert "policy/option_hidden_shift_compensation" in output.metrics
+    assert "policy/option_hidden_shift_compensation_scale" in output.metrics
+    assert "policy/option_hidden_shift_compensation_mean" in output.metrics
     assert "policy/option_hidden_blend_gate" in output.metrics
     assert "policy/option_hidden_blend_scale" in output.metrics
     assert "policy/option_hidden_blend_gate_mean" in output.metrics
