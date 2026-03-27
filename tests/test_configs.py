@@ -1023,3 +1023,28 @@ def test_load_memory_actor_hidden_shiftgate075_scale325_scale_branch_mix_configs
     assert math.isclose(mix975.model.policy_option_hidden_scale_duration_mix, 0.975)
     assert math.isclose(mix975.model.policy_option_hidden_shift_duration_mix, 1.0)
     assert math.isclose(mix975.model.policy_option_hidden_shift_gate_power, 0.75)
+
+
+def test_load_memory_actor_hidden_shiftgate075_scale325_powered_shift_floor_configs() -> None:
+    power075 = load_config(
+        Path(
+            "configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_shiftgate075_scale325_shiftfloor20_power075.yaml"
+        )
+    )
+    power05 = load_config(
+        Path(
+            "configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_shiftgate075_scale325_shiftfloor20_power05.yaml"
+        )
+    )
+
+    assert power075.model.policy_option_hidden_adaptive_shift_floor is True
+    assert math.isclose(power075.model.policy_option_hidden_film_scale, 0.325)
+    assert math.isclose(power075.model.policy_option_hidden_shift_floor, 0.20)
+    assert math.isclose(power075.model.policy_option_hidden_shift_floor_power, 0.75)
+    assert math.isclose(power075.model.policy_option_hidden_shift_gate_power, 0.75)
+
+    assert power05.model.policy_option_hidden_adaptive_shift_floor is True
+    assert math.isclose(power05.model.policy_option_hidden_film_scale, 0.325)
+    assert math.isclose(power05.model.policy_option_hidden_shift_floor, 0.20)
+    assert math.isclose(power05.model.policy_option_hidden_shift_floor_power, 0.50)
+    assert math.isclose(power05.model.policy_option_hidden_shift_gate_power, 0.75)
