@@ -745,3 +745,29 @@ def test_por_actor_hidden_shift_gate_power_logs_metrics(tmp_path: Path) -> None:
     assert "policy/option_hidden_shift_gate_power" in last_scalar
     assert "policy/option_hidden_scale_gate_signal_mean" in last_scalar
     assert "policy/option_hidden_shift_gate_signal_mean" in last_scalar
+
+
+def test_por_actor_hidden_scale_gate_power_logs_metrics(tmp_path: Path) -> None:
+    config = load_config("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_scalegate150.yaml")
+    config.system.device = "cpu"
+    config.logging.tensorboard = False
+    config.env.num_envs = 2
+    config.env.num_eval_envs = 1
+    config.ppo.rollout_steps = 4
+    config.ppo.total_updates = 1
+    config.ppo.update_epochs = 1
+    config.ppo.minibatches = 2
+    config.evaluation.episodes = 1
+    config.logging.output_dir = str(tmp_path / "memory_por_actor_hidden_scale_gate_power")
+
+    run_training(config, max_updates=1)
+
+    last_scalar = {}
+    for line in Path(config.logging.output_dir, "metrics.jsonl").read_text().splitlines():
+        row = json.loads(line)
+        if row.get("type") == "scalar":
+            last_scalar = row
+    assert "policy/option_hidden_scale_gate_power" in last_scalar
+    assert "policy/option_hidden_shift_gate_power" in last_scalar
+    assert "policy/option_hidden_scale_gate_signal_mean" in last_scalar
+    assert "policy/option_hidden_shift_gate_signal_mean" in last_scalar
