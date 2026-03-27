@@ -1071,3 +1071,30 @@ def test_load_memory_actor_hidden_shiftgate075_scale325_shift_bias_configs() -> 
     assert math.isclose(bias05.model.policy_option_hidden_film_scale, 0.325)
     assert math.isclose(bias05.model.policy_option_hidden_shift_gate_bias_scale, 0.05)
     assert math.isclose(bias05.model.policy_option_hidden_shift_gate_power, 0.75)
+
+
+def test_load_memory_actor_hidden_shiftgate075_scale325_shift_comp_configs() -> None:
+    comp100 = load_config(
+        Path(
+            "configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_shiftgate075_scale325_adaptive_floor2875_shiftcomp100.yaml"
+        )
+    )
+    comp200 = load_config(
+        Path(
+            "configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_shiftgate075_scale325_adaptive_floor2875_shiftcomp200.yaml"
+        )
+    )
+
+    assert comp100.model.policy_option_hidden_adaptive_scale_floor is True
+    assert comp100.model.policy_option_hidden_shift_compensation is True
+    assert math.isclose(comp100.model.policy_option_hidden_film_scale, 0.325)
+    assert math.isclose(comp100.model.policy_option_hidden_scale_floor, 0.2875)
+    assert math.isclose(comp100.model.policy_option_hidden_shift_compensation_scale, 1.0)
+    assert math.isclose(comp100.model.policy_option_hidden_shift_gate_power, 0.75)
+
+    assert comp200.model.policy_option_hidden_adaptive_scale_floor is True
+    assert comp200.model.policy_option_hidden_shift_compensation is True
+    assert math.isclose(comp200.model.policy_option_hidden_film_scale, 0.325)
+    assert math.isclose(comp200.model.policy_option_hidden_scale_floor, 0.2875)
+    assert math.isclose(comp200.model.policy_option_hidden_shift_compensation_scale, 2.0)
+    assert math.isclose(comp200.model.policy_option_hidden_shift_gate_power, 0.75)
