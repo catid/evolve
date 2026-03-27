@@ -19,6 +19,12 @@
     "overall": "pass"
   },
   "contract_type": "portfolio_frontier_contract",
+  "scope": "DoorKey benchmark frontier only",
+  "separate_adjacent_task_state": {
+    "candidate_pack": "outputs/reports/memory_next_candidate_pack.json",
+    "decision_memo": "outputs/reports/memory_next_decision_memo.md",
+    "status": "POR or recurrent-control Memory branch earns task-scoped benchmark-candidate status"
+  },
   "frontier_roles": {
     "default_restart_prior": "round7",
     "hold_only_priors": [
