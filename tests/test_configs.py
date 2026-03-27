@@ -1,3 +1,4 @@
+import math
 from pathlib import Path
 
 from psmn_rl.config import load_config
@@ -951,3 +952,26 @@ def test_load_memory_actor_hidden_blend_config() -> None:
     assert por.model.policy_option_hidden_blend_gate is True
     assert por.model.policy_option_hidden_blend_scale == 1.0
     assert por.model.policy_option_hidden_shift_weight == 0.25
+
+
+def test_load_memory_actor_hidden_shiftgate075_scale325_adaptive_floor_configs() -> None:
+    floor2875 = load_config(
+        Path(
+            "configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_shiftgate075_scale325_adaptive_floor2875.yaml"
+        )
+    )
+    floor30 = load_config(
+        Path(
+            "configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_shiftgate075_scale325_adaptive_floor30.yaml"
+        )
+    )
+
+    assert floor2875.model.policy_option_hidden_adaptive_scale_floor is True
+    assert math.isclose(floor2875.model.policy_option_hidden_film_scale, 0.325)
+    assert math.isclose(floor2875.model.policy_option_hidden_scale_floor, 0.2875)
+    assert math.isclose(floor2875.model.policy_option_hidden_shift_gate_power, 0.75)
+
+    assert floor30.model.policy_option_hidden_adaptive_scale_floor is True
+    assert math.isclose(floor30.model.policy_option_hidden_film_scale, 0.325)
+    assert math.isclose(floor30.model.policy_option_hidden_scale_floor, 0.30)
+    assert math.isclose(floor30.model.policy_option_hidden_shift_gate_power, 0.75)
