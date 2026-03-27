@@ -112,6 +112,8 @@ class ModelConfig:
     policy_option_hidden_split_heads: bool = False
     policy_option_hidden_scale_only: bool = False
     policy_option_hidden_scale_weight: float = 1.0
+    policy_option_hidden_adaptive_scale_floor: bool = False
+    policy_option_hidden_scale_floor: float = 0.0
     policy_option_hidden_low_margin_gate: bool = False
     policy_option_hidden_margin_threshold: float = 0.25
     policy_option_hidden_margin_sharpness: float = 12.0

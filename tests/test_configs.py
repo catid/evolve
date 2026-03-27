@@ -291,6 +291,25 @@ def test_load_memory_actor_hidden_termination_bias_config() -> None:
     assert por125.model.termination_bias == 1.25
 
 
+def test_load_memory_actor_hidden_adaptive_scale_floor_config() -> None:
+    por25 = load_config(Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_adaptive_floor25.yaml"))
+    por30 = load_config(Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_adaptive_floor30.yaml"))
+
+    assert por25.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert por25.model.variant == "por"
+    assert por25.model.policy_option_hidden_film is True
+    assert por25.model.policy_option_hidden_shift_weight == 0.22
+    assert por25.model.policy_option_hidden_adaptive_scale_floor is True
+    assert por25.model.policy_option_hidden_scale_floor == 0.25
+
+    assert por30.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert por30.model.variant == "por"
+    assert por30.model.policy_option_hidden_film is True
+    assert por30.model.policy_option_hidden_shift_weight == 0.22
+    assert por30.model.policy_option_hidden_adaptive_scale_floor is True
+    assert por30.model.policy_option_hidden_scale_floor == 0.30
+
+
 def test_load_memory_actor_hidden_option_count_config() -> None:
     por6 = load_config(Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_option6.yaml"))
     por8 = load_config(Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_option8.yaml"))
