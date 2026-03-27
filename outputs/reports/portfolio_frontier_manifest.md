@@ -4,6 +4,8 @@
 - git commit: `fdef6f8234fbf02aa6bd15c6ed1e06a2e133483b`
 - git dirty: `True`
 - active benchmark pack: `outputs/reports/portfolio_candidate_pack.json`
+- scope: `DoorKey benchmark frontier only`
+- separate adjacent-task state: `outputs/reports/memory_next_decision_memo.md`
 
 ## Frontier Roles
 
@@ -32,3 +34,4 @@
 - `round10` is the only replay-validated alternate that survives the historically stitched support-plus-weakness surface, so it is the measured escalation target if the project wants a fuller alternate check.
 - `round5` stays hold-only: it is seed-clean on the packed frontier but still below the incumbent on broader dev mean.
 - `door3_post5` and `post_unlock_x5` remain retired priors.
+- This manifest does not track the internal `Memory` task-scoped candidate; that adjacent-task lane is recorded separately in `outputs/reports/memory_next_candidate_pack.json` and `outputs/reports/memory_next_decision_memo.md`.

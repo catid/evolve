@@ -4,6 +4,8 @@
 - git commit: `a9d089c1aaaf11bdbe569a92684ca96676c4aed3`
 - git dirty: `True`
 - consistency overall: `pass`
+- scope: `DoorKey benchmark frontier only`
+- separate adjacent-task state: `outputs/reports/memory_next_decision_memo.md`
 
 ## Benchmark State
 
@@ -31,3 +33,4 @@
 - This contract is the single authoritative snapshot of the current measured portfolio frontier.
 - It freezes the active benchmark, restart prior, measured alternate, retired set, and seed-level screening contract in one place.
 - Future bounded search or doc updates should be treated as drifting until this contract is intentionally refreshed.
+- The contract is benchmark-scoped: it does not include the internal `Memory` task-scoped candidate, which is tracked separately in `outputs/reports/memory_next_candidate_pack.json` and `outputs/reports/memory_next_decision_memo.md`.
