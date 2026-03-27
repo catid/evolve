@@ -434,6 +434,33 @@ def test_por_actor_hidden_branch_gate_bias_reports_metrics() -> None:
     env.close()
 
 
+def test_por_actor_hidden_adaptive_shift_floor_reports_metrics() -> None:
+    env = gym.make("MiniGrid-MemoryS9-v0")
+    obs = _sample_obs(env)
+    done = torch.ones(1, dtype=torch.bool)
+    model = build_model(
+        ModelConfig(
+            variant="por",
+            por_option_actor_features=True,
+            policy_option_hidden_film=True,
+            policy_option_hidden_film_scale=0.35,
+            policy_option_hidden_use_duration_gate=True,
+            policy_option_hidden_shift_weight=0.22,
+            policy_option_hidden_adaptive_shift_floor=True,
+            policy_option_hidden_shift_floor=0.16,
+        ),
+        env.observation_space,
+        env.action_space,
+    )
+    state = model.initial_state(batch_size=1, device=torch.device("cpu"))
+    output = model.forward(obs, state=state, done=done)
+    assert "policy/option_hidden_adaptive_shift_floor" in output.metrics
+    assert "policy/option_hidden_shift_floor" in output.metrics
+    assert "policy/option_hidden_shift_floor_power" in output.metrics
+    assert "policy/option_hidden_adaptive_shift_weight_mean" in output.metrics
+    env.close()
+
+
 def test_logit_gain_reports_metrics() -> None:
     env = gym.make("MiniGrid-MemoryS9-v0")
     obs = _sample_obs(env)
