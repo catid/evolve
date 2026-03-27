@@ -386,6 +386,27 @@ def test_load_memory_actor_hidden_shiftgate075_power_refinement_configs() -> Non
     assert gate085.model.policy_option_hidden_shift_gate_power == 0.85
 
 
+def test_load_memory_actor_hidden_shiftgate075_scale_refinement_configs() -> None:
+    scale325 = load_config(
+        Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_shiftgate075_scale325.yaml")
+    )
+    scale375 = load_config(
+        Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_shiftgate075_scale375.yaml")
+    )
+
+    assert scale325.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert scale325.model.variant == "por"
+    assert scale325.model.policy_option_hidden_film is True
+    assert scale325.model.policy_option_hidden_film_scale == 0.325
+    assert scale325.model.policy_option_hidden_shift_gate_power == 0.75
+
+    assert scale375.env.env_id == "MiniGrid-MemoryS9-v0"
+    assert scale375.model.variant == "por"
+    assert scale375.model.policy_option_hidden_film is True
+    assert scale375.model.policy_option_hidden_film_scale == 0.375
+    assert scale375.model.policy_option_hidden_shift_gate_power == 0.75
+
+
 def test_load_memory_actor_hidden_scale_gate_power_configs() -> None:
     gate125 = load_config(
         Path("configs/experiments/minigrid_memory_por_switchy_actor_hidden_partial_shift22_scalegate125.yaml")
