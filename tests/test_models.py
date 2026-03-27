@@ -318,6 +318,7 @@ def test_por_actor_hidden_film_reports_metrics() -> None:
             policy_option_hidden_film=True,
             policy_option_hidden_film_scale=0.5,
             policy_option_hidden_use_duration_gate=True,
+            policy_option_hidden_split_heads=True,
             policy_option_hidden_blend_gate=True,
             policy_option_hidden_bound_shift=True,
             policy_option_hidden_shift_bound_scale=2.0,
@@ -330,6 +331,7 @@ def test_por_actor_hidden_film_reports_metrics() -> None:
     assert "policy/option_actor_features_duration_gate" in output.metrics
     assert "policy/option_hidden_film_gate_signal_mean" in output.metrics
     assert "policy/option_hidden_film_duration_mix" in output.metrics
+    assert "policy/option_hidden_split_heads" in output.metrics
     assert "policy/option_hidden_film_scale_only" in output.metrics
     assert "policy/option_hidden_film_scale_weight" in output.metrics
     assert "policy/option_hidden_blend_gate" in output.metrics
